@@ -39,6 +39,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
   const [activeTab, setActiveTab] = useState<string>("catalysts");
+  const [reportDocLang, setReportDocLang] = useState<"en" | "zh">("zh");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -395,17 +396,76 @@ export default function HomePage() {
                 )}
 
                 {activeTab === "report" && (
-                  <div className="p-6 rounded-xl bg-surface-1 border border-border flex flex-col gap-3 shadow-lg">
-                    <div className="flex items-center justify-between pb-3 border-b border-border">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Generated Equity Markdown Report (report.md)
-                      </span>
-                      <span className="text-xs font-mono text-slate-500">
-                        {reportData.folderName}
-                      </span>
+                  <div className="p-6 rounded-xl bg-surface-1 border border-border flex flex-col gap-4 shadow-lg">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-accent" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                          {reportDocLang === "zh"
+                            ? "中文财报深度研报 (report_zh.md)"
+                            : "Equity Markdown Report (report.md)"}
+                        </span>
+                        <span className="text-xs font-mono text-slate-500">
+                          {reportData.folderName}
+                        </span>
+                      </div>
+
+                      {/* Language Switcher for Report View */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center bg-surface-0 p-0.5 rounded-lg border border-border text-xs">
+                          <button
+                            type="button"
+                            onClick={() => setReportDocLang("en")}
+                            className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                              reportDocLang === "en"
+                                ? "bg-surface-2 text-accent shadow-sm"
+                                : "text-slate-400 hover:text-white"
+                            }`}
+                          >
+                            English (report.md)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setReportDocLang("zh")}
+                            className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                              reportDocLang === "zh"
+                                ? "bg-accent/20 text-accent font-bold shadow-sm"
+                                : "text-slate-400 hover:text-white"
+                            }`}
+                          >
+                            🇨🇳 中文研报 (report_zh.md)
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const content =
+                              reportDocLang === "zh"
+                                ? reportData.reportMarkdownZh
+                                : reportData.reportMarkdown;
+                            if (content) {
+                              navigator.clipboard.writeText(content);
+                              showToast(
+                                reportDocLang === "zh"
+                                  ? "中文研报已复制到剪贴板！"
+                                  : "Report markdown copied!"
+                              );
+                            }
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs text-slate-300 hover:text-white transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
                     </div>
-                    <pre className="p-4 rounded-lg bg-surface-0 border border-border text-xs text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed">
-                      {reportData.reportMarkdown || "No report.md file available in this folder."}
+                    <pre className="p-4 rounded-lg bg-surface-0 border border-border text-xs text-slate-200 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                      {(reportDocLang === "zh"
+                        ? reportData.reportMarkdownZh
+                        : reportData.reportMarkdown) ||
+                        (reportDocLang === "zh"
+                          ? "暂无中文研报文件 (report_zh.md)。"
+                          : "No report.md file available in this folder.")}
                     </pre>
                   </div>
                 )}

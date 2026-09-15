@@ -12,6 +12,7 @@ import {
   ValuationSchema,
 } from "@/lib/schemas";
 import { computeValuation, deriveEffectiveBaseline } from "@/lib/valuation";
+import { renderReport } from "@/lib/report";
 
 export async function GET(
   request: NextRequest,
@@ -71,8 +72,6 @@ export async function GET(
     const filingRaw = readFileJson("filing-extracts.json");
     const baselineRaw = readFileJson("stress-baseline.json");
     const valuationRaw = readFileJson("valuation.json");
-    const reportMarkdown = readFileText("report.md");
-
     const catalysts = catalystsRaw ? CatalystsSchema.safeParse(catalystsRaw).data : undefined;
     const reactions = reactionsRaw ? ReactionsSchema.safeParse(reactionsRaw).data : undefined;
     const sentiment = sentimentRaw ? EarningsSentimentSchema.safeParse(sentimentRaw).data : undefined;
@@ -88,9 +87,24 @@ export async function GET(
 
     let valuation = valuationRaw ? ValuationSchema.safeParse(valuationRaw).data : undefined;
 
-    // If valuation is missing or needs recalculating, run the deterministic valuation engine
     if (!valuation) {
       valuation = computeValuation({ facts, scenarios, baseline });
+    }
+
+    let reportMarkdown = readFileText("report.md");
+    let reportMarkdownZh = readFileText("report_zh.md");
+
+    if (!reportMarkdown && valuation) {
+      reportMarkdown = renderReport(
+        { facts, catalysts, valuation, reactions },
+        { language: "en" }
+      );
+    }
+    if (!reportMarkdownZh && valuation) {
+      reportMarkdownZh = renderReport(
+        { facts, catalysts, valuation, reactions },
+        { language: "zh" }
+      );
     }
 
     return NextResponse.json({
@@ -105,6 +119,7 @@ export async function GET(
       filing,
       baseline,
       reportMarkdown,
+      reportMarkdownZh,
     });
   } catch (error) {
     console.error("Error loading report:", error);

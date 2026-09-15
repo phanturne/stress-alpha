@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
-import { Printer, ArrowLeft, ShieldCheck, Zap } from "lucide-react";
-import type { ReportData } from "@/lib/schemas";
-import type { StressResult } from "@/lib/schemas";
+import React, { useState } from "react";
+import { Printer, ArrowLeft, ShieldCheck, Zap, Globe } from "lucide-react";
+import type { ReportData, StressResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 
 interface MemoViewProps {
@@ -17,8 +16,10 @@ export const MemoView: React.FC<MemoViewProps> = ({
   stressResult,
   onBackToCockpit,
 }) => {
-  const { facts, scenarios, catalysts, filing } = reportData;
+  const [memoLang, setMemoLang] = useState<"en" | "zh">("en");
+  const { facts, catalysts, filing } = reportData;
   const currentPrice = facts.currentPrice;
+  const isZh = memoLang === "zh";
 
   return (
     <div className="w-full max-w-4xl mx-auto py-6 px-4">
@@ -30,17 +31,45 @@ export const MemoView: React.FC<MemoViewProps> = ({
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-xs font-semibold text-slate-300 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Cockpit
+          {isZh ? "返回驾驶舱" : "Back to Cockpit"}
         </button>
 
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-colors shadow-md shadow-accent/20"
-        >
-          <Printer className="w-4 h-4" />
-          Print / Export PDF Memo
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Report Language Switcher */}
+          <div className="flex items-center bg-surface-1 p-0.5 rounded-lg border border-border text-xs">
+            <button
+              type="button"
+              onClick={() => setMemoLang("en")}
+              className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                memoLang === "en"
+                  ? "bg-surface-3 text-accent shadow-sm"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              English Memo
+            </button>
+            <button
+              type="button"
+              onClick={() => setMemoLang("zh")}
+              className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                memoLang === "zh"
+                  ? "bg-accent/20 text-accent font-bold shadow-sm"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              🇨🇳 中文备忘录
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-colors shadow-md shadow-accent/20"
+          >
+            <Printer className="w-4 h-4" />
+            {isZh ? "打印 / 导出 PDF" : "Print / Export PDF Memo"}
+          </button>
+        </div>
       </div>
 
       {/* Printable Memo Sheet */}
@@ -50,26 +79,36 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-accent uppercase tracking-widest mb-1">
               <Zap className="w-3.5 h-3.5" />
-              StressAlpha Investment Committee Memorandum
+              {isZh
+                ? "StressAlpha 投资决策委员会备忘录 (MEMORANDUM)"
+                : "StressAlpha Investment Committee Memorandum"}
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              {facts.ticker} ({facts.company}) &bull; {facts.quarter} Decision Audit
+              {facts.ticker} ({facts.company}) &bull; {facts.quarter}{" "}
+              {isZh ? "投资决策与压力测试审计" : "Decision Audit"}
             </h1>
             <div className="text-xs text-slate-400 mt-1 font-mono">
-              Report Date: {facts.reportDate} | Generated via Deterministic Stress Engine
+              {isZh ? "报告日期" : "Report Date"}: {facts.reportDate} |{" "}
+              {isZh
+                ? "由 StressAlpha 确定性压力计算引擎生成"
+                : "Generated via Deterministic Stress Engine"}
             </div>
           </div>
 
           <div className="flex items-center gap-4 bg-surface-0 px-4 py-2.5 rounded-xl border border-border">
             <div>
-              <div className="text-[10px] text-slate-400 font-mono">Current Stock</div>
+              <div className="text-[10px] text-slate-400 font-mono">
+                {isZh ? "当前基准股价" : "Current Stock"}
+              </div>
               <div className="text-base font-bold font-mono text-white">
                 {formatCurrency(currentPrice)}
               </div>
             </div>
             <div className="h-6 w-[1px] bg-border" />
             <div>
-              <div className="text-[10px] text-slate-400 font-mono">Weighted Fair Value</div>
+              <div className="text-[10px] text-slate-400 font-mono">
+                {isZh ? "概率加权公允价" : "Weighted Fair Value"}
+              </div>
               <div className="text-base font-bold font-mono text-accent">
                 {formatCurrency(
                   reportData.valuation?.weightedFairValue ?? currentPrice,
@@ -83,54 +122,91 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {/* Executive Synthesis */}
         <div className="flex flex-col gap-2">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-            1. Executive Decision Synthesis
+            {isZh
+              ? "一、 执行决策综述 (Executive Synthesis)"
+              : "1. Executive Decision Synthesis"}
           </h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            This memorandum provides a structured fundamental equity synthesis for{" "}
-            <strong className="text-white">{facts.ticker}</strong> following the{" "}
-            <strong className="text-white">{facts.quarter}</strong> release. While headline
-            GAAP earnings showed an apparent beat (${facts.epsReported} vs $
-            {facts.epsConsensus} est), intrinsic cash operating earnings stand at{" "}
-            <strong className="text-accent">{formatCurrency(facts.epsOperating)}</strong>,
-            normalized for one-time paper accounting noise.
-          </p>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Under active StressAlpha parameter assumptions, implied forward stressed EPS is{" "}
-            <strong className="text-white">
-              {formatCurrency(stressResult.stressEps)}
-            </strong>
-            , yielding a risk/reward asymmetry ratio of{" "}
-            <strong className="text-accent">
-              {stressResult.asymmetry.riskRewardRatio.toFixed(2)}x
-            </strong>{" "}
-            with a downside panic floor drawdown of{" "}
-            <strong className="text-fintech-red">
-              {formatPercent(stressResult.asymmetry.downsideToPanicPct)}
-            </strong>
-            .
-          </p>
+          {isZh ? (
+            <>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                本备忘录为针对 <strong className="text-white">{facts.ticker}</strong> (
+                {facts.company}) 发布的{" "}
+                <strong className="text-white">{facts.quarter}</strong>{" "}
+                财报提供结构化的基本面决策审计。名义 GAAP 稀释每股收益为 $
+                {facts.epsReported}（彭博一致预期为 ${facts.epsConsensus}
+                ），经收益质量穿透并剔除非经营性一次性账面损益后，真实核心经营 EPS 确立为{" "}
+                <strong className="text-accent">{formatCurrency(facts.epsOperating)}</strong>。
+              </p>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                基于当前 StressAlpha 压力测试参数设定，测算得出的压力预测 EPS 为{" "}
+                <strong className="text-white">
+                  {formatCurrency(stressResult.stressEps)}
+                </strong>
+                ，对应盈亏非对称比为{" "}
+                <strong className="text-accent">
+                  {stressResult.asymmetry.riskRewardRatio.toFixed(2)}x
+                </strong>
+                ，恐慌底价下行最大回撤风险为{" "}
+                <strong className="text-fintech-red">
+                  {formatPercent(stressResult.asymmetry.downsideToPanicPct)}
+                </strong>
+                。
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                This memorandum provides a structured fundamental equity synthesis for{" "}
+                <strong className="text-white">{facts.ticker}</strong> following the{" "}
+                <strong className="text-white">{facts.quarter}</strong> release. While headline
+                GAAP earnings showed an apparent beat (${facts.epsReported} vs $
+                {facts.epsConsensus} est), intrinsic cash operating earnings stand at{" "}
+                <strong className="text-accent">{formatCurrency(facts.epsOperating)}</strong>,
+                normalized for one-time paper accounting noise.
+              </p>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Under active StressAlpha parameter assumptions, implied forward stressed EPS is{" "}
+                <strong className="text-white">
+                  {formatCurrency(stressResult.stressEps)}
+                </strong>
+                , yielding a risk/reward asymmetry ratio of{" "}
+                <strong className="text-accent">
+                  {stressResult.asymmetry.riskRewardRatio.toFixed(2)}x
+                </strong>{" "}
+                with a downside panic floor drawdown of{" "}
+                <strong className="text-fintech-red">
+                  {formatPercent(stressResult.asymmetry.downsideToPanicPct)}
+                </strong>
+                .
+              </p>
+            </>
+          )}
         </div>
 
         {/* Valuation Regimes Table */}
         <div className="flex flex-col gap-3">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-            2. Valuation Regimes & Stress Flow-Through
+            {isZh
+              ? "二、 动态估值区间与利润穿透 (Valuation Regimes & Flow-Through)"
+              : "2. Valuation Regimes & Stress Flow-Through"}
           </h2>
           <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-surface-0 border-b border-border text-slate-400 font-mono uppercase text-[10px]">
-                  <th className="p-3">Regime</th>
-                  <th className="p-3 text-right">Multiple</th>
-                  <th className="p-3 text-right">Stressed EPS</th>
-                  <th className="p-3 text-right">Target Price</th>
-                  <th className="p-3 text-right">Delta vs Current</th>
-                  <th className="p-3">Core Scenario Thesis</th>
+                  <th className="p-3">{isZh ? "估值区间" : "Regime"}</th>
+                  <th className="p-3 text-right">{isZh ? "市盈率倍数" : "Multiple"}</th>
+                  <th className="p-3 text-right">{isZh ? "压力 EPS" : "Stressed EPS"}</th>
+                  <th className="p-3 text-right">{isZh ? "目标价格" : "Target Price"}</th>
+                  <th className="p-3 text-right">{isZh ? "较现价空间" : "Delta vs Current"}</th>
+                  <th className="p-3">{isZh ? "核心情景逻辑" : "Core Scenario Thesis"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
                 <tr>
-                  <td className="p-3 font-bold text-fintech-green">🐂 Bull Regime</td>
+                  <td className="p-3 font-bold text-fintech-green">
+                    {isZh ? "🐂 牛市情景 (Bull)" : "🐂 Bull Regime"}
+                  </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.bull.multiple}x
                   </td>
@@ -144,11 +220,15 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.bull.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    Enterprise re-acceleration accelerates; customer demand expands multiple.
+                    {isZh
+                      ? "企业级需求全面回暖，AI商业化落地加速，估值倍数扩张。"
+                      : "Enterprise re-acceleration accelerates; customer demand expands multiple."}
                   </td>
                 </tr>
                 <tr>
-                  <td className="p-3 font-bold text-slate-200">⚖️ Base Regime</td>
+                  <td className="p-3 font-bold text-slate-200">
+                    {isZh ? "⚖️ 基准情景 (Base)" : "⚖️ Base Regime"}
+                  </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.base.multiple}x
                   </td>
@@ -168,11 +248,15 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.base.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    Guidance mid-point execution; steady normalized workload migration and margin discipline.
+                    {isZh
+                      ? "管理层指引中枢平稳兑现，稳态工作负载迁移与利润率维持规范。"
+                      : "Guidance mid-point execution; steady normalized workload migration and margin discipline."}
                   </td>
                 </tr>
                 <tr>
-                  <td className="p-3 font-bold text-fintech-red">🚨 Panic Floor</td>
+                  <td className="p-3 font-bold text-fintech-red">
+                    {isZh ? "🚨 恐慌底价 (Panic)" : "🚨 Panic Floor"}
+                  </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.panic.multiple}x
                   </td>
@@ -186,7 +270,9 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.panic.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    Severe upstream CapEx curtailment, recessionary demand contraction, multiple de-rating.
+                    {isZh
+                      ? "上游资本开支大幅削减，宏观消费衰退，倍数戴维斯双杀去杠杆。"
+                      : "Severe upstream CapEx curtailment, recessionary demand contraction, multiple de-rating."}
                   </td>
                 </tr>
               </tbody>
@@ -199,20 +285,46 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div className="flex flex-col gap-2 p-4 rounded-xl bg-surface-0 border border-fintech-amber/30">
             <div className="flex items-center gap-2 text-xs font-bold text-fintech-amber font-mono uppercase">
               <ShieldCheck className="w-4 h-4" />
-              3. Income Quality Audit
+              {isZh
+                ? "三、 收益质量与核心经营利润审计 (Income Quality)"
+                : "3. Income Quality Audit"}
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Reported GAAP diluted EPS was ${facts.epsReported}. Fundamental equity assessment strips non-operating and transitory noise:{" "}
-              {facts.oneTimeItems
-                .map(
-                  (i) =>
-                    `$${i.amountBillions}B related to ${i.description} (${
-                      i.isOperating ? "operating" : "non-operating"
-                    })`
-                )
-                .join(", ")}
-              . Normalized operating EPS is established at{" "}
-              <strong className="text-accent">{formatCurrency(facts.epsOperating)}</strong>.
+              {isZh ? (
+                <>
+                  名义报告 GAAP EPS 为 ${facts.epsReported}。模型严格剔除非经营性与过渡性损益：
+                  {facts.oneTimeItems
+                    .map(
+                      (i) =>
+                        `$${i.amountBillions}B 关联 ${i.description} (${
+                          i.isOperating ? "经营性" : "非经营性公允价值变动"
+                        })`
+                    )
+                    .join("，")}
+                  。调整后标准化核心经营 EPS 确立为{" "}
+                  <strong className="text-accent">
+                    {formatCurrency(facts.epsOperating)}
+                  </strong>
+                  。
+                </>
+              ) : (
+                <>
+                  Reported GAAP diluted EPS was ${facts.epsReported}. Fundamental equity assessment strips non-operating and transitory noise:{" "}
+                  {facts.oneTimeItems
+                    .map(
+                      (i) =>
+                        `$${i.amountBillions}B related to ${i.description} (${
+                          i.isOperating ? "operating" : "non-operating"
+                        })`
+                    )
+                    .join(", ")}
+                  . Normalized operating EPS is established at{" "}
+                  <strong className="text-accent">
+                    {formatCurrency(facts.epsOperating)}
+                  </strong>
+                  .
+                </>
+              )}
             </p>
           </div>
         )}
@@ -221,13 +333,16 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {catalysts && catalysts.catalysts && (
           <div className="flex flex-col gap-2">
             <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-              4. Key Audited Catalysts & Probability Anchors
+              {isZh
+                ? "四、 核心基本面催化剂与概率锚定 (Catalysts)"
+                : "4. Key Audited Catalysts & Probability Anchors"}
             </h2>
             <ul className="space-y-1.5 text-xs text-slate-300 pl-4 list-disc">
               {catalysts.catalysts.map((c, i) => (
                 <li key={i} className="leading-relaxed">
                   <strong className="text-white">{c.title}</strong> (
-                  {(c.probability * 100).toFixed(0)}% prob, {c.horizon}): {c.description}
+                  {(c.probability * 100).toFixed(0)}%{" "}
+                  {isZh ? "概率" : "prob"}, {c.horizon}): {c.description}
                 </li>
               ))}
             </ul>
@@ -238,7 +353,9 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {filing && filing.newRiskFactors && filing.newRiskFactors.length > 0 && (
           <div className="flex flex-col gap-2">
             <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-              5. SEC Regulatory Risk Escalations
+              {isZh
+                ? "五、 SEC 10-Q 监管与合规风险升级 (Filing Risks)"
+                : "5. SEC Regulatory Risk Escalations"}
             </h2>
             <ul className="space-y-1 text-xs text-slate-300 pl-4 list-disc">
               {filing.newRiskFactors.map((r, i) => (

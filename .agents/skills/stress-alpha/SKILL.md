@@ -50,7 +50,8 @@ npx tsx scripts/analyze.ts reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
 This automatically validates all schemas and generates:
 - `valuation.json`: Exact mathematical fair values, valuation bands (Bull, Base, Panic), and risk asymmetry metrics.
-- `report.md`: Complete human-readable markdown memorandum.
+- `report.md`: Complete human-readable English markdown report.
+- `report_zh.md`: Complete human-readable Chinese markdown report with institutional financial terminology (概率加权公允价值, 收益质量防线, 压力预测EPS, 估值区间).
 
 ### Step 4: Display Output on the Web Application
 Launch the report directly in the browser:
@@ -65,7 +66,8 @@ Or run the all-in-one helper script:
 The web application:
 - Automatically detects and lists all folders under `reports/` in the top report selector.
 - Provides sub-millisecond client-side sensitivity sliders (<1ms) for testing upstream shocks.
-- Allows switching between the interactive **Cockpit View** and the publication-ready **Committee Memo View**.
+- Allows viewing both English (`report.md`) and Chinese (`report_zh.md`) reports under the **Full Report** tab.
+- Supports switching between the interactive **Cockpit View** and the publication-ready **Committee Memo View** (with 1-click English and Chinese memo options).
 
 ---
 

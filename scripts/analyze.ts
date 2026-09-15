@@ -77,15 +77,31 @@ function main() {
   fs.writeFileSync(valuationPath, JSON.stringify(validatedValuation, null, 2));
   console.log(`  📄 Output written: ${valuationPath}`);
 
-  const reportMd = renderReport({
-    facts,
-    catalysts,
-    valuation: validatedValuation,
-    reactions,
-  });
+  const reportMd = renderReport(
+    {
+      facts,
+      catalysts,
+      valuation: validatedValuation,
+      reactions,
+    },
+    { language: "en" }
+  );
   const reportPath = path.join(absRunDir, "report.md");
   fs.writeFileSync(reportPath, reportMd);
-  console.log(`  📄 Output written: ${reportPath}`);
+  console.log(`  📄 Output written (EN): ${reportPath}`);
+
+  const reportZhMd = renderReport(
+    {
+      facts,
+      catalysts,
+      valuation: validatedValuation,
+      reactions,
+    },
+    { language: "zh" }
+  );
+  const reportZhPath = path.join(absRunDir, "report_zh.md");
+  fs.writeFileSync(reportZhPath, reportZhMd);
+  console.log(`  📄 Output written (ZH): ${reportZhPath}`);
 
   console.log("\n" + "═".repeat(64));
   console.log(`  ${facts.ticker} (${facts.company}) — ${facts.quarter} STRESS REPORT`);

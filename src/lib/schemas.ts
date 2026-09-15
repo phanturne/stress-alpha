@@ -309,4 +309,5 @@ export interface ReportData {
   filing?: FilingExtracts;
   baseline?: FinancialModelBaseline;
   reportMarkdown?: string;
+  reportMarkdownZh?: string;
 }
