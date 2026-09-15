@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { Printer, ArrowLeft, ShieldCheck, Zap, Globe } from "lucide-react";
 import type { ReportData, StressResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface MemoViewProps {
   reportData: ReportData;
   stressResult: StressResult;
   onBackToCockpit: () => void;
-  locale?: "en" | "zh";
+  locale?: Locale;
 }
 
 export const MemoView: React.FC<MemoViewProps> = ({
@@ -18,8 +19,9 @@ export const MemoView: React.FC<MemoViewProps> = ({
   onBackToCockpit,
   locale = "zh",
 }) => {
-  const [memoLang, setMemoLang] = useState<"en" | "zh">(locale);
+  const [memoLang, setMemoLang] = useState<Locale>(locale);
   const isZh = memoLang === "zh";
+  const t = getTranslations(memoLang).memo;
   const facts = (isZh && reportData.factsZh) ? reportData.factsZh : reportData.facts;
   const catalysts = (isZh && reportData.catalystsZh) ? reportData.catalystsZh : reportData.catalysts;
   const filing = (isZh && reportData.filingZh) ? reportData.filingZh : reportData.filing;
@@ -36,7 +38,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-xs font-semibold text-slate-300 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          {isZh ? "返回驾驶舱" : "Back to Cockpit"}
+          {t.backToCockpit}
         </button>
 
         <div className="flex items-center gap-3">
@@ -51,7 +53,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              English Memo
+              {t.enMemoBtn}
             </button>
             <button
               type="button"
@@ -62,7 +64,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              🇨🇳 中文备忘录
+              {t.zhMemoBtn}
             </button>
           </div>
 
@@ -72,7 +74,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-colors shadow-md shadow-accent/20"
           >
             <Printer className="w-4 h-4" />
-            {isZh ? "打印 / 导出 PDF" : "Print / Export PDF Memo"}
+            {t.printPdf}
           </button>
         </div>
       </div>
@@ -84,26 +86,22 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-accent uppercase tracking-widest mb-1">
               <Zap className="w-3.5 h-3.5" />
-              {isZh
-                ? "StressAlpha 投资决策委员会备忘录 (MEMORANDUM)"
-                : "StressAlpha Investment Committee Memorandum"}
+              {t.committeeMemo}
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
               {facts.ticker} ({facts.company}) &bull; {facts.quarter}{" "}
-              {isZh ? "投资决策与压力测试审计" : "Decision Audit"}
+              {t.decisionAudit}
             </h1>
             <div className="text-xs text-slate-400 mt-1 font-mono">
-              {isZh ? "报告日期" : "Report Date"}: {facts.reportDate} |{" "}
-              {isZh
-                ? "由 StressAlpha 确定性压力计算引擎生成"
-                : "Generated via Deterministic Stress Engine"}
+              {t.reportDate}: {facts.reportDate} |{" "}
+              {t.generatedVia}
             </div>
           </div>
 
           <div className="flex items-center gap-4 bg-surface-0 px-4 py-2.5 rounded-xl border border-border">
             <div>
               <div className="text-[10px] text-slate-400 font-mono">
-                {isZh ? "当前基准股价" : "Current Stock"}
+                {t.currentStock}
               </div>
               <div className="text-base font-bold font-mono text-white">
                 {formatCurrency(currentPrice)}
@@ -112,7 +110,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <div className="h-6 w-[1px] bg-border" />
             <div>
               <div className="text-[10px] text-slate-400 font-mono">
-                {isZh ? "概率加权公允价" : "Weighted Fair Value"}
+                {t.weightedFairValue}
               </div>
               <div className="text-base font-bold font-mono text-accent">
                 {formatCurrency(
@@ -127,9 +125,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {/* Executive Synthesis */}
         <div className="flex flex-col gap-2">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-            {isZh
-              ? "一、 执行决策综述 (Executive Synthesis)"
-              : "1. Executive Decision Synthesis"}
+            {t.sec1Title}
           </h2>
           {isZh ? (
             <>
@@ -191,26 +187,24 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {/* Valuation Regimes Table */}
         <div className="flex flex-col gap-3">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-            {isZh
-              ? "二、 动态估值区间与利润穿透 (Valuation Regimes & Flow-Through)"
-              : "2. Valuation Regimes & Stress Flow-Through"}
+            {t.sec2Title}
           </h2>
           <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-surface-0 border-b border-border text-slate-400 font-mono uppercase text-[10px]">
-                  <th className="p-3">{isZh ? "估值区间" : "Regime"}</th>
-                  <th className="p-3 text-right">{isZh ? "市盈率倍数" : "Multiple"}</th>
-                  <th className="p-3 text-right">{isZh ? "压力 EPS" : "Stressed EPS"}</th>
-                  <th className="p-3 text-right">{isZh ? "目标价格" : "Target Price"}</th>
-                  <th className="p-3 text-right">{isZh ? "较现价空间" : "Delta vs Current"}</th>
-                  <th className="p-3">{isZh ? "核心情景逻辑" : "Core Scenario Thesis"}</th>
+                  <th className="p-3">{t.colRegime}</th>
+                  <th className="p-3 text-right">{t.colMultiple}</th>
+                  <th className="p-3 text-right">{t.colStressedEps}</th>
+                  <th className="p-3 text-right">{t.colTargetPrice}</th>
+                  <th className="p-3 text-right">{t.colDelta}</th>
+                  <th className="p-3">{t.colThesis}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
                 <tr>
                   <td className="p-3 font-bold text-fintech-green">
-                    {isZh ? "🐂 牛市情景 (Bull)" : "🐂 Bull Regime"}
+                    {t.regimeBull}
                   </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.bull.multiple}x
@@ -231,7 +225,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-slate-200">
-                    {isZh ? "⚖️ 基准情景 (Base)" : "⚖️ Base Regime"}
+                    {t.regimeBase}
                   </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.base.multiple}x
@@ -258,7 +252,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-fintech-red">
-                    {isZh ? "🚨 恐慌底价 (Panic)" : "🚨 Panic Floor"}
+                    {t.regimePanic}
                   </td>
                   <td className="p-3 text-right font-mono">
                     {stressResult.valuationBands.panic.multiple}x
@@ -287,9 +281,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div className="flex flex-col gap-2 p-4 rounded-xl bg-surface-0 border border-fintech-amber/30">
             <div className="flex items-center gap-2 text-xs font-bold text-fintech-amber font-mono uppercase">
               <ShieldCheck className="w-4 h-4" />
-              {isZh
-                ? "三、 收益质量与核心经营利润审计 (Income Quality)"
-                : "3. Income Quality Audit"}
+              {t.sec3Title}
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
               {isZh ? (
@@ -335,16 +327,14 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {catalysts && catalysts.catalysts && (
           <div className="flex flex-col gap-2">
             <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-              {isZh
-                ? "四、 核心基本面催化剂与概率锚定 (Catalysts)"
-                : "4. Key Audited Catalysts & Probability Anchors"}
+              {t.sec4Title}
             </h2>
             <ul className="space-y-1.5 text-xs text-slate-300 pl-4 list-disc">
               {catalysts.catalysts.map((c, i) => (
                 <li key={i} className="leading-relaxed">
                   <strong className="text-white">{c.title}</strong> (
                   {(c.probability * 100).toFixed(0)}%{" "}
-                  {isZh ? "概率" : "prob"}, {c.horizon}): {c.description}
+                  {t.prob}, {c.horizon}): {c.description}
                 </li>
               ))}
             </ul>
@@ -355,9 +345,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {filing && filing.newRiskFactors && filing.newRiskFactors.length > 0 && (
           <div className="flex flex-col gap-2">
             <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
-              {isZh
-                ? "五、 SEC 10-Q 监管与合规风险升级 (Filing Risks)"
-                : "5. SEC Regulatory Risk Escalations"}
+              {t.sec5Title}
             </h2>
             <ul className="space-y-1 text-xs text-slate-300 pl-4 list-disc">
               {filing.newRiskFactors.map((r, i) => (

@@ -9,9 +9,10 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
-import type { Facts, Valuation } from "@/lib/schemas";
 import { ReportSelector } from "./ReportSelector";
 import { formatCurrency, formatPercent } from "@/lib/utils";
+import { getTranslations, type Locale } from "@/lib/i18n";
+import type { Facts, Valuation } from "@/lib/schemas";
 
 interface HeaderProps {
   facts?: Facts;
@@ -22,8 +23,8 @@ interface HeaderProps {
   onViewModeChange: (mode: "cockpit" | "memo") => void;
   onOpenUploadModal?: () => void;
   onShare: () => void;
-  locale?: "en" | "zh";
-  onToggleLocale?: (l: "en" | "zh") => void;
+  locale?: Locale;
+  onToggleLocale?: (l: Locale) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -38,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   locale = "zh",
   onToggleLocale = () => {},
 }) => {
-  const isZh = locale === "zh";
+  const t = getTranslations(locale).header;
   const currentPrice = facts?.currentPrice ?? 0;
   const weightedFairValue = valuation?.weightedFairValue ?? 0;
   const upsidePct = valuation?.upsidePct ?? 0;
@@ -57,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Stress<span className="text-accent">Alpha</span>
               </span>
               <span className="px-1.5 py-0.2 rounded bg-surface-2 border border-border text-[9px] font-mono text-slate-400 font-semibold tracking-wider uppercase">
-                {isZh ? "决策引擎" : "ENGINE"}
+                {t.engineTag}
               </span>
             </div>
           </div>
@@ -77,13 +78,13 @@ export const Header: React.FC<HeaderProps> = ({
       {facts && (
         <div className="hidden xl:flex items-center gap-6 px-4 py-1.5 rounded-lg bg-surface-1/70 border border-border/70 text-xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">{isZh ? "现价" : "PRICE"}:</span>
+            <span className="text-slate-400">{t.currentPrice}:</span>
             <span className="font-bold text-white">
               {formatCurrency(currentPrice)}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">{isZh ? "加权公允价" : "WFV"}:</span>
+            <span className="text-slate-400">{t.weightedFairValue}:</span>
             <span
               className={`font-bold ${
                 upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
@@ -93,13 +94,13 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">{isZh ? "核心经营EPS" : "CLEAN EPS"}:</span>
+            <span className="text-slate-400">{t.cleanEps}:</span>
             <span className="font-bold text-accent">
               {formatCurrency(facts.epsOperating)}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">{isZh ? "远期一致预期" : "FWD EST"}:</span>
+            <span className="text-slate-400">{t.fwdEstimate}:</span>
             <span className="text-slate-200">
               {facts.forwardEpsConsensus ? formatCurrency(facts.forwardEpsConsensus) : (facts.epsConsensus ? formatCurrency(facts.epsConsensus) : "N/A")}
             </span>
@@ -150,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">{isZh ? "驾驶舱" : "Cockpit"}</span>
+            <span className="hidden md:inline">{t.cockpit}</span>
           </button>
           <button
             type="button"
@@ -162,7 +163,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">{isZh ? "备忘录" : "Memo"}</span>
+            <span className="hidden md:inline">{t.memo}</span>
           </button>
         </div>
 
@@ -171,10 +172,10 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={onShare}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-xs font-semibold text-slate-300 hover:text-accent transition-colors shadow-sm"
-          title={isZh ? "复制当前情景链接" : "Share current scenario"}
+          title={t.shareTooltip}
         >
           <Share2 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">{isZh ? "分享" : "Share"}</span>
+          <span className="hidden sm:inline">{t.share}</span>
         </button>
 
         {/* Upload Fallback Button */}
@@ -183,10 +184,10 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onOpenUploadModal}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-xs font-semibold text-slate-300 hover:text-white transition-colors"
-            title={isZh ? "上传自定义文件夹" : "Upload custom folder"}
+            title={t.uploadTooltip}
           >
             <Upload className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{isZh ? "上传" : "Upload"}</span>
+            <span className="hidden sm:inline">{t.upload}</span>
           </button>
         )}
       </div>

@@ -3,12 +3,13 @@
 import React from "react";
 import { TrendingUp, TrendingDown, RotateCcw, Clock, Target } from "lucide-react";
 import type { Catalyst, Catalysts } from "@/lib/schemas";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface CatalystsTabProps {
   catalystsData?: Catalysts;
   onProbabilityChange?: (index: number, prob: number) => void;
   onResetProbability?: (index: number) => void;
-  locale?: "en" | "zh";
+  locale?: Locale;
 }
 
 export const CatalystsTab: React.FC<CatalystsTabProps> = ({
@@ -17,11 +18,11 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
   onResetProbability,
   locale = "zh",
 }) => {
-  const isZh = locale === "zh";
+  const t = getTranslations(locale).catalystsTab;
   if (!catalystsData || !catalystsData.catalysts || catalystsData.catalysts.length === 0) {
     return (
       <div className="p-8 text-center text-sm text-slate-500 bg-surface-1 rounded-xl border border-border">
-        {isZh ? "当前研报暂无催化剂审计数据。" : "No catalyst audit artifacts available for this report."}
+        {t.empty}
       </div>
     );
   }
@@ -31,16 +32,14 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-            {isZh ? "定性财报催化剂与发生概率锚定" : "Qualitative Filing Catalysts & Probability Anchors"}
+            {t.title}
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            {isZh
-              ? "从 SEC 披露及财报电话会中提取的关键驱动因子。拖动滑块可测试逻辑敏感性。"
-              : "Key operational drivers extracted from SEC disclosures and earnings calls. Adjust sliders to test thesis sensitivity."}
+            {t.subtitle}
           </p>
         </div>
         <span className="px-2.5 py-1 rounded-full bg-surface-2 border border-border text-xs font-mono font-semibold text-accent">
-          {catalystsData.catalysts.length} {isZh ? "项催化因子" : "Catalysts"}
+          {catalystsData.catalysts.length} {t.countLabel}
         </span>
       </div>
 
@@ -87,11 +86,15 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                         : "bg-fintech-redGlow/15 text-fintech-red border border-fintech-red/30"
                     }`}
                   >
-                    {isGrowth ? (isZh ? "增长催化" : "growth") : (isZh ? "下行风险" : "risk")}
+                    {isGrowth ? t.growth : t.risk}
                   </span>
                   <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-surface-2 border border-border text-[11px] text-slate-300">
                     <Clock className="w-3 h-3 text-slate-400" />
-                    {catalyst.horizon === "near-term" ? (isZh ? "近期 (0-6月)" : "near-term") : catalyst.horizon === "medium-term" ? (isZh ? "中期 (6-18月)" : "medium-term") : (isZh ? "长期" : catalyst.horizon)}
+                    {catalyst.horizon === "near-term"
+                      ? t.nearTerm
+                      : catalyst.horizon === "medium-term"
+                      ? t.mediumTerm
+                      : t.longTerm}
                   </span>
                 </div>
               </div>
@@ -106,7 +109,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                 <div className="mt-3 bg-surface-0/60 rounded-lg p-3 border border-border/70">
                   <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                     <Target className="w-3 h-3 text-accent" />
-                    {isZh ? "审计证据底稿与出处事实" : "Documented Evidence & Audit Notes"}
+                    {t.evidenceTitle}
                   </div>
                   <ul className="text-xs text-slate-300 space-y-1">
                     {catalyst.evidence.map((ev, eIdx) => (
@@ -122,7 +125,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
               {/* Probability Slider Bar */}
               <div className="mt-3.5 pt-3 border-t border-border flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-slate-400 shrink-0">
-                  <span>{isZh ? "发生概率权重:" : "Probability Weight:"}</span>
+                  <span>{t.probabilityWeight}</span>
                   <span className="font-mono font-bold text-accent text-sm">
                     {probPct}%
                   </span>
@@ -146,7 +149,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                     type="button"
                     onClick={() => onResetProbability(idx)}
                     className="p-1 rounded bg-surface-2 hover:bg-surface-3 text-slate-400 hover:text-white text-xs flex items-center gap-1 transition-colors"
-                    title="Reset to original weight"
+                    title={t.resetTooltip}
                   >
                     <RotateCcw className="w-3 h-3" />
                   </button>

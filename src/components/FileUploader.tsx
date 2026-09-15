@@ -14,16 +14,20 @@ import {
   ValuationSchema,
 } from "@/lib/schemas";
 import { computeValuation, deriveEffectiveBaseline } from "@/lib/valuation";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface FileUploaderProps {
   onDataLoaded: (data: ReportData) => void;
   onClose?: () => void;
+  locale?: Locale;
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
   onDataLoaded,
   onClose,
+  locale = "zh",
 }) => {
+  const t = getTranslations(locale).uploader;
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +51,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     }
 
     if (!fileMap["facts.json"] || !fileMap["scenarios.json"]) {
-      setError("Minimum required files: facts.json and scenarios.json");
+      setError(t.minFilesError);
       return;
     }
 
@@ -100,7 +104,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       onDataLoaded(reportData);
       onClose?.();
     } catch (err) {
-      setError(`Schema validation failed: ${(err as Error).message}`);
+      setError(t.schemaError((err as Error).message));
     }
   };
 
@@ -111,7 +115,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
           <div className="flex items-center gap-2">
             <Upload className="w-5 h-5 text-accent" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Upload Analysis Folder
+              {t.title}
             </h3>
           </div>
           {onClose && (
@@ -126,7 +130,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         </div>
 
         <p className="text-xs text-slate-400 leading-relaxed">
-          Drag and drop your analysis folder containing <code className="text-accent">facts.json</code>, <code className="text-accent">scenarios.json</code>, and optional baseline files.
+          {t.description}
         </p>
 
         {error && (
@@ -158,10 +162,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         >
           <FolderUp className="w-10 h-10 text-accent" />
           <div className="text-xs text-slate-300 font-medium">
-            Drag & drop folder or JSON files here
+            {t.dropzoneTitle}
           </div>
           <div className="text-[10px] text-slate-500 font-mono">
-            Requires facts.json + scenarios.json
+            {t.dropzoneHint}
           </div>
 
           <div className="flex items-center gap-2 mt-2">
@@ -180,7 +184,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
               onClick={() => folderInputRef.current?.click()}
               className="px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs font-semibold text-white transition-colors"
             >
-              Choose Folder
+              {t.chooseFolder}
             </button>
 
             <input
@@ -196,7 +200,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
               onClick={() => filesInputRef.current?.click()}
               className="px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs font-semibold text-slate-300 transition-colors"
             >
-              Select Files
+              {t.selectFiles}
             </button>
           </div>
         </div>

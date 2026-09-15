@@ -32,6 +32,7 @@ import {
   computeValuation,
   type StressTestParams,
 } from "@/lib/valuation";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 export default function HomePage() {
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
@@ -39,12 +40,14 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
   const [activeTab, setActiveTab] = useState<string>("catalysts");
-  const [locale, setLocale] = useState<"en" | "zh">("zh");
-  const [reportDocLang, setReportDocLang] = useState<"en" | "zh">("zh");
+  const [locale, setLocale] = useState<Locale>("zh");
+  const [reportDocLang, setReportDocLang] = useState<Locale>("zh");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleToggleLocale = (newLocale: "en" | "zh") => {
+  const t = getTranslations(locale);
+
+  const handleToggleLocale = (newLocale: Locale) => {
     setLocale(newLocale);
     setReportDocLang(newLocale);
   };
@@ -161,7 +164,7 @@ export default function HomePage() {
     if (typeof window !== "undefined") {
       navigator.clipboard
         .writeText(window.location.href)
-        .then(() => showToast("Scenario link copied to clipboard!"))
+        .then(() => showToast(t.page.linkCopiedToast))
         .catch(() => prompt("Copy link:", window.location.href));
     }
   };
@@ -202,7 +205,7 @@ export default function HomePage() {
       grossMarginBpsDelta: 0,
       fixedOpexShiftPct: 0,
     });
-    showToast("Reset all sliders to baseline defaults.");
+    showToast(t.page.resetSlidersToast);
   };
 
   // Catalyst probability changes
@@ -297,7 +300,7 @@ export default function HomePage() {
           <div className="h-[70vh] flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 text-accent animate-spin" />
             <span className="text-xs font-mono text-slate-400">
-              {isZh ? "正在加载 StressAlpha 研报数据..." : "Loading StressAlpha Report..."}
+              {t.page.loading}
             </span>
           </div>
         ) : !reportData || !stressResult ? (
@@ -307,12 +310,10 @@ export default function HomePage() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">
-                {isZh ? "未选择研报" : "No Report Selected"}
+                {t.page.noReportSelected}
               </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-md">
-                {isZh
-                  ? "请从顶部下拉菜单直接选择已生成的研报文件夹，或上传自定义分析目录。"
-                  : "Select an earnings analysis report from the dropdown above or upload an analysis folder."}
+                {t.page.noReportDesc}
               </p>
             </div>
             <button
@@ -320,7 +321,7 @@ export default function HomePage() {
               onClick={() => setIsUploadModalOpen(true)}
               className="px-4 py-2 rounded-lg bg-accent text-slate-950 font-bold text-xs hover:bg-accent-hover transition-colors"
             >
-              {isZh ? "上传分析文件夹" : "Upload Analysis Folder"}
+              {t.page.uploadFolderBtn}
             </button>
           </div>
         ) : viewMode === "memo" ? (
@@ -357,14 +358,14 @@ export default function HomePage() {
               {/* Tab Navigation Ribbon */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/80">
                 {[
-                  { id: "catalysts", label: isZh ? "催化因子" : "Catalysts", icon: Sparkles, count: displayCatalysts?.catalysts?.length },
-                  { id: "scenarios", label: isZh ? "情景估值树" : "Scenario Tree", icon: TrendingUp, count: displayScenarios?.scenarios.length },
-                  { id: "segments", label: isZh ? "分部与指引" : "Segments & Guidance", icon: Layers, count: displayFacts?.segments.length },
-                  { id: "tone", label: isZh ? "管理层情绪" : "Management Tone", icon: Mic },
-                  { id: "filing", label: isZh ? "10-Q 风险" : "10-Q Risks", icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
-                  { id: "reactions", label: isZh ? "历史股价反应" : "Historical Reactions", icon: History, count: displayReactions?.events?.length },
-                  { id: "sensitivity", label: isZh ? "敏感性热力图" : "Sensitivity Heatmap", icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity)?.length },
-                  { id: "report", label: isZh ? "深度研报全文" : "Full Report", icon: FileText },
+                  { id: "catalysts", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+                  { id: "scenarios", label: t.tabs.scenarios, icon: TrendingUp, count: displayScenarios?.scenarios.length },
+                  { id: "segments", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
+                  { id: "tone", label: t.tabs.tone, icon: Mic },
+                  { id: "filing", label: t.tabs.filing, icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
+                  { id: "reactions", label: t.tabs.reactions, icon: History, count: displayReactions?.events?.length },
+                  { id: "sensitivity", label: t.tabs.sensitivity, icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity)?.length },
+                  { id: "report", label: t.tabs.report, icon: FileText },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -459,8 +460,8 @@ export default function HomePage() {
                         <FileText className="w-4 h-4 text-accent" />
                         <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
                           {reportDocLang === "zh"
-                            ? "中文财报深度研报 (report_zh.md)"
-                            : "Equity Markdown Report (report.md)"}
+                            ? t.page.reportTitleZh
+                            : t.page.reportTitleEn}
                         </span>
                         <span className="text-xs font-mono text-slate-500">
                           {reportData.folderName}
@@ -505,14 +506,14 @@ export default function HomePage() {
                               navigator.clipboard.writeText(content);
                               showToast(
                                 reportDocLang === "zh"
-                                  ? "中文研报已复制到剪贴板！"
-                                  : "Report markdown copied!"
+                                  ? t.page.copiedZh
+                                  : t.page.copiedEn
                               );
                             }
                           }}
                           className="px-2.5 py-1 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs text-slate-300 hover:text-white transition-colors"
                         >
-                          Copy
+                          {t.page.copyBtn}
                         </button>
                       </div>
                     </div>
@@ -521,8 +522,8 @@ export default function HomePage() {
                         ? reportData.reportMarkdownZh
                         : reportData.reportMarkdown) ||
                         (reportDocLang === "zh"
-                          ? "暂无中文研报文件 (report_zh.md)。"
-                          : "No report.md file available in this folder.")}
+                          ? t.page.noReportFileZh
+                          : t.page.noReportFileEn)}
                     </pre>
                   </div>
                 )}
@@ -539,9 +540,10 @@ export default function HomePage() {
             setReportData(data);
             setCurrentSlug(data.folderSlug);
             setIsUploadModalOpen(false);
-            showToast("Custom report loaded successfully!");
+            showToast(t.page.customLoadedToast);
           }}
           onClose={() => setIsUploadModalOpen(false)}
+          locale={locale}
         />
       )}
 

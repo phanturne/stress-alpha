@@ -3,18 +3,19 @@
 import React from "react";
 import { Mic, MessageSquare, Quote, Gauge } from "lucide-react";
 import type { EarningsSentiment } from "@/lib/schemas";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface ToneTabProps {
   sentimentData?: EarningsSentiment;
-  locale?: "en" | "zh";
+  locale?: Locale;
 }
 
 export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }) => {
-  const isZh = locale === "zh";
+  const t = getTranslations(locale).toneTab;
   if (!sentimentData || !sentimentData.managementTone) {
     return (
       <div className="p-8 text-center text-sm text-slate-500 bg-surface-1 rounded-xl border border-border">
-        {isZh ? "当前研报暂无财报电话会议情绪审计数据。" : "No earnings call sentiment data available for this report."}
+        {t.empty}
       </div>
     );
   }
@@ -22,23 +23,21 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
   const { managementTone, analystConcerns, keyQuotes } = sentimentData;
 
   const metrics = [
-    { label: isZh ? "表述精确度 (Specificity)" : "Specificity", val: managementTone.specificity },
-    { label: isZh ? "前瞻信心指数 (Forward Confidence)" : "Forward Confidence", val: managementTone.forwardConfidence },
-    { label: isZh ? "资本开支合理性 (CapEx Justification)" : "CapEx Justification", val: managementTone.capexJustification },
-    { label: isZh ? "竞争格局卡位 (Competitive Positioning)" : "Competitive Positioning", val: managementTone.competitivePositioning },
-    { label: isZh ? "风险坦诚正视度 (Risk Acknowledgment)" : "Risk Acknowledgment", val: managementTone.riskAcknowledgment },
+    { label: t.metrics.specificity, val: managementTone.specificity },
+    { label: t.metrics.forwardConfidence, val: managementTone.forwardConfidence },
+    { label: t.metrics.capexJustification, val: managementTone.capexJustification },
+    { label: t.metrics.competitivePositioning, val: managementTone.competitivePositioning },
+    { label: t.metrics.riskAcknowledgment, val: managementTone.riskAcknowledgment },
   ];
 
   return (
     <div className="flex flex-col gap-5">
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-          {isZh ? "管理层语调与财报电话会定性审计" : "Management Tone & Earnings Call Sentiment Audit"}
+          {t.title}
         </h3>
         <p className="text-xs text-slate-400 mt-0.5">
-          {isZh
-            ? "经审计的管理层语言信号、五维信心得分、华尔街分析师问答焦点与关键原声引用。"
-            : "Audited qualitative signals, executive confidence metrics, analyst concern frequencies, and high-impact quotes."}
+          {t.subtitle}
         </p>
       </div>
 
@@ -50,7 +49,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
           </div>
           <div>
             <div className="text-xs text-slate-400 font-semibold uppercase">
-              {isZh ? "管理层综合信心得分" : "Overall Executive Confidence"}
+              {t.overallConfidence}
             </div>
             <div className="text-2xl font-extrabold font-mono text-white mt-0.5">
               {managementTone.overallConfidence}{" "}
@@ -69,7 +68,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
       {/* 5-Dimension Scorecard */}
       <div className="p-4 rounded-xl bg-surface-1 border border-border flex flex-col gap-3 shadow-lg">
         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-          {isZh ? "管理层行为五维雷达评估 (1-5 分制)" : "Executive Behavioral Dimensions (1-5 Scale)"}
+          {t.behavioralDimensions}
         </h4>
         <div className="grid grid-cols-1 gap-3">
           {metrics.map((m) => (
@@ -97,15 +96,15 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
           <div className="p-3 bg-surface-0 border-b border-border flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-accent" />
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              {isZh ? "分析师提问焦点与管理层回应态度" : "Analyst Q&A Focus & Executive Responses"}
+              {t.qaFocus}
             </h4>
           </div>
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-surface-0/40 border-b border-border text-slate-400 font-mono uppercase text-[10px]">
-                <th className="p-3">{isZh ? "关切主题" : "Topic"}</th>
-                <th className="p-3 text-right">{isZh ? "提及频次" : "Mentions"}</th>
-                <th className="p-3">{isZh ? "管理层应对" : "Executive Response"}</th>
+                <th className="p-3">{t.colTopic}</th>
+                <th className="p-3 text-right">{t.colMentions}</th>
+                <th className="p-3">{t.colResponse}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
@@ -133,7 +132,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
           <div className="flex items-center gap-2">
             <Quote className="w-4 h-4 text-accent" />
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              {isZh ? "电话会议核心原声引用" : "Key Executive Quotes"}
+              {t.keyQuotes}
             </h4>
           </div>
 
@@ -156,10 +155,10 @@ export const ToneTab: React.FC<ToneTabProps> = ({ sentimentData, locale = "zh" }
 
               const sentimentLabel =
                 sentiment === "bullish"
-                  ? (isZh ? "积极偏多" : "bullish")
+                  ? t.sentimentLabels.bullish
                   : sentiment === "bearish"
-                  ? (isZh ? "谨慎偏空" : "bearish")
-                  : (isZh ? "中性客观" : "neutral");
+                  ? t.sentimentLabels.bearish
+                  : t.sentimentLabels.neutral;
 
               return (
                 <div

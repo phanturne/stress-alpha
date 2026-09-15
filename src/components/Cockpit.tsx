@@ -14,6 +14,7 @@ import type { FinancialModelBaseline, Facts, StressResult } from "@/lib/schemas"
 import type { StressTestParams } from "@/lib/valuation";
 import { PriceMeter } from "./PriceMeter";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface CockpitProps {
   baseline: FinancialModelBaseline;
@@ -24,7 +25,7 @@ interface CockpitProps {
   onGrossMarginDeltaChange: (bps: number) => void;
   onFixedOpexShiftChange: (shiftPct: number) => void;
   onResetDefaults: () => void;
-  locale?: "en" | "zh";
+  locale?: Locale;
 }
 
 export const Cockpit: React.FC<CockpitProps> = ({
@@ -38,7 +39,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   onResetDefaults,
   locale = "zh",
 }) => {
-  const isZh = locale === "zh";
+  const t = getTranslations(locale).cockpit;
   const {
     stressRevenueBillions,
     stressGrossProfitBillions,
@@ -59,17 +60,17 @@ export const Cockpit: React.FC<CockpitProps> = ({
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-accent" />
             <h2 className="text-sm font-bold tracking-tight text-white uppercase">
-              {isZh ? "实时情景压力驾驶舱" : "Stress Flow-Through Cockpit"}
+              {t.title}
             </h2>
           </div>
           <button
             type="button"
             onClick={onResetDefaults}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md bg-surface-2 hover:bg-surface-3 text-slate-300 hover:text-white border border-border transition-colors font-medium"
-            title={isZh ? "重置所有滑块至初始基准值" : "Reset all shock sliders to 0"}
+            title={t.resetTooltip}
           >
             <RotateCcw className="w-3 h-3" />
-            {isZh ? "重置" : "Reset"}
+            {t.reset}
           </button>
         </div>
 
@@ -77,7 +78,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
         <div className="flex items-baseline justify-between p-3 rounded-lg bg-surface-0 border border-border/80">
           <div>
             <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              {isZh ? "压力测试远期 EPS (年化)" : "Stressed Forward EPS (Annual)"}
+              {t.stressedForwardEps}
             </div>
             <div className="text-2xl font-extrabold font-mono text-accent">
               {formatCurrency(stressEps)}
@@ -85,7 +86,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           </div>
           <div className="text-right">
             <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              {facts.quarter} {isZh ? "核心经营 EPS" : "Clean Operating EPS"}
+              {facts.quarter} {t.cleanOperatingEps}
             </div>
             <div className="text-sm font-bold font-mono text-slate-200">
               {formatCurrency(facts.epsOperating)}
@@ -96,25 +97,25 @@ export const Cockpit: React.FC<CockpitProps> = ({
         {/* Live Stressed P&L Ribbon */}
         <div className="grid grid-cols-4 gap-1.5 pt-1 text-center">
           <div className="p-2 rounded-lg bg-surface-2/60 border border-border/60">
-            <div className="text-[10px] text-slate-400 font-medium">{isZh ? "测算营收" : "Stressed Rev"}</div>
+            <div className="text-[10px] text-slate-400 font-medium">{t.stressedRev}</div>
             <div className="text-xs font-bold font-mono text-white mt-0.5">
               {formatBillions(stressRevenueBillions)}
             </div>
           </div>
           <div className="p-2 rounded-lg bg-surface-2/60 border border-border/60">
-            <div className="text-[10px] text-slate-400 font-medium">{isZh ? "毛利润" : "Gross Profit"}</div>
+            <div className="text-[10px] text-slate-400 font-medium">{t.grossProfit}</div>
             <div className="text-xs font-bold font-mono text-white mt-0.5">
               {formatBillions(stressGrossProfitBillions)}
             </div>
           </div>
           <div className="p-2 rounded-lg bg-surface-2/60 border border-border/60">
-            <div className="text-[10px] text-slate-400 font-medium">{isZh ? "营业利润" : "Op. Income"}</div>
+            <div className="text-[10px] text-slate-400 font-medium">{t.operatingIncome}</div>
             <div className="text-xs font-bold font-mono text-white mt-0.5">
               {formatBillions(stressOperatingIncomeBillions)}
             </div>
           </div>
           <div className="p-2 rounded-lg bg-surface-2/60 border border-border/60">
-            <div className="text-[10px] text-slate-400 font-medium">{isZh ? "净利润" : "Net Income"}</div>
+            <div className="text-[10px] text-slate-400 font-medium">{t.netIncome}</div>
             <div className="text-xs font-bold font-mono text-white mt-0.5">
               {formatBillions(stressNetIncomeBillions)}
             </div>
@@ -125,9 +126,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
       {/* 2. Valuation Regimes (Bull, Base, Panic) */}
       <div className="bg-surface-1 rounded-xl p-4 border border-border flex flex-col gap-3 shadow-lg">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
-          <span>{isZh ? "估值情景区间" : "Valuation Regimes"}</span>
+          <span>{t.valuationRegimes}</span>
           <span className="font-mono text-[11px] text-slate-400">
-            {isZh ? "当前价格" : "Current"}: {formatCurrency(currentPrice)}
+            {t.current}: {formatCurrency(currentPrice)}
           </span>
         </div>
 
@@ -135,7 +136,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           {/* Bull */}
           <div className="p-3 rounded-lg bg-fintech-greenGlow/10 border border-fintech-green/30 flex flex-col">
             <div className="flex items-center justify-between text-[11px] font-semibold text-fintech-green">
-              <span>{isZh ? "🐂 牛市" : "🐂 Bull"}</span>
+              <span>{t.regimes.bull}</span>
               <span className="font-mono text-[10px] text-slate-400">
                 {valuationBands.bull.multiple}x
               </span>
@@ -151,7 +152,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           {/* Base */}
           <div className="p-3 rounded-lg bg-surface-2/80 border border-border flex flex-col">
             <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
-              <span>{isZh ? "⚖️ 基准" : "⚖️ Base"}</span>
+              <span>{t.regimes.base}</span>
               <span className="font-mono text-[10px] text-slate-400">
                 {valuationBands.base.multiple}x
               </span>
@@ -173,7 +174,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           {/* Panic */}
           <div className="p-3 rounded-lg bg-fintech-redGlow/10 border border-fintech-red/30 flex flex-col">
             <div className="flex items-center justify-between text-[11px] font-semibold text-fintech-red">
-              <span>{isZh ? "🚨 恐慌底价" : "🚨 Panic"}</span>
+              <span>{t.regimes.panic}</span>
               <span className="font-mono text-[10px] text-slate-400">
                 {valuationBands.panic.multiple}x
               </span>
@@ -199,25 +200,25 @@ export const Cockpit: React.FC<CockpitProps> = ({
         {/* 2x2 Risk Asymmetry Matrix */}
         <div className="grid grid-cols-2 gap-2 pt-1">
           <div className="p-2.5 rounded-lg bg-surface-0 border border-border/70">
-            <div className="text-[10px] font-medium text-slate-400">{isZh ? "牛市上行空间" : "Upside to Bull"}</div>
+            <div className="text-[10px] font-medium text-slate-400">{t.asymmetry.upsideToBull}</div>
             <div className="text-sm font-bold font-mono text-fintech-green mt-0.5">
               {formatPercent(asymmetry.upsideToBullPct)}
             </div>
           </div>
           <div className="p-2.5 rounded-lg bg-surface-0 border border-border/70">
-            <div className="text-[10px] font-medium text-slate-400">{isZh ? "恐慌下行最大回撤" : "Downside to Panic"}</div>
+            <div className="text-[10px] font-medium text-slate-400">{t.asymmetry.downsideToPanic}</div>
             <div className="text-sm font-bold font-mono text-fintech-red mt-0.5">
               {formatPercent(asymmetry.downsideToPanicPct)}
             </div>
           </div>
           <div className="p-2.5 rounded-lg bg-surface-0 border border-border/70">
-            <div className="text-[10px] font-medium text-slate-400">{isZh ? "市场隐含市盈率" : "Priced-in Multiple"}</div>
+            <div className="text-[10px] font-medium text-slate-400">{t.asymmetry.pricedInMultiple}</div>
             <div className="text-sm font-bold font-mono text-slate-200 mt-0.5">
               {asymmetry.marketPricedInMultiple.toFixed(1)}x
             </div>
           </div>
           <div className="p-2.5 rounded-lg bg-surface-0 border border-border/70">
-            <div className="text-[10px] font-medium text-slate-400">{isZh ? "风险收益非对称赔率" : "Asymmetry Skew"}</div>
+            <div className="text-[10px] font-medium text-slate-400">{t.asymmetry.asymmetrySkew}</div>
             <div className="text-sm font-bold font-mono text-accent mt-0.5">
               {asymmetry.riskRewardRatio.toFixed(2)}x
             </div>
@@ -229,7 +230,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
       <div className="bg-surface-1 rounded-xl p-4 border border-border flex flex-col gap-4 shadow-lg">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
           <Sliders className="w-4 h-4 text-accent" />
-          {isZh ? "上游核心驱动因子冲击滑块" : "Upstream Demand Shock Sliders"}
+          {t.upstreamTitle}
         </div>
 
         <div className="flex flex-col gap-3.5">
@@ -269,8 +270,8 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   className="accent-accent"
                 />
                 <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                  <span>{isZh ? "敞口" : "Exposure"}: {(driver.exposureShare * 100).toFixed(0)}%</span>
-                  <span>{isZh ? "弹性" : "Elasticity"}: {driver.elasticity.toFixed(2)}x</span>
+                  <span>{t.exposure}: {(driver.exposureShare * 100).toFixed(0)}%</span>
+                  <span>{t.elasticity}: {driver.elasticity.toFixed(2)}x</span>
                 </div>
               </div>
             );
@@ -279,14 +280,14 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
         <div className="border-t border-border pt-3 flex flex-col gap-3.5">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            {isZh ? "会计利润率与杠杆控制" : "Accounting Margin & Leverage Controls"}
+            {t.accountingTitle}
           </div>
 
           {/* Gross Margin Slider */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium text-slate-300">
-                {isZh ? "毛利率扰动 (基点)" : "Gross Margin Perturbation"}
+                {t.grossMarginPerturbation}
               </span>
               <span
                 className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
@@ -317,7 +318,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium text-slate-300">
-                {isZh ? "固定运营支出变动" : "Fixed OpEx Shift"}
+                {t.fixedOpexShift}
               </span>
               <span
                 className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
@@ -347,9 +348,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
         {/* Baseline Metadata Pills */}
         <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 bg-surface-0 p-2 rounded-lg border border-border/60">
-          <span>{isZh ? "基准营收" : "Base Rev"}: {formatBillions(baseline.baseRevenueBillions)}</span>
-          <span>{isZh ? "稀释总股本" : "Shares"}: {baseline.dilutedSharesBillions}B</span>
-          <span>{isZh ? "税率" : "Tax"}: {baseline.taxRatePct}%</span>
+          <span>{t.metadata.baseRev}: {formatBillions(baseline.baseRevenueBillions)}</span>
+          <span>{t.metadata.shares}: {baseline.dilutedSharesBillions}B</span>
+          <span>{t.metadata.tax}: {baseline.taxRatePct}%</span>
         </div>
       </div>
 
@@ -358,19 +359,17 @@ export const Cockpit: React.FC<CockpitProps> = ({
         <div className="bg-surface-1 rounded-xl p-4 border border-fintech-amber/30 bg-fintech-amberGlow/5 flex flex-col gap-2 shadow-lg">
           <div className="flex items-center gap-2 text-xs font-bold text-fintech-amber uppercase tracking-wider">
             <ShieldAlert className="w-4 h-4" />
-            {isZh ? "收益质量审计护栏" : "Income Quality Guardrail"}
+            {t.guardrail.title}
           </div>
           <p className="text-xs text-slate-300">
-            {isZh
-              ? "经审计的 GAAP 调整项，隔离非经营性或过渡性账面损益："
-              : "Audited GAAP adjustments isolating non-operating or transitory items:"}
+            {t.guardrail.description}
           </p>
           <ul className="text-xs text-slate-400 space-y-1 my-1">
             {facts.oneTimeItems.map((item, idx) => (
               <li key={idx} className="flex flex-col gap-0.5">
                 <span className="text-slate-200 font-medium">
                   • <strong>{item.description}</strong>: {formatBillions(item.amountBillions)}{" "}
-                  ({item.isOperating ? (isZh ? "经营性" : "operating") : (isZh ? "非经营性" : "non-operating")})
+                  ({item.isOperating ? t.guardrail.operating : t.guardrail.nonOperating})
                 </span>
                 {item.note && (
                   <span className="text-[11px] text-slate-500 pl-3">
@@ -381,7 +380,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             ))}
           </ul>
           <div className="flex items-center justify-between text-xs pt-1 border-t border-border/80">
-            <span className="text-slate-400">{isZh ? "核心经营清洁 EPS:" : "Operating Clean EPS:"}</span>
+            <span className="text-slate-400">{t.guardrail.operatingCleanEps}</span>
             <span className="font-mono font-bold text-accent">
               {formatCurrency(facts.epsOperating)}
             </span>

@@ -2,13 +2,14 @@
 
 import React from "react";
 import { formatCurrency } from "@/lib/utils";
+import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface PriceMeterProps {
   currentPrice: number;
   panicTarget: number;
   baseTarget: number;
   bullTarget: number;
-  locale?: "en" | "zh";
+  locale?: Locale;
 }
 
 export const PriceMeter: React.FC<PriceMeterProps> = ({
@@ -18,7 +19,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
   bullTarget,
   locale = "zh",
 }) => {
-  const isZh = locale === "zh";
+  const t = getTranslations(locale).priceMeter;
   const minM = Math.min(panicTarget * 0.88, currentPrice * 0.9);
   const maxM = Math.max(bullTarget * 1.12, currentPrice * 1.1);
 
@@ -37,10 +38,10 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
     <div className="w-full bg-surface-1 rounded-xl p-3.5 border border-border">
       <div className="flex items-center justify-between text-xs mb-2">
         <span className="font-semibold text-slate-300">
-          {isZh ? "估值区间标尺" : "Valuation Meter"}
+          {t.title}
         </span>
         <span className="text-slate-400 font-mono text-[11px]">
-          {isZh ? "现价" : "Current"}: <strong className="text-accent">{formatCurrency(currentPrice)}</strong>
+          {t.current}: <strong className="text-accent">{formatCurrency(currentPrice)}</strong>
         </span>
       </div>
 
@@ -104,13 +105,13 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
 
       <div className="grid grid-cols-3 text-[11px] font-mono text-slate-400 mt-1">
         <span className="text-fintech-red font-medium text-left">
-          {isZh ? "🚨 恐慌底价" : "🚨 Panic Floor"}
+          {t.panicFloor}
         </span>
         <span className="text-slate-300 font-medium text-center">
-          {isZh ? "⚖️ 基准目标" : "⚖️ Base"}: {formatCurrency(baseTarget, 0)}
+          {t.base}: {formatCurrency(baseTarget, 0)}
         </span>
         <span className="text-fintech-green font-medium text-right">
-          {isZh ? "🐂 牛市目标" : "🐂 Bull Regime"}
+          {t.bullRegime}
         </span>
       </div>
     </div>
