@@ -298,31 +298,35 @@ export default function HomePage() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-6">
+      <main className="flex-1 w-full max-w-[1680px] mx-auto p-3 sm:p-5 md:p-6 min-w-0">
         {isLoading ? (
           <div className="h-[70vh] flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 text-accent animate-spin" />
-            <span className="text-xs font-mono text-slate-400">
+            <div className="relative">
+              <Loader2 className="w-9 h-9 text-accent animate-spin" />
+              <div className="absolute inset-0 bg-accent/20 rounded-full blur-md animate-pulse" />
+            </div>
+            <span className="text-xs font-mono text-slate-400 tracking-wider">
               {t.page.loading}
             </span>
           </div>
         ) : !reportData || !stressResult ? (
-          <div className="max-w-xl mx-auto my-16 p-8 rounded-2xl bg-surface-1 border border-border text-center flex flex-col items-center gap-4 shadow-2xl">
-            <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
-              <FolderOpen className="w-6 h-6" />
+          <div className="relative max-w-xl mx-auto my-16 p-8 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] text-center flex flex-col items-center gap-5 shadow-2xl overflow-hidden">
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-sky-500/10 border border-accent/30 flex items-center justify-center text-accent shadow-lg shadow-accent/10">
+              <FolderOpen className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-xl font-extrabold text-white tracking-tight">
                 {t.page.noReportSelected}
               </h2>
-              <p className="text-xs text-slate-400 mt-1 max-w-md">
+              <p className="text-xs text-slate-400 mt-1.5 max-w-md leading-relaxed">
                 {t.page.noReportDesc}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsUploadModalOpen(true)}
-              className="px-4 py-2 rounded-lg bg-accent text-slate-950 font-bold text-xs hover:bg-accent-hover transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-all shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {t.page.uploadFolderBtn}
             </button>
@@ -342,8 +346,8 @@ export default function HomePage() {
             locale={locale}
           />
         ) : (
-          <div className="flex flex-col lg:flex-row gap-6 items-start">
-            {/* Left Sticky Cockpit (~440px) */}
+          <div className="flex flex-col lg:flex-row gap-5 xl:gap-6 items-start">
+            {/* Left Sticky Cockpit (~400px responsive) */}
             <Cockpit
               baseline={reportData.baseline!}
               facts={displayFacts!}
@@ -356,10 +360,10 @@ export default function HomePage() {
               locale={locale}
             />
 
-            {/* Right Tabbed Intelligence Workspace */}
-            <div className="flex-1 w-full flex flex-col gap-4">
+            {/* Right Tabbed Intelligence Workspace (min-w-0 prevents blowout) */}
+            <div className="min-w-0 flex-1 w-full flex flex-col gap-4">
               {/* Tab Navigation Ribbon */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/80">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 border-b border-white/[0.08] no-scrollbar scroll-smooth">
                 {[
                   { id: "catalysts", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
                   { id: "moat", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
@@ -378,19 +382,19 @@ export default function HomePage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                         isActive
-                          ? "bg-surface-2 text-accent border border-accent/40 shadow-sm"
-                          : "text-slate-400 hover:text-slate-200 hover:bg-surface-1"
+                          ? "bg-accent/15 text-accent border border-accent/40 shadow-glow/30 font-bold"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-surface-1 border border-transparent"
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                       <span>{tab.label}</span>
                       {tab.count !== undefined && (
                         <span
-                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono tabular-nums ${
                             isActive
-                              ? "bg-accent/20 text-accent font-bold"
+                              ? "bg-accent/25 text-accent font-bold"
                               : "bg-surface-3 text-slate-400"
                           }`}
                         >
@@ -465,29 +469,33 @@ export default function HomePage() {
                 )}
 
                 {activeTab === "report" && (
-                  <div className="p-6 rounded-xl bg-surface-1 border border-border flex flex-col gap-4 shadow-lg">
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-accent" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
-                          {reportDocLang === "zh"
-                            ? t.page.reportTitleZh
-                            : t.page.reportTitleEn}
-                        </span>
-                        <span className="text-xs font-mono text-slate-500">
-                          {reportData.folderName}
-                        </span>
+                  <div className="glass-panel rounded-2xl p-5 sm:p-6 border border-white/[0.08] flex flex-col gap-4 shadow-xl">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-1.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono block">
+                            {reportDocLang === "zh"
+                              ? t.page.reportTitleZh
+                              : t.page.reportTitleEn}
+                          </span>
+                          <span className="text-[11px] font-mono text-slate-400">
+                            {reportData.folderName}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Language Switcher for Report View */}
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center bg-surface-0 p-0.5 rounded-lg border border-border text-xs">
+                        <div className="flex items-center bg-surface-0/80 p-0.5 rounded-lg border border-white/[0.08] text-xs">
                           <button
                             type="button"
                             onClick={() => setReportDocLang("en")}
                             className={`px-3 py-1 rounded-md font-semibold transition-all ${
                               reportDocLang === "en"
-                                ? "bg-surface-2 text-accent shadow-sm"
+                                ? "bg-surface-2 text-accent shadow-sm ring-1 ring-white/10"
                                 : "text-slate-400 hover:text-white"
                             }`}
                           >
@@ -498,7 +506,7 @@ export default function HomePage() {
                             onClick={() => setReportDocLang("zh")}
                             className={`px-3 py-1 rounded-md font-semibold transition-all ${
                               reportDocLang === "zh"
-                                ? "bg-accent/20 text-accent font-bold shadow-sm"
+                                ? "bg-accent/20 text-accent font-bold shadow-sm ring-1 ring-accent/30"
                                 : "text-slate-400 hover:text-white"
                             }`}
                           >
@@ -522,13 +530,13 @@ export default function HomePage() {
                               );
                             }
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs text-slate-300 hover:text-white transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-surface-2/90 hover:bg-surface-3 border border-white/[0.08] hover:border-accent/40 text-xs font-medium text-slate-200 hover:text-white transition-all shadow-sm flex items-center gap-1.5"
                         >
-                          {t.page.copyBtn}
+                          <span>{t.page.copyBtn}</span>
                         </button>
                       </div>
                     </div>
-                    <pre className="p-4 rounded-lg bg-surface-0 border border-border text-xs text-slate-200 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                    <pre className="p-5 rounded-xl bg-surface-0/90 border border-white/[0.06] text-xs sm:text-[13px] text-slate-200 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed custom-scrollbar shadow-inner max-h-[72vh] selection:bg-accent/30">
                       {(reportDocLang === "zh"
                         ? reportData.reportMarkdownZh
                         : reportData.reportMarkdown) ||

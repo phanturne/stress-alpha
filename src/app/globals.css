@@ -28,9 +28,70 @@
   body {
     background-color: var(--bg);
     color: var(--text-primary);
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1, "tnum" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     min-height: 100vh;
   }
+}
+
+/* Glassmorphism & Card Utility Classes */
+.glass-panel {
+  background: rgba(19, 25, 34, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-subtle {
+  background: rgba(13, 17, 23, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide number input spinners */
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button,
+input[type="number"].no-spinners::-webkit-inner-spin-button,
+input[type="number"].no-spinners::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinners,
+input[type="number"].no-spinners {
+  -moz-appearance: textfield;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom micro-scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(13, 17, 23, 0.5);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #242f40;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
 }
 
 /* Custom range sliders for financial cockpit */
@@ -39,36 +100,50 @@ input[type="range"] {
   appearance: none;
   background: #1b2330;
   height: 6px;
-  border-radius: 4px;
+  border-radius: 9999px;
   outline: none;
   width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="range"]:focus {
+  outline: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #38bdf8;
-  cursor: pointer;
+  border: 2px solid #07090e;
+  cursor: grab;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-  transition: transform 0.1s, background-color 0.15s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.25);
   background: #7dd3fc;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #38bdf8;
+  border: 2px solid #07090e;
   cursor: pointer;
-  border: none;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* Print styles for Investment Committee Memo */
@@ -89,9 +164,39 @@ input[type="range"]::-moz-range-thumb {
     margin: 0 !important;
     padding: 0 !important;
   }
+  .memo-print-page h1,
+  .memo-print-page h2,
+  .memo-print-page h3,
+  .memo-print-page h4,
+  .memo-print-page strong {
+    color: #0f172a !important;
+  }
+  .memo-print-page p,
+  .memo-print-page span,
+  .memo-print-page li {
+    color: #334155 !important;
+  }
+  .memo-print-page table {
+    border-color: #cbd5e1 !important;
+  }
+  .memo-print-page th {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+  }
+  .memo-print-page td {
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  .memo-print-page .bg-surface-0,
+  .memo-print-page .bg-surface-1,
+  .memo-print-page .bg-surface-2 {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
 }
 
-/* Custom scrollbar */
+/* Global scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

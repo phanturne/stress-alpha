@@ -32,11 +32,11 @@ export const MemoView: React.FC<MemoViewProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto py-6 px-4">
       {/* Control Bar */}
-      <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border">
+      <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border/80">
         <button
           type="button"
           onClick={onBackToCockpit}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel hover:border-slate-500 text-xs font-semibold text-slate-300 hover:text-white transition-all shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.backToCockpit}
@@ -44,13 +44,13 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         <div className="flex items-center gap-3">
           {/* Report Language Switcher */}
-          <div className="flex items-center bg-surface-1 p-0.5 rounded-lg border border-border text-xs">
+          <div className="flex items-center glass-panel p-1 rounded-xl border border-border/80 text-xs shadow-sm">
             <button
               type="button"
               onClick={() => setMemoLang("en")}
-              className={`px-3 py-1 rounded-md font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 memoLang === "en"
-                  ? "bg-surface-3 text-accent shadow-sm"
+                  ? "bg-accent/20 text-accent font-bold shadow-sm"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -59,7 +59,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <button
               type="button"
               onClick={() => setMemoLang("zh")}
-              className={`px-3 py-1 rounded-md font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 memoLang === "zh"
                   ? "bg-accent/20 text-accent font-bold shadow-sm"
                   : "text-slate-400 hover:text-white"
@@ -72,7 +72,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-colors shadow-md shadow-accent/20"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-all shadow-md shadow-accent/20 hover:shadow-accent/40"
           >
             <Printer className="w-4 h-4" />
             {t.printPdf}
@@ -81,11 +81,11 @@ export const MemoView: React.FC<MemoViewProps> = ({
       </div>
 
       {/* Printable Memo Sheet */}
-      <div className="memo-print-page bg-surface-1 text-slate-100 rounded-2xl border border-border p-8 md:p-12 shadow-2xl flex flex-col gap-8">
+      <div className="memo-print-page glass-panel text-slate-100 rounded-2xl border border-border/80 p-8 md:p-12 shadow-2xl flex flex-col gap-8">
         {/* Memo Header */}
-        <div className="border-b border-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="border-b border-border/80 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-accent uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-accent uppercase tracking-widest mb-1.5">
               <Zap className="w-3.5 h-3.5" />
               {t.committeeMemo}
             </div>
@@ -93,27 +93,27 @@ export const MemoView: React.FC<MemoViewProps> = ({
               {facts.ticker} ({facts.company}) &bull; {facts.quarter}{" "}
               {t.decisionAudit}
             </h1>
-            <div className="text-xs text-slate-400 mt-1 font-mono">
+            <div className="text-xs text-slate-400 mt-1.5 font-mono">
               {t.reportDate}: {facts.reportDate} |{" "}
               {t.generatedVia}
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-surface-0 px-4 py-2.5 rounded-xl border border-border">
+          <div className="flex items-center gap-4 bg-surface-0/90 px-4 py-2.5 rounded-xl border border-border/80 shadow-sm">
             <div>
-              <div className="text-[10px] text-slate-400 font-mono">
+              <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 {t.currentStock}
               </div>
-              <div className="text-base font-bold font-mono text-white">
+              <div className="text-base font-bold font-mono text-white tabular-nums">
                 {formatCurrency(currentPrice)}
               </div>
             </div>
             <div className="h-6 w-[1px] bg-border" />
             <div>
-              <div className="text-[10px] text-slate-400 font-mono">
+              <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 {t.weightedFairValue}
               </div>
-              <div className="text-base font-bold font-mono text-accent">
+              <div className="text-base font-bold font-mono text-accent tabular-nums">
                 {formatCurrency(
                   reportData.valuation?.weightedFairValue ?? currentPrice,
                   2
@@ -190,55 +190,55 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
             {t.sec2Title}
           </h2>
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <div className="overflow-x-auto custom-scrollbar rounded-xl border border-border/80">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-surface-0 border-b border-border text-slate-400 font-mono uppercase text-[10px]">
-                  <th className="p-3">{t.colRegime}</th>
-                  <th className="p-3 text-right">{t.colMultiple}</th>
-                  <th className="p-3 text-right">{t.colStressedEps}</th>
-                  <th className="p-3 text-right">{t.colTargetPrice}</th>
-                  <th className="p-3 text-right">{t.colDelta}</th>
-                  <th className="p-3">{t.colThesis}</th>
+                <tr className="bg-surface-0/90 border-b border-border text-slate-400 font-mono uppercase text-[10px] tracking-wider">
+                  <th className="p-3 font-semibold">{t.colRegime}</th>
+                  <th className="p-3 text-right font-semibold">{t.colMultiple}</th>
+                  <th className="p-3 text-right font-semibold">{t.colStressedEps}</th>
+                  <th className="p-3 text-right font-semibold">{t.colTargetPrice}</th>
+                  <th className="p-3 text-right font-semibold">{t.colDelta}</th>
+                  <th className="p-3 font-semibold">{t.colThesis}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                <tr>
-                  <td className="p-3 font-bold text-fintech-green">
+                <tr className="hover:bg-surface-0/40 transition-colors">
+                  <td className="p-3 font-bold text-fintech-green whitespace-nowrap">
                     {t.regimeBull}
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {stressResult.valuationBands.bull.multiple}x
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-white">
+                  <td className="p-3 text-right font-mono font-bold text-white tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.valuationBands.bull.targetPrice)}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-fintech-green">
+                  <td className="p-3 text-right font-mono font-bold text-fintech-green tabular-nums whitespace-nowrap">
                     {formatPercent(stressResult.valuationBands.bull.deltaFromCurrentPct)}
                   </td>
-                  <td className="p-3 text-slate-300 text-[11px]">
+                  <td className="p-3 text-slate-300 text-[11px] leading-relaxed min-w-[240px]">
                     {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("bull") || s.name.includes("牛市"))?.assumptions?.[0]
                       ?? (isZh ? "强劲基本面超预期，关键增长催化剂落地，估值倍数扩张。" : "Strong fundamental outperformance, catalyst execution, and multiple expansion.")}
                   </td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-slate-200">
+                <tr className="hover:bg-surface-0/40 transition-colors">
+                  <td className="p-3 font-bold text-slate-200 whitespace-nowrap">
                     {t.regimeBase}
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {stressResult.valuationBands.base.multiple}x
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-white">
+                  <td className="p-3 text-right font-mono font-bold text-white tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.valuationBands.base.targetPrice)}
                   </td>
                   <td
-                    className={`p-3 text-right font-mono font-bold ${
+                    className={`p-3 text-right font-mono font-bold tabular-nums whitespace-nowrap ${
                       stressResult.valuationBands.base.deltaFromCurrentPct >= 0
                         ? "text-fintech-green"
                         : "text-fintech-red"
@@ -246,28 +246,28 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   >
                     {formatPercent(stressResult.valuationBands.base.deltaFromCurrentPct)}
                   </td>
-                  <td className="p-3 text-slate-300 text-[11px]">
+                  <td className="p-3 text-slate-300 text-[11px] leading-relaxed min-w-[240px]">
                     {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("base") || s.name.includes("基准"))?.assumptions?.[0]
                       ?? (isZh ? "管理层指引中枢平稳兑现，市场份额稳固，估值倍数维持合理中枢。" : "Guidance mid-point execution, steady market share, and normalized multiple stability.")}
                   </td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-fintech-red">
+                <tr className="hover:bg-surface-0/40 transition-colors">
+                  <td className="p-3 font-bold text-fintech-red whitespace-nowrap">
                     {t.regimePanic}
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {stressResult.valuationBands.panic.multiple}x
                   </td>
-                  <td className="p-3 text-right font-mono">
+                  <td className="p-3 text-right font-mono tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-white">
+                  <td className="p-3 text-right font-mono font-bold text-white tabular-nums whitespace-nowrap">
                     {formatCurrency(stressResult.valuationBands.panic.targetPrice)}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-fintech-red">
+                  <td className="p-3 text-right font-mono font-bold text-fintech-red tabular-nums whitespace-nowrap">
                     {formatPercent(stressResult.valuationBands.panic.deltaFromCurrentPct)}
                   </td>
-                  <td className="p-3 text-slate-300 text-[11px]">
+                  <td className="p-3 text-slate-300 text-[11px] leading-relaxed min-w-[240px]">
                     {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("bear") || s.name.toLowerCase().includes("panic") || s.name.includes("熊市") || s.name.includes("恐慌"))?.assumptions?.[0]
                       ?? (isZh ? "核心业务承压，监管或竞争加剧引发利润率收缩与倍数戴维斯双杀。" : "Severe top-line contraction, margin compression, and multiple de-rating.")}
                   </td>
@@ -279,7 +279,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         {/* Quality of Earnings Guardrail */}
         {facts.oneTimeItems && facts.oneTimeItems.length > 0 && (
-          <div className="flex flex-col gap-2 p-4 rounded-xl bg-surface-0 border border-fintech-amber/30">
+          <div className="flex flex-col gap-2 p-4 rounded-xl bg-surface-0/80 border border-fintech-amber/30 shadow-sm">
             <div className="flex items-center gap-2 text-xs font-bold text-fintech-amber font-mono uppercase">
               <ShieldCheck className="w-4 h-4" />
               {t.sec3Title}
@@ -349,32 +349,32 @@ export const MemoView: React.FC<MemoViewProps> = ({
               {t.secMoatTitle}
             </h2>
 
-            <div className="p-3.5 rounded-xl bg-surface-0 border border-border flex flex-col gap-2">
+            <div className="p-4 rounded-xl bg-surface-0/80 border border-border/80 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-fintech-greenGlow/20 text-fintech-green border border-fintech-green/30 font-mono">
+                <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-fintech-greenGlow/20 text-fintech-green border border-fintech-green/30 font-mono shadow-sm">
                   {moat.overallMoatRating} Moat
                 </span>
-                <span className="px-2 py-0.5 rounded text-[11px] font-semibold text-slate-300 bg-surface-2 border border-border font-mono">
+                <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold text-slate-300 bg-surface-2 border border-border font-mono">
                   Trend: {moat.moatTrend}
                 </span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed mt-1">
                 {moat.competitiveDynamicsSummary}
               </p>
             </div>
 
             {/* Moat Sources Grid */}
             {moat.moatSources && moat.moatSources.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
                 {moat.moatSources.map((s, i) => (
-                  <div key={i} className="p-2.5 rounded-lg bg-surface-0 border border-border/70 flex flex-col gap-1">
+                  <div key={i} className="p-3 rounded-xl bg-surface-0/80 border border-border/70 flex flex-col gap-1.5 shadow-sm">
                     <div className="flex items-center justify-between">
                       <strong className="text-white font-medium">{s.source}</strong>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-2 text-accent">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-2 text-accent border border-border/60">
                         {s.strength} {s.durabilityYears ? `(${s.durabilityYears}y)` : ""}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-snug">{s.description}</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{s.description}</p>
                   </div>
                 ))}
               </div>
@@ -382,29 +382,29 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
             {/* Peer Benchmarking Table */}
             {moat.competitors && moat.competitors.length > 0 && (
-              <div className="overflow-x-auto rounded-xl border border-border">
+              <div className="overflow-x-auto custom-scrollbar rounded-xl border border-border/80">
                 <table className="w-full text-left text-[11px] border-collapse">
                   <thead>
-                    <tr className="bg-surface-0 text-slate-400 font-mono border-b border-border">
-                      <th className="p-2">Ticker</th>
-                      <th className="p-2">Company</th>
-                      <th className="p-2 text-right">Mkt Cap</th>
-                      <th className="p-2 text-right">Rev / YoY</th>
-                      <th className="p-2 text-right">Op Margin</th>
-                      <th className="p-2 text-right">FWD P/E</th>
-                      <th className="p-2">Pricing Power</th>
-                      <th className="p-2">{isZh ? "产品管线与核心优劣势" : "Key Advantage / Vulnerability"}</th>
+                    <tr className="bg-surface-0/90 text-slate-400 font-mono border-b border-border text-[10px] uppercase tracking-wider">
+                      <th className="p-2.5 font-semibold">Ticker</th>
+                      <th className="p-2.5 font-semibold">Company</th>
+                      <th className="p-2.5 text-right font-semibold">Mkt Cap</th>
+                      <th className="p-2.5 text-right font-semibold">Rev / YoY</th>
+                      <th className="p-2.5 text-right font-semibold">Op Margin</th>
+                      <th className="p-2.5 text-right font-semibold">FWD P/E</th>
+                      <th className="p-2.5 font-semibold">Pricing Power</th>
+                      <th className="p-2.5 font-semibold">{isZh ? "产品管线与核心优劣势" : "Key Advantage / Vulnerability"}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
                     {moat.competitors.map((peer, i) => (
-                      <tr key={i} className="hover:bg-surface-0/50">
-                        <td className="p-2 font-mono font-bold text-accent">{peer.ticker}</td>
-                        <td className="p-2 text-white font-medium whitespace-nowrap">{peer.name}</td>
-                        <td className="p-2 text-right font-mono text-slate-300">
+                      <tr key={i} className="hover:bg-surface-0/50 transition-colors">
+                        <td className="p-2.5 font-mono font-bold text-accent whitespace-nowrap">{peer.ticker}</td>
+                        <td className="p-2.5 text-white font-medium whitespace-nowrap">{peer.name}</td>
+                        <td className="p-2.5 text-right font-mono text-slate-300 tabular-nums whitespace-nowrap">
                           {peer.marketCapBillions !== undefined ? `$${peer.marketCapBillions.toFixed(1)}B` : "-"}
                         </td>
-                        <td className="p-2 text-right font-mono text-slate-300 whitespace-nowrap">
+                        <td className="p-2.5 text-right font-mono text-slate-300 tabular-nums whitespace-nowrap">
                           {peer.revenueBillions !== undefined ? `$${peer.revenueBillions.toFixed(1)}B` : "-"}
                           {peer.revenueGrowthPct !== undefined && (
                             <span className={`ml-1 font-bold ${peer.revenueGrowthPct >= 0 ? "text-fintech-green" : "text-fintech-red"}`}>
@@ -412,18 +412,18 @@ export const MemoView: React.FC<MemoViewProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="p-2 text-right font-mono text-slate-300">
+                        <td className="p-2.5 text-right font-mono text-slate-300 tabular-nums whitespace-nowrap">
                           {peer.operatingMarginPct !== undefined ? `${(peer.operatingMarginPct).toFixed(1)}%` : "-"}
                         </td>
-                        <td className="p-2 text-right font-mono text-slate-300">
+                        <td className="p-2.5 text-right font-mono text-slate-300 tabular-nums whitespace-nowrap">
                           {peer.forwardPe !== undefined ? `${peer.forwardPe.toFixed(1)}x` : "-"}
                         </td>
-                        <td className="p-2">
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-2 border border-border text-slate-300">
+                        <td className="p-2.5 whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-surface-2 border border-border text-slate-300">
                             {peer.pricingPower ?? "-"}
                           </span>
                         </td>
-                        <td className="p-2 text-slate-400 text-[10px] max-w-[240px] truncate" title={`${peer.productComparison} — ${peer.keyAdvantageOrVulnerability}`}>
+                        <td className="p-2.5 text-slate-300 text-[10px] max-w-[240px] truncate" title={`${peer.productComparison} — ${peer.keyAdvantageOrVulnerability}`}>
                           {peer.keyAdvantageOrVulnerability}
                         </td>
                       </tr>
