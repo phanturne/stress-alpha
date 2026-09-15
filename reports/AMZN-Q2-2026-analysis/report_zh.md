@@ -49,7 +49,36 @@ GAAP 名义每股收益 **$5.75** 包含以下一次性或非经营性账面调�
 | 7 | AI investment cycle correction — hyperscaler capex questioned, sector de-rating | 📉 下行风险 | 30% | 中期 (3-12个月) | BIS: 5 largest hyperscalers spending >$1T combined in 2025-2026; FactSet scenario analysis places correction stress-test at 2027-2028; historical analog: 2021-22 cloud capex surge preceded 2022-23 optimization cycle with 12-18mo lag |
 | 8 | Anthropic valuation sustains at $965B+ (supporting Amazon's $190B mark) | 📈 积极驱动 | 50% | 中期 (3-12个月) | Anthropic at $965B valuation; Claude maintains reasoning advantage; but a reversal would hit sentiment even though non-operating. IPO reportedly being considered — would crystallize or challenge the mark. |
 
-## 五、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)
+## 五、 🏰 护城河壁垒与竞品对标 (Economic Moat & Competitors)
+
+- **护城河评级:** **宽护城河 (Wide Moat)**
+- **演变趋势:** **持续拓宽 (Widening)**
+
+### 核心护城河支柱
+
+| 护城河支柱 | 壁垒强度 | 保护年限 | 核心结构性壁垒论据 |
+|------------|----------|----------|--------------------|
+| Network Effects | 极强 (Strong) | 15 年 | 拥有超过3亿活跃买家与数百万第三方商家的双边飞轮效应。Prime会员高续费率（>95%）与FBA物流深度绑定，形成自我强化的交易流动性壁垒。 |
+| Cost Advantage | 极强 (Strong) | 15 年 | 庞大的区域化仓储物流网络叠加自主研发自动化机器人（Proteus/Sparrow）、自有干线机队及自研AWS芯片（Trainium/Inferentia/Graviton），在算力与履约端构筑了极强的单位成本优势。 |
+| Switching Costs | 极强 (Strong) | 12 年 | AWS企业级云工作负载具有极高的架构锁定属性，涵盖自研数据库（Aurora、DynamoDB）、安全IAM认证体系、Bedrock模型生态及多年期企业折扣协议（EDP）。 |
+| Intangible Assets | 极强 (Strong) | 15 年 | 全球顶尖的电商第一品牌心智，超过60%的美国电商搜索以此为起点，驱动高毛利零售媒体广告业务（单季198亿美元，同比+26%）爆发式扩张。 |
+| Efficient Scale | 中等 (Moderate) | 10 年 | 半日达/当日达近场履约基建与多级区域分拣枢纽沉淀了数千亿美元累计资本开支，任何新进入者从零复制均缺乏商业理性。 |
+
+### 核心同行竞品对标矩阵
+
+| 竞品代码 / 公司 | 市值 | 年化营收 | 营收增速 | 毛利率 | 营业利润率 | 远期 P/E | 核心份额 | 定价权 | 相对优势与潜在软肋 |
+|-----------------|------|----------|----------|--------|------------|----------|----------|--------|-------------------|
+| **MSFT** (Microsoft (微软)) | $3350B | $245B | +15% | 70% | 45% | 31x | 24% | Superior | 优势：Office/Windows在企业软件栈拥有极深用户粘性与OpenAI模型先发红利。劣势：过度依赖英伟达外采GPU，企业软件端受AI推理成本挤压利润率。 |
+| **GOOGL** (Alphabet (谷歌)) | $2250B | $350B | +14% | 57% | 32% | 21.5x | 11% | Superior | 优势：全球搜索引擎统治级入口及TPU自研算力技术积淀。劣势：在企业级公有云市场位列第三，且核心搜索商业模式面临AI Agent直接问答的重构风险。 |
+| **WMT** (Walmart (沃尔玛)) | $620B | $685B | +5.5% | 24.5% | 4.5% | 28x | 12% | Parity | 优势：生鲜食品线下近场网络无可替代，到店提货极具时效。劣势：线上纯电商履约利润率偏低，且缺乏高毛利云计算业务支撑利润。 |
+| **BABA** (Alibaba (阿里巴巴)) | $210B | $135B | +6% | 38% | 15% | 9.5x | 14% | Inferior | 优势：扎根中国完整制造业供应链生态，跨境白牌性价比极高。劣势：地缘政治监管不确定性高，国内消费大盘疲软，面临拼多多与抖音电商剧烈分流。 |
+| **SHOP** (Shopify) | $105B | $8.5B | +21% | 50% | 12% | 55x | 3% | Parity | 优势：品牌方拥有绝对数据自主权与独立品牌调性。劣势：缺乏自建干线物流体系，高度依赖第三方快递，无全网公域流量池支撑。 |
+
+### 竞争格局与护城河综述
+
+> 亚马逊构建了涵盖全球电商、FBA履约物流、高毛利站内广告以及云计算（AWS）的超级飞轮生态。AWS二季度营收增速强劲再加速至同比+36.7%，凭借Amazon Bedrock平台与自研第二代Trainium2/Inferentia2芯片快速吸纳企业生成式AI工作负载。零售广告业务持续保持26%的高增长，以高转化购买意图构筑了全球第三大数字广告平台。北美区域化配送履约结合机器人全面落地使得履约单均成本持续下行，在数字经济与物理物流两端巩固了宽广且持续拓宽的经济护城河。
+
+## 六、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)
 
 - **压力测试预测 EPS:** $10.5
 - **测算压力营业收入:** $820B

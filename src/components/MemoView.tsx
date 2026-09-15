@@ -26,6 +26,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   const catalysts = (isZh && reportData.catalystsZh) ? reportData.catalystsZh : reportData.catalysts;
   const filing = (isZh && reportData.filingZh) ? reportData.filingZh : reportData.filing;
   const scenarios = (isZh && reportData.scenariosZh) ? reportData.scenariosZh : reportData.scenarios;
+  const moat = (isZh && reportData.moatZh) ? reportData.moatZh : reportData.moat;
   const currentPrice = facts.currentPrice;
 
   return (
@@ -338,6 +339,99 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/* Economic Moat & Competitors */}
+        {moat && (
+          <div className="flex flex-col gap-3">
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
+              {t.secMoatTitle}
+            </h2>
+
+            <div className="p-3.5 rounded-xl bg-surface-0 border border-border flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-fintech-greenGlow/20 text-fintech-green border border-fintech-green/30 font-mono">
+                  {moat.overallMoatRating} Moat
+                </span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-semibold text-slate-300 bg-surface-2 border border-border font-mono">
+                  Trend: {moat.moatTrend}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {moat.competitiveDynamicsSummary}
+              </p>
+            </div>
+
+            {/* Moat Sources Grid */}
+            {moat.moatSources && moat.moatSources.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                {moat.moatSources.map((s, i) => (
+                  <div key={i} className="p-2.5 rounded-lg bg-surface-0 border border-border/70 flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <strong className="text-white font-medium">{s.source}</strong>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-2 text-accent">
+                        {s.strength} {s.durabilityYears ? `(${s.durabilityYears}y)` : ""}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-snug">{s.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Peer Benchmarking Table */}
+            {moat.competitors && moat.competitors.length > 0 && (
+              <div className="overflow-x-auto rounded-xl border border-border">
+                <table className="w-full text-left text-[11px] border-collapse">
+                  <thead>
+                    <tr className="bg-surface-0 text-slate-400 font-mono border-b border-border">
+                      <th className="p-2">Ticker</th>
+                      <th className="p-2">Company</th>
+                      <th className="p-2 text-right">Mkt Cap</th>
+                      <th className="p-2 text-right">Rev / YoY</th>
+                      <th className="p-2 text-right">Op Margin</th>
+                      <th className="p-2 text-right">FWD P/E</th>
+                      <th className="p-2">Pricing Power</th>
+                      <th className="p-2">{isZh ? "产品管线与核心优劣势" : "Key Advantage / Vulnerability"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {moat.competitors.map((peer, i) => (
+                      <tr key={i} className="hover:bg-surface-0/50">
+                        <td className="p-2 font-mono font-bold text-accent">{peer.ticker}</td>
+                        <td className="p-2 text-white font-medium whitespace-nowrap">{peer.name}</td>
+                        <td className="p-2 text-right font-mono text-slate-300">
+                          {peer.marketCapBillions !== undefined ? `$${peer.marketCapBillions.toFixed(1)}B` : "-"}
+                        </td>
+                        <td className="p-2 text-right font-mono text-slate-300 whitespace-nowrap">
+                          {peer.revenueBillions !== undefined ? `$${peer.revenueBillions.toFixed(1)}B` : "-"}
+                          {peer.revenueGrowthPct !== undefined && (
+                            <span className={`ml-1 font-bold ${peer.revenueGrowthPct >= 0 ? "text-fintech-green" : "text-fintech-red"}`}>
+                              {(peer.revenueGrowthPct).toFixed(0)}%
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-2 text-right font-mono text-slate-300">
+                          {peer.operatingMarginPct !== undefined ? `${(peer.operatingMarginPct).toFixed(1)}%` : "-"}
+                        </td>
+                        <td className="p-2 text-right font-mono text-slate-300">
+                          {peer.forwardPe !== undefined ? `${peer.forwardPe.toFixed(1)}x` : "-"}
+                        </td>
+                        <td className="p-2">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-2 border border-border text-slate-300">
+                            {peer.pricingPower ?? "-"}
+                          </span>
+                        </td>
+                        <td className="p-2 text-slate-400 text-[10px] max-w-[240px] truncate" title={`${peer.productComparison} — ${peer.keyAdvantageOrVulnerability}`}>
+                          {peer.keyAdvantageOrVulnerability}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 

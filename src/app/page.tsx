@@ -14,12 +14,14 @@ import {
   Check,
   AlertCircle,
   Loader2,
+  ShieldCheck,
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
 import { MemoView } from "@/components/MemoView";
 import { FileUploader } from "@/components/FileUploader";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
+import { MoatTab } from "@/components/tabs/MoatTab";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { ToneTab } from "@/components/tabs/ToneTab";
@@ -277,6 +279,7 @@ export default function HomePage() {
   const displaySentiment = (isZh && reportData?.sentimentZh) ? reportData.sentimentZh : reportData?.sentiment;
   const displayFiling = (isZh && reportData?.filingZh) ? reportData.filingZh : reportData?.filing;
   const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
+  const displayMoat = (isZh && reportData?.moatZh) ? reportData.moatZh : reportData?.moat;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-slate-100">
@@ -359,6 +362,7 @@ export default function HomePage() {
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/80">
                 {[
                   { id: "catalysts", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+                  { id: "moat", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
                   { id: "scenarios", label: t.tabs.scenarios, icon: TrendingUp, count: displayScenarios?.scenarios.length },
                   { id: "segments", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
                   { id: "tone", label: t.tabs.tone, icon: Mic },
@@ -404,6 +408,13 @@ export default function HomePage() {
                   <CatalystsTab
                     catalystsData={displayCatalysts}
                     onProbabilityChange={handleCatalystProbabilityChange}
+                    locale={locale}
+                  />
+                )}
+
+                {activeTab === "moat" && (
+                  <MoatTab
+                    moatData={displayMoat}
                     locale={locale}
                   />
                 )}

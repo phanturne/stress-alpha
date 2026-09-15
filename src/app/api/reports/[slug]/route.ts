@@ -10,6 +10,7 @@ import {
   FilingExtractsSchema,
   FinancialModelBaselineSchema,
   ValuationSchema,
+  MoatCompetitorsSchema,
 } from "@/lib/schemas";
 import { computeValuation, deriveEffectiveBaseline } from "@/lib/valuation";
 import { renderReport } from "@/lib/report";
@@ -72,10 +73,12 @@ export async function GET(
     const filingRaw = readFileJson("filing-extracts.json");
     const baselineRaw = readFileJson("stress-baseline.json");
     const valuationRaw = readFileJson("valuation.json");
+    const moatRaw = readFileJson("moat-competitors.json");
     const catalysts = catalystsRaw ? CatalystsSchema.safeParse(catalystsRaw).data : undefined;
     const reactions = reactionsRaw ? ReactionsSchema.safeParse(reactionsRaw).data : undefined;
     const sentiment = sentimentRaw ? EarningsSentimentSchema.safeParse(sentimentRaw).data : undefined;
     const filing = filingRaw ? FilingExtractsSchema.safeParse(filingRaw).data : undefined;
+    const moat = moatRaw ? MoatCompetitorsSchema.safeParse(moatRaw).data : undefined;
 
     let baseline = baselineRaw
       ? FinancialModelBaselineSchema.safeParse(baselineRaw).data
@@ -91,28 +94,13 @@ export async function GET(
       valuation = computeValuation({ facts, scenarios, baseline });
     }
 
-    let reportMarkdown = readFileText("report.md");
-    let reportMarkdownZh = readFileText("report_zh.md");
-
-    if (!reportMarkdown && valuation) {
-      reportMarkdown = renderReport(
-        { facts, catalysts, valuation, reactions },
-        { language: "en" }
-      );
-    }
-    if (!reportMarkdownZh && valuation) {
-      reportMarkdownZh = renderReport(
-        { facts, catalysts, valuation, reactions },
-        { language: "zh" }
-      );
-    }
-
     const factsZhRaw = readFileJson("facts_zh.json");
     const catalystsZhRaw = readFileJson("catalysts_zh.json");
     const scenariosZhRaw = readFileJson("scenarios_zh.json");
     const sentimentZhRaw = readFileJson("earnings-sentiment_zh.json");
     const filingZhRaw = readFileJson("filing-extracts_zh.json");
     const reactionsZhRaw = readFileJson("reactions_zh.json");
+    const moatZhRaw = readFileJson("moat-competitors_zh.json");
 
     const factsZh = factsZhRaw ? FactsSchema.safeParse(factsZhRaw).data : undefined;
     const catalystsZh = catalystsZhRaw ? CatalystsSchema.safeParse(catalystsZhRaw).data : undefined;
@@ -120,6 +108,23 @@ export async function GET(
     const sentimentZh = sentimentZhRaw ? EarningsSentimentSchema.safeParse(sentimentZhRaw).data : undefined;
     const filingZh = filingZhRaw ? FilingExtractsSchema.safeParse(filingZhRaw).data : undefined;
     const reactionsZh = reactionsZhRaw ? ReactionsSchema.safeParse(reactionsZhRaw).data : undefined;
+    const moatZh = moatZhRaw ? MoatCompetitorsSchema.safeParse(moatZhRaw).data : undefined;
+
+    let reportMarkdown = readFileText("report.md");
+    let reportMarkdownZh = readFileText("report_zh.md");
+
+    if (!reportMarkdown && valuation) {
+      reportMarkdown = renderReport(
+        { facts, catalysts, valuation, reactions, moat },
+        { language: "en" }
+      );
+    }
+    if (!reportMarkdownZh && valuation) {
+      reportMarkdownZh = renderReport(
+        { facts: factsZh ?? facts, catalysts: catalystsZh ?? catalysts, valuation, reactions: reactionsZh ?? reactions, moat: moatZh ?? moat },
+        { language: "zh" }
+      );
+    }
 
     return NextResponse.json({
       folderSlug: sanitizedSlug,
@@ -132,12 +137,14 @@ export async function GET(
       sentiment,
       filing,
       baseline,
+      moat,
       factsZh,
       catalystsZh,
       scenariosZh,
       sentimentZh,
       filingZh,
       reactionsZh,
+      moatZh,
       reportMarkdown,
       reportMarkdownZh,
     });

@@ -16,8 +16,10 @@ import {
   ReactionsSchema,
   FinancialModelBaselineSchema,
   ValuationSchema,
+  MoatCompetitorsSchema,
   type Reactions,
   type FinancialModelBaseline,
+  type MoatCompetitors,
 } from "../src/lib/schemas.js";
 import { computeValuation, deriveEffectiveBaseline } from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
@@ -59,6 +61,20 @@ function main() {
     reactions = loadAndValidate(absRunDir, "reactions.json", ReactionsSchema);
   }
 
+  let moat: MoatCompetitors | undefined;
+  const moatPath = path.join(absRunDir, "moat-competitors.json");
+  if (fs.existsSync(moatPath)) {
+    moat = loadAndValidate(absRunDir, "moat-competitors.json", MoatCompetitorsSchema);
+    console.log("  ✅ moat-competitors.json validated");
+  }
+
+  let moatZh: MoatCompetitors | undefined;
+  const moatZhPath = path.join(absRunDir, "moat-competitors_zh.json");
+  if (fs.existsSync(moatZhPath)) {
+    moatZh = loadAndValidate(absRunDir, "moat-competitors_zh.json", MoatCompetitorsSchema);
+    console.log("  ✅ moat-competitors_zh.json validated");
+  }
+
   let baseline: FinancialModelBaseline | undefined = scenarios.baseline;
   const baselinePath = path.join(absRunDir, "stress-baseline.json");
   if (fs.existsSync(baselinePath)) {
@@ -83,6 +99,7 @@ function main() {
       catalysts,
       valuation: validatedValuation,
       reactions,
+      moat,
     },
     { language: "en" }
   );
@@ -96,6 +113,7 @@ function main() {
       catalysts,
       valuation: validatedValuation,
       reactions,
+      moat: moatZh ?? moat,
     },
     { language: "zh" }
   );
@@ -108,6 +126,9 @@ function main() {
   console.log("═".repeat(64));
   console.log(`  Stock Price:          $${validatedValuation.currentPrice}`);
   console.log(`  Weighted Fair Value:  $${validatedValuation.weightedFairValue} (${validatedValuation.upsidePct > 0 ? "+" : ""}${validatedValuation.upsidePct}%)`);
+  if (moat) {
+    console.log(`  Economic Moat:        ${moat.overallMoatRating} Moat (Trend: ${moat.moatTrend})`);
+  }
   console.log(`  Clean Operating EPS:  $${facts.epsOperating}`);
   console.log(`  Consensus PT:         $${validatedValuation.consensusTarget}`);
   console.log(`  Verdict:              ${validatedValuation.verdictVsConsensus}`);

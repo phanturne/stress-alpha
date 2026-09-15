@@ -49,6 +49,35 @@ Operating EPS (adjusted): **$1.87**
 | 7 | AI investment cycle correction — hyperscaler capex questioned, sector de-rating | 📉 risk | 30% | medium-term | BIS: 5 largest hyperscalers spending >$1T combined in 2025-2026; FactSet scenario analysis places correction stress-test at 2027-2028; historical analog: 2021-22 cloud capex surge preceded 2022-23 optimization cycle with 12-18mo lag |
 | 8 | Anthropic valuation sustains at $965B+ (supporting Amazon's $190B mark) | 📈 growth | 50% | medium-term | Anthropic at $965B valuation; Claude maintains reasoning advantage; but a reversal would hit sentiment even though non-operating. IPO reportedly being considered — would crystallize or challenge the mark. |
 
+## 🏰 Economic Moat & Competitor Benchmarking
+
+- **Overall Moat Rating:** **Wide Moat**
+- **Moat Trend:** **Widening**
+
+### Moat Sources
+
+| Moat Source | Strength | Durability | Description |
+|-------------|----------|------------|-------------|
+| Network Effects | Strong | 15 yrs | Two-sided e-commerce marketplace flywheel with over 300M active customer accounts and millions of third-party sellers. Prime member retention (>95% annual renewal) and FBA fulfillment integration create self-reinforcing liquidity. |
+| Cost Advantage | Strong | 15 yrs | Massive regionalized fulfillment network with automated robotics (Proteus/Sparrow), internal line-haul transport, and custom hyperscale silicon (Trainium, Inferentia, Graviton) driving superior unit economics in compute and logistics. |
+| Switching Costs | Strong | 12 yrs | Enterprise cloud workloads on AWS feature deep architectural entrenchment across proprietary databases (Aurora, DynamoDB), security IAM, Bedrock foundation models, and multi-year Enterprise Discount Programs (EDP). |
+| Intangible Assets | Strong | 15 yrs | Top-tier global brand equity and default starting point for over 60% of US commercial product searches, supporting a high-margin retail media advertising platform ($19.8B/quarter, +26% YoY). |
+| Efficient Scale | Moderate | 10 yrs | Sub-same-day delivery infrastructure and regional multi-tier fulfillment hubs represent multi-hundred-billion-dollar cumulative Capex investments that deter rational greenfield replication. |
+
+### Competitor Peer Benchmarking
+
+| Peer | Market Cap | Revenue | YoY Growth | Gross Margin | Op. Margin | Forward P/E | Market Share | Pricing Power | Key Advantage / Vulnerability |
+|------|------------|---------|------------|--------------|------------|-------------|--------------|---------------|-------------------------------|
+| **MSFT** (Microsoft Corporation) | $3350B | $245B | +15% | 70% | 45% | 31x | 24% | Superior | Advantage: Deep enterprise software lock-in with Office/Windows and OpenAI model access. Vulnerability: Higher reliance on external GPU capacity and enterprise software margin compression. |
+| **GOOGL** (Alphabet Inc.) | $2250B | $350B | +14% | 57% | 32% | 21.5x | 11% | Superior | Advantage: Dominant consumer internet search and in-house TPU silicon leadership. Vulnerability: Trailing #3 position in enterprise cloud infrastructure and vulnerability of core search to AI agents. |
+| **WMT** (Walmart Inc.) | $620B | $685B | +5.5% | 24.5% | 4.5% | 28x | 12% | Parity | Advantage: Unmatched physical store proximity for grocery and immediate pickup. Vulnerability: Lower digital e-commerce profitability and zero high-margin cloud infrastructure offset. |
+| **BABA** (Alibaba Group) | $210B | $135B | +6% | 38% | 15% | 9.5x | 14% | Inferior | Advantage: Massive scale across Chinese domestic retail supply chains and cross-border manufacturing. Vulnerability: Geopolitical headwinds, Chinese consumer demand slowdown, and intensifying domestic competition from PDD/Douyin. |
+| **SHOP** (Shopify Inc.) | $105B | $8.5B | +21% | 50% | 12% | 55x | 3% | Parity | Advantage: Preferred platform for direct-to-consumer brand identity and autonomy. Vulnerability: Relies on third-party carrier logistics and lacks integrated hyperscale cloud/ad ecosystems. |
+
+### Competitive Dynamics Summary
+
+> Amazon operates a formidable multi-engine ecosystem spanning global e-commerce, third-party seller logistics (FBA), high-margin retail media advertising, and hyperscale cloud infrastructure (AWS). AWS growth has re-accelerated to +36.7% YoY, capturing significant incremental enterprise generative AI workloads through Amazon Bedrock and custom Trainium2/Inferentia2 silicon. Advertising revenue continues to expand at +26% YoY with industry-leading ROAS driven by high-intent shopping queries. The integration of robotics across North American regional fulfillment networks has driven structural cost-to-serve reductions, cementing Amazon's Wide Moat across both commercial cloud and physical distribution.
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $10.5

@@ -263,6 +263,48 @@ export const FilingExtractsSchema = z.object({
 });
 export type FilingExtracts = z.infer<typeof FilingExtractsSchema>;
 
+// --- Stage 1b: Economic Moat & Competitor Benchmarking ---
+export const MoatSourceSchema = z.object({
+  source: z.enum([
+    "Intangible Assets",
+    "Switching Costs",
+    "Cost Advantage",
+    "Network Effects",
+    "Efficient Scale",
+  ]),
+  strength: z.enum(["Strong", "Moderate", "Weak", "None"]),
+  description: z.string(),
+  durabilityYears: z.number().describe("Estimated years of sustainable advantage"),
+});
+export type MoatSource = z.infer<typeof MoatSourceSchema>;
+
+export const CompetitorComparisonSchema = z.object({
+  ticker: z.string(),
+  name: z.string(),
+  marketCapBillions: z.number(),
+  revenueBillions: z.number(),
+  revenueGrowthPct: z.number().optional(),
+  grossMarginPct: z.number(),
+  operatingMarginPct: z.number(),
+  forwardPe: z.number().optional(),
+  marketSharePct: z.number().optional(),
+  productComparison: z.string(),
+  pricingPower: z.enum(["Superior", "Parity", "Inferior"]).or(z.string()),
+  keyAdvantageOrVulnerability: z.string(),
+});
+export type CompetitorComparison = z.infer<typeof CompetitorComparisonSchema>;
+
+export const MoatCompetitorsSchema = z.object({
+  ticker: z.string(),
+  overallMoatRating: z.enum(["Wide", "Narrow", "None"]),
+  moatTrend: z.enum(["Widening", "Stable", "Narrowing"]),
+  moatSources: z.array(MoatSourceSchema).min(1),
+  competitors: z.array(CompetitorComparisonSchema).default([]),
+  competitiveDynamicsSummary: z.string(),
+  sources: z.array(SourceSchema).optional().default([]),
+});
+export type MoatCompetitors = z.infer<typeof MoatCompetitorsSchema>;
+
 // --- Valuation Output ---
 export const ScenarioResultSchema = z.object({
   name: z.string(),
@@ -308,6 +350,8 @@ export interface ReportData {
   sentiment?: EarningsSentiment;
   filing?: FilingExtracts;
   baseline?: FinancialModelBaseline;
+  moat?: MoatCompetitors;
+  moatZh?: MoatCompetitors;
   factsZh?: Facts;
   catalystsZh?: Catalysts;
   scenariosZh?: Scenarios;

@@ -17,6 +17,17 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * **Core Rule (Income Quality Guardrail):** Identifies non-operating or transitory items (e.g. unrealized mark-to-market equity gains/losses under ASU 2016-01) and calculates true **Operating EPS**.
 * Output: `facts.json`
 
+## Stage 1b: Economic Moat & Competitor Benchmarking (`prompts/stage1b-moat.md`)
+* **Framework:** Morningstar 5-Pillar Economic Moat Assessment (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and Moat Trend (Widening, Stable, Narrowing).
+* **Modern Sector-Velocity Calibration (Timeline Adjustment):**
+  - Replaces rigid 20y/10y blanket perpetuity assumptions with velocity-adjusted durability horizons.
+  - *High-Velocity Hardware / AI & Optics:* 4–8 years (2–4 year architecture and tape-out cycles).
+  - *Enterprise Cloud & Data Workloads:* 10–15 years (IAM security, database gravitation).
+  - *Regulated Biopharma & Therapeutics:* 10–15 years (composition-of-matter patent protection bounded by IRA price negotiation).
+  - *Physical Distribution & Scaled Hubs:* 15–20+ years (densified robotics and logistics grids).
+* **Multi-Metric Peer Matrix:** Benchmark 3–5 direct peers across Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power (`Superior` | `Parity` | `Inferior`), Product Comparison, and Advantage/Vulnerability.
+* Output: `moat-competitors.json` and `moat-competitors_zh.json`
+
 ## Stage 2: Catalysts & Probability Anchors (`prompts/stage2-catalysts.md`)
 * Defines distinct directional growth and risk drivers with quantified probability anchors and time horizons.
 * Output: `catalysts.json`

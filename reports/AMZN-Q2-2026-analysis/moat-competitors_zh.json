@@ -1,0 +1,110 @@
+{
+  "ticker": "AMZN",
+  "overallMoatRating": "Wide",
+  "moatTrend": "Widening",
+  "moatSources": [
+    {
+      "source": "Network Effects",
+      "strength": "Strong",
+      "durabilityYears": 15,
+      "description": "拥有超过3亿活跃买家与数百万第三方商家的双边飞轮效应。Prime会员高续费率（>95%）与FBA物流深度绑定，形成自我强化的交易流动性壁垒。"
+    },
+    {
+      "source": "Cost Advantage",
+      "strength": "Strong",
+      "durabilityYears": 15,
+      "description": "庞大的区域化仓储物流网络叠加自主研发自动化机器人（Proteus/Sparrow）、自有干线机队及自研AWS芯片（Trainium/Inferentia/Graviton），在算力与履约端构筑了极强的单位成本优势。"
+    },
+    {
+      "source": "Switching Costs",
+      "strength": "Strong",
+      "durabilityYears": 12,
+      "description": "AWS企业级云工作负载具有极高的架构锁定属性，涵盖自研数据库（Aurora、DynamoDB）、安全IAM认证体系、Bedrock模型生态及多年期企业折扣协议（EDP）。"
+    },
+    {
+      "source": "Intangible Assets",
+      "strength": "Strong",
+      "durabilityYears": 15,
+      "description": "全球顶尖的电商第一品牌心智，超过60%的美国电商搜索以此为起点，驱动高毛利零售媒体广告业务（单季198亿美元，同比+26%）爆发式扩张。"
+    },
+    {
+      "source": "Efficient Scale",
+      "strength": "Moderate",
+      "durabilityYears": 10,
+      "description": "半日达/当日达近场履约基建与多级区域分拣枢纽沉淀了数千亿美元累计资本开支，任何新进入者从零复制均缺乏商业理性。"
+    }
+  ],
+  "competitors": [
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft (微软)",
+      "marketCapBillions": 3350.0,
+      "revenueBillions": 245.0,
+      "revenueGrowthPct": 15.0,
+      "grossMarginPct": 70.0,
+      "operatingMarginPct": 45.0,
+      "forwardPe": 31.0,
+      "marketSharePct": 24.0,
+      "productComparison": "Azure公有云基础设施、OpenAI独家深度合作及M365 Copilot企业套件对标AWS算力底座与Bedrock模型平台。",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "优势：Office/Windows在企业软件栈拥有极深用户粘性与OpenAI模型先发红利。劣势：过度依赖英伟达外采GPU，企业软件端受AI推理成本挤压利润率。"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet (谷歌)",
+      "marketCapBillions": 2250.0,
+      "revenueBillions": 350.0,
+      "revenueGrowthPct": 14.0,
+      "grossMarginPct": 57.0,
+      "operatingMarginPct": 32.0,
+      "forwardPe": 21.5,
+      "marketSharePct": 11.0,
+      "productComparison": "Google Cloud (GCP)及搜索/YouTube全域广告栈对标AWS云基础设施及亚马逊零售站内赞助广告平台。",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "优势：全球搜索引擎统治级入口及TPU自研算力技术积淀。劣势：在企业级公有云市场位列第三，且核心搜索商业模式面临AI Agent直接问答的重构风险。"
+    },
+    {
+      "ticker": "WMT",
+      "name": "Walmart (沃尔玛)",
+      "marketCapBillions": 620.0,
+      "revenueBillions": 685.0,
+      "revenueGrowthPct": 5.5,
+      "grossMarginPct": 24.5,
+      "operatingMarginPct": 4.5,
+      "forwardPe": 28.0,
+      "marketSharePct": 12.0,
+      "productComparison": "全美4,700多家线下实体门店、Walmart+会员及Luminate数字广告对标亚马逊电商平台与Prime履约生态。",
+      "pricingPower": "Parity",
+      "keyAdvantageOrVulnerability": "优势：生鲜食品线下近场网络无可替代，到店提货极具时效。劣势：线上纯电商履约利润率偏低，且缺乏高毛利云计算业务支撑利润。"
+    },
+    {
+      "ticker": "BABA",
+      "name": "Alibaba (阿里巴巴)",
+      "marketCapBillions": 210.0,
+      "revenueBillions": 135.0,
+      "revenueGrowthPct": 6.0,
+      "grossMarginPct": 38.0,
+      "operatingMarginPct": 15.0,
+      "forwardPe": 9.5,
+      "marketSharePct": 14.0,
+      "productComparison": "淘宝天猫国内电商平台、全球速卖通跨境电商及阿里云对标亚马逊全球零售与AWS云平台。",
+      "pricingPower": "Inferior",
+      "keyAdvantageOrVulnerability": "优势：扎根中国完整制造业供应链生态，跨境白牌性价比极高。劣势：地缘政治监管不确定性高，国内消费大盘疲软，面临拼多多与抖音电商剧烈分流。"
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify",
+      "marketCapBillions": 105.0,
+      "revenueBillions": 8.5,
+      "revenueGrowthPct": 21.0,
+      "grossMarginPct": 50.0,
+      "operatingMarginPct": 12.0,
+      "forwardPe": 55.0,
+      "marketSharePct": 3.0,
+      "productComparison": "独立站DTC建站SaaS工具及Shop Pay结算系统对标亚马逊第三方商家服务及Buy with Prime生态。",
+      "pricingPower": "Parity",
+      "keyAdvantageOrVulnerability": "优势：品牌方拥有绝对数据自主权与独立品牌调性。劣势：缺乏自建干线物流体系，高度依赖第三方快递，无全网公域流量池支撑。"
+    }
+  ],
+  "competitiveDynamicsSummary": "亚马逊构建了涵盖全球电商、FBA履约物流、高毛利站内广告以及云计算（AWS）的超级飞轮生态。AWS二季度营收增速强劲再加速至同比+36.7%，凭借Amazon Bedrock平台与自研第二代Trainium2/Inferentia2芯片快速吸纳企业生成式AI工作负载。零售广告业务持续保持26%的高增长，以高转化购买意图构筑了全球第三大数字广告平台。北美区域化配送履约结合机器人全面落地使得履约单均成本持续下行，在数字经济与物理物流两端巩固了宽广且持续拓宽的经济护城河。"
+}

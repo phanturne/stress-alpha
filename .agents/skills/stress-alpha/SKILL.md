@@ -31,15 +31,19 @@ Generate the following structured JSON artifacts inside the report folder using 
    - **Income Quality Guardrail:** Identify any non-operating one-time gains/losses (e.g. ASU 2016-01 equity marks) and isolate clean `epsOperating`.
 2. `scenarios.json` (Required):
    - Formulate 3-4 scenarios (Bull, Base, Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0.
-3. `stress-baseline.json` (Recommended):
+3. `moat-competitors.json` (Recommended):
+   - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
+   - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
+   - **Durability Calibration:** Durability years assessed per pillar, calibrated for sector velocity (e.g., 4-8 years for high-velocity AI/hardware cycles vs. 10-15 years for patent-protected biopharma or physical infrastructure).
+4. `stress-baseline.json` (Recommended):
    - Define base revenue, gross margin %, fixed OpEx, shares outstanding, and upstream drivers (with exposure shares and elasticities).
-4. `catalysts.json` (Optional):
+5. `catalysts.json` (Optional):
    - Catalysts with probability anchors, horizons, and documented evidence.
-5. `earnings-sentiment.json` (Optional):
+6. `earnings-sentiment.json` (Optional):
    - Management tone scorecard across 5 dimensions, analyst Q&A topics, and key executive quotes.
-6. `filing-extracts.json` (Optional):
+7. `filing-extracts.json` (Optional):
    - 10-Q Item 1A risk disclosure diffs and novel findings.
-7. `reactions.json` (Optional):
+8. `reactions.json` (Optional):
    - Historical post-earnings day-1 moves and conditional reaction framing.
 
 ### Step 3: Run the Deterministic Valuation Engine

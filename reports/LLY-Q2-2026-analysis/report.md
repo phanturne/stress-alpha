@@ -51,6 +51,35 @@ Operating EPS (adjusted): **$11.41**
 | 7 | Aseptic Fill-Finish & Auto-Injector Component Dependencies | 📉 risk | 35% | near-term | Parenteral device delivery systems rely on specialized high-speed sterile component suppliers with extended lead times |
 | 8 | Inflation Reduction Act (IRA) Price Negotiation & Legislative Budget Caps | 📉 risk | 45% | long-term | Senate health committee hearings on GLP-1 healthcare expenditures and looming potential eligibility for mandatory government price setting |
 
+## 🏰 Economic Moat & Competitor Benchmarking
+
+- **Overall Moat Rating:** **Wide Moat**
+- **Moat Trend:** **Widening**
+
+### Moat Sources
+
+| Moat Source | Strength | Durability | Description |
+|-------------|----------|------------|-------------|
+| Intangible Assets | Strong | 15 yrs | Patents on tirzepatide (GLP-1/GIP dual agonist) and next-gen incretins (retatrutide, orforglipron) grant regulatory and commercial exclusivity well into the late 2030s/2040s, supported by top-tier clinical data in HbA1c reduction and weight loss. |
+| Cost Advantage | Strong | 12 yrs | Cumulative capital expenditures exceeding $18B in advanced continuous manufacturing, API synthesis, and autoinjector fill-finish capacity yield structural unit cost efficiencies that sub-scale biotech entrants cannot replicate. |
+| Switching Costs | Moderate | 8 yrs | GLP-1/GIP therapies require ongoing chronic administration for weight management and T2D; high patient titration inertia, institutional electronic health record protocols, and commercial formulary tier-1 access generate meaningful switching friction. |
+| Efficient Scale | Strong | 10 yrs | The global incretin duopoly with Novo Nordisk limits profitable entry; new entrants face multi-year FDA bio-equivalence and trial requirements, clinical safety benchmarks, and billions in pre-commercial Capex that deter rational capital investment. |
+| Network Effects | None | 0 yrs | Direct network effects are absent in prescription pharmaceuticals, although extensive real-world physician familiarity and prescriber advocacy provide reinforcing commercial momentum. |
+
+### Competitor Peer Benchmarking
+
+| Peer | Market Cap | Revenue | YoY Growth | Gross Margin | Op. Margin | Forward P/E | Market Share | Pricing Power | Key Advantage / Vulnerability |
+|------|------------|---------|------------|--------------|------------|-------------|--------------|---------------|-------------------------------|
+| **NVO** (Novo Nordisk) | $580B | $42.5B | +24% | 84.5% | 44.5% | 32.5x | 48% | Superior | Advantage: First-mover brand equity and European market dominance. Vulnerability: Inferior absolute efficacy vs tirzepatide and severe autoinjector supply shortages. |
+| **AMGN** (Amgen) | $175B | $34B | +8% | 71% | 32% | 16.5x | 1% | Parity | Advantage: Extended dosing interval convenience. Vulnerability: Bone mineral density safety signals in Phase 2, unproven commercial scale, 3-4 years behind LLY. |
+| **VKTX** (Viking Therapeutics) | $8.5B | $0B | 0% | 0% | -85% | 0x | 0% | Inferior | Advantage: Competitive Phase 2 weight loss efficacy profile. Vulnerability: Zero commercial manufacturing facilities, no global sales infrastructure, reliant on M&A or licensing. |
+| **PFE** (Pfizer) | $155B | $60.5B | +4% | 70.5% | 26.5% | 11.2x | 0% | Inferior | Advantage: Massive global distribution and M&A dry powder. Vulnerability: Repeated clinical failures and hepatotoxicity hurdles in internal oral small molecule GLP-1 programs. |
+| **ROG** (Roche) | $230B | $68B | +6% | 73% | 29% | 15x | 0% | Parity | Advantage: Deep balance sheet, world-class diagnostics, and global oncology/specialty infrastructure. Vulnerability: Early clinical stage (Phase 1/2), 4-5 years away from commercialization. |
+
+### Competitive Dynamics Summary
+
+> The global cardiometabolic and obesity market represents an unprecedented structural growth tailwind projected to surpass $130B by 2030. The competitive landscape is functionally an asymmetric duopoly between Eli Lilly and Novo Nordisk. Lilly is steadily gaining market share in new-to-brand prescriptions (NBRx) driven by tirzepatide's clinical superiority in absolute weight reduction (-22.5% vs -15.0% for semaglutide) and dual GIP-mediated metabolic tolerability. While mid-cap challengers (Viking, Amgen) and pharma incumbents (Roche, Pfizer) are advancing next-gen unimolecular multi-agonists and oral modalities, Lilly's proprietary manufacturing moat ($18B+ Capex), clinical pipeline depth (Retatrutide Phase 3, Orforglipron Phase 3), and entrenched patent defenses will insulate its market leadership and superior operating margins (40%+) through the 2030s.
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $47.61

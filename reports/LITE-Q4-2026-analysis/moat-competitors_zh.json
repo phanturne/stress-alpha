@@ -1,0 +1,110 @@
+{
+  "ticker": "LITE",
+  "overallMoatRating": "Narrow",
+  "moatTrend": "Widening",
+  "moatSources": [
+    {
+      "source": "Intangible Assets",
+      "strength": "Strong",
+      "durabilityYears": 8,
+      "description": "拥有磷化铟（InP）半导体激光器、电吸收调制激光器（EML）、超高速VCSEL阵列及相干光通信专利族，为800G、1.6T光模块及共封装光学（CPO）提供核心光引擎支撑。"
+    },
+    {
+      "source": "Switching Costs",
+      "strength": "Moderate",
+      "durabilityYears": 6,
+      "description": "头部云厂商（英伟达、谷歌、Meta、微软、AWS）认证周期长达9-18个月，需完成严苛的热稳定性验证、眼图失真测试与固件协同优化，准入壁垒极高。"
+    },
+    {
+      "source": "Cost Advantage",
+      "strength": "Moderate",
+      "durabilityYears": 6,
+      "description": "完成对Cloud Light与NeoPhotonics的垂直整合后，打通了晶圆级InP芯片制造与东南亚自动化高密度光模块封装量产体系，具备良率与成本双重优势。"
+    },
+    {
+      "source": "Efficient Scale",
+      "strength": "Moderate",
+      "durabilityYears": 5,
+      "description": "高端AI光模块与激光发射芯片市场呈现Lumentum、Coherent与博通三足鼎立的寡头垄断格局，年均数亿美元的超净间与设备研发开支限制了中小型厂商参与。"
+    },
+    {
+      "source": "Network Effects",
+      "strength": "None",
+      "durabilityYears": 0,
+      "description": "硬件制造领域不存在直接的网络效应，但与顶级超大规模云厂商的跨代联合设计（Co-Design）建立了深厚的方案预埋与粘性。"
+    }
+  ],
+  "competitors": [
+    {
+      "ticker": "COHR",
+      "name": "Coherent (高意)",
+      "marketCapBillions": 18.5,
+      "revenueBillions": 5.8,
+      "revenueGrowthPct": 28.0,
+      "grossMarginPct": 38.0,
+      "operatingMarginPct": 18.5,
+      "forwardPe": 22.0,
+      "marketSharePct": 32.0,
+      "productComparison": "800G/1.6T高速光收发模块、VCSEL阵列、碳化硅（SiC）衬底及工业激光设备对标Lumentum的InP EML与Cloud Light光模块业务。",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "优势：涵盖GaAs、InP、SiC的全谱系光电化合物材料垂直整合最深。劣势：此前并购带来的负债包袱较重，且工业激光等周期性终端市场存在拖累。"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom (博通)",
+      "marketCapBillions": 840.0,
+      "revenueBillions": 58.0,
+      "revenueGrowthPct": 42.0,
+      "grossMarginPct": 76.0,
+      "operatingMarginPct": 58.0,
+      "forwardPe": 27.5,
+      "marketSharePct": 28.0,
+      "productComparison": "商用以太网交换芯片（Tomahawk）、Bailo CPO光学器件及光发射组件对标Lumentum的光传输子系统与光收发模块。",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "优势：在数据中心交换机核心芯片及定制化AI ASIC领域拥有绝对垄断地位。劣势：商业模式更侧重高毛利芯片销售，对劳动密集型光模块模组代工意愿有限。"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell (迈凌)",
+      "marketCapBillions": 72.0,
+      "revenueBillions": 5.7,
+      "revenueGrowthPct": 22.0,
+      "grossMarginPct": 52.0,
+      "operatingMarginPct": 26.0,
+      "forwardPe": 28.0,
+      "marketSharePct": 18.0,
+      "productComparison": "Nova 1.6T及Spica 800G PAM4 光电DSP芯片、硅光互连方案对标Lumentum的光学元器件与整机系统。",
+      "pricingPower": "Parity",
+      "keyAdvantageOrVulnerability": "优势：在PAM4光电转换数字信号处理芯片领域居行业黄金标准。劣势：自身不生产激光发射芯片，组装完整光引擎需外采Lumentum等厂商的激光二极管。"
+    },
+    {
+      "ticker": "AAOI",
+      "name": "Applied Optoelectronics (AOI)",
+      "marketCapBillions": 1.2,
+      "revenueBillions": 0.28,
+      "revenueGrowthPct": 18.0,
+      "grossMarginPct": 26.0,
+      "operatingMarginPct": 4.0,
+      "forwardPe": 19.0,
+      "marketSharePct": 4.0,
+      "productComparison": "数据中心400G/800G光收发模块及有线电视CATV宽带设备对标Lumentum的Cloud Light高端光模块。",
+      "pricingPower": "Inferior",
+      "keyAdvantageOrVulnerability": "优势：台湾制造基地具备成本灵活性，且斩获微软部分光模块供应资质。劣势：研发预算与晶圆厂产能规模偏小，面临技术代际迭代落后与毛利率偏低风险。"
+    },
+    {
+      "ticker": "CIEN",
+      "name": "Ciena (西纳)",
+      "marketCapBillions": 9.8,
+      "revenueBillions": 4.2,
+      "revenueGrowthPct": 8.0,
+      "grossMarginPct": 44.0,
+      "operatingMarginPct": 11.5,
+      "forwardPe": 17.0,
+      "marketSharePct": 8.0,
+      "productComparison": "WaveLogic相干光DSP芯片与城域/长途光传输系统对标Lumentum的高端ROADM波分复用及子系统。",
+      "pricingPower": "Parity",
+      "keyAdvantageOrVulnerability": "优势：在电信运营商核心骨干网及DCI城域网市场具有极深存量底座。劣势：传统电信运营商资本开支周期放缓，高增长弹性不及超大规模AI智算中心。"
+    }
+  ],
+  "competitiveDynamicsSummary": "全球前沿生成式AI大模型对GPU超级计算集群的爆发式需求，引爆了光互连技术的空前超级周期。GPU卡间超大通信带宽推动光互连代际演进从400G急速跃迁至800G及1.6T，使得高性能磷化铟（InP）激光芯片与光收发模块成为智算中心绝不可缺的核心瓶颈器件。Lumentum通过收购Cloud Light，成功实现由单纯激光元器件供应商向全栈一梯队光模块领头羊的战略蜕变，推动2026财年第四季度营收同比飙升109.3%突破10亿美元，营业利润率大幅扩张至36.6%。公司正伴随超大规模云厂商对下一代200G单通道EML及共封装光学（CPO）架构的多年期产能锁定，持续拓宽其窄护城河（Narrow Moat）。"
+}

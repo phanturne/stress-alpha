@@ -1,10 +1,11 @@
-import type { Facts, Catalysts, Valuation, Reactions } from "./schemas";
+import type { Facts, Catalysts, Valuation, Reactions, MoatCompetitors } from "./schemas";
 
 export interface ReportInput {
   facts: Facts;
   catalysts?: Catalysts;
   valuation: Valuation;
   reactions?: Reactions;
+  moat?: MoatCompetitors;
 }
 
 export interface RenderOptions {
@@ -85,6 +86,45 @@ function renderReportEnglish(input: ReportInput): string {
       lines.push(`| ${i + 1} | ${c.title} | ${emoji} ${c.direction} | ${(c.probability * 100).toFixed(0)}% | ${c.horizon} | ${c.probabilityAnchor} |`);
     });
     lines.push("");
+  }
+
+  // Economic Moat & Competitor Benchmarking
+  if (input.moat) {
+    const m = input.moat;
+    lines.push("## 🏰 Economic Moat & Competitor Benchmarking");
+    lines.push("");
+    lines.push(`- **Overall Moat Rating:** **${m.overallMoatRating} Moat**`);
+    lines.push(`- **Moat Trend:** **${m.moatTrend}**`);
+    lines.push("");
+    if (m.moatSources && m.moatSources.length > 0) {
+      lines.push("### Moat Sources");
+      lines.push("");
+      lines.push("| Moat Source | Strength | Durability | Description |");
+      lines.push("|-------------|----------|------------|-------------|");
+      for (const ms of m.moatSources) {
+        lines.push(`| ${ms.source} | ${ms.strength} | ${ms.durabilityYears} yrs | ${ms.description} |`);
+      }
+      lines.push("");
+    }
+    if (m.competitors && m.competitors.length > 0) {
+      lines.push("### Competitor Peer Benchmarking");
+      lines.push("");
+      lines.push("| Peer | Market Cap | Revenue | YoY Growth | Gross Margin | Op. Margin | Forward P/E | Market Share | Pricing Power | Key Advantage / Vulnerability |");
+      lines.push("|------|------------|---------|------------|--------------|------------|-------------|--------------|---------------|-------------------------------|");
+      for (const comp of m.competitors) {
+        const revGrowth = comp.revenueGrowthPct != null ? `${comp.revenueGrowthPct > 0 ? "+" : ""}${comp.revenueGrowthPct}%` : "—";
+        const fwdPe = comp.forwardPe != null ? `${comp.forwardPe}x` : "—";
+        const share = comp.marketSharePct != null ? `${comp.marketSharePct}%` : "—";
+        lines.push(`| **${comp.ticker}** (${comp.name}) | $${comp.marketCapBillions}B | $${comp.revenueBillions}B | ${revGrowth} | ${comp.grossMarginPct}% | ${comp.operatingMarginPct}% | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`);
+      }
+      lines.push("");
+    }
+    if (m.competitiveDynamicsSummary) {
+      lines.push("### Competitive Dynamics Summary");
+      lines.push("");
+      lines.push(`> ${m.competitiveDynamicsSummary}`);
+      lines.push("");
+    }
   }
 
   // StressAlpha Valuation Bands & Accounting Flow-Through
@@ -218,10 +258,52 @@ function renderReportChinese(input: ReportInput): string {
     lines.push("");
   }
 
+  // 护城河壁垒与竞品对标
+  if (input.moat) {
+    const m = input.moat;
+    lines.push("## 五、 🏰 护城河壁垒与竞品对标 (Economic Moat & Competitors)");
+    lines.push("");
+    const moatRatingZh = m.overallMoatRating === "Wide" ? "宽护城河 (Wide Moat)" : m.overallMoatRating === "Narrow" ? "窄护城河 (Narrow Moat)" : "无明显壁垒 (No Moat)";
+    const moatTrendZh = m.moatTrend === "Widening" ? "持续拓宽 (Widening)" : m.moatTrend === "Stable" ? "保持稳定 (Stable)" : "面临侵蚀收窄 (Narrowing)";
+    lines.push(`- **护城河评级:** **${moatRatingZh}**`);
+    lines.push(`- **演变趋势:** **${moatTrendZh}**`);
+    lines.push("");
+    if (m.moatSources && m.moatSources.length > 0) {
+      lines.push("### 核心护城河支柱");
+      lines.push("");
+      lines.push("| 护城河支柱 | 壁垒强度 | 保护年限 | 核心结构性壁垒论据 |");
+      lines.push("|------------|----------|----------|--------------------|");
+      for (const ms of m.moatSources) {
+        const strengthZh = ms.strength === "Strong" ? "极强 (Strong)" : ms.strength === "Moderate" ? "中等 (Moderate)" : ms.strength === "Weak" ? "较弱 (Weak)" : "无 (None)";
+        lines.push(`| ${ms.source} | ${strengthZh} | ${ms.durabilityYears} 年 | ${ms.description} |`);
+      }
+      lines.push("");
+    }
+    if (m.competitors && m.competitors.length > 0) {
+      lines.push("### 核心同行竞品对标矩阵");
+      lines.push("");
+      lines.push("| 竞品代码 / 公司 | 市值 | 年化营收 | 营收增速 | 毛利率 | 营业利润率 | 远期 P/E | 核心份额 | 定价权 | 相对优势与潜在软肋 |");
+      lines.push("|-----------------|------|----------|----------|--------|------------|----------|----------|--------|-------------------|");
+      for (const comp of m.competitors) {
+        const revGrowth = comp.revenueGrowthPct != null ? `${comp.revenueGrowthPct > 0 ? "+" : ""}${comp.revenueGrowthPct}%` : "—";
+        const fwdPe = comp.forwardPe != null ? `${comp.forwardPe}x` : "—";
+        const share = comp.marketSharePct != null ? `${comp.marketSharePct}%` : "—";
+        lines.push(`| **${comp.ticker}** (${comp.name}) | $${comp.marketCapBillions}B | $${comp.revenueBillions}B | ${revGrowth} | ${comp.grossMarginPct}% | ${comp.operatingMarginPct}% | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`);
+      }
+      lines.push("");
+    }
+    if (m.competitiveDynamicsSummary) {
+      lines.push("### 竞争格局与护城河综述");
+      lines.push("");
+      lines.push(`> ${m.competitiveDynamicsSummary}`);
+      lines.push("");
+    }
+  }
+
   // 估值区间
   if (valuation.stressTest && valuation.baseline) {
     const st = valuation.stressTest;
-    lines.push("## 五、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)");
+    lines.push(`## ${input.moat ? "六" : "五"}、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)`);
     lines.push("");
     lines.push(`- **压力测试预测 EPS:** $${st.stressEps}`);
     lines.push(`- **测算压力营业收入:** $${st.stressRevenueBillions}B`);
