@@ -1,0 +1,65 @@
+{
+  "ticker": "LLY",
+  "basisYear": "FY2027",
+  "currentPrice": 1142.20,
+  "consensusTarget": 1320.00,
+  "scenarios": [
+    {
+      "name": "Bull",
+      "probability": 0.30,
+      "forwardEps": 54.00,
+      "multiple": 32.0,
+      "assumptions": [
+        "Orforglipron (oral GLP-1) receives expedited FDA approval in early 2027, unlocking needle-phobic patients and massive non-cold-chain global distribution",
+        "Retatrutide BLA submitted in Q1 2027 with ~24% bariatric-level weight loss data, cementing undisputed long-term incretin leadership",
+        "Lebanon, IN and Alzey manufacturing expansions reach full commercial validation ahead of schedule, eliminating backlog constraints",
+        "Bipartisan Treat and Reduce Obesity Act (TROA) unlocks broad Medicare Part D coverage for anti-obesity medications",
+        "Multiple expands to 32x reflecting generational compounder status and accelerating cash flow inflection"
+      ],
+      "keyDrivers": [
+        "orforglipron-oral-glp1-fda-approval",
+        "retatrutide-triple-agonist-bla-filing",
+        "manufacturing-capacity-doubling",
+        "compounding-pharmacy-curtailment"
+      ]
+    },
+    {
+      "name": "Base",
+      "probability": 0.50,
+      "forwardEps": 47.60,
+      "multiple": 27.0,
+      "assumptions": [
+        "Tirzepatide (Mounjaro and Zepbound) volume grows >35% YoY in FY2027, crossing $65B combined annual run-rate",
+        "Realized net prices compress 8-12% due to commercial payer rebate escalation and Medicaid statutory mandates, offset by unit volume leverage",
+        "Retatrutide submitted Q1 2027; Orforglipron launches in early diabetic indications with phased obesity ramp",
+        "FDA permanent 503B Bulks List exclusion successfully shuts down mass-scale compounded tirzepatide copies, redirecting patients to branded Zepbound",
+        "Valuation stabilizes at 27x forward EPS, inline with normalized high-growth mega-cap biopharma peers"
+      ],
+      "keyDrivers": [
+        "mounjaro-zepbound-volume-dominance",
+        "compounding-pharmacy-curtailment",
+        "gross-to-net-price-erosion",
+        "retatrutide-triple-agonist-bla-filing"
+      ]
+    },
+    {
+      "name": "Bear",
+      "probability": 0.20,
+      "forwardEps": 38.00,
+      "multiple": 20.0,
+      "assumptions": [
+        "Escalating gross-to-net price erosion (>20% price declines) as commercial insurers impose restrictive prior authorization criteria and employer opt-outs",
+        "Novo Nordisk CagriSema and next-gen competitors (Amgen MariTide, Viking VK2735) achieve favorable clinical differentiation and price competition",
+        "Manufacturing validation bottlenecks or fill-finish quality citations create intermittent regional inventory stock-outs",
+        "Intensified federal scrutiny on GLP-1 budgetary impact spurs aggressive statutory price negotiation and PBM rebate restructuring",
+        "Multiple de-rates to 20x as growth decelerates and obesity franchise commoditization narrative gains market traction"
+      ],
+      "keyDrivers": [
+        "gross-to-net-price-erosion",
+        "competitive-incretin-crowding",
+        "supply-chain-single-source-vulnerability",
+        "ira-and-medicare-price-scrutiny"
+      ]
+    }
+  ]
+}

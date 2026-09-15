@@ -9,17 +9,22 @@ interface MemoViewProps {
   reportData: ReportData;
   stressResult: StressResult;
   onBackToCockpit: () => void;
+  locale?: "en" | "zh";
 }
 
 export const MemoView: React.FC<MemoViewProps> = ({
   reportData,
   stressResult,
   onBackToCockpit,
+  locale = "zh",
 }) => {
-  const [memoLang, setMemoLang] = useState<"en" | "zh">("en");
-  const { facts, catalysts, filing } = reportData;
-  const currentPrice = facts.currentPrice;
+  const [memoLang, setMemoLang] = useState<"en" | "zh">(locale);
   const isZh = memoLang === "zh";
+  const facts = (isZh && reportData.factsZh) ? reportData.factsZh : reportData.facts;
+  const catalysts = (isZh && reportData.catalystsZh) ? reportData.catalystsZh : reportData.catalysts;
+  const filing = (isZh && reportData.filingZh) ? reportData.filingZh : reportData.filing;
+  const scenarios = (isZh && reportData.scenariosZh) ? reportData.scenariosZh : reportData.scenarios;
+  const currentPrice = facts.currentPrice;
 
   return (
     <div className="w-full max-w-4xl mx-auto py-6 px-4">
@@ -112,7 +117,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <div className="text-base font-bold font-mono text-accent">
                 {formatCurrency(
                   reportData.valuation?.weightedFairValue ?? currentPrice,
-                  0
+                  2
                 )}
               </div>
             </div>
@@ -220,9 +225,8 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.bull.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    {isZh
-                      ? "企业级需求全面回暖，AI商业化落地加速，估值倍数扩张。"
-                      : "Enterprise re-acceleration accelerates; customer demand expands multiple."}
+                    {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("bull") || s.name.includes("牛市"))?.assumptions?.[0]
+                      ?? (isZh ? "强劲基本面超预期，关键增长催化剂落地，估值倍数扩张。" : "Strong fundamental outperformance, catalyst execution, and multiple expansion.")}
                   </td>
                 </tr>
                 <tr>
@@ -248,9 +252,8 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.base.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    {isZh
-                      ? "管理层指引中枢平稳兑现，稳态工作负载迁移与利润率维持规范。"
-                      : "Guidance mid-point execution; steady normalized workload migration and margin discipline."}
+                    {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("base") || s.name.includes("基准"))?.assumptions?.[0]
+                      ?? (isZh ? "管理层指引中枢平稳兑现，市场份额稳固，估值倍数维持合理中枢。" : "Guidance mid-point execution, steady market share, and normalized multiple stability.")}
                   </td>
                 </tr>
                 <tr>
@@ -270,9 +273,8 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {formatPercent(stressResult.valuationBands.panic.deltaFromCurrentPct)}
                   </td>
                   <td className="p-3 text-slate-300 text-[11px]">
-                    {isZh
-                      ? "上游资本开支大幅削减，宏观消费衰退，倍数戴维斯双杀去杠杆。"
-                      : "Severe upstream CapEx curtailment, recessionary demand contraction, multiple de-rating."}
+                    {scenarios?.scenarios?.find(s => s.name.toLowerCase().includes("bear") || s.name.toLowerCase().includes("panic") || s.name.includes("熊市") || s.name.includes("恐慌"))?.assumptions?.[0]
+                      ?? (isZh ? "核心业务承压，监管或竞争加剧引发利润率收缩与倍数戴维斯双杀。" : "Severe top-line contraction, margin compression, and multiple de-rating.")}
                   </td>
                 </tr>
               </tbody>

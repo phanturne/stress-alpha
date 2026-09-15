@@ -308,6 +308,12 @@ export interface ReportData {
   sentiment?: EarningsSentiment;
   filing?: FilingExtracts;
   baseline?: FinancialModelBaseline;
+  factsZh?: Facts;
+  catalystsZh?: Catalysts;
+  scenariosZh?: Scenarios;
+  sentimentZh?: EarningsSentiment;
+  filingZh?: FilingExtracts;
+  reactionsZh?: Reactions;
   reportMarkdown?: string;
   reportMarkdownZh?: string;
 }

@@ -135,9 +135,24 @@ export function computeValuation(input: ValuationInput): Valuation {
   const { facts, scenarios } = input;
   const currentPrice = scenarios.currentPrice || facts.currentPrice;
 
-  // Per-scenario fair values
+  // StressAlpha flow-through computation if baseline provided
+  const baseline = input.baseline ?? scenarios.baseline;
+  let stressTest: StressResult | undefined;
+  let shockMultiplier = 1.0;
+
+  if (baseline) {
+    stressTest = computeStressedValuation(baseline, currentPrice, input.stressParams);
+    // If stressParams are supplied, calculate the flow-through scale multiplier
+    const unperturbed = computeStressedValuation(baseline, currentPrice, {});
+    if (unperturbed.stressEps > 0 && stressTest.stressEps > 0) {
+      shockMultiplier = stressTest.stressEps / unperturbed.stressEps;
+    }
+  }
+
+  // Per-scenario fair values (dynamically modulated by flow-through shock)
   const scenarioResults: ScenarioResult[] = scenarios.scenarios.map((s) => {
-    const fairValue = s.forwardEps * s.multiple;
+    const effectiveEps = s.forwardEps * shockMultiplier;
+    const fairValue = effectiveEps * s.multiple;
     const upsideFromCurrent = currentPrice > 0 ? ((fairValue - currentPrice) / currentPrice) * 100 : 0;
     return {
       name: s.name,
@@ -158,22 +173,23 @@ export function computeValuation(input: ValuationInput): Valuation {
   const sensitivity: SensitivityEntry[] = [];
 
   for (const s of scenarios.scenarios) {
-    const baseFV = s.forwardEps * s.multiple;
+    const effectiveEps = s.forwardEps * shockMultiplier;
+    const baseFV = effectiveEps * s.multiple;
 
     // EPS sensitivity
-    const epsUp = s.forwardEps * 1.1;
-    const epsDown = s.forwardEps * 0.9;
+    const epsUp = effectiveEps * 1.1;
+    const epsDown = effectiveEps * 0.9;
     sensitivity.push({
       scenario: s.name,
       parameter: "EPS +10%",
-      baseValue: round2(s.forwardEps),
+      baseValue: round2(effectiveEps),
       altValue: round2(epsUp),
       fairValueDelta: round2(epsUp * s.multiple - baseFV),
     });
     sensitivity.push({
       scenario: s.name,
       parameter: "EPS -10%",
-      baseValue: round2(s.forwardEps),
+      baseValue: round2(effectiveEps),
       altValue: round2(epsDown),
       fairValueDelta: round2(epsDown * s.multiple - baseFV),
     });
@@ -186,14 +202,14 @@ export function computeValuation(input: ValuationInput): Valuation {
       parameter: "Multiple +2",
       baseValue: s.multiple,
       altValue: multUp,
-      fairValueDelta: round2(s.forwardEps * multUp - baseFV),
+      fairValueDelta: round2(effectiveEps * multUp - baseFV),
     });
     sensitivity.push({
       scenario: s.name,
       parameter: "Multiple -2",
       baseValue: s.multiple,
       altValue: multDown,
-      fairValueDelta: round2(s.forwardEps * multDown - baseFV),
+      fairValueDelta: round2(effectiveEps * multDown - baseFV),
     });
   }
 
@@ -210,13 +226,6 @@ export function computeValuation(input: ValuationInput): Valuation {
     } else {
       verdictVsConsensus = `Below consensus ($${consensusTarget}) by ${Math.abs(diffPct)}% — more cautious`;
     }
-  }
-
-  // StressAlpha flow-through computation if baseline provided
-  const baseline = input.baseline ?? scenarios.baseline;
-  let stressTest: StressResult | undefined;
-  if (baseline) {
-    stressTest = computeStressedValuation(baseline, currentPrice, input.stressParams);
   }
 
   return {

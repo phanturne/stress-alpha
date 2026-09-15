@@ -8,12 +8,14 @@ interface ReportSelectorProps {
   currentSlug: string | null;
   onSelectReport: (slug: string) => void;
   isLoading?: boolean;
+  locale?: "en" | "zh";
 }
 
 export const ReportSelector: React.FC<ReportSelectorProps> = ({
   currentSlug,
   onSelectReport,
   isLoading = false,
+  locale = "en",
 }) => {
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +61,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 {currentReport.quarter ? `• ${currentReport.quarter}` : ""}
               </>
             ) : (
-              "Select Report..."
+              locale === "zh" ? "选择财报研报..." : "Select Report..."
             )}
           </span>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -70,7 +72,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           onClick={fetchReports}
           disabled={isFetching}
           className="p-1.5 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border text-slate-400 hover:text-accent transition-colors"
-          title="Refresh reports folder"
+          title={locale === "zh" ? "刷新研报目录" : "Refresh reports folder"}
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin text-accent" : ""}`} />
         </button>

@@ -8,6 +8,7 @@ interface PriceMeterProps {
   panicTarget: number;
   baseTarget: number;
   bullTarget: number;
+  locale?: "en" | "zh";
 }
 
 export const PriceMeter: React.FC<PriceMeterProps> = ({
@@ -15,7 +16,9 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
   panicTarget,
   baseTarget,
   bullTarget,
+  locale = "zh",
 }) => {
+  const isZh = locale === "zh";
   const minM = Math.min(panicTarget * 0.88, currentPrice * 0.9);
   const maxM = Math.max(bullTarget * 1.12, currentPrice * 1.1);
 
@@ -27,14 +30,17 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
 
   const currentPct = getPositionPct(currentPrice);
   const panicPct = getPositionPct(panicTarget);
+  const basePct = getPositionPct(baseTarget);
   const bullPct = getPositionPct(bullTarget);
 
   return (
     <div className="w-full bg-surface-1 rounded-xl p-3.5 border border-border">
       <div className="flex items-center justify-between text-xs mb-2">
-        <span className="font-semibold text-slate-300">Valuation Meter</span>
+        <span className="font-semibold text-slate-300">
+          {isZh ? "估值区间标尺" : "Valuation Meter"}
+        </span>
         <span className="text-slate-400 font-mono text-[11px]">
-          Current: <strong className="text-accent">{formatCurrency(currentPrice)}</strong>
+          {isZh ? "现价" : "Current"}: <strong className="text-accent">{formatCurrency(currentPrice)}</strong>
         </span>
       </div>
 
@@ -61,6 +67,17 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           <div className="w-1 h-2 bg-fintech-red rounded-full mt-0.5" />
         </div>
 
+        {/* Base Marker */}
+        <div
+          className="absolute top-1 -translate-x-1/2 flex flex-col items-center pointer-events-none"
+          style={{ left: `${basePct}%` }}
+        >
+          <span className="text-[10px] font-mono text-slate-300 font-semibold">
+            {formatCurrency(baseTarget, 0)}
+          </span>
+          <div className="w-1 h-2 bg-slate-300 rounded-full mt-0.5" />
+        </div>
+
         {/* Bull Marker */}
         <div
           className="absolute top-1 -translate-x-1/2 flex flex-col items-center pointer-events-none"
@@ -85,10 +102,16 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
         </div>
       </div>
 
-      <div className="flex justify-between items-center text-[11px] font-mono text-slate-400 mt-1">
-        <span className="text-fintech-red font-medium">🚨 Panic Floor</span>
-        <span className="text-slate-400">⚖️ Base: {formatCurrency(baseTarget, 0)}</span>
-        <span className="text-fintech-green font-medium">🐂 Bull Regime</span>
+      <div className="grid grid-cols-3 text-[11px] font-mono text-slate-400 mt-1">
+        <span className="text-fintech-red font-medium text-left">
+          {isZh ? "🚨 恐慌底价" : "🚨 Panic Floor"}
+        </span>
+        <span className="text-slate-300 font-medium text-center">
+          {isZh ? "⚖️ 基准目标" : "⚖️ Base"}: {formatCurrency(baseTarget, 0)}
+        </span>
+        <span className="text-fintech-green font-medium text-right">
+          {isZh ? "🐂 牛市目标" : "🐂 Bull Regime"}
+        </span>
       </div>
     </div>
   );

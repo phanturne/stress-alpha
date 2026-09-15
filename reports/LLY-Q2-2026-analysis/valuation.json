@@ -1,0 +1,210 @@
+{
+  "ticker": "LLY",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 1142.2,
+  "weightedFairValue": 1313,
+  "upsidePct": 14.95,
+  "scenarioResults": [
+    {
+      "name": "Bull",
+      "probability": 0.3,
+      "fairValue": 1728,
+      "upsideFromCurrent": 51.29
+    },
+    {
+      "name": "Base",
+      "probability": 0.5,
+      "fairValue": 1285.2,
+      "upsideFromCurrent": 12.52
+    },
+    {
+      "name": "Bear",
+      "probability": 0.2,
+      "fairValue": 760,
+      "upsideFromCurrent": -33.46
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull",
+      "parameter": "EPS +10%",
+      "baseValue": 54,
+      "altValue": 59.4,
+      "fairValueDelta": 172.8
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "EPS -10%",
+      "baseValue": 54,
+      "altValue": 48.6,
+      "fairValueDelta": -172.8
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple +2",
+      "baseValue": 32,
+      "altValue": 34,
+      "fairValueDelta": 108
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 32,
+      "altValue": 30,
+      "fairValueDelta": -108
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS +10%",
+      "baseValue": 47.6,
+      "altValue": 52.36,
+      "fairValueDelta": 128.52
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS -10%",
+      "baseValue": 47.6,
+      "altValue": 42.84,
+      "fairValueDelta": -128.52
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple +2",
+      "baseValue": 27,
+      "altValue": 29,
+      "fairValueDelta": 95.2
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple -2",
+      "baseValue": 27,
+      "altValue": 25,
+      "fairValueDelta": -95.2
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS +10%",
+      "baseValue": 38,
+      "altValue": 41.8,
+      "fairValueDelta": 76
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS -10%",
+      "baseValue": 38,
+      "altValue": 34.2,
+      "fairValueDelta": -76
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple +2",
+      "baseValue": 20,
+      "altValue": 22,
+      "fairValueDelta": 76
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple -2",
+      "baseValue": 20,
+      "altValue": 18,
+      "fairValueDelta": -76
+    }
+  ],
+  "consensusTarget": 1320,
+  "verdictVsConsensus": "In line with consensus ($1320) — delta -0.53%",
+  "baseline": {
+    "baseRevenueBillions": 101.5,
+    "baseGrossMarginPct": 86,
+    "fixedOpexBillions": 35.5,
+    "taxRatePct": 13.5,
+    "dilutedSharesBillions": 0.941,
+    "multipleRegimes": {
+      "bull": 32,
+      "base": 27,
+      "panic": 18
+    },
+    "upstreamDrivers": [
+      {
+        "id": "tirzepatide-fill-finish-capacity",
+        "name": "Aseptic Fill-Finish & Auto-Injector Capacity Scaling",
+        "exposureShare": 0.65,
+        "elasticity": 0.95,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "us-commercial-payer-coverage",
+        "name": "U.S. Commercial & Medicare GLP-1 Formulary Coverage",
+        "exposureShare": 0.55,
+        "elasticity": 0.8,
+        "defaultShockPct": 0,
+        "minShockPct": -35,
+        "maxShockPct": 35
+      },
+      {
+        "id": "gross-to-net-pricing-rebates",
+        "name": "Gross-to-Net Realized Pricing & Rebate Pressure",
+        "exposureShare": 0.7,
+        "elasticity": -0.75,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      },
+      {
+        "id": "next-gen-pipeline-advancement",
+        "name": "Next-Gen Incretin Progression (Orforglipron & Retatrutide)",
+        "exposureShare": 0.3,
+        "elasticity": 0.6,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 50
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 101.5,
+    "stressGrossProfitBillions": 87.29,
+    "stressOperatingIncomeBillions": 51.79,
+    "stressNetIncomeBillions": 44.8,
+    "stressEps": 47.61,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (32x P/E)",
+        "multiple": 32,
+        "targetPrice": 1523.52,
+        "deltaFromCurrentPct": 33.38
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (27x P/E)",
+        "multiple": 27,
+        "targetPrice": 1285.47,
+        "deltaFromCurrentPct": 12.54
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (18x P/E)",
+        "multiple": 18,
+        "targetPrice": 856.98,
+        "deltaFromCurrentPct": -24.97
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 12.54,
+      "downsideToPanicPct": -24.97,
+      "upsideToBullPct": 33.38,
+      "marketPricedInMultiple": 23.99,
+      "riskRewardRatio": 1.34
+    },
+    "driverShocksApplied": {
+      "tirzepatide-fill-finish-capacity": 0,
+      "us-commercial-payer-coverage": 0,
+      "gross-to-net-pricing-rebates": 0,
+      "next-gen-pipeline-advancement": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

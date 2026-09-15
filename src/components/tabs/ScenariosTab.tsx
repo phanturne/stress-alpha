@@ -2,33 +2,41 @@
 
 import React from "react";
 import { AlertCircle, CheckCircle2, TrendingUp } from "lucide-react";
-import type { Scenarios, Scenario } from "@/lib/schemas";
+import type { Scenarios, Scenario, Valuation } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 
 interface ScenariosTabProps {
   scenariosData: Scenarios;
   currentPrice: number;
+  valuation?: Valuation;
   onScenarioChange: (index: number, updated: Partial<Scenario>) => void;
+  locale?: "en" | "zh";
 }
 
 export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   scenariosData,
   currentPrice,
+  valuation,
   onScenarioChange,
+  locale = "zh",
 }) => {
+  const isZh = locale === "zh";
   const { scenarios, basisYear, consensusTarget } = scenariosData;
 
   // Compute live fair values
   const totalProbability = scenarios.reduce((acc, s) => acc + s.probability, 0);
   const isProbValid = Math.abs(totalProbability - 1.0) < 0.015;
 
-  const weightedFairValue = scenarios.reduce(
-    (acc, s) => acc + s.probability * s.forwardEps * s.multiple,
-    0
-  );
+  const weightedFairValue =
+    valuation?.weightedFairValue ??
+    scenarios.reduce(
+      (acc, s) => acc + s.probability * s.forwardEps * s.multiple,
+      0
+    );
 
   const weightedUpsidePct =
-    currentPrice > 0 ? ((weightedFairValue - currentPrice) / currentPrice) * 100 : 0;
+    valuation?.upsidePct ??
+    (currentPrice > 0 ? ((weightedFairValue - currentPrice) / currentPrice) * 100 : 0);
 
   return (
     <div className="flex flex-col gap-4">
@@ -36,10 +44,12 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-            Scenario Probability Tree ({basisYear})
+            {isZh ? `情景发生概率树 (${basisYear})` : `Scenario Probability Tree (${basisYear})`}
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Deterministic valuation matrix. Edit probabilities, forward EPS, or exit multiples inline for instant recalculation.
+            {isZh
+              ? "确定性估值计算矩阵。支持直接内联编辑概率、远期 EPS 或目标倍数，实时重算。"
+              : "Deterministic valuation matrix. Edit probabilities, forward EPS, or exit multiples inline for instant recalculation."}
           </p>
         </div>
 
@@ -47,12 +57,14 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           {!isProbValid ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-fintech-amberGlow/10 border border-fintech-amber/30 text-fintech-amber text-xs font-mono">
               <AlertCircle className="w-3.5 h-3.5" />
-              Probabilities sum to {(totalProbability * 100).toFixed(0)}% (should be 100%)
+              {isZh
+                ? `概率总和为 ${(totalProbability * 100).toFixed(0)}% (需等于 100%)`
+                : `Probabilities sum to ${(totalProbability * 100).toFixed(0)}% (should be 100%)`}
             </div>
           ) : (
             <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-fintech-greenGlow/10 border border-fintech-green/30 text-fintech-green text-xs font-mono">
               <CheckCircle2 className="w-3 h-3" />
-              100% Probability Distributed
+              {isZh ? "100% 概率完全分配" : "100% Probability Distributed"}
             </div>
           )}
         </div>
@@ -61,7 +73,9 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
       {/* Live Weighted Fair Value Summary Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="p-3.5 rounded-xl bg-surface-1 border border-border flex flex-col justify-between">
-          <span className="text-xs text-slate-400 font-medium">Weighted Fair Value</span>
+          <span className="text-xs text-slate-400 font-medium">
+            {isZh ? "加权公允价值 (WFV)" : "Weighted Fair Value"}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-2xl font-extrabold font-mono text-white">
               {formatCurrency(weightedFairValue, 2)}
@@ -71,27 +85,31 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                 weightedUpsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
               }`}
             >
-              {formatPercent(weightedUpsidePct)} vs current
+              {formatPercent(weightedUpsidePct)} {isZh ? "较现价空间" : "vs current"}
             </span>
           </div>
         </div>
 
         <div className="p-3.5 rounded-xl bg-surface-1 border border-border flex flex-col justify-between">
-          <span className="text-xs text-slate-400 font-medium">Consensus Price Target</span>
+          <span className="text-xs text-slate-400 font-medium">
+            {isZh ? "华尔街一致预期目标价" : "Consensus Price Target"}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-2xl font-extrabold font-mono text-slate-300">
               {consensusTarget ? formatCurrency(consensusTarget, 2) : "N/A"}
             </span>
             {consensusTarget > 0 && (
               <span className="text-xs text-slate-400 font-mono">
-                {formatPercent(((consensusTarget - currentPrice) / currentPrice) * 100)} implied
+                {formatPercent(((consensusTarget - currentPrice) / currentPrice) * 100)} {isZh ? "预期空间" : "implied"}
               </span>
             )}
           </div>
         </div>
 
         <div className="p-3.5 rounded-xl bg-surface-1 border border-border flex flex-col justify-between">
-          <span className="text-xs text-slate-400 font-medium">Alpha vs Consensus</span>
+          <span className="text-xs text-slate-400 font-medium">
+            {isZh ? "超额预期收益 (Alpha)" : "Alpha vs Consensus"}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
             <span
               className={`text-xl font-extrabold font-mono ${
@@ -107,7 +125,9 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                 : "—"}
             </span>
             <span className="text-[11px] text-slate-400">
-              {weightedFairValue >= consensusTarget ? "Bullish premium" : "Discounted safety"}
+              {weightedFairValue >= consensusTarget
+                ? (isZh ? "看多溢价" : "Bullish premium")
+                : (isZh ? "折价安全边际" : "Discounted safety")}
             </span>
           </div>
         </div>
@@ -118,20 +138,22 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="bg-surface-0/80 border-b border-border text-slate-400 font-mono uppercase text-[11px]">
-              <th className="p-3">Scenario</th>
-              <th className="p-3 text-right">Probability</th>
-              <th className="p-3 text-right">FWD EPS</th>
-              <th className="p-3 text-right">Exit P/E</th>
-              <th className="p-3 text-right">Fair Value Target</th>
-              <th className="p-3 text-right">Upside</th>
-              <th className="p-3">Key Assumptions</th>
+              <th className="p-3">{isZh ? "情景名称" : "Scenario"}</th>
+              <th className="p-3 text-right">{isZh ? "发生概率" : "Probability"}</th>
+              <th className="p-3 text-right">{isZh ? "远期 EPS" : "FWD EPS"}</th>
+              <th className="p-3 text-right">{isZh ? "目标倍数" : "Exit P/E"}</th>
+              <th className="p-3 text-right">{isZh ? "目标公允价" : "Fair Value Target"}</th>
+              <th className="p-3 text-right">{isZh ? "较现价空间" : "Upside"}</th>
+              <th className="p-3">{isZh ? "核心假设与驱动依据" : "Key Assumptions"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
             {scenarios.map((scenario, idx) => {
-              const fairValue = scenario.forwardEps * scenario.multiple;
+              const res = valuation?.scenarioResults?.[idx];
+              const fairValue = res?.fairValue ?? scenario.forwardEps * scenario.multiple;
               const upside =
-                currentPrice > 0 ? ((fairValue - currentPrice) / currentPrice) * 100 : 0;
+                res?.upsideFromCurrent ??
+                (currentPrice > 0 ? ((fairValue - currentPrice) / currentPrice) * 100 : 0);
 
               return (
                 <tr
@@ -192,7 +214,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                     </div>
                   </td>
                   <td className="p-3 text-right font-mono font-bold text-white text-sm">
-                    {formatCurrency(fairValue, 0)}
+                    {formatCurrency(fairValue, 2)}
                   </td>
                   <td
                     className={`p-3 text-right font-mono font-bold text-sm ${

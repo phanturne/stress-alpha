@@ -7,9 +7,11 @@ import { formatBillions, formatPercent } from "@/lib/utils";
 
 interface SegmentsTabProps {
   facts: Facts;
+  locale?: "en" | "zh";
 }
 
-export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts }) => {
+export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts, locale = "zh" }) => {
+  const isZh = locale === "zh";
   const { segments } = facts;
   const totalRev = segments.reduce((acc, s) => acc + s.revenueBillions, 0);
 
@@ -17,18 +19,20 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts }) => {
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-          Operational Segments & Management Guidance
+          {isZh ? "分部业务运营数据与管理层业绩指引" : "Operational Segments & Management Guidance"}
         </h3>
         <p className="text-xs text-slate-400 mt-0.5">
-          Audited unit economics, business unit growth velocities, and forward guidance ranges.
+          {isZh
+            ? "经审计的各业务线单元经济效益、同比增速与管理层官方前瞻业绩指引区间。"
+            : "Audited unit economics, business unit growth velocities, and forward guidance ranges."}
         </p>
       </div>
 
       {/* Segment Revenue Contribution Bar */}
       <div className="p-3.5 rounded-xl bg-surface-1 border border-border flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-          <span>Revenue Contribution Breakdown</span>
-          <span>Total Segment Revenue: {formatBillions(totalRev)}</span>
+          <span>{isZh ? "各分部营收贡献占比分解" : "Revenue Contribution Breakdown"}</span>
+          <span>{isZh ? "分部总营收" : "Total Segment Revenue"}: {formatBillions(totalRev)}</span>
         </div>
         <div className="h-3 w-full rounded-full bg-surface-3 flex overflow-hidden">
           {segments.map((s, i) => {
@@ -68,10 +72,10 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts }) => {
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="bg-surface-0/80 border-b border-border text-slate-400 font-mono uppercase text-[11px]">
-              <th className="p-3">Segment Name</th>
-              <th className="p-3 text-right">Revenue</th>
-              <th className="p-3 text-right">YoY Growth</th>
-              <th className="p-3 text-right">Operating Margin</th>
+              <th className="p-3">{isZh ? "分部名称" : "Segment Name"}</th>
+              <th className="p-3 text-right">{isZh ? "季度营收" : "Revenue"}</th>
+              <th className="p-3 text-right">{isZh ? "同比增长率" : "YoY Growth"}</th>
+              <th className="p-3 text-right">{isZh ? "营业利润率" : "Operating Margin"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
@@ -105,13 +109,13 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts }) => {
         <div className="p-4 rounded-xl bg-surface-1 border border-accent/30 bg-accentGlow/5 flex flex-col gap-2">
           <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider">
             <Compass className="w-4 h-4" />
-            Executive Forward Guidance Summary
+            {isZh ? "管理层官方前瞻业绩指引概要" : "Executive Forward Guidance Summary"}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
             {facts.guidanceOperatingIncomeLowBillions && (
               <div className="p-3 rounded-lg bg-surface-0 border border-border">
                 <div className="text-[11px] text-slate-400 font-medium">
-                  Operating Income Guidance Range
+                  {isZh ? "营业利润指引区间" : "Operating Income Guidance Range"}
                 </div>
                 <div className="text-base font-bold font-mono text-white mt-0.5">
                   {formatBillions(facts.guidanceOperatingIncomeLowBillions)} –{" "}
@@ -124,7 +128,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({ facts }) => {
             {facts.guidanceRevenueLowBillions && (
               <div className="p-3 rounded-lg bg-surface-0 border border-border">
                 <div className="text-[11px] text-slate-400 font-medium">
-                  Revenue Guidance Range
+                  {isZh ? "总营收指引区间" : "Revenue Guidance Range"}
                 </div>
                 <div className="text-base font-bold font-mono text-white mt-0.5">
                   {formatBillions(facts.guidanceRevenueLowBillions)} –{" "}

@@ -1,0 +1,98 @@
+{
+  "ticker": "LLY",
+  "company": "Eli Lilly and Company",
+  "quarter": "Q2 2026",
+  "reportDate": "2026-08-05",
+  "revenueBillions": 23.00,
+  "revenueGrowthPct": 48.0,
+  "revenueEstimateBillions": 20.75,
+  "operatingIncomeBillions": 8.99,
+  "operatingMarginPct": 39.1,
+  "operatingIncomeGrowthPct": 40.0,
+  "epsReported": 7.94,
+  "epsConsensus": 6.48,
+  "epsOperating": 11.41,
+  "segments": [
+    {
+      "name": "Mounjaro (Tirzepatide - Type 2 Diabetes)",
+      "revenueBillions": 9.94,
+      "growthPct": 91.0,
+      "operatingIncomeBillions": 4.97,
+      "operatingMarginPct": 50.0
+    },
+    {
+      "name": "Zepbound (Tirzepatide - Obesity & Weight Loss)",
+      "revenueBillions": 4.93,
+      "growthPct": 56.0,
+      "operatingIncomeBillions": 2.47,
+      "operatingMarginPct": 50.1
+    },
+    {
+      "name": "Verzenio & Targeted Oncology",
+      "revenueBillions": 2.12,
+      "growthPct": 3.5,
+      "operatingIncomeBillions": 0.95,
+      "operatingMarginPct": 44.8
+    },
+    {
+      "name": "Trulicity & Legacy Incretins",
+      "revenueBillions": 1.22,
+      "growthPct": 12.0,
+      "operatingIncomeBillions": 0.49,
+      "operatingMarginPct": 40.2
+    },
+    {
+      "name": "Immunology (Taltz, Olumiant, Omvoh, Ebglyss)",
+      "revenueBillions": 1.34,
+      "growthPct": 8.2,
+      "operatingIncomeBillions": 0.54,
+      "operatingMarginPct": 40.3
+    },
+    {
+      "name": "Neuroscience & Established Products (Kisunla, Humalog, Cymbalta)",
+      "revenueBillions": 3.45,
+      "growthPct": -4.5,
+      "operatingIncomeBillions": 1.02,
+      "operatingMarginPct": 29.6
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Acquired In-Process Research & Development (IPR&D) charges from M&A (Orna, Ajax, Centessa, Kelonia)",
+      "amountBillions": 2.80,
+      "isOperating": false,
+      "note": "Under SEC / GAAP rules, upfront transaction payments and acquired clinical development milestones must be expensed immediately in the quarter of acquisition. This imposed a $3.03 per-share drag on reported ($7.94) and non-GAAP ($8.38) EPS. Normalizing for this transitory, non-operating M&A investment charge yields clean underlying operating EPS of $11.41, compared to reported Non-GAAP of $8.38 and consensus of $6.48."
+    }
+  ],
+  "guidanceRevenueLowBillions": 85.00,
+  "guidanceRevenueHighBillions": 87.00,
+  "guidanceOperatingIncomeLowBillions": 34.00,
+  "guidanceOperatingIncomeHighBillions": 36.50,
+  "currentPrice": 1142.20,
+  "marketCapBillions": 1075.00,
+  "trailingEps": 29.80,
+  "forwardEpsConsensus": 47.20,
+  "sources": [
+    {
+      "url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results",
+      "title": "Eli Lilly and Company Reports Second-Quarter 2026 Financial Results",
+      "date": "2026-08-05"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/data/59478/000005947826000085/lly-20260630.htm",
+      "title": "Eli Lilly Form 10-Q for the Period Ended June 30, 2026",
+      "date": "2026-08-05"
+    },
+    {
+      "url": "https://www.cnbc.com/2026/08/05/eli-lilly-lly-q2-2026-earnings.html",
+      "title": "Eli Lilly raises full-year guidance on explosive Mounjaro and Zepbound demand",
+      "date": "2026-08-05"
+    },
+    {
+      "url": "https://www.marketbeat.com/stocks/NYSE/LLY/forecast/",
+      "title": "Eli Lilly (LLY) Stock Forecast and Consensus Price Target",
+      "date": "2026-09-14"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

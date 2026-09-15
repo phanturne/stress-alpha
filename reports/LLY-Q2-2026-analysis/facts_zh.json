@@ -1,0 +1,88 @@
+{
+  "ticker": "LLY",
+  "company": "礼来公司 (Eli Lilly and Company)",
+  "quarter": "2026 年第二季度 (Q2 2026)",
+  "reportDate": "2026-08-05",
+  "revenueBillions": 23.00,
+  "revenueGrowthPct": 48.0,
+  "revenueEstimateBillions": 20.75,
+  "operatingIncomeBillions": 8.99,
+  "operatingMarginPct": 39.1,
+  "operatingIncomeGrowthPct": 40.0,
+  "epsReported": 7.94,
+  "epsConsensus": 6.48,
+  "epsOperating": 11.41,
+  "segments": [
+    {
+      "name": "Mounjaro 替尔泊肽 (2型糖尿病适应症)",
+      "revenueBillions": 9.94,
+      "growthPct": 91.0,
+      "operatingIncomeBillions": 4.97,
+      "operatingMarginPct": 50.0
+    },
+    {
+      "name": "Zepbound 替尔泊肽 (减重与肥胖症适应症)",
+      "revenueBillions": 4.93,
+      "growthPct": 56.0,
+      "operatingIncomeBillions": 2.47,
+      "operatingMarginPct": 50.1
+    },
+    {
+      "name": "Verzenio 唯择与靶向肿瘤药",
+      "revenueBillions": 2.12,
+      "growthPct": 3.5,
+      "operatingIncomeBillions": 0.95,
+      "operatingMarginPct": 44.8
+    },
+    {
+      "name": "Trulicity 度拉糖肽与成熟肠促胰素产品",
+      "revenueBillions": 1.22,
+      "growthPct": 12.0,
+      "operatingIncomeBillions": 0.49,
+      "operatingMarginPct": 40.2
+    },
+    {
+      "name": "自身免疫药管线 (Taltz, Olumiant, Omvoh, Ebglyss)",
+      "revenueBillions": 1.34,
+      "growthPct": 8.2,
+      "operatingIncomeBillions": 0.54,
+      "operatingMarginPct": 40.3
+    },
+    {
+      "name": "神经科学与成熟药物 (Kisunla, 优泌乐, 欣百达)",
+      "revenueBillions": 3.45,
+      "growthPct": -4.5,
+      "operatingIncomeBillions": 1.02,
+      "operatingMarginPct": 29.6
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "并购取得的在研研发项目 (IPR&D) 费用扣除 (Orna, Ajax, Centessa, Kelonia)",
+      "amountBillions": 2.80,
+      "isOperating": false,
+      "note": "根据 SEC/GAAP 会计准则，并购前期交易对价及获得的在研临床研发资产必须在当季作为管理费用一次性全额计提。此项会计调整导致当季报告 GAAP EPS ($7.94) 和 Non-GAAP EPS ($8.38) 产生了高达每股 $3.03 美元的账面拖累。剔除该过渡性非经营并购研发投资后，礼来底层真实的清洁核心经营 EPS 为 $11.41 美元，大幅超越一致预期的 $6.48 美元。"
+    }
+  ],
+  "guidanceRevenueLowBillions": 85.00,
+  "guidanceRevenueHighBillions": 87.00,
+  "guidanceOperatingIncomeLowBillions": 34.00,
+  "guidanceOperatingIncomeHighBillions": 36.50,
+  "currentPrice": 1142.20,
+  "marketCapBillions": 1075.00,
+  "trailingEps": 29.80,
+  "forwardEpsConsensus": 47.20,
+  "sources": [
+    {
+      "url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results",
+      "title": "礼来公司发布 2026 财年第二季度财务报告",
+      "date": "2026-08-05"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/data/59478/000005947826000085/lly-20260630.htm",
+      "title": "礼来公司 Form 10-Q 季度报告",
+      "date": "2026-08-05"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

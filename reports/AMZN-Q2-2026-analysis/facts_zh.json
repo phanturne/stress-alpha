@@ -1,0 +1,61 @@
+{
+  "ticker": "AMZN",
+  "company": "亚马逊 (Amazon.com, Inc.)",
+  "quarter": "2026年第二季度 (Q2 2026)",
+  "reportDate": "2026-07-30",
+  "revenueBillions": 200.6,
+  "revenueGrowthPct": 20,
+  "revenueEstimateBillions": 196.16,
+  "operatingIncomeBillions": 27.5,
+  "operatingMarginPct": 13.7,
+  "operatingIncomeGrowthPct": 43,
+  "epsReported": 5.75,
+  "epsConsensus": 1.81,
+  "epsOperating": 1.87,
+  "segments": [
+    {
+      "name": "AWS 云计算",
+      "revenueBillions": 42.2,
+      "growthPct": 36.7,
+      "operatingIncomeBillions": 16.6,
+      "operatingMarginPct": 36.8
+    },
+    {
+      "name": "北美电商零售 (North America)",
+      "revenueBillions": 116.2,
+      "growthPct": 16,
+      "operatingIncomeBillions": 9.2,
+      "operatingMarginPct": 7.9
+    },
+    {
+      "name": "国际业务 (International)",
+      "revenueBillions": 42.2,
+      "growthPct": 15,
+      "operatingIncomeBillions": 1.7,
+      "operatingMarginPct": 4.0
+    },
+    {
+      "name": "数字广告业务 (Advertising)",
+      "revenueBillions": 19.8,
+      "growthPct": 26
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Anthropic 股权投资按公允价值重估账面浮盈",
+      "amountBillions": 53.4,
+      "isOperating": false,
+      "note": "130亿美元成本基数重估至1904亿美元；属未实现、非现金损益。使GAAP名义EPS由核心约$1.87失真虚增至$5.75"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 22.5,
+  "guidanceOperatingIncomeHighBillions": 26.5,
+  "currentPrice": 271.58,
+  "marketCapBillions": 2930,
+  "trailingEps": 12.43,
+  "forwardEpsConsensus": 10.46,
+  "sources": [
+    {"url": "https://www.aboutamazon.com/news/company-news/amazon-earnings-q2-2026-report", "title": "亚马逊 Q2 2026 财报公告", "date": "2026-07-30"}
+  ],
+  "analysisDate": "2026-08-06"
+}

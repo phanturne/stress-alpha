@@ -1,0 +1,48 @@
+{
+  "ticker": "AMZN",
+  "basisYear": "FY2027",
+  "currentPrice": 271.58,
+  "consensusTarget": 322,
+  "scenarios": [
+    {
+      "name": "牛市情景 (Bull)",
+      "probability": 0.30,
+      "forwardEps": 11.50,
+      "multiple": 32,
+      "assumptions": [
+        "AWS 增速维持在 33% 以上，AI 算力需求在 2028 年前持续超供给上限",
+        "资本开支在 2027 年见顶，自由现金流在 2027 年中迎来向上拐点转正",
+        "数字广告经营利润率持续扩张，单项贡献超 200 亿美元营业利润",
+        "美联储开启降息周期，科技龙头股整体市盈率估值中枢上移"
+      ],
+      "keyDrivers": ["aws-growth-sustains-30plus", "advertising-margin-engine", "fed-rate-cuts-multiple-expansion"]
+    },
+    {
+      "name": "基准情景 (Base)",
+      "probability": 0.45,
+      "forwardEps": 10.50,
+      "multiple": 28,
+      "assumptions": [
+        "随着体量基数增大，AWS 同比增速平稳归一化至 28-32% 区间",
+        "资本开支维持在 2200 亿美元高位，但整体营业利润率维持在 13-14%",
+        "2027 年自由现金流维持微负或盈亏平衡，但资产负债表与现金头寸稳健",
+        "无风险利率维持平稳，估值倍数保持在 28x 历史合理中位水平"
+      ],
+      "keyDrivers": ["aws-growth-sustains-30plus", "capex-fcf-negative-sustained"]
+    },
+    {
+      "name": "熊市情景 (Bear)",
+      "probability": 0.25,
+      "forwardEps": 8.50,
+      "multiple": 22,
+      "assumptions": [
+        "AI 投资周期进入消化期，企业客户放缓云端大规模迁移开支节奏",
+        "开源模型使推理商品化，公有云高溢价服务定价权受到侵蚀",
+        "2200 亿美元激增资本开支带来的折旧浪潮将营业利润率压缩至 10-11%",
+        "FTC 反垄断诉讼开审引发头条监管情绪压制及潜在业务剥离担忧",
+        "科技同行率先削减资本开支信号引发市场对过度建设的双重去杠杆杀估值"
+      ],
+      "keyDrivers": ["open-source-ai-commoditization", "ai-cycle-correction", "capex-fcf-negative-sustained"]
+    }
+  ]
+}

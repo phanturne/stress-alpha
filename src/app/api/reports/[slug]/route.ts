@@ -107,6 +107,20 @@ export async function GET(
       );
     }
 
+    const factsZhRaw = readFileJson("facts_zh.json");
+    const catalystsZhRaw = readFileJson("catalysts_zh.json");
+    const scenariosZhRaw = readFileJson("scenarios_zh.json");
+    const sentimentZhRaw = readFileJson("earnings-sentiment_zh.json");
+    const filingZhRaw = readFileJson("filing-extracts_zh.json");
+    const reactionsZhRaw = readFileJson("reactions_zh.json");
+
+    const factsZh = factsZhRaw ? FactsSchema.safeParse(factsZhRaw).data : undefined;
+    const catalystsZh = catalystsZhRaw ? CatalystsSchema.safeParse(catalystsZhRaw).data : undefined;
+    const scenariosZh = scenariosZhRaw ? ScenariosSchema.safeParse(scenariosZhRaw).data : undefined;
+    const sentimentZh = sentimentZhRaw ? EarningsSentimentSchema.safeParse(sentimentZhRaw).data : undefined;
+    const filingZh = filingZhRaw ? FilingExtractsSchema.safeParse(filingZhRaw).data : undefined;
+    const reactionsZh = reactionsZhRaw ? ReactionsSchema.safeParse(reactionsZhRaw).data : undefined;
+
     return NextResponse.json({
       folderSlug: sanitizedSlug,
       folderName: sanitizedSlug,
@@ -118,6 +132,12 @@ export async function GET(
       sentiment,
       filing,
       baseline,
+      factsZh,
+      catalystsZh,
+      scenariosZh,
+      sentimentZh,
+      filingZh,
+      reactionsZh,
       reportMarkdown,
       reportMarkdownZh,
     });

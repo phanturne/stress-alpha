@@ -1,0 +1,156 @@
+{
+  "ticker": "LLY",
+  "catalysts": [
+    {
+      "id": "orforglipron-oral-glp1-fda-approval",
+      "title": "Orforglipron Oral GLP-1 Approval & Global Commercial Launch",
+      "direction": "growth",
+      "probability": 0.75,
+      "probabilityAnchor": "U.S. NDA submitted for T2D in mid-2026, over 36,000 U.S. physicians prescribers activated, and Phase 3 obesity readout package completed",
+      "horizon": "medium-term",
+      "description": "Orforglipron represents the first non-peptide daily oral GLP-1 receptor agonist without food or water restrictions. It bypasses cold-chain logistics and injectable syringe supply bottlenecks, opening massive global primary care markets.",
+      "evidence": [
+        {
+          "fact": "Management confirmed U.S. regulatory submission for orforglipron in type 2 diabetes with global commercial rollout targeted for 2027.",
+          "source": {
+            "title": "Eli Lilly Q2 2026 Earnings Call Prepared Remarks",
+            "date": "2026-08-05"
+          }
+        },
+        {
+          "fact": "Prescriber footprint grew to ~36,000 clinicians following Medicare GLP-1 Bridge launch.",
+          "source": {
+            "title": "Lilly USA Commercial Briefing",
+            "date": "2026-08-05"
+          }
+        }
+      ]
+    },
+    {
+      "id": "retatrutide-triple-agonist-bla-filing",
+      "title": "Retatrutide (GIP/GLP-1/Glucagon Triple Agonist) BLA Filing",
+      "direction": "growth",
+      "probability": 0.80,
+      "probabilityAnchor": "Phase 3 clinical trial package completed for obesity, OSA, and knee osteoarthritis pain; FDA BLA submission scheduled for Q1 2027",
+      "horizon": "medium-term",
+      "description": "Retatrutide delivers up to 24.2% mean body weight loss alongside profound improvements in metabolic biomarkers and liver fat resolution, establishing a new therapeutic benchmark superior to dual incretins.",
+      "evidence": [
+        {
+          "fact": "Three Phase 3 trials read out positive in Q2 2026, satisfying registration criteria across obesity, obstructive sleep apnea, and osteoarthritis.",
+          "source": {
+            "title": "Lilly Pipeline Update",
+            "date": "2026-08-05"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manufacturing-capacity-doubling",
+      "title": "Greenfield Manufacturing Expansions (Lebanon, NC, Alzey) Coming Online",
+      "direction": "growth",
+      "probability": 0.85,
+      "probabilityAnchor": "Over $18B committed capital expenditure in parenteral manufacturing, with Lebanon site achieving initial engineering validation runs",
+      "horizon": "medium-term",
+      "description": "Unprecedented multi-billion capital deployment in automated autoinjector assembly, peptide synthesis, and vial filling creates unmatched production scale that permanently resolves supply shortages.",
+      "evidence": [
+        {
+          "fact": "Q2 2026 volume surged 60% YoY as earlier manufacturing investments began commercial supply ramp.",
+          "source": {
+            "title": "Eli Lilly Q2 2026 Financial Release",
+            "date": "2026-08-05"
+          }
+        }
+      ]
+    },
+    {
+      "id": "compounding-pharmacy-curtailment",
+      "title": "FDA 503B Bulks Exclusion & Compounding Channel Conversion",
+      "direction": "growth",
+      "probability": 0.70,
+      "probabilityAnchor": "FDA proposed permanent exclusion of tirzepatide from 503B Bulks List on April 30, 2026 following official resolution of national drug shortage",
+      "horizon": "near-term",
+      "description": "As regulatory loopholes allowing compounding pharmacies to formulate unapproved generic copies of tirzepatide close, an estimated 1.5M+ patients are redirected into branded Zepbound and Mounjaro channels.",
+      "evidence": [
+        {
+          "fact": "FDA ruled that with commercial supply normalized, no clinical justification exists for compounded bulk tirzepatide under Section 503B.",
+          "source": {
+            "title": "FDA Drug Shortage & Compounding Policy Announcement",
+            "date": "2026-04-30"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gross-to-net-price-erosion",
+      "title": "Escalating Commercial Payer Rebates & Statutory Medicaid Discounts",
+      "direction": "risk",
+      "probability": 0.65,
+      "probabilityAnchor": "Realized net prices declined 13% YoY in Q2 2026 despite 60% unit volume growth, driven by channel mix shift and formulary rebate concessions",
+      "horizon": "near-term",
+      "description": "Health plans and pharmacy benefit managers (PBMs) require aggressive double-digit net price rebates to grant preferred tier formulary status, steadily lowering realized revenue per patient treated.",
+      "evidence": [
+        {
+          "fact": "Q2 2026 realized price headwind of -13% partially offset strong volume gains.",
+          "source": {
+            "title": "Eli Lilly Q2 2026 Earnings Report",
+            "date": "2026-08-05"
+          }
+        }
+      ]
+    },
+    {
+      "id": "competitive-incretin-crowding",
+      "title": "Competitive Incretin Crowding (CagriSema, MariTide, Viking)",
+      "direction": "risk",
+      "probability": 0.40,
+      "probabilityAnchor": "Novo Nordisk advancing CagriSema Phase 3 readouts and Amgen progressing monthly/quarterly dosing regimens with MariTide",
+      "horizon": "medium-term",
+      "description": "Next-generation competitors offering alternative dosing frequencies (monthly vs weekly) or novel dual/triple mechanisms could fragment market share and trigger aggressive price competition.",
+      "evidence": [
+        {
+          "fact": "Multiple Phase 3 obesity candidates from rival pharmas are scheduled for primary completion in 2026-2027.",
+          "source": {
+            "title": "Biopharma Obesity Pipeline Tracker",
+            "date": "2026-07-15"
+          }
+        }
+      ]
+    },
+    {
+      "id": "supply-chain-single-source-vulnerability",
+      "title": "Aseptic Fill-Finish & Auto-Injector Component Dependencies",
+      "direction": "risk",
+      "probability": 0.35,
+      "probabilityAnchor": "Parenteral device delivery systems rely on specialized high-speed sterile component suppliers with extended lead times",
+      "horizon": "near-term",
+      "description": "Any interruption in sterile glass syringe barrels, stoppers, or spring-loaded injection pen mechanisms can halt production lines, constraining supply regardless of active pharmaceutical ingredient (API) inventory.",
+      "evidence": [
+        {
+          "fact": "Lilly Form 10-Q Item 1A highlights operational risks tied to single-source parenteral component suppliers.",
+          "source": {
+            "title": "Eli Lilly Form 10-Q Item 1A",
+            "date": "2026-08-05"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ira-and-medicare-price-scrutiny",
+      "title": "Inflation Reduction Act (IRA) Price Negotiation & Legislative Budget Caps",
+      "direction": "risk",
+      "probability": 0.45,
+      "probabilityAnchor": "Senate health committee hearings on GLP-1 healthcare expenditures and looming potential eligibility for mandatory government price setting",
+      "horizon": "long-term",
+      "description": "Massive state and federal budgetary exposure to obesity medication costs creates bipartisan political momentum to mandate price caps, accelerated IRA negotiation eligibility, or statutory rebate minimums.",
+      "evidence": [
+        {
+          "fact": "Congressional Budget Office (CBO) reports highlighted multi-hundred-billion Medicare budget impacts if anti-obesity medications are broadly covered without price statutory limits.",
+          "source": {
+            "title": "Congressional Budget Office Health Care Working Paper",
+            "date": "2026-05-18"
+          }
+        }
+      ]
+    }
+  ]
+}

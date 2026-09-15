@@ -1,0 +1,55 @@
+{
+  "ticker": "LITE",
+  "company": "朗讯科技 / 鲁门特姆 (Lumentum Holdings Inc.)",
+  "quarter": "2026财年第四季度 (Q4 2026)",
+  "reportDate": "2026-08-11",
+  "revenueBillions": 1.0063,
+  "revenueGrowthPct": 109.3,
+  "revenueEstimateBillions": 0.9877,
+  "operatingIncomeBillions": 0.3683,
+  "operatingMarginPct": 36.6,
+  "operatingIncomeGrowthPct": 215.0,
+  "epsReported": -84.65,
+  "epsConsensus": 2.97,
+  "epsOperating": 3.23,
+  "segments": [
+    {
+      "name": "光元器件与芯片 (Components)",
+      "revenueBillions": 0.6494,
+      "growthPct": 102.7,
+      "operatingIncomeBillions": 0.2533,
+      "operatingMarginPct": 39.0
+    },
+    {
+      "name": "光网络系统集成 (Systems)",
+      "revenueBillions": 0.3569,
+      "growthPct": 122.6,
+      "operatingIncomeBillions": 0.1150,
+      "operatingMarginPct": 32.2
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "可转债转股与提前清偿会计非现金计提",
+      "amountBillions": 7.76,
+      "isOperating": false,
+      "note": "由于股价暴涨，根据 GAAP 会计准则可转债转股清偿产生 77.6 亿美元账面非现金计提，使名义 EPS 录得 -$84.65。剔除该非现金账面噪音后，真实核心 Non-GAAP 经营 EPS 为 $3.23，大幅超越预期的 $2.97。"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 0.4839,
+  "guidanceOperatingIncomeHighBillions": 0.5164,
+  "guidanceRevenueLowBillions": 1.225,
+  "guidanceRevenueHighBillions": 1.275,
+  "currentPrice": 835.03,
+  "marketCapBillions": 74.90,
+  "trailingEps": -92.98,
+  "forwardEpsConsensus": 21.67,
+  "sources": [
+    {
+      "url": "https://investor.lumentum.com",
+      "title": "Lumentum Q4 2026 财报公告",
+      "date": "2026-08-11"
+    }
+  ],
+  "analysisDate": "2026-09-14"
+}

@@ -7,13 +7,15 @@ import { formatCurrency } from "@/lib/utils";
 
 interface SensitivityTabProps {
   sensitivityData: SensitivityEntry[];
+  locale?: "en" | "zh";
 }
 
-export const SensitivityTab: React.FC<SensitivityTabProps> = ({ sensitivityData }) => {
+export const SensitivityTab: React.FC<SensitivityTabProps> = ({ sensitivityData, locale = "zh" }) => {
+  const isZh = locale === "zh";
   if (!sensitivityData || sensitivityData.length === 0) {
     return (
       <div className="p-8 text-center text-sm text-slate-500 bg-surface-1 rounded-xl border border-border">
-        No sensitivity matrix data available for this report.
+        {isZh ? "当前研报暂无估值敏感性矩阵数据。" : "No sensitivity matrix data available for this report."}
       </div>
     );
   }
@@ -31,10 +33,12 @@ export const SensitivityTab: React.FC<SensitivityTabProps> = ({ sensitivityData 
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-          Valuation Sensitivity & Perturbation Matrix
+          {isZh ? "估值敏感性与扰动分析矩阵" : "Valuation Sensitivity & Perturbation Matrix"}
         </h3>
         <p className="text-xs text-slate-400 mt-0.5">
-          Isolated dollar impact on scenario fair value per incremental shift in fundamental parameters.
+          {isZh
+            ? "基本面单变量边际扰动对各情景公允价值的单因素敏感性冲击测算。"
+            : "Isolated dollar impact on scenario fair value per incremental shift in fundamental parameters."}
         </p>
       </div>
 
@@ -46,10 +50,10 @@ export const SensitivityTab: React.FC<SensitivityTabProps> = ({ sensitivityData 
           >
             <div className="flex items-center justify-between border-b border-border pb-2">
               <span className="text-sm font-bold text-white tracking-tight">
-                {scenarioName} Sensitivity
+                {scenarioName} {isZh ? "敏感性" : "Sensitivity"}
               </span>
               <span className="text-[11px] font-mono text-slate-400">
-                Δ Target Fair Value
+                {isZh ? "目标公允价变动 (Δ Fair Value)" : "Δ Target Fair Value"}
               </span>
             </div>
 

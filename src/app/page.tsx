@@ -39,9 +39,15 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
   const [activeTab, setActiveTab] = useState<string>("catalysts");
+  const [locale, setLocale] = useState<"en" | "zh">("zh");
   const [reportDocLang, setReportDocLang] = useState<"en" | "zh">("zh");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleToggleLocale = (newLocale: "en" | "zh") => {
+    setLocale(newLocale);
+    setReportDocLang(newLocale);
+  };
 
   const [stressParams, setStressParams] = useState<StressTestParams>({
     driverShocks: {},
@@ -249,18 +255,40 @@ export default function HomePage() {
     );
   }, [reportData, stressParams]);
 
+  // Compute live dynamic valuation tree (WFV, scenario targets, upside %)
+  const dynamicValuation = useMemo(() => {
+    if (!reportData?.facts || !reportData.scenarios) return reportData?.valuation;
+    return computeValuation({
+      facts: reportData.facts,
+      scenarios: reportData.scenarios,
+      baseline: reportData.baseline,
+      stressParams,
+    });
+  }, [reportData, stressParams]);
+
+  // Localized artifacts resolution
+  const isZh = locale === "zh";
+  const displayFacts = (isZh && reportData?.factsZh) ? reportData.factsZh : reportData?.facts;
+  const displayCatalysts = (isZh && reportData?.catalystsZh) ? reportData.catalystsZh : reportData?.catalysts;
+  const displayScenarios = (isZh && reportData?.scenariosZh) ? reportData.scenariosZh : reportData?.scenarios;
+  const displaySentiment = (isZh && reportData?.sentimentZh) ? reportData.sentimentZh : reportData?.sentiment;
+  const displayFiling = (isZh && reportData?.filingZh) ? reportData.filingZh : reportData?.filing;
+  const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-slate-100">
       {/* Top Navigation */}
       <Header
-        facts={reportData?.facts}
-        valuation={reportData?.valuation}
+        facts={displayFacts}
+        valuation={dynamicValuation ?? reportData?.valuation}
         currentSlug={currentSlug}
         onSelectReport={loadReport}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onOpenUploadModal={() => setIsUploadModalOpen(true)}
         onShare={handleShare}
+        locale={locale}
+        onToggleLocale={handleToggleLocale}
       />
 
       {/* Main Content Area */}
@@ -269,7 +297,7 @@ export default function HomePage() {
           <div className="h-[70vh] flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 text-accent animate-spin" />
             <span className="text-xs font-mono text-slate-400">
-              Loading StressAlpha Report...
+              {isZh ? "正在加载 StressAlpha 研报数据..." : "Loading StressAlpha Report..."}
             </span>
           </div>
         ) : !reportData || !stressResult ? (
@@ -278,9 +306,13 @@ export default function HomePage() {
               <FolderOpen className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">No Report Selected</h2>
+              <h2 className="text-lg font-bold text-white">
+                {isZh ? "未选择研报" : "No Report Selected"}
+              </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-md">
-                Select an earnings analysis report from the dropdown above or upload an analysis folder.
+                {isZh
+                  ? "请从顶部下拉菜单直接选择已生成的研报文件夹，或上传自定义分析目录。"
+                  : "Select an earnings analysis report from the dropdown above or upload an analysis folder."}
               </p>
             </div>
             <button
@@ -288,27 +320,36 @@ export default function HomePage() {
               onClick={() => setIsUploadModalOpen(true)}
               className="px-4 py-2 rounded-lg bg-accent text-slate-950 font-bold text-xs hover:bg-accent-hover transition-colors"
             >
-              Upload Analysis Folder
+              {isZh ? "上传分析文件夹" : "Upload Analysis Folder"}
             </button>
           </div>
         ) : viewMode === "memo" ? (
           <MemoView
-            reportData={reportData}
+            reportData={{
+              ...reportData,
+              facts: displayFacts!,
+              catalysts: displayCatalysts,
+              scenarios: displayScenarios!,
+              filing: displayFiling,
+              valuation: dynamicValuation ?? reportData.valuation,
+            }}
             stressResult={stressResult}
             onBackToCockpit={() => setViewMode("cockpit")}
+            locale={locale}
           />
         ) : (
           <div className="flex flex-col lg:flex-row gap-6 items-start">
             {/* Left Sticky Cockpit (~440px) */}
             <Cockpit
               baseline={reportData.baseline!}
-              facts={reportData.facts}
+              facts={displayFacts!}
               stressParams={stressParams}
               stressResult={stressResult}
               onDriverShockChange={handleDriverShockChange}
               onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
               onFixedOpexShiftChange={handleFixedOpexShiftChange}
               onResetDefaults={handleResetDefaults}
+              locale={locale}
             />
 
             {/* Right Tabbed Intelligence Workspace */}
@@ -316,14 +357,14 @@ export default function HomePage() {
               {/* Tab Navigation Ribbon */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/80">
                 {[
-                  { id: "catalysts", label: "Catalysts", icon: Sparkles, count: reportData.catalysts?.catalysts?.length },
-                  { id: "scenarios", label: "Scenario Tree", icon: TrendingUp, count: reportData.scenarios.scenarios.length },
-                  { id: "segments", label: "Segments & Guidance", icon: Layers, count: reportData.facts.segments.length },
-                  { id: "tone", label: "Management Tone", icon: Mic },
-                  { id: "filing", label: "10-Q Risks", icon: FileSearch, count: reportData.filing?.newRiskFactors?.length },
-                  { id: "reactions", label: "Historical Reactions", icon: History, count: reportData.reactions?.events?.length },
-                  { id: "sensitivity", label: "Sensitivity Heatmap", icon: Grid, count: reportData.valuation?.sensitivity?.length },
-                  { id: "report", label: "Full Report", icon: FileText },
+                  { id: "catalysts", label: isZh ? "催化因子" : "Catalysts", icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+                  { id: "scenarios", label: isZh ? "情景估值树" : "Scenario Tree", icon: TrendingUp, count: displayScenarios?.scenarios.length },
+                  { id: "segments", label: isZh ? "分部与指引" : "Segments & Guidance", icon: Layers, count: displayFacts?.segments.length },
+                  { id: "tone", label: isZh ? "管理层情绪" : "Management Tone", icon: Mic },
+                  { id: "filing", label: isZh ? "10-Q 风险" : "10-Q Risks", icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
+                  { id: "reactions", label: isZh ? "历史股价反应" : "Historical Reactions", icon: History, count: displayReactions?.events?.length },
+                  { id: "sensitivity", label: isZh ? "敏感性热力图" : "Sensitivity Heatmap", icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity)?.length },
+                  { id: "report", label: isZh ? "深度研报全文" : "Full Report", icon: FileText },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -360,38 +401,54 @@ export default function HomePage() {
               <div className="w-full">
                 {activeTab === "catalysts" && (
                   <CatalystsTab
-                    catalystsData={reportData.catalysts}
+                    catalystsData={displayCatalysts}
                     onProbabilityChange={handleCatalystProbabilityChange}
+                    locale={locale}
                   />
                 )}
 
                 {activeTab === "scenarios" && (
                   <ScenariosTab
-                    scenariosData={reportData.scenarios}
-                    currentPrice={reportData.facts.currentPrice}
+                    scenariosData={displayScenarios!}
+                    currentPrice={displayFacts!.currentPrice}
+                    valuation={dynamicValuation ?? reportData.valuation}
                     onScenarioChange={handleScenarioChange}
+                    locale={locale}
                   />
                 )}
 
                 {activeTab === "segments" && (
-                  <SegmentsTab facts={reportData.facts} />
+                  <SegmentsTab
+                    facts={displayFacts!}
+                    locale={locale}
+                  />
                 )}
 
                 {activeTab === "tone" && (
-                  <ToneTab sentimentData={reportData.sentiment} />
+                  <ToneTab
+                    sentimentData={displaySentiment}
+                    locale={locale}
+                  />
                 )}
 
                 {activeTab === "filing" && (
-                  <FilingTab filingData={reportData.filing} />
+                  <FilingTab
+                    filingData={displayFiling}
+                    locale={locale}
+                  />
                 )}
 
                 {activeTab === "reactions" && (
-                  <ReactionsTab reactionsData={reportData.reactions} />
+                  <ReactionsTab
+                    reactionsData={displayReactions}
+                    locale={locale}
+                  />
                 )}
 
                 {activeTab === "sensitivity" && (
                   <SensitivityTab
-                    sensitivityData={reportData.valuation?.sensitivity || []}
+                    sensitivityData={dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity ?? []}
+                    locale={locale}
                   />
                 )}
 
