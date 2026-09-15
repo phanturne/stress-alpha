@@ -1,0 +1,81 @@
+{
+  "ticker": "LITE",
+  "filingType": "10-K",
+  "period": "Q4 FY2026",
+  "filingUrl": "https://www.sec.gov/edgar/browse/?CIK=0001633978",
+  "sections": [
+    {
+      "section": "MD&A",
+      "keyFindings": [
+        {
+          "finding": "Cloud & Networking segment net revenue grew to $1,006.3M in Q4 FY26, driven by record shipments of 800G optical components and initial volume deployments of 1.6T transceivers for AI datacenter clusters.",
+          "quote": "The substantial increase in our net revenue was driven by accelerating demand from cloud hyperscale customers deploying high-density optical interconnects to support generative AI workloads.",
+          "implication": "growth",
+          "novelty": "new"
+        },
+        {
+          "finding": "Non-GAAP gross margin expanded to 50.4% and non-GAAP operating margin expanded to 36.6%, benefiting from operating leverage and higher-margin 800G/1.6T product mix.",
+          "quote": "Operating income benefited from fixed manufacturing cost absorption across our wafer fabs and packaging lines.",
+          "implication": "growth",
+          "novelty": "updated"
+        },
+        {
+          "finding": "GAAP net loss was $7.16B ($84.65/share) primarily due to a non-cash $7.76B loss on debt extinguishment from settling convertible notes as stock prices surged.",
+          "quote": "The GAAP net loss for fiscal 2026 was largely impacted by the non-cash charge associated with the equitization and settlement of our outstanding convertible notes.",
+          "implication": "neutral",
+          "novelty": "new"
+        }
+      ]
+    },
+    {
+      "section": "Risk Factors",
+      "keyFindings": [
+        {
+          "finding": "Customer concentration remains elevated, with top cloud hyperscalers representing over half of datacom optical transceiver shipments.",
+          "quote": "A small number of cloud and networking customers account for a substantial portion of our revenue, and any reduction or delay in orders could materially impact operating results.",
+          "implication": "risk",
+          "novelty": "updated"
+        },
+        {
+          "finding": "In-house Indium Phosphide (InP) wafer fab capacity and cleanroom assembly throughput are currently operating near maximum capacity.",
+          "quote": "Our ability to meet customer demand for high-speed laser diodes and transceivers depends on timely expansion of our cleanroom facilities and equipment delivery.",
+          "implication": "risk",
+          "novelty": "updated"
+        }
+      ]
+    }
+  ],
+  "newRiskFactors": [
+    {
+      "risk": "Hyperscaler Datacenter AI CapEx Pause",
+      "priorLanguage": "General cyclicality in cloud computing capital expenditure.",
+      "currentLanguage": "Concentrated exposure to AI datacenter infrastructure deployment schedules; potential pauses in GPU cluster builds may result in rapid adjustments to transceiver demand.",
+      "severity": "high"
+    },
+    {
+      "risk": "Wafer Fab and Assembly Capacity Allocation",
+      "priorLanguage": "Normal manufacturing risks and supplier lead times.",
+      "currentLanguage": "Capacity constraints in proprietary laser fabs and outsourced advanced assembly in Southeast Asia may restrict our ability to fulfill surging orders for 1.6T modules.",
+      "severity": "medium"
+    }
+  ],
+  "purchaseObligations": {
+    "totalBillions": 0.42,
+    "within1YearBillions": 0.28,
+    "note": "Capital equipment commitments for Indium Phosphide wafer fab tools and optical assembly cleanrooms in San Jose and Thailand."
+  },
+  "legalProceedings": [
+    {
+      "case": "General intellectual property and patent monitoring",
+      "status": "No material adverse proceedings pending",
+      "potentialImpact": "None"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001633978",
+      "title": "Lumentum Holdings Inc. SEC Form 10-K Annual Report",
+      "date": "2026-08-18"
+    }
+  ]
+}

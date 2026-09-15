@@ -1,0 +1,34 @@
+{
+  "ticker": "AMZN",
+  "events": [
+    {
+      "date": "2026-07-30",
+      "event": "Q2 2026 earnings: AWS +37%, capex raised to $220B, Jassy 'clear line of sight' to ROI",
+      "priceMovePct": 15.3,
+      "context": "Market rewarded because AWS growth validated the capex thesis. Stock had pulled back 11% in prior weeks on capex anxiety, creating setup for relief rally.",
+      "source": {"url": "https://www.fool.com/investing/2026/07/30/is-amazon-a-buy-after-its-latest-earnings-report/", "title": "Is Amazon a Buy After Its Latest Earnings Report?", "date": "2026-07-30"}
+    },
+    {
+      "date": "2026-02-23",
+      "event": "$200B capex announcement with no ROI specificity",
+      "priceMovePct": -18,
+      "context": "Longest daily losing streak in 20 years. Market punished capex without growth validation. $460B in market value erased in 2 weeks.",
+      "source": {"url": "https://www.forbes.com/sites/greatspeculations/2026/02/23/why-the-amazon-stock-sell-off-isnt-over-yet/", "title": "Why The Amazon Stock Sell-Off Isn't Over Yet", "date": "2026-02-23"}
+    },
+    {
+      "date": "2026-06-23",
+      "event": "Record Prime Day ($26.3B ecosystem spending) but stock fell on broader AI capex rotation",
+      "priceMovePct": -5,
+      "context": "Strong consumer demand couldn't offset sector rotation out of AI capex names. Market cared more about capex narrative than retail fundamentals.",
+      "source": {"url": "https://ng.investing.com/analysis/amazons-selloff-shows-ai-capex-has-become-the-new-margin-test-217402", "title": "Amazon's Selloff Shows AI Capex Has Become the New Margin Test", "date": "2026-06-27"}
+    },
+    {
+      "date": "2026-07-14",
+      "event": "Pre-earnings pullback: stock at $240, down from $278 high",
+      "priceMovePct": -11,
+      "context": "Market anxiously positioning ahead of capex guidance. FCF tension was the dominant narrative. Set up the 15% post-earnings rally.",
+      "source": {"url": "https://www.marketbeat.com/articles/whys-amazon-suddenly-lagging-the-s-and-p-500-and-is-it-a-warning/", "title": "AMZN Stock Pulls Back as CapEx Weighs on Free Cash Flow", "date": "2026-07-14"}
+    }
+  ],
+  "conditionalFraming": "The market's revealed rule in 2026: capex is punished when growth is ambiguous or unquantified (Feb: -18%), rewarded when AWS growth validates the spend (Jul: +15%). The key variable for next earnings (Oct) is whether AWS sustains >35% AND whether management provides granular ROI data. FTC trial in the same month compounds event risk. Historical pattern: pre-earnings anxiety creates the setup for post-earnings relief — but only if the numbers validate."
+}

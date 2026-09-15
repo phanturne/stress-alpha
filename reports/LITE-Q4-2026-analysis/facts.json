@@ -1,0 +1,65 @@
+{
+  "ticker": "LITE",
+  "company": "Lumentum Holdings Inc.",
+  "quarter": "Q4 2026",
+  "reportDate": "2026-08-11",
+  "revenueBillions": 1.0063,
+  "revenueGrowthPct": 109.3,
+  "revenueEstimateBillions": 0.9877,
+  "operatingIncomeBillions": 0.3683,
+  "operatingMarginPct": 36.6,
+  "operatingIncomeGrowthPct": 215.0,
+  "epsReported": -84.65,
+  "epsConsensus": 2.97,
+  "epsOperating": 3.23,
+  "segments": [
+    {
+      "name": "Components",
+      "revenueBillions": 0.6494,
+      "growthPct": 102.7,
+      "operatingIncomeBillions": 0.2533,
+      "operatingMarginPct": 39.0
+    },
+    {
+      "name": "Systems",
+      "revenueBillions": 0.3569,
+      "growthPct": 122.6,
+      "operatingIncomeBillions": 0.1150,
+      "operatingMarginPct": 32.2
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Convertible debt equitization and extinguishment non-cash charge",
+      "amountBillions": 7.76,
+      "isOperating": false,
+      "note": "Non-cash GAAP accounting charge of $7.76B resulting from rapid stock price appreciation upon convertible notes conversion/extinguishment. Core operational Non-GAAP EPS was $3.23, beating consensus of $2.97."
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 0.4839,
+  "guidanceOperatingIncomeHighBillions": 0.5164,
+  "guidanceRevenueLowBillions": 1.225,
+  "guidanceRevenueHighBillions": 1.275,
+  "currentPrice": 835.03,
+  "marketCapBillions": 74.90,
+  "trailingEps": -92.98,
+  "forwardEpsConsensus": 21.67,
+  "sources": [
+    {
+      "url": "https://investor.lumentum.com/news/news-details/2026/Lumentum-Reports-Fiscal-Fourth-Quarter-and-Fiscal-Year-2026-Financial-Results/default.aspx",
+      "title": "Lumentum Reports Fiscal Fourth Quarter and Fiscal Year 2026 Financial Results",
+      "date": "2026-08-11"
+    },
+    {
+      "url": "https://seekingalpha.com/article/lumentum-holdings-q4-2026-earnings-call-transcript",
+      "title": "Lumentum Holdings Inc. (LITE) Q4 2026 Earnings Call Transcript",
+      "date": "2026-08-11"
+    },
+    {
+      "url": "https://finance.yahoo.com/quote/LITE/",
+      "title": "Lumentum Holdings Inc. (LITE) Stock Price & Financials",
+      "date": "2026-09-14"
+    }
+  ],
+  "analysisDate": "2026-09-14"
+}

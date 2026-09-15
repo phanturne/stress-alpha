@@ -1,0 +1,64 @@
+{
+  "ticker": "AMZN",
+  "company": "Amazon.com, Inc.",
+  "quarter": "Q2 2026",
+  "reportDate": "2026-07-30",
+  "revenueBillions": 200.6,
+  "revenueGrowthPct": 20,
+  "revenueEstimateBillions": 196.16,
+  "operatingIncomeBillions": 27.5,
+  "operatingMarginPct": 13.7,
+  "operatingIncomeGrowthPct": 43,
+  "epsReported": 5.75,
+  "epsConsensus": 1.81,
+  "epsOperating": 1.87,
+  "segments": [
+    {
+      "name": "AWS",
+      "revenueBillions": 42.2,
+      "growthPct": 36.7,
+      "operatingIncomeBillions": 16.6,
+      "operatingMarginPct": 36.8
+    },
+    {
+      "name": "North America",
+      "revenueBillions": 116.2,
+      "growthPct": 16,
+      "operatingIncomeBillions": 9.2,
+      "operatingMarginPct": 7.9
+    },
+    {
+      "name": "International",
+      "revenueBillions": 42.2,
+      "growthPct": 15,
+      "operatingIncomeBillions": 1.7,
+      "operatingMarginPct": 4.0
+    },
+    {
+      "name": "Advertising",
+      "revenueBillions": 19.8,
+      "growthPct": 26
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Anthropic investment mark-to-market gain",
+      "amountBillions": 53.4,
+      "isOperating": false,
+      "note": "$13B cost basis revalued to $190.4B; unrealized, non-cash. Inflates headline EPS from ~$1.87 to $5.75"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 22.5,
+  "guidanceOperatingIncomeHighBillions": 26.5,
+  "currentPrice": 271.58,
+  "marketCapBillions": 2930,
+  "trailingEps": 12.43,
+  "forwardEpsConsensus": 10.46,
+  "sources": [
+    {"url": "https://www.aboutamazon.com/news/company-news/amazon-earnings-q2-2026-report", "title": "Amazon Q2 2026 earnings report", "date": "2026-07-30"},
+    {"url": "https://www.cnbc.com/2026/07/30/aws-earnings-q2-2026.html", "title": "AWS earnings Q2 2026", "date": "2026-07-30"},
+    {"url": "https://www.marketbeat.com/stocks/NASDAQ/AMZN/earnings/", "title": "AMZN Earnings Date and Reports", "date": "2026-08-06"},
+    {"url": "https://www.marketbeat.com/stocks/NASDAQ/AMZN/forecast/", "title": "AMZN Stock Forecast", "date": "2026-08-06"}
+  ],
+  "analysisDate": "2026-08-06"
+}

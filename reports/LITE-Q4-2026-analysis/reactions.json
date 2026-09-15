@@ -1,0 +1,50 @@
+{
+  "ticker": "LITE",
+  "events": [
+    {
+      "date": "2026-08-11",
+      "event": "Q4 FY2026 Earnings Release & Q1 FY2027 Blowout Guidance",
+      "priceMovePct": 13.63,
+      "context": "Reported revenue of $1.01B (+109% YoY) and Non-GAAP EPS of $3.23 (vs $2.97 consensus). Guided Q1 FY27 revenue to $1.25B with 40% operating margins, far exceeding Wall Street expectations. Stock surged +13.63% next trading day on double average trading volume (11.77M shares).",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/LITE/history/",
+        "title": "LITE Historical Price Action",
+        "date": "2026-08-12"
+      }
+    },
+    {
+      "date": "2026-05-05",
+      "event": "Q3 FY2026 Earnings Release & Capacity Commentary",
+      "priceMovePct": -5.06,
+      "context": "Non-GAAP EPS beat ($2.37 vs $2.27), but the stock had run up near $1,000 prior to the print. Profit-taking ensued after management flagged severe laser diode capacity tightness that temporarily capped sequential upside.",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/LITE/history/",
+        "title": "LITE Historical Price Action",
+        "date": "2026-05-06"
+      }
+    },
+    {
+      "date": "2026-02-03",
+      "event": "Q2 FY2026 Earnings Release & 1.6T Sampling News",
+      "priceMovePct": 7.00,
+      "context": "Non-GAAP EPS of $1.67 strongly beat consensus ($1.41) by 18.6%. Management announced early sampling of 1.6T transceiver modules to multiple Tier-1 hyperscale customers, sparking a +7.00% rally.",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/LITE/history/",
+        "title": "LITE Historical Price Action",
+        "date": "2026-02-04"
+      }
+    },
+    {
+      "date": "2025-11-04",
+      "event": "Q1 FY2026 Earnings Inflection",
+      "priceMovePct": 23.57,
+      "context": "Inflection point quarter where 800G transceiver demand catalyzed a +23.57% single-day explosion (closing at $232.75 from $188.36), confirming the acceleration of cloud optics demand.",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/LITE/history/",
+        "title": "LITE Historical Price Action",
+        "date": "2025-11-05"
+      }
+    }
+  ],
+  "conditionalFraming": "Lumentum stock displays asymmetric post-earnings volatility tied directly to forward operating margin guidance and transceiver cycle transitions: when forward quarterly guidance confirms accelerating sequential transceiver volume (Q1 FY26, Q4 FY26), the stock rallies violently (+13% to +24%). Conversely, when supply bottlenecks or capacity constraints limit sequential growth into a high-multiple print (Q3 FY26), the stock undergoes sharp 5-10% profit-taking drawdowns."
+}

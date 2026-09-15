@@ -1,0 +1,58 @@
+{
+  "ticker": "LITE",
+  "basisYear": "FY2027",
+  "currentPrice": 835.03,
+  "consensusTarget": 1149.38,
+  "scenarios": [
+    {
+      "name": "Bull",
+      "probability": 0.30,
+      "forwardEps": 25.00,
+      "multiple": 48,
+      "assumptions": [
+        "1.6T optical transceiver transition accelerates across Tier-1 cloud hyperscalers throughout CY2027",
+        "EML laser capacity debottlenecking drives gross margin expansion above 53.0%",
+        "Optical Circuit Switching (OCS) reaches over $150M quarterly revenue milestone",
+        "Multiple expands toward peak semiconductor infrastructure comps (48x) on sustained >50% profit growth"
+      ],
+      "keyDrivers": [
+        "transceiver-1-6t-transition",
+        "ocs-optical-circuit-switching-ramp",
+        "fed-easing-cycle-tech-valuation"
+      ]
+    },
+    {
+      "name": "Base",
+      "probability": 0.50,
+      "forwardEps": 21.67,
+      "multiple": 40,
+      "assumptions": [
+        "FY2027 net revenue reaches $5.84B with non-GAAP operating margin holding steady at 40%",
+        "800G shipments remain solid while 1.6T transceiver volume ramp progresses per management timetable",
+        "Balanced supply-demand environment with stable component pricing and disciplined OpEx",
+        "Multiple stabilizes near 40x FY2027 consensus EPS"
+      ],
+      "keyDrivers": [
+        "transceiver-1-6t-transition",
+        "hyperscaler-capex-sustainability"
+      ]
+    },
+    {
+      "name": "Bear",
+      "probability": 0.20,
+      "forwardEps": 16.50,
+      "multiple": 26,
+      "assumptions": [
+        "Hyperscalers initiate a multi-quarter AI CapEx digestion cycle, moderating optical transceiver order rates",
+        "Laser fab expansion delays and packaging yield constraints push high-volume 1.6T deliveries into late FY2028",
+        "Competitive pricing pressure in standard 800G transceivers compresses operating margins to ~34%",
+        "Multiple de-rates to 26x as forward revenue growth decelerates toward cyclical hardware peers"
+      ],
+      "keyDrivers": [
+        "hyperscaler-capex-digestion-cycle",
+        "manufacturing-yield-constraints",
+        "cpo-disintermediation-risk"
+      ]
+    }
+  ]
+}

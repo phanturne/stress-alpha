@@ -1,0 +1,41 @@
+{
+  "baseRevenueBillions": 820.0,
+  "baseGrossMarginPct": 48.5,
+  "fixedOpexBillions": 265.0,
+  "taxRatePct": 16.5,
+  "dilutedSharesBillions": 10.55,
+  "multipleRegimes": {
+    "bull": 32,
+    "base": 28,
+    "panic": 18
+  },
+  "upstreamDrivers": [
+    {
+      "id": "enterprise-cloud-capex",
+      "name": "Enterprise AI & Cloud Infrastructure CapEx",
+      "exposureShare": 0.28,
+      "elasticity": 0.85,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "consumer-discretionary-demand",
+      "name": "North America Consumer Discretionary Spend",
+      "exposureShare": 0.52,
+      "elasticity": 0.65,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    },
+    {
+      "id": "digital-ad-pricing",
+      "name": "Digital Advertising Budgets & CPMs",
+      "exposureShare": 0.20,
+      "elasticity": 0.90,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    }
+  ]
+}

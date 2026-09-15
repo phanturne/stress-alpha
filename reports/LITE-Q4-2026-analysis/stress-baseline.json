@@ -1,0 +1,41 @@
+{
+  "baseRevenueBillions": 5.84,
+  "baseGrossMarginPct": 51.5,
+  "fixedOpexBillions": 0.672,
+  "taxRatePct": 16.8,
+  "dilutedSharesBillions": 0.0897,
+  "multipleRegimes": {
+    "bull": 48,
+    "base": 40,
+    "panic": 24
+  },
+  "upstreamDrivers": [
+    {
+      "id": "hyperscaler-ai-capex",
+      "name": "Tier-1 Cloud Hyperscaler AI Infrastructure CapEx",
+      "exposureShare": 0.55,
+      "elasticity": 1.20,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "transceiver-1-6t-adoption",
+      "name": "800G to 1.6T Transceiver Transition Velocity",
+      "exposureShare": 0.28,
+      "elasticity": 0.90,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    },
+    {
+      "id": "industrial-commercial-lasers",
+      "name": "Industrial Ultrafast & Commercial Laser Demand",
+      "exposureShare": 0.17,
+      "elasticity": 0.60,
+      "defaultShockPct": 0,
+      "minShockPct": -35,
+      "maxShockPct": 35
+    }
+  ]
+}

@@ -1,0 +1,440 @@
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  FolderOpen,
+  Sparkles,
+  TrendingUp,
+  Layers,
+  Mic,
+  FileSearch,
+  History,
+  Grid,
+  FileText,
+  Check,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import { Header } from "@/components/Header";
+import { Cockpit } from "@/components/Cockpit";
+import { MemoView } from "@/components/MemoView";
+import { FileUploader } from "@/components/FileUploader";
+import { CatalystsTab } from "@/components/tabs/CatalystsTab";
+import { ScenariosTab } from "@/components/tabs/ScenariosTab";
+import { SegmentsTab } from "@/components/tabs/SegmentsTab";
+import { ToneTab } from "@/components/tabs/ToneTab";
+import { FilingTab } from "@/components/tabs/FilingTab";
+import { ReactionsTab } from "@/components/tabs/ReactionsTab";
+import { SensitivityTab } from "@/components/tabs/SensitivityTab";
+import type { ReportData, Scenario } from "@/lib/schemas";
+import {
+  computeStressedValuation,
+  computeValuation,
+  type StressTestParams,
+} from "@/lib/valuation";
+
+export default function HomePage() {
+  const [currentSlug, setCurrentSlug] = useState<string | null>(null);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
+  const [activeTab, setActiveTab] = useState<string>("catalysts");
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const [stressParams, setStressParams] = useState<StressTestParams>({
+    driverShocks: {},
+    grossMarginBpsDelta: 0,
+    fixedOpexShiftPct: 0,
+  });
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  // Load report from API
+  const loadReport = useCallback(async (slug: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch report ${slug}`);
+      }
+      const data: ReportData = await res.json();
+      setReportData(data);
+      setCurrentSlug(slug);
+
+      // Initialize default driver shocks from baseline
+      const initialShocks: Record<string, number> = {};
+      if (data.baseline?.upstreamDrivers) {
+        for (const d of data.baseline.upstreamDrivers) {
+          initialShocks[d.id] = d.defaultShockPct ?? 0;
+        }
+      }
+
+      setStressParams({
+        driverShocks: initialShocks,
+        grossMarginBpsDelta: 0,
+        fixedOpexShiftPct: 0,
+      });
+
+      // Update URL query param without full reload
+      if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        url.searchParams.set("report", slug);
+        window.history.replaceState({}, "", url.toString());
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(`Failed to load report: ${(err as Error).message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Initial load: check query param or pick first available report
+  useEffect(() => {
+    const init = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const queryReport = params.get("report");
+
+      if (queryReport) {
+        await loadReport(queryReport);
+      } else {
+        try {
+          const res = await fetch("/api/reports");
+          if (res.ok) {
+            const data = await res.json();
+            if (data.reports && data.reports.length > 0) {
+              await loadReport(data.reports[0].slug);
+            } else {
+              setIsLoading(false);
+            }
+          }
+        } catch {
+          setIsLoading(false);
+        }
+      }
+    };
+    init();
+  }, [loadReport]);
+
+  // Handle URL hash state synchronization
+  const syncStateToHash = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const parts: string[] = [];
+    parts.push(`tab=${activeTab}`);
+    if (viewMode !== "cockpit") parts.push(`mode=${viewMode}`);
+
+    if (stressParams.driverShocks) {
+      for (const [k, v] of Object.entries(stressParams.driverShocks)) {
+        if (v !== 0) parts.push(`d_${encodeURIComponent(k)}=${v}`);
+      }
+    }
+    if (stressParams.grossMarginBpsDelta !== 0) {
+      parts.push(`gm=${stressParams.grossMarginBpsDelta}`);
+    }
+    if (stressParams.fixedOpexShiftPct !== 0) {
+      parts.push(`opex=${stressParams.fixedOpexShiftPct}`);
+    }
+
+    const hash = "#" + parts.join("&");
+    const newUrl = window.location.pathname + window.location.search + hash;
+    window.history.replaceState(null, "", newUrl);
+  }, [activeTab, viewMode, stressParams]);
+
+  useEffect(() => {
+    syncStateToHash();
+  }, [syncStateToHash]);
+
+  // Share scenario link
+  const handleShare = () => {
+    syncStateToHash();
+    if (typeof window !== "undefined") {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => showToast("Scenario link copied to clipboard!"))
+        .catch(() => prompt("Copy link:", window.location.href));
+    }
+  };
+
+  // Slider handlers
+  const handleDriverShockChange = (driverId: string, shockPct: number) => {
+    setStressParams((prev) => ({
+      ...prev,
+      driverShocks: {
+        ...(prev.driverShocks ?? {}),
+        [driverId]: shockPct,
+      },
+    }));
+  };
+
+  const handleGrossMarginDeltaChange = (bps: number) => {
+    setStressParams((prev) => ({
+      ...prev,
+      grossMarginBpsDelta: bps,
+    }));
+  };
+
+  const handleFixedOpexShiftChange = (shiftPct: number) => {
+    setStressParams((prev) => ({
+      ...prev,
+      fixedOpexShiftPct: shiftPct,
+    }));
+  };
+
+  const handleResetDefaults = () => {
+    if (!reportData?.baseline) return;
+    const defaultShocks: Record<string, number> = {};
+    for (const d of reportData.baseline.upstreamDrivers) {
+      defaultShocks[d.id] = d.defaultShockPct ?? 0;
+    }
+    setStressParams({
+      driverShocks: defaultShocks,
+      grossMarginBpsDelta: 0,
+      fixedOpexShiftPct: 0,
+    });
+    showToast("Reset all sliders to baseline defaults.");
+  };
+
+  // Catalyst probability changes
+  const handleCatalystProbabilityChange = (idx: number, prob: number) => {
+    if (!reportData?.catalysts) return;
+    const updated = [...reportData.catalysts.catalysts];
+    updated[idx] = { ...updated[idx], probability: prob };
+    setReportData({
+      ...reportData,
+      catalysts: {
+        ...reportData.catalysts,
+        catalysts: updated,
+      },
+    });
+  };
+
+  // Scenario inline field changes
+  const handleScenarioChange = (idx: number, patch: Partial<Scenario>) => {
+    if (!reportData) return;
+    const updatedScenarios = [...reportData.scenarios.scenarios];
+    updatedScenarios[idx] = { ...updatedScenarios[idx], ...patch };
+
+    const newScenarios = {
+      ...reportData.scenarios,
+      scenarios: updatedScenarios,
+    };
+
+    // Deterministically recompute valuation
+    const updatedValuation = computeValuation({
+      facts: reportData.facts,
+      scenarios: newScenarios,
+      baseline: reportData.baseline,
+      stressParams,
+    });
+
+    setReportData({
+      ...reportData,
+      scenarios: newScenarios,
+      valuation: updatedValuation,
+    });
+  };
+
+  // Compute live stressed valuation
+  const stressResult = useMemo(() => {
+    if (!reportData?.baseline || !reportData.facts) return null;
+    return computeStressedValuation(
+      reportData.baseline,
+      reportData.facts.currentPrice,
+      stressParams
+    );
+  }, [reportData, stressParams]);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-slate-100">
+      {/* Top Navigation */}
+      <Header
+        facts={reportData?.facts}
+        valuation={reportData?.valuation}
+        currentSlug={currentSlug}
+        onSelectReport={loadReport}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onOpenUploadModal={() => setIsUploadModalOpen(true)}
+        onShare={handleShare}
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-6">
+        {isLoading ? (
+          <div className="h-[70vh] flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-8 h-8 text-accent animate-spin" />
+            <span className="text-xs font-mono text-slate-400">
+              Loading StressAlpha Report...
+            </span>
+          </div>
+        ) : !reportData || !stressResult ? (
+          <div className="max-w-xl mx-auto my-16 p-8 rounded-2xl bg-surface-1 border border-border text-center flex flex-col items-center gap-4 shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
+              <FolderOpen className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">No Report Selected</h2>
+              <p className="text-xs text-slate-400 mt-1 max-w-md">
+                Select an earnings analysis report from the dropdown above or upload an analysis folder.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsUploadModalOpen(true)}
+              className="px-4 py-2 rounded-lg bg-accent text-slate-950 font-bold text-xs hover:bg-accent-hover transition-colors"
+            >
+              Upload Analysis Folder
+            </button>
+          </div>
+        ) : viewMode === "memo" ? (
+          <MemoView
+            reportData={reportData}
+            stressResult={stressResult}
+            onBackToCockpit={() => setViewMode("cockpit")}
+          />
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-6 items-start">
+            {/* Left Sticky Cockpit (~440px) */}
+            <Cockpit
+              baseline={reportData.baseline!}
+              facts={reportData.facts}
+              stressParams={stressParams}
+              stressResult={stressResult}
+              onDriverShockChange={handleDriverShockChange}
+              onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
+              onFixedOpexShiftChange={handleFixedOpexShiftChange}
+              onResetDefaults={handleResetDefaults}
+            />
+
+            {/* Right Tabbed Intelligence Workspace */}
+            <div className="flex-1 w-full flex flex-col gap-4">
+              {/* Tab Navigation Ribbon */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/80">
+                {[
+                  { id: "catalysts", label: "Catalysts", icon: Sparkles, count: reportData.catalysts?.catalysts?.length },
+                  { id: "scenarios", label: "Scenario Tree", icon: TrendingUp, count: reportData.scenarios.scenarios.length },
+                  { id: "segments", label: "Segments & Guidance", icon: Layers, count: reportData.facts.segments.length },
+                  { id: "tone", label: "Management Tone", icon: Mic },
+                  { id: "filing", label: "10-Q Risks", icon: FileSearch, count: reportData.filing?.newRiskFactors?.length },
+                  { id: "reactions", label: "Historical Reactions", icon: History, count: reportData.reactions?.events?.length },
+                  { id: "sensitivity", label: "Sensitivity Heatmap", icon: Grid, count: reportData.valuation?.sensitivity?.length },
+                  { id: "report", label: "Full Report", icon: FileText },
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                        isActive
+                          ? "bg-surface-2 text-accent border border-accent/40 shadow-sm"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-surface-1"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{tab.label}</span>
+                      {tab.count !== undefined && (
+                        <span
+                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                            isActive
+                              ? "bg-accent/20 text-accent font-bold"
+                              : "bg-surface-3 text-slate-400"
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tab Contents */}
+              <div className="w-full">
+                {activeTab === "catalysts" && (
+                  <CatalystsTab
+                    catalystsData={reportData.catalysts}
+                    onProbabilityChange={handleCatalystProbabilityChange}
+                  />
+                )}
+
+                {activeTab === "scenarios" && (
+                  <ScenariosTab
+                    scenariosData={reportData.scenarios}
+                    currentPrice={reportData.facts.currentPrice}
+                    onScenarioChange={handleScenarioChange}
+                  />
+                )}
+
+                {activeTab === "segments" && (
+                  <SegmentsTab facts={reportData.facts} />
+                )}
+
+                {activeTab === "tone" && (
+                  <ToneTab sentimentData={reportData.sentiment} />
+                )}
+
+                {activeTab === "filing" && (
+                  <FilingTab filingData={reportData.filing} />
+                )}
+
+                {activeTab === "reactions" && (
+                  <ReactionsTab reactionsData={reportData.reactions} />
+                )}
+
+                {activeTab === "sensitivity" && (
+                  <SensitivityTab
+                    sensitivityData={reportData.valuation?.sensitivity || []}
+                  />
+                )}
+
+                {activeTab === "report" && (
+                  <div className="p-6 rounded-xl bg-surface-1 border border-border flex flex-col gap-3 shadow-lg">
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Generated Equity Markdown Report (report.md)
+                      </span>
+                      <span className="text-xs font-mono text-slate-500">
+                        {reportData.folderName}
+                      </span>
+                    </div>
+                    <pre className="p-4 rounded-lg bg-surface-0 border border-border text-xs text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                      {reportData.reportMarkdown || "No report.md file available in this folder."}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Upload Modal */}
+      {isUploadModalOpen && (
+        <FileUploader
+          onDataLoaded={(data) => {
+            setReportData(data);
+            setCurrentSlug(data.folderSlug);
+            setIsUploadModalOpen(false);
+            showToast("Custom report loaded successfully!");
+          }}
+          onClose={() => setIsUploadModalOpen(false)}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-2 border border-accent/40 text-slate-100 text-xs font-semibold shadow-2xl animate-fade-in">
+          <Check className="w-4 h-4 text-accent" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+    </div>
+  );
+}

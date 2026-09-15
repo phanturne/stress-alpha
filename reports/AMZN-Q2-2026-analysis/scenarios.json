@@ -1,0 +1,48 @@
+{
+  "ticker": "AMZN",
+  "basisYear": "FY2027",
+  "currentPrice": 271.58,
+  "consensusTarget": 322,
+  "scenarios": [
+    {
+      "name": "Bull",
+      "probability": 0.30,
+      "forwardEps": 11.50,
+      "multiple": 32,
+      "assumptions": [
+        "AWS sustains >33% growth as AI demand exceeds capacity through 2028",
+        "Capex peaks in 2027, FCF inflects positive by mid-2027",
+        "Advertising margins expand, contributing $20B+ in operating income",
+        "Fed begins cutting rates, expanding tech multiples"
+      ],
+      "keyDrivers": ["aws-growth-sustains-30plus", "advertising-margin-engine", "fed-rate-cuts-multiple-expansion"]
+    },
+    {
+      "name": "Base",
+      "probability": 0.45,
+      "forwardEps": 10.50,
+      "multiple": 28,
+      "assumptions": [
+        "AWS growth normalizes to 28-32% as base grows larger",
+        "Capex continues at $220B+ but operating margins hold at 13-14%",
+        "FCF remains negative or minimal through 2027 but no crisis",
+        "Fed on hold; multiples stable at current levels"
+      ],
+      "keyDrivers": ["aws-growth-sustains-30plus", "capex-fcf-negative-sustained"]
+    },
+    {
+      "name": "Bear",
+      "probability": 0.25,
+      "forwardEps": 8.50,
+      "multiple": 22,
+      "assumptions": [
+        "AI digestion cycle — enterprise customers slow cloud migration",
+        "Open-source models commoditize inference, pressuring AWS pricing",
+        "Depreciation wave from $220B+ capex compresses margins to 10-11%",
+        "FTC trial overhang + potential structural remedy",
+        "Another hyperscaler signals demand saturation by cutting capex"
+      ],
+      "keyDrivers": ["open-source-ai-commoditization", "ai-bubble-correction", "ftc-antitrust-trial", "capex-fcf-negative-sustained"]
+    }
+  ]
+}

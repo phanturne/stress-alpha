@@ -1,0 +1,88 @@
+{
+  "ticker": "AMZN",
+  "quarter": "Q2 2026",
+  "callDate": "2026-07-30",
+  "managementTone": {
+    "specificity": 4,
+    "forwardConfidence": 5,
+    "capexJustification": 5,
+    "competitivePositioning": 3,
+    "riskAcknowledgment": 3,
+    "overallConfidence": 8,
+    "evidenceNotes": "Jassy provided granular capex ROI data ('clear line of sight to strong financial returns'), quantified AI ARR for first time ($25B), gave 30-year datacenter lifespan economics. Deflected FTC questions. Did not address open-source competitive threat directly."
+  },
+  "analystConcerns": {
+    "topTopics": [
+      {"topic": "Capex sustainability and ROI timeline", "frequency": 5, "managementResponse": "strong"},
+      {"topic": "FCF recovery timeline", "frequency": 3, "managementResponse": "hedged"},
+      {"topic": "Memory cost inflation impact", "frequency": 2, "managementResponse": "acknowledged"},
+      {"topic": "AWS margin sustainability at scale", "frequency": 2, "managementResponse": "strong"},
+      {"topic": "Competitive positioning vs Azure/GCP", "frequency": 1, "managementResponse": "deflected"}
+    ],
+    "dodgedQuestions": [
+      "Specific FTC trial preparation and remedy scenarios",
+      "Whether open-source AI models are impacting cloud API demand",
+      "Exact timeline for FCF to return positive"
+    ],
+    "surprisingQuestions": [
+      "Anthropic valuation dependency — what happens if AI startup valuations deflate?",
+      "Whether $220B includes potential acquisitions or is purely organic infrastructure"
+    ],
+    "newConcernsVsPrior": [
+      "Memory cost inflation (not discussed last quarter — drove the $20B capex raise)",
+      "AI revenue disclosure ($25B ARR — first time quantified, previously only 'multi-billion')"
+    ]
+  },
+  "keyQuotes": [
+    {
+      "speaker": "Andy Jassy",
+      "quote": "At this level of spend and higher, we have clear line-of-sight to strong financial returns",
+      "context": "Responding to capex ROI concern — the 12 words that moved the stock",
+      "sentiment": "bullish",
+      "reliability": "high — backed by $496B backlog data and specific datacenter economics"
+    },
+    {
+      "speaker": "Andy Jassy",
+      "quote": "AWS could eventually become a trillion dollar annual revenue business",
+      "context": "Long-term vision framing, citing 'striking' AI demand",
+      "sentiment": "bullish",
+      "reliability": "medium — aspirational, no timeline given"
+    },
+    {
+      "speaker": "Andy Jassy",
+      "quote": "Data centers have useful lives of 30 years or more. Inside each facility, we can cycle through five or six generations of servers.",
+      "context": "Justifying the $220B spend as long-duration infrastructure, not short-cycle hardware",
+      "sentiment": "bullish",
+      "reliability": "high — verifiable engineering claim"
+    },
+    {
+      "speaker": "Brian Olsavsky",
+      "quote": "The increase to $220B was primarily driven by higher memory costs",
+      "context": "Explaining mid-year capex raise — not demand increase but input cost inflation",
+      "sentiment": "neutral",
+      "reliability": "high — CFO financial disclosure"
+    }
+  ],
+  "sentimentDelta": {
+    "vsLastQuarter": "significantly more confident",
+    "newTopics": [
+      "AI revenue ARR disclosed for first time ($25B)",
+      "30-year datacenter lifespan economics framing (new)",
+      "Memory cost inflation as capex driver (new)"
+    ],
+    "droppedTopics": [
+      "International profitability concerns (no longer questioned — margins stable)"
+    ],
+    "note": "This was the strongest management confidence performance in at least 4 quarters. The shift from 'we're spending for the future' to 'we have clear line of sight to returns' was the key narrative pivot."
+  },
+  "scores": {
+    "managementConfidence": 8,
+    "marketConcernAlignment": 7,
+    "summary": "Management convincingly addressed capex ROI (the #1 concern) with specific economics, but left FCF timeline vague and dodged FTC/competitive questions entirely. The market scored it a pass — +15% after hours."
+  },
+  "sources": [
+    {"url": "https://www.cnbc.com/2026/07/31/andy-jassy-soothed-concerns-over-amazons-massive-ai-spending-heres-how-he-did-it-.html", "title": "Andy Jassy soothed concerns over Amazon's massive AI spending", "date": "2026-07-31"},
+    {"url": "https://www.fool.com/investing/2026/08/05/13-words-from-amazon-ceo-andy-jassy-that-should/", "title": "12 Words From Amazon CEO Andy Jassy That Should Have AI Investors Cheering", "date": "2026-08-05"},
+    {"url": "https://ca.investing.com/news/company-news/amazoncom-inc-amzn-q2-2026-earnings-call-highlights-record-revenue-and-aws-acceleration--4766786", "title": "Amazon.com Inc (AMZN) Q2 2026 Earnings Call Highlights", "date": "2026-07-30"}
+  ]
+}
