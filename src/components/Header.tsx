@@ -6,9 +6,7 @@ import {
   Share2,
   SlidersHorizontal,
   Upload,
-  Zap,
   Globe,
-  Radio,
   HelpCircle,
 } from "lucide-react";
 import { ReportSelector } from "./ReportSelector";

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TrendingUp, TrendingDown, RotateCcw, Clock, Target } from "lucide-react";
-import type { Catalyst, Catalysts } from "@/lib/schemas";
+import type { Catalysts } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface CatalystsTabProps {

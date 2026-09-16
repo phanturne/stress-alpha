@@ -3,7 +3,7 @@
  * CLI runner for the deterministic StressAlpha valuation pipeline.
  *
  * Usage:
- *   npx ts-node scripts/analyze.ts reports/AMZN-Q2-2026-analysis
+ *   npx tsx scripts/analyze.ts reports/AMZN-Q2-2026-analysis
  *   npm run analyze -- reports/LITE-Q4-2026-analysis
  */
 
@@ -67,35 +67,30 @@ function main() {
   const moatPath = path.join(absRunDir, "moat-competitors.json");
   if (fs.existsSync(moatPath)) {
     moat = loadAndValidate(absRunDir, "moat-competitors.json", MoatCompetitorsSchema);
-    console.log("  ✅ moat-competitors.json validated");
   }
 
   let moatZh: MoatCompetitors | undefined;
   const moatZhPath = path.join(absRunDir, "moat-competitors_zh.json");
   if (fs.existsSync(moatZhPath)) {
     moatZh = loadAndValidate(absRunDir, "moat-competitors_zh.json", MoatCompetitorsSchema);
-    console.log("  ✅ moat-competitors_zh.json validated");
   }
 
   let estimates: AnalystEstimates | undefined;
   const estimatesPath = path.join(absRunDir, "analyst-estimates.json");
   if (fs.existsSync(estimatesPath)) {
     estimates = loadAndValidate(absRunDir, "analyst-estimates.json", AnalystEstimatesSchema);
-    console.log("  ✅ analyst-estimates.json validated");
   }
 
   let estimatesZh: AnalystEstimates | undefined;
   const estimatesZhPath = path.join(absRunDir, "analyst-estimates_zh.json");
   if (fs.existsSync(estimatesZhPath)) {
     estimatesZh = loadAndValidate(absRunDir, "analyst-estimates_zh.json", AnalystEstimatesSchema);
-    console.log("  ✅ analyst-estimates_zh.json validated");
   }
 
   let baseline: FinancialModelBaseline | undefined = scenarios.baseline;
   const baselinePath = path.join(absRunDir, "stress-baseline.json");
   if (fs.existsSync(baselinePath)) {
     baseline = loadAndValidate(absRunDir, "stress-baseline.json", FinancialModelBaselineSchema);
-    console.log("  ✅ stress-baseline.json validated");
   } else if (!baseline) {
     baseline = deriveEffectiveBaseline(facts);
     console.log("  ℹ️  Derived baseline from facts");

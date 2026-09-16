@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Upload, FolderUp, FileJson, X, AlertCircle } from "lucide-react";
+import { Upload, FolderUp, X, AlertCircle } from "lucide-react";
 import type { ReportData } from "@/lib/schemas";
 import {
   FactsSchema,

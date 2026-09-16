@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mic, FileSearch, History, Gauge, MessageSquare, AlertOctagon, Quote } from "lucide-react";
+import { Mic, FileSearch, History } from "lucide-react";
 import type { EarningsSentiment, FilingExtracts, Reactions } from "@/lib/schemas";
-import { formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { ToneTab } from "./ToneTab";
 import { FilingTab } from "./FilingTab";

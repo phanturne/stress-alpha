@@ -13,8 +13,6 @@ import {
   DollarSign,
   Scale,
   Share2,
-  AlertCircle,
-  Building2,
 } from "lucide-react";
 import type { MoatCompetitors } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
