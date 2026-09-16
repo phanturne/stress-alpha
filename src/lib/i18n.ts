@@ -93,15 +93,25 @@ export interface Translations {
     bullRegime: string;
   };
   tabs: {
-    catalysts: string;
+    valuation: string;
     moat: string;
-    scenarios: string;
     segments: string;
-    tone: string;
-    filing: string;
-    reactions: string;
-    sensitivity: string;
+    catalysts: string;
+    audit: string;
     report: string;
+    scenarios?: string;
+    sensitivity?: string;
+    tone?: string;
+    filing?: string;
+    reactions?: string;
+  };
+  auditTab: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    subTone: string;
+    subFiling: string;
+    subReactions: string;
   };
   moatTab: {
     title: string;
@@ -152,6 +162,15 @@ export interface Translations {
     alphaConsensus: string;
     bullishPremium: string;
     discountedSafety: string;
+    viewCards: string;
+    viewTable: string;
+    targetPrice: string;
+    weight: string;
+    fwdEps: string;
+    exitPe: string;
+    assumptionsTitle: string;
+    sensitivityTitle: string;
+    sensitivitySubtitle: string;
     colScenario: string;
     colProbability: string;
     colFwdEps: string;
@@ -359,7 +378,7 @@ export const translations: Record<Locale, Translations> = {
     },
     shortcuts: {
       title: "Keyboard Shortcuts",
-      tabSwitch: "Switch Tabs (1–9)",
+      tabSwitch: "Switch Tabs (1–6)",
       resetModel: "Reset Model (R)",
       toggleMemo: "Toggle Cockpit / Memo (M)",
       toggleLang: "Toggle Language (L)",
@@ -373,15 +392,25 @@ export const translations: Record<Locale, Translations> = {
       bullRegime: "🐂 Bull Regime",
     },
     tabs: {
-      catalysts: "Catalysts",
+      valuation: "Valuation & Scenarios",
       moat: "Moat & Peers",
-      scenarios: "Scenario Tree",
-      segments: "Segments & Guidance",
+      segments: "Segments & Financials",
+      catalysts: "Catalysts & Risks",
+      audit: "Earnings Audit",
+      report: "Raw Filings & Notes",
+      scenarios: "Valuation & Scenarios",
+      sensitivity: "Sensitivity Heatmap",
       tone: "Management Tone",
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
-      sensitivity: "Sensitivity Heatmap",
-      report: "Raw Filings & Notes",
+    },
+    auditTab: {
+      title: "Earnings Print & Filing Audit",
+      subtitle: "Management call tone, 10-Q risk disclosures, and post-earnings historical volatility.",
+      empty: "No earnings audit artifacts available for this report.",
+      subTone: "Call Tone & Q&A",
+      subFiling: "10-Q Risk Deltas",
+      subReactions: "Historical Moves",
     },
     moatTab: {
       title: "Economic Moat & Competitor Benchmarking",
@@ -432,6 +461,15 @@ export const translations: Record<Locale, Translations> = {
       alphaConsensus: "Alpha vs Consensus",
       bullishPremium: "Bullish premium",
       discountedSafety: "Discounted safety",
+      viewCards: "Scenario Columns",
+      viewTable: "Dense Table",
+      targetPrice: "Target Price",
+      weight: "Probability Weight",
+      fwdEps: "FWD EPS",
+      exitPe: "Exit P/E",
+      assumptionsTitle: "Key Assumptions & Drivers",
+      sensitivityTitle: "Scenario Sensitivity Analysis",
+      sensitivitySubtitle: "Estimated Fair Value flex across key parameter variations",
       colScenario: "Scenario",
       colProbability: "Probability",
       colFwdEps: "FWD EPS",
@@ -637,7 +675,7 @@ export const translations: Record<Locale, Translations> = {
     },
     shortcuts: {
       title: "快捷键指南",
-      tabSwitch: "快速切换标签页 (1–9)",
+      tabSwitch: "快速切换标签页 (1–6)",
       resetModel: "重置压力模型 (R)",
       toggleMemo: "切换驾驶舱 / 备忘录 (M)",
       toggleLang: "切换中英文 (L)",
@@ -651,15 +689,25 @@ export const translations: Record<Locale, Translations> = {
       bullRegime: "🐂 牛市目标",
     },
     tabs: {
-      catalysts: "催化因子",
+      valuation: "估值与情景",
       moat: "护城河与竞品",
-      scenarios: "情景估值树",
-      segments: "分部与指引",
-      tone: "管理层情绪",
+      segments: "分部业务与财务",
+      catalysts: "催化剂与风险",
+      audit: "业绩与披露审计",
+      report: "原始底稿与披露",
+      scenarios: "估值与情景",
+      sensitivity: "敏感性热力图",
+      tone: "电话会情绪",
       filing: "10-Q 风险",
       reactions: "历史股价反应",
-      sensitivity: "敏感性热力图",
-      report: "原始底稿与披露",
+    },
+    auditTab: {
+      title: "业绩发布与财报披露审计",
+      subtitle: "管理层电话会语调、10-Q新增风险披露变更及历史业绩股价反应。",
+      empty: "当前研报暂无财报审计底稿。",
+      subTone: "电话会语调与问答",
+      subFiling: "10-Q 风险增量",
+      subReactions: "历史股价反应",
     },
     moatTab: {
       title: "经济护城河与核心竞品对标矩阵",
@@ -710,6 +758,15 @@ export const translations: Record<Locale, Translations> = {
       alphaConsensus: "超额预期收益 (Alpha)",
       bullishPremium: "看多溢价",
       discountedSafety: "折价安全边际",
+      viewCards: "情景对比列",
+      viewTable: "数据表格",
+      targetPrice: "目标公允价",
+      weight: "发生概率权重",
+      fwdEps: "远期 EPS",
+      exitPe: "目标退出倍数",
+      assumptionsTitle: "核心驱动与业务假设",
+      sensitivityTitle: "情景敏感性分析",
+      sensitivitySubtitle: "关键参数变动对各情景目标价的弹性测算",
       colScenario: "情景名称",
       colProbability: "发生概率",
       colFwdEps: "远期 EPS",

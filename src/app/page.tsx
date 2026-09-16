@@ -26,10 +26,7 @@ import { CatalystsTab } from "@/components/tabs/CatalystsTab";
 import { MoatTab } from "@/components/tabs/MoatTab";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
-import { ToneTab } from "@/components/tabs/ToneTab";
-import { FilingTab } from "@/components/tabs/FilingTab";
-import { ReactionsTab } from "@/components/tabs/ReactionsTab";
-import { SensitivityTab } from "@/components/tabs/SensitivityTab";
+import { AuditTab } from "@/components/tabs/AuditTab";
 import type { ReportData, Scenario } from "@/lib/schemas";
 import {
   computeStressedValuation,
@@ -43,7 +40,7 @@ export default function HomePage() {
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
-  const [activeTab, setActiveTab] = useState<string>("scenarios");
+  const [activeTab, setActiveTab] = useState<string>("valuation");
   const [locale, setLocale] = useState<Locale>("zh");
   const [reportDocLang, setReportDocLang] = useState<Locale>("zh");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
@@ -284,18 +281,15 @@ export default function HomePage() {
   const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
   const displayMoat = (isZh && reportData?.moatZh) ? reportData.moatZh : reportData?.moat;
 
-  // Logically ordered tabs: Valuation -> Moat -> Sensitivity -> Segments -> Catalysts -> Tone -> Filing -> Reactions -> Raw Notes
+  // 6 Focused Institutional Intelligence Workspaces
   const tabItems = useMemo(() => [
-    { id: "scenarios", shortcut: "1", label: t.tabs.scenarios, icon: TrendingUp, count: displayScenarios?.scenarios.length },
+    { id: "valuation", shortcut: "1", label: t.tabs.valuation, icon: TrendingUp, count: displayScenarios?.scenarios.length },
     { id: "moat", shortcut: "2", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
-    { id: "sensitivity", shortcut: "3", label: t.tabs.sensitivity, icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData?.valuation?.sensitivity)?.length },
-    { id: "segments", shortcut: "4", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
-    { id: "catalysts", shortcut: "5", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
-    { id: "tone", shortcut: "6", label: t.tabs.tone, icon: Mic },
-    { id: "filing", shortcut: "7", label: t.tabs.filing, icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
-    { id: "reactions", shortcut: "8", label: t.tabs.reactions, icon: History, count: displayReactions?.events?.length },
-    { id: "report", shortcut: "9", label: t.tabs.report, icon: FileText },
-  ], [t, displayScenarios, displayMoat, dynamicValuation, reportData, displayFacts, displayCatalysts, displayFiling, displayReactions]);
+    { id: "segments", shortcut: "3", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
+    { id: "catalysts", shortcut: "4", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+    { id: "audit", shortcut: "5", label: t.tabs.audit, icon: FileSearch, count: (displayFiling?.newRiskFactors?.length ?? 0) + (displayReactions?.events?.length ?? 0) },
+    { id: "report", shortcut: "6", label: t.tabs.report, icon: FileText },
+  ], [t, displayScenarios, displayMoat, displayFacts, displayCatalysts, displayFiling, displayReactions]);
 
   // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
   useEffect(() => {
@@ -476,10 +470,13 @@ export default function HomePage() {
 
               {/* Tab Contents */}
               <div className="w-full">
-                {activeTab === "catalysts" && (
-                  <CatalystsTab
-                    catalystsData={displayCatalysts}
-                    onProbabilityChange={handleCatalystProbabilityChange}
+                {(activeTab === "valuation" || activeTab === "scenarios" || activeTab === "sensitivity") && (
+                  <ScenariosTab
+                    scenariosData={displayScenarios!}
+                    currentPrice={displayFacts!.currentPrice}
+                    valuation={dynamicValuation ?? reportData.valuation}
+                    sensitivityData={dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity ?? []}
+                    onScenarioChange={handleScenarioChange}
                     locale={locale}
                   />
                 )}
@@ -491,16 +488,6 @@ export default function HomePage() {
                   />
                 )}
 
-                {activeTab === "scenarios" && (
-                  <ScenariosTab
-                    scenariosData={displayScenarios!}
-                    currentPrice={displayFacts!.currentPrice}
-                    valuation={dynamicValuation ?? reportData.valuation}
-                    onScenarioChange={handleScenarioChange}
-                    locale={locale}
-                  />
-                )}
-
                 {activeTab === "segments" && (
                   <SegmentsTab
                     facts={displayFacts!}
@@ -508,30 +495,19 @@ export default function HomePage() {
                   />
                 )}
 
-                {activeTab === "tone" && (
-                  <ToneTab
+                {activeTab === "catalysts" && (
+                  <CatalystsTab
+                    catalystsData={displayCatalysts}
+                    onProbabilityChange={handleCatalystProbabilityChange}
+                    locale={locale}
+                  />
+                )}
+
+                {(activeTab === "audit" || activeTab === "tone" || activeTab === "filing" || activeTab === "reactions") && (
+                  <AuditTab
                     sentimentData={displaySentiment}
-                    locale={locale}
-                  />
-                )}
-
-                {activeTab === "filing" && (
-                  <FilingTab
                     filingData={displayFiling}
-                    locale={locale}
-                  />
-                )}
-
-                {activeTab === "reactions" && (
-                  <ReactionsTab
                     reactionsData={displayReactions}
-                    locale={locale}
-                  />
-                )}
-
-                {activeTab === "sensitivity" && (
-                  <SensitivityTab
-                    sensitivityData={dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity ?? []}
                     locale={locale}
                   />
                 )}
@@ -672,7 +648,7 @@ export default function HomePage() {
                   </kbd>
                   <span className="text-slate-500 text-[10px]">–</span>
                   <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
-                    9
+                    6
                   </kbd>
                 </div>
               </div>
