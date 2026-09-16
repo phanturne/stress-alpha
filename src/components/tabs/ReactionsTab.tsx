@@ -11,11 +11,18 @@ interface ReactionsTabProps {
   locale?: Locale;
 }
 
-export const ReactionsTab: React.FC<ReactionsTabProps> = ({ reactionsData, locale = "zh" }) => {
+export const ReactionsTab: React.FC<ReactionsTabProps> = ({
+  reactionsData,
+  locale = "zh",
+}) => {
   const t = getTranslations(locale).reactionsTab;
-  if (!reactionsData || !reactionsData.events || reactionsData.events.length === 0) {
+  if (
+    !reactionsData ||
+    !reactionsData.events ||
+    reactionsData.events.length === 0
+  ) {
     return (
-      <div className="p-12 text-center text-sm text-slate-400 glass-panel rounded-xl">
+      <div className="glass-panel rounded-xl p-12 text-center text-sm text-slate-400">
         {t.empty}
       </div>
     );
@@ -29,27 +36,25 @@ export const ReactionsTab: React.FC<ReactionsTabProps> = ({ reactionsData, local
         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
           {t.title}
         </h3>
-        <p className="text-xs text-slate-400 mt-0.5">
-          {t.subtitle}
-        </p>
+        <p className="mt-0.5 text-xs text-slate-400">{t.subtitle}</p>
       </div>
 
       {/* Conditional Framing Box */}
       {conditionalFraming && (
-        <div className="p-4.5 rounded-xl glass-panel border border-accent/20 bg-accent/5 flex items-start gap-3.5 shadow-md">
-          <Quote className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-          <p className="text-xs text-slate-200 italic leading-relaxed">
+        <div className="glass-panel flex items-start gap-3.5 rounded-xl border border-accent/20 bg-accent/5 p-4.5 shadow-md">
+          <Quote className="mt-0.5 size-5 shrink-0 text-accent" />
+          <p className="text-xs italic leading-relaxed text-slate-200">
             &ldquo;{conditionalFraming}&rdquo;
           </p>
         </div>
       )}
 
       {/* Reactions Table */}
-      <div className="rounded-xl glass-panel border border-border/80 overflow-hidden shadow-lg">
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left text-xs border-collapse">
+      <div className="glass-panel overflow-hidden rounded-xl border border-border/80 shadow-lg">
+        <div className="custom-scrollbar overflow-x-auto">
+          <table className="w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="bg-surface-2/70 border-b border-border text-slate-400 font-mono uppercase text-[11px] tracking-wider">
+              <tr className="border-b border-border bg-surface-2/70 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                 <th className="p-3 font-semibold">{t.colDate}</th>
                 <th className="p-3 font-semibold">{t.colEvent}</th>
                 <th className="p-3 text-right font-semibold">{t.colMove}</th>
@@ -58,21 +63,26 @@ export const ReactionsTab: React.FC<ReactionsTabProps> = ({ reactionsData, local
             </thead>
             <tbody className="divide-y divide-border/60">
               {events.map((ev, idx) => (
-                <tr key={idx} className="hover:bg-surface-2/40 transition-colors">
-                  <td className="p-3 font-mono text-slate-400 text-xs whitespace-nowrap">
+                <tr
+                  key={idx}
+                  className="transition-colors hover:bg-surface-2/40"
+                >
+                  <td className="whitespace-nowrap p-3 font-mono text-xs text-slate-400">
                     {ev.date}
                   </td>
-                  <td className="p-3 font-bold text-white text-sm whitespace-nowrap">
+                  <td className="whitespace-nowrap p-3 text-sm font-bold text-white">
                     {ev.event}
                   </td>
                   <td
-                    className={`p-3 text-right font-mono font-bold text-sm tabular-nums whitespace-nowrap ${
-                      ev.priceMovePct >= 0 ? "text-fintech-green" : "text-fintech-red"
+                    className={`whitespace-nowrap p-3 text-right font-mono text-sm font-bold tabular-nums ${
+                      ev.priceMovePct >= 0
+                        ? "text-fintech-green"
+                        : "text-fintech-red"
                     }`}
                   >
                     {formatPercent(ev.priceMovePct)}
                   </td>
-                  <td className="p-3 text-slate-300 text-xs leading-relaxed min-w-[240px] max-w-md">
+                  <td className="min-w-[240px] max-w-md p-3 text-xs leading-relaxed text-slate-300">
                     {ev.context}
                   </td>
                 </tr>

@@ -23,7 +23,10 @@ import {
   type MoatCompetitors,
   type AnalystEstimates,
 } from "../src/lib/schemas.js";
-import { computeValuation, deriveEffectiveBaseline } from "../src/lib/valuation.js";
+import {
+  computeValuation,
+  deriveEffectiveBaseline,
+} from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
 
 function main() {
@@ -46,10 +49,16 @@ function main() {
     }
   }
 
-  console.log(`\n📂 [StressAlpha Engine] Loading artifacts from: ${absRunDir}\n`);
+  console.log(
+    `\n📂 [StressAlpha Engine] Loading artifacts from: ${absRunDir}\n`
+  );
 
   const facts = loadAndValidate(absRunDir, "facts.json", FactsSchema);
-  const scenarios = loadAndValidate(absRunDir, "scenarios.json", ScenariosSchema);
+  const scenarios = loadAndValidate(
+    absRunDir,
+    "scenarios.json",
+    ScenariosSchema
+  );
 
   let catalysts;
   const catalystsPath = path.join(absRunDir, "catalysts.json");
@@ -66,31 +75,51 @@ function main() {
   let moat: MoatCompetitors | undefined;
   const moatPath = path.join(absRunDir, "moat-competitors.json");
   if (fs.existsSync(moatPath)) {
-    moat = loadAndValidate(absRunDir, "moat-competitors.json", MoatCompetitorsSchema);
+    moat = loadAndValidate(
+      absRunDir,
+      "moat-competitors.json",
+      MoatCompetitorsSchema
+    );
   }
 
   let moatZh: MoatCompetitors | undefined;
   const moatZhPath = path.join(absRunDir, "moat-competitors_zh.json");
   if (fs.existsSync(moatZhPath)) {
-    moatZh = loadAndValidate(absRunDir, "moat-competitors_zh.json", MoatCompetitorsSchema);
+    moatZh = loadAndValidate(
+      absRunDir,
+      "moat-competitors_zh.json",
+      MoatCompetitorsSchema
+    );
   }
 
   let estimates: AnalystEstimates | undefined;
   const estimatesPath = path.join(absRunDir, "analyst-estimates.json");
   if (fs.existsSync(estimatesPath)) {
-    estimates = loadAndValidate(absRunDir, "analyst-estimates.json", AnalystEstimatesSchema);
+    estimates = loadAndValidate(
+      absRunDir,
+      "analyst-estimates.json",
+      AnalystEstimatesSchema
+    );
   }
 
   let estimatesZh: AnalystEstimates | undefined;
   const estimatesZhPath = path.join(absRunDir, "analyst-estimates_zh.json");
   if (fs.existsSync(estimatesZhPath)) {
-    estimatesZh = loadAndValidate(absRunDir, "analyst-estimates_zh.json", AnalystEstimatesSchema);
+    estimatesZh = loadAndValidate(
+      absRunDir,
+      "analyst-estimates_zh.json",
+      AnalystEstimatesSchema
+    );
   }
 
   let baseline: FinancialModelBaseline | undefined = scenarios.baseline;
   const baselinePath = path.join(absRunDir, "stress-baseline.json");
   if (fs.existsSync(baselinePath)) {
-    baseline = loadAndValidate(absRunDir, "stress-baseline.json", FinancialModelBaselineSchema);
+    baseline = loadAndValidate(
+      absRunDir,
+      "stress-baseline.json",
+      FinancialModelBaselineSchema
+    );
   } else if (!baseline) {
     baseline = deriveEffectiveBaseline(facts);
     console.log("  ℹ️  Derived baseline from facts");
@@ -135,28 +164,44 @@ function main() {
   console.log(`  📄 Output written (ZH): ${reportZhPath}`);
 
   console.log("\n" + "═".repeat(64));
-  console.log(`  ${facts.ticker} (${facts.company}) — ${facts.quarter} STRESS REPORT`);
+  console.log(
+    `  ${facts.ticker} (${facts.company}) — ${facts.quarter} STRESS REPORT`
+  );
   console.log("═".repeat(64));
   console.log(`  Stock Price:          $${validatedValuation.currentPrice}`);
-  console.log(`  Weighted Fair Value:  $${validatedValuation.weightedFairValue} (${validatedValuation.upsidePct > 0 ? "+" : ""}${validatedValuation.upsidePct}%)`);
+  console.log(
+    `  Weighted Fair Value:  $${validatedValuation.weightedFairValue} (${validatedValuation.upsidePct > 0 ? "+" : ""}${validatedValuation.upsidePct}%)`
+  );
   if (moat) {
-    console.log(`  Economic Moat:        ${moat.overallMoatRating} Moat (Trend: ${moat.moatTrend})`);
+    console.log(
+      `  Economic Moat:        ${moat.overallMoatRating} Moat (Trend: ${moat.moatTrend})`
+    );
   }
   if (estimates) {
-    console.log(`  Analyst Consensus:    ${estimates.consensus.consensus} (${estimates.consensus.totalAnalysts} analysts, Target: $${estimates.priceTargets.average})`);
+    console.log(
+      `  Analyst Consensus:    ${estimates.consensus.consensus} (${estimates.consensus.totalAnalysts} analysts, Target: $${estimates.priceTargets.average})`
+    );
   }
   console.log(`  Clean Operating EPS:  $${facts.epsOperating}`);
   console.log(`  Consensus PT:         $${validatedValuation.consensusTarget}`);
-  console.log(`  Verdict:              ${validatedValuation.verdictVsConsensus}`);
+  console.log(
+    `  Verdict:              ${validatedValuation.verdictVsConsensus}`
+  );
 
   if (validatedValuation.stressTest) {
     const st = validatedValuation.stressTest;
     console.log("\n" + "─".repeat(64));
     console.log("  ⚡ StressAlpha Dynamic Regimes:");
     console.log("─".repeat(64));
-    console.log(`    🐂 Bull Regime  (${st.valuationBands.bull.multiple}x):  $${st.valuationBands.bull.targetPrice} (${st.valuationBands.bull.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.bull.deltaFromCurrentPct}%)`);
-    console.log(`    ⚖️ Base Regime  (${st.valuationBands.base.multiple}x):  $${st.valuationBands.base.targetPrice} (${st.valuationBands.base.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.base.deltaFromCurrentPct}%)`);
-    console.log(`    🚨 Panic Floor  (${st.valuationBands.panic.multiple}x):  $${st.valuationBands.panic.targetPrice} (${st.valuationBands.panic.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.panic.deltaFromCurrentPct}%)`);
+    console.log(
+      `    🐂 Bull Regime  (${st.valuationBands.bull.multiple}x):  $${st.valuationBands.bull.targetPrice} (${st.valuationBands.bull.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.bull.deltaFromCurrentPct}%)`
+    );
+    console.log(
+      `    ⚖️ Base Regime  (${st.valuationBands.base.multiple}x):  $${st.valuationBands.base.targetPrice} (${st.valuationBands.base.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.base.deltaFromCurrentPct}%)`
+    );
+    console.log(
+      `    🚨 Panic Floor  (${st.valuationBands.panic.multiple}x):  $${st.valuationBands.panic.targetPrice} (${st.valuationBands.panic.deltaFromCurrentPct > 0 ? "+" : ""}${st.valuationBands.panic.deltaFromCurrentPct}%)`
+    );
     console.log(`    Downside to Panic:  ${st.asymmetry.downsideToPanicPct}%`);
     console.log(`    Risk/Reward Ratio:  ${st.asymmetry.riskRewardRatio}x`);
   }

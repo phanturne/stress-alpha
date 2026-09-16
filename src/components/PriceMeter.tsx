@@ -35,22 +35,24 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
   const bullPct = getPositionPct(bullTarget);
 
   return (
-    <div className="w-full rounded-xl p-4 glass-panel-subtle border border-white/[0.08] shadow-inner flex flex-col gap-3">
+    <div className="glass-panel-subtle flex w-full flex-col gap-3 rounded-xl border border-white/[0.08] p-4 shadow-inner">
       {/* Title & Current Price Badge */}
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold text-slate-300 tracking-wide">
+        <span className="font-semibold tracking-wide text-slate-300">
           {t.title}
         </span>
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-[11px] font-bold tabular-nums">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          <span>{t.current}: {formatCurrency(currentPrice)}</span>
+        <div className="flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums text-accent">
+          <span className="size-1.5 animate-pulse rounded-full bg-accent" />
+          <span>
+            {t.current}: {formatCurrency(currentPrice)}
+          </span>
         </div>
       </div>
 
       {/* Visual Meter Bar */}
-      <div className="relative pt-7 pb-6 select-none">
+      <div className="relative select-none pb-6 pt-7">
         {/* Track Bar with Smooth Multi-Stop Gradient */}
-        <div className="h-2.5 w-full rounded-full bg-surface-3 relative overflow-hidden shadow-inner ring-1 ring-white/10">
+        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-surface-3 shadow-inner ring-1 ring-white/10">
           <div
             className="absolute inset-0 opacity-90"
             style={{
@@ -62,63 +64,63 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
 
         {/* Current Price Pin (Floating Above Track) */}
         <div
-          className="absolute top-0 -translate-x-1/2 flex flex-col items-center transition-all duration-300 z-20 pointer-events-none"
+          className="pointer-events-none absolute top-0 z-20 flex -translate-x-1/2 flex-col items-center transition-all duration-300"
           style={{ left: `${currentPct}%` }}
         >
-          <div className="px-2 py-0.5 rounded-md bg-accent text-slate-950 font-mono text-[11px] font-black shadow-lg shadow-accent/50 whitespace-nowrap ring-1 ring-white/30 tabular-nums">
+          <div className="whitespace-nowrap rounded-md bg-accent px-2 py-0.5 font-mono text-[11px] font-black tabular-nums text-slate-950 shadow-lg shadow-accent/50 ring-1 ring-white/30">
             {formatCurrency(currentPrice, 0)}
           </div>
-          <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-accent" />
-          <div className="w-1 h-3 bg-white rounded-full shadow-sm -mt-0.5" />
+          <div className="size-0 border-x-4 border-t-[5px] border-x-transparent border-t-accent" />
+          <div className="-mt-0.5 h-3 w-1 rounded-full bg-white shadow-sm" />
         </div>
 
         {/* Regime Target Markers (Below Track) */}
         {/* Panic Marker */}
         <div
-          className="absolute top-8 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10"
+          className="pointer-events-none absolute top-8 z-10 flex -translate-x-1/2 flex-col items-center"
           style={{ left: `${panicPct}%` }}
         >
-          <div className="w-0.5 h-2 bg-fintech-red/80 -mt-1 mb-1" />
-          <span className="text-[10px] font-mono text-fintech-red font-bold tabular-nums px-1 py-0.2 rounded bg-fintech-redGlow/20 border border-fintech-red/40 whitespace-nowrap">
+          <div className="-mt-1 mb-1 h-2 w-0.5 bg-fintech-red/80" />
+          <span className="whitespace-nowrap rounded border border-fintech-red/40 bg-fintech-redGlow/20 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-red">
             {formatCurrency(panicTarget, 0)}
           </span>
         </div>
 
         {/* Base Marker */}
         <div
-          className="absolute top-8 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10"
+          className="pointer-events-none absolute top-8 z-10 flex -translate-x-1/2 flex-col items-center"
           style={{ left: `${basePct}%` }}
         >
-          <div className="w-0.5 h-2 bg-slate-300/80 -mt-1 mb-1" />
-          <span className="text-[10px] font-mono text-slate-200 font-bold tabular-nums px-1 py-0.2 rounded bg-surface-2 border border-white/[0.1] whitespace-nowrap">
+          <div className="-mt-1 mb-1 h-2 w-0.5 bg-slate-300/80" />
+          <span className="whitespace-nowrap rounded border border-white/[0.1] bg-surface-2 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-slate-200">
             {formatCurrency(baseTarget, 0)}
           </span>
         </div>
 
         {/* Bull Marker */}
         <div
-          className="absolute top-8 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10"
+          className="pointer-events-none absolute top-8 z-10 flex -translate-x-1/2 flex-col items-center"
           style={{ left: `${bullPct}%` }}
         >
-          <div className="w-0.5 h-2 bg-fintech-green/80 -mt-1 mb-1" />
-          <span className="text-[10px] font-mono text-fintech-green font-bold tabular-nums px-1 py-0.2 rounded bg-fintech-greenGlow/20 border border-fintech-green/40 whitespace-nowrap">
+          <div className="-mt-1 mb-1 h-2 w-0.5 bg-fintech-green/80" />
+          <span className="whitespace-nowrap rounded border border-fintech-green/40 bg-fintech-greenGlow/20 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-green">
             {formatCurrency(bullTarget, 0)}
           </span>
         </div>
       </div>
 
       {/* Bottom Regime Labels */}
-      <div className="grid grid-cols-3 text-[11px] font-mono text-slate-400 pt-1 border-t border-white/[0.06]">
-        <div className="flex items-center gap-1 text-fintech-red font-semibold">
-          <span className="w-1.5 h-1.5 rounded-full bg-fintech-red" />
+      <div className="grid grid-cols-3 border-t border-white/[0.06] pt-1 font-mono text-[11px] text-slate-400">
+        <div className="flex items-center gap-1 font-semibold text-fintech-red">
+          <span className="size-1.5 rounded-full bg-fintech-red" />
           <span className="truncate">{t.panicFloor}</span>
         </div>
-        <div className="flex items-center justify-center gap-1 text-slate-300 font-semibold">
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+        <div className="flex items-center justify-center gap-1 font-semibold text-slate-300">
+          <span className="size-1.5 rounded-full bg-slate-400" />
           <span className="truncate">{t.base}</span>
         </div>
-        <div className="flex items-center justify-end gap-1 text-fintech-green font-semibold">
-          <span className="w-1.5 h-1.5 rounded-full bg-fintech-green" />
+        <div className="flex items-center justify-end gap-1 font-semibold text-fintech-green">
+          <span className="size-1.5 rounded-full bg-fintech-green" />
           <span className="truncate">{t.bullRegime}</span>
         </div>
       </div>

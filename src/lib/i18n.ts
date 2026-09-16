@@ -394,7 +394,8 @@ export const translations: Record<Locale, Translations> = {
       },
       guardrail: {
         title: "Income Quality Guardrail",
-        description: "Audited GAAP adjustments isolating non-operating or transitory items:",
+        description:
+          "Audited GAAP adjustments isolating non-operating or transitory items:",
         operatingCleanEps: "Operating Clean EPS:",
         operating: "operating",
         nonOperating: "non-operating",
@@ -445,7 +446,8 @@ export const translations: Record<Locale, Translations> = {
     },
     estimatesTab: {
       title: "Wall Street Analyst Consensus & Estimates",
-      subtitle: "Sell-side price targets, ratings distribution, revision dynamics, and consensus synthesis.",
+      subtitle:
+        "Sell-side price targets, ratings distribution, revision dynamics, and consensus synthesis.",
       empty: "No analyst estimates data available for this report.",
       consensusTitle: "Analyst Consensus",
       totalAnalysts: "Total Analysts",
@@ -477,7 +479,8 @@ export const translations: Record<Locale, Translations> = {
     },
     auditTab: {
       title: "Earnings Print & Filing Audit",
-      subtitle: "Management call tone, 10-Q risk disclosures, and post-earnings historical volatility.",
+      subtitle:
+        "Management call tone, 10-Q risk disclosures, and post-earnings historical volatility.",
       empty: "No earnings audit artifacts available for this report.",
       subTone: "Call Tone & Q&A",
       subFiling: "10-Q Risk Deltas",
@@ -485,8 +488,10 @@ export const translations: Record<Locale, Translations> = {
     },
     moatTab: {
       title: "Economic Moat & Competitor Benchmarking",
-      subtitle: "Morningstar 5-pillar moat evaluation, durability assessment, and financial benchmarking against core industry peers.",
-      empty: "No economic moat or competitor benchmarking artifacts available for this report.",
+      subtitle:
+        "Morningstar 5-pillar moat evaluation, durability assessment, and financial benchmarking against core industry peers.",
+      empty:
+        "No economic moat or competitor benchmarking artifacts available for this report.",
       ratingLabel: "Economic Moat Rating",
       trendLabel: "Moat Trend",
       sourcesTitle: "Moat Source Breakdown",
@@ -508,7 +513,8 @@ export const translations: Record<Locale, Translations> = {
     },
     catalystsTab: {
       title: "Qualitative Filing Catalysts & Probability Anchors",
-      subtitle: "Key operational drivers extracted from SEC disclosures and earnings calls. Adjust sliders to test thesis sensitivity.",
+      subtitle:
+        "Key operational drivers extracted from SEC disclosures and earnings calls. Adjust sliders to test thesis sensitivity.",
       empty: "No catalyst audit artifacts available for this report.",
       countLabel: "Catalysts",
       growth: "growth",
@@ -522,8 +528,10 @@ export const translations: Record<Locale, Translations> = {
     },
     scenariosTab: {
       title: (year: string) => `Scenario Probability Tree (${year})`,
-      subtitle: "Deterministic valuation matrix. Edit probabilities, forward EPS, or exit multiples inline for instant recalculation.",
-      probMismatch: (pct: number) => `Probabilities sum to ${pct}% (should be 100%)`,
+      subtitle:
+        "Deterministic valuation matrix. Edit probabilities, forward EPS, or exit multiples inline for instant recalculation.",
+      probMismatch: (pct: number) =>
+        `Probabilities sum to ${pct}% (should be 100%)`,
       probValid: "100% Probability Distributed",
       wfv: "Weighted Fair Value",
       vsCurrent: "vs current",
@@ -540,7 +548,8 @@ export const translations: Record<Locale, Translations> = {
       exitPe: "Exit P/E",
       assumptionsTitle: "Key Assumptions & Drivers",
       sensitivityTitle: "Scenario Sensitivity Analysis",
-      sensitivitySubtitle: "Estimated Fair Value flex across key parameter variations",
+      sensitivitySubtitle:
+        "Estimated Fair Value flex across key parameter variations",
       colScenario: "Scenario",
       colProbability: "Probability",
       colFwdEps: "FWD EPS",
@@ -551,7 +560,8 @@ export const translations: Record<Locale, Translations> = {
     },
     segmentsTab: {
       title: "Operational Segments & Management Guidance",
-      subtitle: "Audited unit economics, business unit growth velocities, and forward guidance ranges.",
+      subtitle:
+        "Audited unit economics, business unit growth velocities, and forward guidance ranges.",
       breakdownTitle: "Revenue Contribution Breakdown",
       totalRevenue: "Total Segment Revenue",
       colName: "Segment Name",
@@ -564,7 +574,8 @@ export const translations: Record<Locale, Translations> = {
     },
     toneTab: {
       title: "Management Tone & Earnings Call Sentiment Audit",
-      subtitle: "Audited qualitative signals, executive confidence metrics, analyst concern frequencies, and high-impact quotes.",
+      subtitle:
+        "Audited qualitative signals, executive confidence metrics, analyst concern frequencies, and high-impact quotes.",
       empty: "No earnings call sentiment data available for this report.",
       overallConfidence: "Overall Executive Confidence",
       behavioralDimensions: "Executive Behavioral Dimensions (1-5 Scale)",
@@ -588,7 +599,8 @@ export const translations: Record<Locale, Translations> = {
     },
     filingTab: {
       title: "SEC 10-Q Filing Audit & Escalated Disclosures",
-      subtitle: "Diff audit against previous regulatory filings highlighting novel disclosures and modified legal risk factors.",
+      subtitle:
+        "Diff audit against previous regulatory filings highlighting novel disclosures and modified legal risk factors.",
       empty: "No SEC 10-Q filing extract artifacts available for this report.",
       newRisksTitle: "New / Escalated Risk Disclosures",
       newTag: "⚡ Newly added this filing period",
@@ -598,7 +610,8 @@ export const translations: Record<Locale, Translations> = {
     },
     reactionsTab: {
       title: "Historical Earnings Market Reactions & Framing",
-      subtitle: "Empirical post-earnings 1-day price reaction history and conditional catalyst framing.",
+      subtitle:
+        "Empirical post-earnings 1-day price reaction history and conditional catalyst framing.",
       empty: "No historical earnings reactions data available for this report.",
       colDate: "Report Date",
       colEvent: "Event / Quarter",
@@ -607,7 +620,8 @@ export const translations: Record<Locale, Translations> = {
     },
     sensitivityTab: {
       title: "Valuation Sensitivity & Perturbation Matrix",
-      subtitle: "Isolated dollar impact on scenario fair value per incremental shift in fundamental parameters.",
+      subtitle:
+        "Isolated dollar impact on scenario fair value per incremental shift in fundamental parameters.",
       empty: "No sensitivity matrix data available for this report.",
       sensitivitySuffix: "Sensitivity",
       deltaFairValue: "Δ Target Fair Value",
@@ -644,7 +658,8 @@ export const translations: Record<Locale, Translations> = {
     page: {
       loading: "Loading StressAlpha Report...",
       noReportSelected: "No Report Selected",
-      noReportDesc: "Select an earnings analysis report from the dropdown above or upload an analysis folder.",
+      noReportDesc:
+        "Select an earnings analysis report from the dropdown above or upload an analysis folder.",
       uploadFolderBtn: "Upload Analysis Folder",
       reportTitleZh: "中文财报深度研报 (report_zh.md)",
       reportTitleEn: "Equity Markdown Report (report.md)",
@@ -659,7 +674,8 @@ export const translations: Record<Locale, Translations> = {
     },
     uploader: {
       title: "Upload Analysis Folder",
-      description: "Drag and drop your analysis folder containing facts.json, scenarios.json, and optional baseline files.",
+      description:
+        "Drag and drop your analysis folder containing facts.json, scenarios.json, and optional baseline files.",
       dropzoneTitle: "Drag & drop folder or JSON files here",
       dropzoneHint: "Requires facts.json + scenarios.json",
       chooseFolder: "Choose Folder",
@@ -818,7 +834,8 @@ export const translations: Record<Locale, Translations> = {
     },
     moatTab: {
       title: "经济护城河与核心竞品对标矩阵",
-      subtitle: "晨星五维护城河定性评估、壁垒持久性预估与行业核心竞品财务经营指标横向对比。",
+      subtitle:
+        "晨星五维护城河定性评估、壁垒持久性预估与行业核心竞品财务经营指标横向对比。",
       empty: "当前研报暂无经济护城河与竞品对标数据。",
       ratingLabel: "护城河综合评级",
       trendLabel: "护城河演变趋势",
@@ -841,7 +858,8 @@ export const translations: Record<Locale, Translations> = {
     },
     catalystsTab: {
       title: "定性财报催化剂与发生概率锚定",
-      subtitle: "从 SEC 披露及财报电话会中提取的关键驱动因子。拖动滑块可测试逻辑敏感性。",
+      subtitle:
+        "从 SEC 披露及财报电话会中提取的关键驱动因子。拖动滑块可测试逻辑敏感性。",
       empty: "当前研报暂无催化剂审计数据。",
       countLabel: "项催化因子",
       growth: "增长催化",
@@ -855,7 +873,8 @@ export const translations: Record<Locale, Translations> = {
     },
     scenariosTab: {
       title: (year: string) => `情景发生概率树 (${year})`,
-      subtitle: "确定性估值计算矩阵。支持直接内联编辑概率、远期 EPS 或目标倍数，实时重算。",
+      subtitle:
+        "确定性估值计算矩阵。支持直接内联编辑概率、远期 EPS 或目标倍数，实时重算。",
       probMismatch: (pct: number) => `概率总和为 ${pct}% (需等于 100%)`,
       probValid: "100% 概率完全分配",
       wfv: "加权公允价值 (WFV)",
@@ -884,7 +903,8 @@ export const translations: Record<Locale, Translations> = {
     },
     segmentsTab: {
       title: "分部业务运营数据与管理层业绩指引",
-      subtitle: "经审计的各业务线单元经济效益、同比增速与管理层官方前瞻业绩指引区间。",
+      subtitle:
+        "经审计的各业务线单元经济效益、同比增速与管理层官方前瞻业绩指引区间。",
       breakdownTitle: "各分部营收贡献占比分解",
       totalRevenue: "分部总营收",
       colName: "分部名称",
@@ -897,7 +917,8 @@ export const translations: Record<Locale, Translations> = {
     },
     toneTab: {
       title: "管理层语调与财报电话会定性审计",
-      subtitle: "经审计的管理层语言信号、五维信心得分、华尔街分析师问答焦点与关键原声引用。",
+      subtitle:
+        "经审计的管理层语言信号、五维信心得分、华尔街分析师问答焦点与关键原声引用。",
       empty: "当前研报暂无财报电话会议情绪审计数据。",
       overallConfidence: "管理层综合信心得分",
       behavioralDimensions: "管理层行为五维雷达评估 (1-5 分制)",
@@ -921,7 +942,8 @@ export const translations: Record<Locale, Translations> = {
     },
     filingTab: {
       title: "SEC 10-Q 定期报告对比审计与风险披露",
-      subtitle: "与往期法定监管申报文件的差异对比审计，识别新增法律表述与合规风险因素。",
+      subtitle:
+        "与往期法定监管申报文件的差异对比审计，识别新增法律表述与合规风险因素。",
       empty: "当前研报暂无 SEC 10-Q 监管申报审计底稿。",
       newRisksTitle: "新增或升级的风险因素披露",
       newTag: "⚡ 本报告期全新增加",
@@ -931,7 +953,8 @@ export const translations: Record<Locale, Translations> = {
     },
     reactionsTab: {
       title: "历史财报披露后市场反应复盘与情景框架",
-      subtitle: "历史财报披露后首个交易日的实际涨跌幅统计与条件化催化归因框架。",
+      subtitle:
+        "历史财报披露后首个交易日的实际涨跌幅统计与条件化催化归因框架。",
       empty: "当前研报暂无财报历史股价反应数据。",
       colDate: "披露日期",
       colEvent: "事件 / 报告季度",
@@ -957,11 +980,13 @@ export const translations: Record<Locale, Translations> = {
       currentStock: "当前基准股价",
       weightedFairValue: "概率加权公允价",
       sec1Title: "一、 执行决策综述 (Executive Synthesis)",
-      sec2Title: "二、 动态估值区间与利润穿透 (Valuation Regimes & Flow-Through)",
+      sec2Title:
+        "二、 动态估值区间与利润穿透 (Valuation Regimes & Flow-Through)",
       sec3Title: "三、 收益质量与核心经营利润审计 (Income Quality)",
       sec4Title: "四、 核心基本面催化剂与概率锚定 (Catalysts)",
       secMoatTitle: "五、 经济护城河与核心竞品对标 (Moat & Peers)",
-      secEstimatesTitle: "五(附)、 华尔街分析师共识与目标价 (Analyst Estimates)",
+      secEstimatesTitle:
+        "五(附)、 华尔街分析师共识与目标价 (Analyst Estimates)",
       sec5Title: "六、 SEC 10-Q 监管与合规风险升级 (Filing Risks)",
       colRegime: "估值区间",
       colMultiple: "市盈率倍数",
@@ -977,7 +1002,8 @@ export const translations: Record<Locale, Translations> = {
     page: {
       loading: "正在加载 StressAlpha 研报数据...",
       noReportSelected: "未选择研报",
-      noReportDesc: "请从顶部下拉菜单直接选择已生成的研报文件夹，或上传自定义分析目录。",
+      noReportDesc:
+        "请从顶部下拉菜单直接选择已生成的研报文件夹，或上传自定义分析目录。",
       uploadFolderBtn: "上传分析文件夹",
       reportTitleZh: "中文财报深度研报 (report_zh.md)",
       reportTitleEn: "Equity Markdown Report (report.md)",
@@ -992,7 +1018,8 @@ export const translations: Record<Locale, Translations> = {
     },
     uploader: {
       title: "上传研报分析文件夹",
-      description: "拖拽包含 facts.json、scenarios.json 以及可选基准配置文件的研报目录至此。",
+      description:
+        "拖拽包含 facts.json、scenarios.json 以及可选基准配置文件的研报目录至此。",
       dropzoneTitle: "拖拽文件夹或 JSON 数据文件至此",
       dropzoneHint: "必须包含 facts.json 与 scenarios.json",
       chooseFolder: "选择文件夹",

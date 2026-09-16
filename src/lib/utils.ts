@@ -12,7 +12,10 @@ export function formatCurrency(amount: number, decimals: number = 2): string {
   })}`;
 }
 
-export function formatPercent(value: number, includeSign: boolean = true): string {
+export function formatPercent(
+  value: number,
+  includeSign: boolean = true
+): string {
   const sign = includeSign && value > 0 ? "+" : "";
   return `${sign}${value.toFixed(1)}%`;
 }

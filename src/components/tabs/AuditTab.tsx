@@ -2,7 +2,11 @@
 
 import React, { useState } from "react";
 import { Mic, FileSearch, History } from "lucide-react";
-import type { EarningsSentiment, FilingExtracts, Reactions } from "@/lib/schemas";
+import type {
+  EarningsSentiment,
+  FilingExtracts,
+  Reactions,
+} from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { ToneTab } from "./ToneTab";
 import { FilingTab } from "./FilingTab";
@@ -52,18 +56,16 @@ export const AuditTab: React.FC<AuditTabProps> = ({
   return (
     <div className="flex flex-col gap-5">
       {/* Sub-navigation Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
             {t.title}
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {t.subtitle}
-          </p>
+          <p className="mt-0.5 text-xs text-slate-400">{t.subtitle}</p>
         </div>
 
         {/* Sub-Pills Switcher */}
-        <div className="flex items-center p-1 rounded-xl bg-surface-0/80 border border-white/[0.08] text-xs">
+        <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-0/80 p-1 text-xs">
           {subNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = subTab === item.id;
@@ -72,19 +74,19 @@ export const AuditTab: React.FC<AuditTabProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => setSubTab(item.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all ${
                   isActive
-                    ? "bg-accent/20 text-accent font-bold shadow-sm ring-1 ring-accent/30"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-surface-2/60"
+                    ? "bg-accent/20 font-bold text-accent shadow-sm ring-1 ring-accent/30"
+                    : "text-slate-400 hover:bg-surface-2/60 hover:text-slate-200"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="size-3.5" />
                 <span>{item.label}</span>
                 {item.countBadge && (
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono tabular-nums ${
+                    className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
                       isActive
-                        ? "bg-accent/30 text-accent font-bold"
+                        ? "bg-accent/30 font-bold text-accent"
                         : "bg-surface-2 text-slate-400"
                     }`}
                   >

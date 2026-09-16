@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      spacing: {
+        4.5: "1.125rem",
+      },
       colors: {
         background: "#07090e",
         surface: {
@@ -33,7 +36,7 @@ const config: Config = {
           amber: "#f59e0b",
           amberGlow: "rgba(245, 158, 11, 0.18)",
           purple: "#a855f7",
-        }
+        },
       },
       boxShadow: {
         glow: "0 0 20px -5px rgba(56, 189, 248, 0.3)",
@@ -68,8 +71,17 @@ const config: Config = {
           "monospace",
         ],
       },
+      keyframes: {
+        "fade-in": {
+          "0%": { opacity: "0", transform: "scale(0.98)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+      },
+      animation: {
+        "fade-in": "fade-in 0.15s ease-out forwards",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;

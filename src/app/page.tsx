@@ -48,7 +48,9 @@ export default function HomePage() {
   // Restore saved language preference from localStorage on mount
   useEffect(() => {
     try {
-      const savedLocale = localStorage.getItem("stress_alpha_locale") as Locale | null;
+      const savedLocale = localStorage.getItem(
+        "stress_alpha_locale"
+      ) as Locale | null;
       if (savedLocale === "en" || savedLocale === "zh") {
         Promise.resolve().then(() => {
           setLocale(savedLocale);
@@ -280,7 +282,8 @@ export default function HomePage() {
 
   // Compute live dynamic valuation tree (WFV, scenario targets, upside %)
   const dynamicValuation = useMemo(() => {
-    if (!reportData?.facts || !reportData.scenarios) return reportData?.valuation;
+    if (!reportData?.facts || !reportData.scenarios)
+      return reportData?.valuation;
     return computeValuation({
       facts: reportData.facts,
       scenarios: reportData.scenarios,
@@ -291,31 +294,103 @@ export default function HomePage() {
 
   // Localized artifacts resolution
   const isZh = locale === "zh";
-  const displayFacts = (isZh && reportData?.factsZh) ? reportData.factsZh : reportData?.facts;
-  const displayCatalysts = (isZh && reportData?.catalystsZh) ? reportData.catalystsZh : reportData?.catalysts;
-  const displayScenarios = (isZh && reportData?.scenariosZh) ? reportData.scenariosZh : reportData?.scenarios;
-  const displaySentiment = (isZh && reportData?.sentimentZh) ? reportData.sentimentZh : reportData?.sentiment;
-  const displayFiling = (isZh && reportData?.filingZh) ? reportData.filingZh : reportData?.filing;
-  const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
-  const displayMoat = (isZh && reportData?.moatZh) ? reportData.moatZh : reportData?.moat;
-  const displayEstimates = (isZh && reportData?.estimatesZh) ? reportData.estimatesZh : reportData?.estimates;
+  const displayFacts =
+    isZh && reportData?.factsZh ? reportData.factsZh : reportData?.facts;
+  const displayCatalysts =
+    isZh && reportData?.catalystsZh
+      ? reportData.catalystsZh
+      : reportData?.catalysts;
+  const displayScenarios =
+    isZh && reportData?.scenariosZh
+      ? reportData.scenariosZh
+      : reportData?.scenarios;
+  const displaySentiment =
+    isZh && reportData?.sentimentZh
+      ? reportData.sentimentZh
+      : reportData?.sentiment;
+  const displayFiling =
+    isZh && reportData?.filingZh ? reportData.filingZh : reportData?.filing;
+  const displayReactions =
+    isZh && reportData?.reactionsZh
+      ? reportData.reactionsZh
+      : reportData?.reactions;
+  const displayMoat =
+    isZh && reportData?.moatZh ? reportData.moatZh : reportData?.moat;
+  const displayEstimates =
+    isZh && reportData?.estimatesZh
+      ? reportData.estimatesZh
+      : reportData?.estimates;
 
   // 7 Focused Institutional Intelligence Workspaces
-  const tabItems = useMemo(() => [
-    { id: "valuation", shortcut: "1", label: t.tabs.valuation, icon: TrendingUp, count: displayScenarios?.scenarios.length },
-    { id: "estimates", shortcut: "2", label: t.tabs.estimates || "Estimates", icon: Target, count: displayEstimates?.estimates?.length },
-    { id: "moat", shortcut: "3", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
-    { id: "segments", shortcut: "4", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
-    { id: "catalysts", shortcut: "5", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
-    { id: "audit", shortcut: "6", label: t.tabs.audit, icon: FileSearch, count: (displayFiling?.newRiskFactors?.length ?? 0) + (displayReactions?.events?.length ?? 0) },
-    { id: "report", shortcut: "7", label: t.tabs.report, icon: FileText },
-  ], [t, displayScenarios, displayEstimates, displayMoat, displayFacts, displayCatalysts, displayFiling, displayReactions]);
+  const tabItems = useMemo(
+    () => [
+      {
+        id: "valuation",
+        shortcut: "1",
+        label: t.tabs.valuation,
+        icon: TrendingUp,
+        count: displayScenarios?.scenarios.length,
+      },
+      {
+        id: "estimates",
+        shortcut: "2",
+        label: t.tabs.estimates || "Estimates",
+        icon: Target,
+        count: displayEstimates?.estimates?.length,
+      },
+      {
+        id: "moat",
+        shortcut: "3",
+        label: t.tabs.moat,
+        icon: ShieldCheck,
+        count: displayMoat?.competitors?.length,
+      },
+      {
+        id: "segments",
+        shortcut: "4",
+        label: t.tabs.segments,
+        icon: Layers,
+        count: displayFacts?.segments.length,
+      },
+      {
+        id: "catalysts",
+        shortcut: "5",
+        label: t.tabs.catalysts,
+        icon: Sparkles,
+        count: displayCatalysts?.catalysts?.length,
+      },
+      {
+        id: "audit",
+        shortcut: "6",
+        label: t.tabs.audit,
+        icon: FileSearch,
+        count:
+          (displayFiling?.newRiskFactors?.length ?? 0) +
+          (displayReactions?.events?.length ?? 0),
+      },
+      { id: "report", shortcut: "7", label: t.tabs.report, icon: FileText },
+    ],
+    [
+      t,
+      displayScenarios,
+      displayEstimates,
+      displayMoat,
+      displayFacts,
+      displayCatalysts,
+      displayFiling,
+      displayReactions,
+    ]
+  );
 
   // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || (e.target as HTMLElement)?.isContentEditable) {
+      if (
+        tag === "input" ||
+        tag === "textarea" ||
+        (e.target as HTMLElement)?.isContentEditable
+      ) {
         return;
       }
 
@@ -360,10 +435,16 @@ export default function HomePage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [tabItems, locale, isShortcutsOpen, handleResetDefaults, handleToggleLocale]);
+  }, [
+    tabItems,
+    locale,
+    isShortcutsOpen,
+    handleResetDefaults,
+    handleToggleLocale,
+  ]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-slate-100">
+    <div className="flex min-h-screen flex-col bg-background text-slate-100">
       {/* Top Navigation */}
       <Header
         facts={displayFacts}
@@ -380,35 +461,35 @@ export default function HomePage() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-[1680px] mx-auto p-3 sm:p-5 md:p-6 min-w-0">
+      <main className="mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6">
         {isLoading ? (
-          <div className="h-[70vh] flex flex-col items-center justify-center gap-3">
+          <div className="flex h-[70vh] flex-col items-center justify-center gap-3">
             <div className="relative">
-              <Loader2 className="w-9 h-9 text-accent animate-spin" />
-              <div className="absolute inset-0 bg-accent/20 rounded-full blur-md animate-pulse" />
+              <Loader2 className="size-9 animate-spin text-accent" />
+              <div className="absolute inset-0 animate-pulse rounded-full bg-accent/20 blur-md" />
             </div>
-            <span className="text-xs font-mono text-slate-400 tracking-wider">
+            <span className="font-mono text-xs tracking-wider text-slate-400">
               {t.page.loading}
             </span>
           </div>
         ) : !reportData || !stressResult ? (
-          <div className="relative max-w-xl mx-auto my-16 p-8 sm:p-10 rounded-3xl glass-panel border border-white/[0.08] text-center flex flex-col items-center gap-5 shadow-2xl overflow-hidden">
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-sky-500/10 border border-accent/30 flex items-center justify-center text-accent shadow-lg shadow-accent/10">
-              <FolderOpen className="w-7 h-7" />
+          <div className="glass-panel relative mx-auto my-16 flex max-w-xl flex-col items-center gap-5 overflow-hidden rounded-3xl border border-white/[0.08] p-8 text-center shadow-2xl sm:p-10">
+            <div className="pointer-events-none absolute -left-24 -top-24 size-48 rounded-full bg-accent/10 blur-3xl" />
+            <div className="flex size-14 items-center justify-center rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 to-sky-500/10 text-accent shadow-lg shadow-accent/10">
+              <FolderOpen className="size-7" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
+              <h2 className="text-xl font-extrabold tracking-tight text-white">
                 {t.page.noReportSelected}
               </h2>
-              <p className="text-xs text-slate-400 mt-1.5 max-w-md leading-relaxed">
+              <p className="mt-1.5 max-w-md text-xs leading-relaxed text-slate-400">
                 {t.page.noReportDesc}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsUploadModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-slate-950 font-bold text-xs transition-all shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:scale-[1.02] active:scale-[0.98]"
+              className="rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-accent/25 transition-all hover:scale-[1.02] hover:bg-accent-hover hover:shadow-accent/40 active:scale-[0.98]"
             >
               {t.page.uploadFolderBtn}
             </button>
@@ -429,7 +510,7 @@ export default function HomePage() {
             onLocaleChange={handleToggleLocale}
           />
         ) : (
-          <div className="flex flex-col lg:flex-row gap-5 xl:gap-6 items-start">
+          <div className="flex flex-col items-start gap-5 lg:flex-row xl:gap-6">
             {/* Left Sticky Cockpit (~400px responsive) */}
             <Cockpit
               baseline={reportData.baseline!}
@@ -445,9 +526,9 @@ export default function HomePage() {
             />
 
             {/* Right Tabbed Intelligence Workspace (min-w-0 prevents blowout) */}
-            <div className="min-w-0 flex-1 w-full flex flex-col gap-4">
+            <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
               {/* Tab Navigation Ribbon */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 border-b border-white/[0.08] no-scrollbar scroll-smooth">
+              <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto scroll-smooth border-b border-white/[0.08] pb-1.5">
                 {tabItems.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -456,19 +537,19 @@ export default function HomePage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`group flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                      className={`group flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 sm:px-3.5 ${
                         isActive
-                          ? "bg-accent/15 text-accent border border-accent/40 shadow-glow/30 font-bold"
-                          : "text-slate-400 hover:text-slate-200 hover:bg-surface-1 border border-transparent"
+                          ? "border border-accent/40 bg-accent/15 font-bold text-accent shadow-glow"
+                          : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <Icon className="size-3.5 shrink-0" />
                       <span>{tab.label}</span>
                       {tab.count !== undefined && (
                         <span
-                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono tabular-nums ${
+                          className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
                             isActive
-                              ? "bg-accent/25 text-accent font-bold"
+                              ? "bg-accent/25 font-bold text-accent"
                               : "bg-surface-3 text-slate-400"
                           }`}
                         >
@@ -476,9 +557,9 @@ export default function HomePage() {
                         </span>
                       )}
                       <span
-                        className={`text-[10px] font-mono transition-opacity hidden sm:inline ${
+                        className={`hidden font-mono text-[10px] transition-opacity sm:inline ${
                           isActive
-                            ? "text-accent/70 font-bold"
+                            ? "font-bold text-accent/70"
                             : "text-slate-600 group-hover:text-slate-400"
                         }`}
                       >
@@ -491,12 +572,18 @@ export default function HomePage() {
 
               {/* Tab Contents */}
               <div className="w-full">
-                {(activeTab === "valuation" || activeTab === "scenarios" || activeTab === "sensitivity") && (
+                {(activeTab === "valuation" ||
+                  activeTab === "scenarios" ||
+                  activeTab === "sensitivity") && (
                   <ScenariosTab
                     scenariosData={displayScenarios!}
                     currentPrice={displayFacts!.currentPrice}
                     valuation={dynamicValuation ?? reportData.valuation}
-                    sensitivityData={dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity ?? []}
+                    sensitivityData={
+                      dynamicValuation?.sensitivity ??
+                      reportData.valuation?.sensitivity ??
+                      []
+                    }
                     onScenarioChange={handleScenarioChange}
                     locale={locale}
                   />
@@ -511,17 +598,11 @@ export default function HomePage() {
                 )}
 
                 {activeTab === "moat" && (
-                  <MoatTab
-                    moatData={displayMoat}
-                    locale={locale}
-                  />
+                  <MoatTab moatData={displayMoat} locale={locale} />
                 )}
 
                 {activeTab === "segments" && (
-                  <SegmentsTab
-                    facts={displayFacts!}
-                    locale={locale}
-                  />
+                  <SegmentsTab facts={displayFacts!} locale={locale} />
                 )}
 
                 {activeTab === "catalysts" && (
@@ -532,7 +613,10 @@ export default function HomePage() {
                   />
                 )}
 
-                {(activeTab === "audit" || activeTab === "tone" || activeTab === "filing" || activeTab === "reactions") && (
+                {(activeTab === "audit" ||
+                  activeTab === "tone" ||
+                  activeTab === "filing" ||
+                  activeTab === "reactions") && (
                   <AuditTab
                     sentimentData={displaySentiment}
                     filingData={displayFiling}
@@ -542,19 +626,19 @@ export default function HomePage() {
                 )}
 
                 {activeTab === "report" && (
-                  <div className="glass-panel rounded-2xl p-5 sm:p-6 border border-white/[0.08] flex flex-col gap-4 shadow-xl">
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
+                  <div className="glass-panel flex flex-col gap-4 rounded-2xl border border-white/[0.08] p-5 shadow-xl sm:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="p-1.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
-                          <FileText className="w-4 h-4" />
+                        <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
+                          <FileText className="size-4" />
                         </div>
                         <div>
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono block">
+                          <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
                             {reportDocLang === "zh"
                               ? t.page.reportTitleZh
                               : t.page.reportTitleEn}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="font-mono text-[11px] text-slate-400">
                             {reportData.folderName}
                           </span>
                         </div>
@@ -562,11 +646,11 @@ export default function HomePage() {
 
                       {/* Language Switcher for Report View */}
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center bg-surface-0/80 p-0.5 rounded-lg border border-white/[0.08] text-xs">
+                        <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5 text-xs">
                           <button
                             type="button"
                             onClick={() => setReportDocLang("en")}
-                            className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                            className={`rounded-md px-3 py-1 font-semibold transition-all ${
                               reportDocLang === "en"
                                 ? "bg-surface-2 text-accent shadow-sm ring-1 ring-white/10"
                                 : "text-slate-400 hover:text-white"
@@ -577,9 +661,9 @@ export default function HomePage() {
                           <button
                             type="button"
                             onClick={() => setReportDocLang("zh")}
-                            className={`px-3 py-1 rounded-md font-semibold transition-all ${
+                            className={`rounded-md px-3 py-1 font-semibold transition-all ${
                               reportDocLang === "zh"
-                                ? "bg-accent/20 text-accent font-bold shadow-sm ring-1 ring-accent/30"
+                                ? "bg-accent/20 font-bold text-accent shadow-sm ring-1 ring-accent/30"
                                 : "text-slate-400 hover:text-white"
                             }`}
                           >
@@ -603,13 +687,13 @@ export default function HomePage() {
                               );
                             }
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-surface-2/90 hover:bg-surface-3 border border-white/[0.08] hover:border-accent/40 text-xs font-medium text-slate-200 hover:text-white transition-all shadow-sm flex items-center gap-1.5"
+                          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-3 py-1.5 text-xs font-medium text-slate-200 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
                         >
                           <span>{t.page.copyBtn}</span>
                         </button>
                       </div>
                     </div>
-                    <pre className="p-5 rounded-xl bg-surface-0/90 border border-white/[0.06] text-xs sm:text-[13px] text-slate-200 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed custom-scrollbar shadow-inner max-h-[72vh] selection:bg-accent/30">
+                    <pre className="custom-scrollbar max-h-[72vh] overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/[0.06] bg-surface-0/90 p-5 font-mono text-xs leading-relaxed text-slate-200 shadow-inner selection:bg-accent/30 sm:text-[13px]">
                       {(reportDocLang === "zh"
                         ? reportData.reportMarkdownZh
                         : reportData.reportMarkdown) ||
@@ -642,75 +726,85 @@ export default function HomePage() {
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={() => setIsShortcutsOpen(false)}
         >
           <div
-            className="w-full max-w-md bg-surface-1/95 border border-white/[0.12] rounded-2xl shadow-2xl p-6 relative flex flex-col gap-5 glass-panel"
+            className="glass-panel relative flex w-full max-w-md flex-col gap-5 rounded-2xl border border-white/[0.12] bg-surface-1/95 p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent">
-                  <Keyboard className="w-4 h-4" />
+                <div className="rounded-lg border border-accent/30 bg-accent/15 p-1.5 text-accent">
+                  <Keyboard className="size-4" />
                 </div>
-                <h3 className="text-sm font-bold text-white tracking-wide">
+                <h3 className="text-sm font-bold tracking-wide text-white">
                   {t.shortcuts.title}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsShortcutsOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-2 transition-colors"
+                className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-surface-2 hover:text-white"
                 aria-label="Close"
               >
-                <X className="w-4 h-4" />
+                <X className="size-4" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-2.5">
-              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
-                <span className="text-xs text-slate-300">{t.shortcuts.tabSwitch}</span>
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.tabSwitch}
+                </span>
                 <div className="flex items-center gap-1">
-                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                     1
                   </kbd>
-                  <span className="text-slate-500 text-[10px]">–</span>
-                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  <span className="text-[10px] text-slate-500">–</span>
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                     7
                   </kbd>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
-                <span className="text-xs text-slate-300">{t.shortcuts.resetModel}</span>
-                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.resetModel}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   R
                 </kbd>
               </div>
 
-              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
-                <span className="text-xs text-slate-300">{t.shortcuts.toggleMemo}</span>
-                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.toggleMemo}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   M
                 </kbd>
               </div>
 
-              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
-                <span className="text-xs text-slate-300">{t.shortcuts.toggleLang}</span>
-                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.toggleLang}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   L
                 </kbd>
               </div>
 
-              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
-                <span className="text-xs text-slate-300">{t.shortcuts.close}</span>
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.close}
+                </span>
                 <div className="flex items-center gap-1.5">
-                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                     ?
                   </kbd>
-                  <span className="text-slate-500 text-[10px]">/</span>
-                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-slate-300 shadow-sm">
+                  <span className="text-[10px] text-slate-500">/</span>
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-300 shadow-sm">
                     Esc
                   </kbd>
                 </div>
@@ -722,8 +816,8 @@ export default function HomePage() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-2 border border-accent/40 text-slate-100 text-xs font-semibold shadow-2xl animate-fade-in">
-          <Check className="w-4 h-4 text-accent" />
+        <div className="fixed bottom-6 right-6 z-50 flex animate-fade-in items-center gap-2 rounded-xl border border-accent/40 bg-surface-2 px-4 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl">
+          <Check className="size-4 text-accent" />
           <span>{toastMessage}</span>
         </div>
       )}

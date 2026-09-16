@@ -28,7 +28,12 @@
   body {
     background-color: var(--bg);
     color: var(--text-primary);
-    font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1, "tnum" 1;
+    font-feature-settings:
+      "cv02" 1,
+      "cv03" 1,
+      "cv04" 1,
+      "cv11" 1,
+      "tnum" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -121,7 +126,10 @@ input[type="range"]::-webkit-slider-thumb {
   border: 2px solid #07090e;
   cursor: grab;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
@@ -143,7 +151,9 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid #07090e;
   cursor: pointer;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 /* Print styles for Investment Committee Memo */

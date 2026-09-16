@@ -1,0 +1,11 @@
+.next
+node_modules
+out
+build
+package-lock.json
+tsconfig.tsbuildinfo
+reports
+prompts
+.agents
+docs
+*.md

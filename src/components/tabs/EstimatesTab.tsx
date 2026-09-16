@@ -52,7 +52,11 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         label: rating,
       };
     }
-    if (r.includes("buy") || r.includes("overweight") || r.includes("outperform")) {
+    if (
+      r.includes("buy") ||
+      r.includes("overweight") ||
+      r.includes("outperform")
+    ) {
       return {
         className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
         label: rating,
@@ -64,7 +68,11 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         label: rating,
       };
     }
-    if (r.includes("sell") || r.includes("underperform") || r.includes("underweight")) {
+    if (
+      r.includes("sell") ||
+      r.includes("underperform") ||
+      r.includes("underweight")
+    ) {
       return {
         className: "bg-rose-500/15 text-rose-400 border-rose-500/30",
         label: rating,
@@ -111,21 +119,33 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       .filter((item) => {
         const matchesSearch =
           item.firm.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (item.analyst && item.analyst.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (item.notes && item.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+          (item.analyst &&
+            item.analyst.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (item.notes &&
+            item.notes.toLowerCase().includes(searchTerm.toLowerCase()));
 
         if (!matchesSearch) return false;
 
         if (ratingFilter === "all") return true;
         const r = item.rating.toLowerCase();
         if (ratingFilter === "buy") {
-          return r.includes("buy") || r.includes("outperform") || r.includes("overweight");
+          return (
+            r.includes("buy") ||
+            r.includes("outperform") ||
+            r.includes("overweight")
+          );
         }
         if (ratingFilter === "hold") {
-          return r.includes("hold") || r.includes("neutral") || r.includes("equal");
+          return (
+            r.includes("hold") || r.includes("neutral") || r.includes("equal")
+          );
         }
         if (ratingFilter === "sell") {
-          return r.includes("sell") || r.includes("underperform") || r.includes("underweight");
+          return (
+            r.includes("sell") ||
+            r.includes("underperform") ||
+            r.includes("underweight")
+          );
         }
         return true;
       })
@@ -144,14 +164,20 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
   if (!estimatesData) {
     return (
-      <div className="p-12 text-center text-sm text-slate-400 glass-panel rounded-xl">
+      <div className="glass-panel rounded-xl p-12 text-center text-sm text-slate-400">
         {t.empty}
       </div>
     );
   }
 
-  const { consensus, priceTargets, synthesisNarrative, sources = [] } = estimatesData;
-  const effectiveCurrentPrice = priceTargets?.currentPrice || propCurrentPrice || 0;
+  const {
+    consensus,
+    priceTargets,
+    synthesisNarrative,
+    sources = [],
+  } = estimatesData;
+  const effectiveCurrentPrice =
+    priceTargets?.currentPrice || propCurrentPrice || 0;
 
   // Track Calculations
   const low = priceTargets.low;
@@ -177,13 +203,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-panel p-5 rounded-2xl border border-white/[0.08]">
+      <div className="glass-panel flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] p-5 md:flex-row md:items-center">
         <div>
-          <div className="flex items-center gap-2 text-accent text-xs font-semibold uppercase tracking-wider mb-1">
-            <Target className="w-4 h-4" />
+          <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
+            <Target className="size-4" />
             <span>{t.title}</span>
             {estimatesData.asOfDate && (
-              <span className="text-slate-500 font-mono text-[11px] lowercase">
+              <span className="font-mono text-[11px] lowercase text-slate-500">
                 • {estimatesData.asOfDate}
               </span>
             )}
@@ -193,13 +219,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
         {/* Global Summary Metric Badges */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <div className="px-3 py-1.5 rounded-lg bg-surface-2 border border-white/[0.06] flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-surface-2 px-3 py-1.5">
             <span className="text-slate-400">{t.totalAnalysts}:</span>
             <span className="font-mono font-bold text-white">
               {consensus.totalAnalysts}
             </span>
           </div>
-          <div className="px-3 py-1.5 rounded-lg bg-surface-2 border border-white/[0.06] flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-surface-2 px-3 py-1.5">
             <span className="text-slate-400">{t.avgUpside}:</span>
             <span
               className={`font-mono font-bold ${
@@ -214,19 +240,19 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       </div>
 
       {/* Top 2 Cards: Consensus Breakdown & 52W Price Targets Slider */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* Card 1: Analyst Consensus (5 cols) */}
-        <div className="lg:col-span-5 glass-panel p-5 rounded-2xl border border-white/[0.08] flex flex-col justify-between">
+        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 lg:col-span-5">
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold text-white tracking-wide">
+                <Users className="size-4 text-accent" />
+                <h3 className="text-sm font-semibold tracking-wide text-white">
                   {t.consensusTitle}
                 </h3>
               </div>
               <span
-                className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
+                className={`rounded-full border px-2.5 py-1 text-xs font-bold ${
                   getRatingBadge(consensus.consensus).className
                 }`}
               >
@@ -235,20 +261,20 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
 
             {/* Visual Multi-Segment Bar */}
-            <div className="w-full h-2.5 bg-surface-3 rounded-full overflow-hidden flex gap-0.5 p-0.5 mb-5">
+            <div className="mb-5 flex h-2.5 w-full gap-0.5 overflow-hidden rounded-full bg-surface-3 p-0.5">
               <div
                 style={{ width: `${consensus.bullishPct}%` }}
-                className="bg-emerald-500 h-full rounded-l-full transition-all duration-500"
+                className="h-full rounded-l-full bg-emerald-500 transition-all duration-500"
                 title={`Bullish: ${consensus.bullishPct}%`}
               />
               <div
                 style={{ width: `${consensus.neutralPct}%` }}
-                className="bg-amber-400 h-full transition-all duration-500"
+                className="h-full bg-amber-400 transition-all duration-500"
                 title={`Neutral: ${consensus.neutralPct}%`}
               />
               <div
                 style={{ width: `${consensus.bearishPct}%` }}
-                className="bg-rose-500 h-full rounded-r-full transition-all duration-500"
+                className="h-full rounded-r-full bg-rose-500 transition-all duration-500"
                 title={`Bearish: ${consensus.bearishPct}%`}
               />
             </div>
@@ -256,68 +282,76 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             {/* Breakdown Stats Grid */}
             <div className="grid grid-cols-3 gap-3">
               {/* Bullish */}
-              <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15 flex flex-col">
-                <div className="flex items-center gap-1.5 text-xs text-emerald-400 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <div className="flex flex-col rounded-xl border border-emerald-500/15 bg-emerald-500/5 p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-xs text-emerald-400">
+                  <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                   <span className="font-medium">{t.bullish}</span>
                 </div>
-                <div className="text-lg font-bold font-mono text-white">
+                <div className="font-mono text-lg font-bold text-white">
                   {consensus.bullishCount}
                 </div>
-                <div className="text-[11px] text-emerald-400/80 font-mono">
+                <div className="font-mono text-[11px] text-emerald-400/80">
                   {consensus.bullishPct.toFixed(1)}%
                 </div>
               </div>
 
               {/* Neutral */}
-              <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15 flex flex-col">
-                <div className="flex items-center gap-1.5 text-xs text-amber-400 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+              <div className="flex flex-col rounded-xl border border-amber-500/15 bg-amber-500/5 p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-xs text-amber-400">
+                  <div className="size-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                   <span className="font-medium">{t.neutral}</span>
                 </div>
-                <div className="text-lg font-bold font-mono text-white">
+                <div className="font-mono text-lg font-bold text-white">
                   {consensus.neutralCount}
                 </div>
-                <div className="text-[11px] text-amber-400/80 font-mono">
+                <div className="font-mono text-[11px] text-amber-400/80">
                   {consensus.neutralPct.toFixed(1)}%
                 </div>
               </div>
 
               {/* Bearish */}
-              <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/15 flex flex-col">
-                <div className="flex items-center gap-1.5 text-xs text-rose-400 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+              <div className="flex flex-col rounded-xl border border-rose-500/15 bg-rose-500/5 p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-xs text-rose-400">
+                  <div className="size-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
                   <span className="font-medium">{t.bearish}</span>
                 </div>
-                <div className="text-lg font-bold font-mono text-white">
+                <div className="font-mono text-lg font-bold text-white">
                   {consensus.bearishCount}
                 </div>
-                <div className="text-[11px] text-rose-400/80 font-mono">
+                <div className="font-mono text-[11px] text-rose-400/80">
                   {consensus.bearishPct.toFixed(1)}%
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-400 flex items-center justify-between">
-            <span>{isZh ? "华尔街卖方共识情绪" : "Wall Street Sentiment Momentum"}</span>
-            <span className="text-slate-300 font-medium">
+          <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
+            <span>
+              {isZh ? "华尔街卖方共识情绪" : "Wall Street Sentiment Momentum"}
+            </span>
+            <span className="font-medium text-slate-300">
               {consensus.bullishPct >= 70
-                ? isZh ? "🔥 极度看多 (High Conviction)" : "🔥 High Conviction Bullish"
+                ? isZh
+                  ? "🔥 极度看多 (High Conviction)"
+                  : "🔥 High Conviction Bullish"
                 : consensus.bullishPct >= 50
-                ? isZh ? "偏多共识 (Moderate Bull)" : "Moderate Bull"
-                : isZh ? "观点分歧 (Divergent)" : "Divergent"}
+                  ? isZh
+                    ? "偏多共识 (Moderate Bull)"
+                    : "Moderate Bull"
+                  : isZh
+                    ? "观点分歧 (Divergent)"
+                    : "Divergent"}
             </span>
           </div>
         </div>
 
         {/* Card 2: Analyst 52W Price Targets (7 cols) */}
-        <div className="lg:col-span-7 glass-panel p-5 rounded-2xl border border-white/[0.08] flex flex-col justify-between">
+        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 lg:col-span-7">
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold text-white tracking-wide">
+                <TrendingUp className="size-4 text-accent" />
+                <h3 className="text-sm font-semibold tracking-wide text-white">
                   {t.priceTargetsTitle}
                 </h3>
               </div>
@@ -338,12 +372,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
 
             {/* Track Visualizer */}
-            <div className="pt-6 pb-8 px-3 relative">
+            <div className="relative px-3 pb-8 pt-6">
               {/* Background Base Track */}
-              <div className="relative w-full h-3 bg-surface-3 rounded-full">
+              <div className="relative h-3 w-full rounded-full bg-surface-3">
                 {/* Target Range Highlight Bar */}
                 <div
-                  className="absolute top-0 bottom-0 bg-accent/20 border-y border-accent/40 rounded-full"
+                  className="absolute inset-y-0 rounded-full border-y border-accent/40 bg-accent/20"
                   style={{
                     left: `${Math.min(lowPct, highPct)}%`,
                     width: `${Math.abs(highPct - lowPct)}%`,
@@ -352,27 +386,27 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
                 {/* Low Target Tick */}
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-300 -translate-x-1/2 shadow-sm"
+                  className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 shadow-sm"
                   style={{ left: `${lowPct}%` }}
                 />
 
                 {/* High Target Tick */}
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-300 -translate-x-1/2 shadow-sm"
+                  className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 shadow-sm"
                   style={{ left: `${highPct}%` }}
                 />
 
                 {/* Average Target Marker (Prominent) */}
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
+                  className="absolute top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
                   style={{ left: `${avgPct}%` }}
                 >
-                  <div className="w-4 h-4 rounded-full bg-emerald-400 border-2 border-surface-0 shadow-[0_0_12px_rgba(16,185,129,0.7)]" />
+                  <div className="size-4 rounded-full border-2 border-surface-0 bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.7)]" />
                   <div className="absolute top-5 flex flex-col items-center whitespace-nowrap">
-                    <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded shadow-sm">
+                    <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-400 shadow-sm">
                       ${average.toFixed(2)}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-medium">
+                    <span className="text-[10px] font-medium text-slate-400">
                       {t.average}
                     </span>
                   </div>
@@ -381,12 +415,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 {/* Current Price Pin (Distinct cyan/blue marker) */}
                 {current > 0 && (
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
+                    className="absolute top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
                     style={{ left: `${curPct}%` }}
                   >
-                    <div className="w-3.5 h-3.5 rounded-full bg-accent border-2 border-surface-0 shadow-[0_0_10px_rgba(56,189,248,0.7)]" />
+                    <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent shadow-[0_0_10px_rgba(56,189,248,0.7)]" />
                     <div className="absolute -top-7 flex flex-col items-center whitespace-nowrap">
-                      <span className="text-[10px] font-mono font-bold text-white bg-accent/20 border border-accent/40 px-1.5 py-0.5 rounded">
+                      <span className="rounded border border-accent/40 bg-accent/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
                         {isZh ? "现价" : "Current"}: ${current.toFixed(2)}
                       </span>
                     </div>
@@ -395,9 +429,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </div>
 
               {/* Min and Max Target Labels */}
-              <div className="flex justify-between text-xs font-mono text-slate-400 mt-5 pt-2">
+              <div className="mt-5 flex justify-between pt-2 font-mono text-xs text-slate-400">
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-500">
                     {t.low}
                   </span>
                   <span className="font-semibold text-slate-200">
@@ -411,7 +445,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 </div>
 
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-500">
                     {t.high}
                   </span>
                   <span className="font-semibold text-slate-200">
@@ -427,13 +461,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
           </div>
 
-          <div className="mt-2 pt-3 border-t border-white/[0.06] text-[11px] text-slate-400 flex items-center justify-between">
+          <div className="mt-2 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
             <span>
               {isZh
                 ? `共识目标中枢: $${average.toFixed(2)} (${avgUpsidePct >= 0 ? "+" : ""}${avgUpsidePct.toFixed(1)}%)`
                 : `Consensus Target Mean: $${average.toFixed(2)} (${avgUpsidePct >= 0 ? "+" : ""}${avgUpsidePct.toFixed(1)}%)`}
             </span>
-            <span className="text-slate-300 font-mono">
+            <span className="font-mono text-slate-300">
               {isZh ? "偏度比 (High/Low): " : "Spread: "}
               {(high / (low || 1)).toFixed(2)}x
             </span>
@@ -442,15 +476,15 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       </div>
 
       {/* Main Grid: Estimates Table (8 cols) + Ratings Synthesis Narrative (4 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* Left: Analyst Estimates Table (lg:col-span-8) */}
-        <div className="lg:col-span-8 glass-panel rounded-2xl border border-white/[0.08] overflow-hidden flex flex-col">
+        <div className="glass-panel flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] lg:col-span-8">
           {/* Table Header & Controls */}
-          <div className="p-4 sm:p-5 border-b border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-1/40">
+          <div className="flex flex-col justify-between gap-3 border-b border-white/[0.08] bg-surface-1/40 p-4 sm:flex-row sm:items-center sm:p-5">
             <div>
-              <h3 className="text-sm font-semibold text-white tracking-wide flex items-center gap-2">
+              <h3 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-white">
                 <span>{t.tableTitle}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-slate-300 font-mono">
+                <span className="rounded-full bg-surface-3 px-2 py-0.5 font-mono text-xs text-slate-300">
                   {filteredEstimates.length}
                 </span>
               </h3>
@@ -460,36 +494,46 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               {/* Search */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder={isZh ? "搜索券商或分析师..." : "Search firm or analyst..."}
+                  placeholder={
+                    isZh ? "搜索券商或分析师..." : "Search firm or analyst..."
+                  }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs bg-surface-2/80 border border-white/[0.08] rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-accent/50 w-36 sm:w-44"
+                  className="w-36 rounded-lg border border-white/[0.08] bg-surface-2/80 py-1.5 pl-8 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-accent/50 focus:outline-none sm:w-44"
                 />
               </div>
 
               {/* Rating Filter Pills */}
-              <div className="flex items-center bg-surface-2/80 rounded-lg p-0.5 border border-white/[0.08] text-xs">
+              <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-2/80 p-0.5 text-xs">
                 {(["all", "buy", "hold", "sell"] as const).map((mode) => (
                   <button
                     key={mode}
                     type="button"
                     onClick={() => setRatingFilter(mode)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+                    className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
                       ratingFilter === mode
-                        ? "bg-accent/20 text-accent font-semibold"
+                        ? "bg-accent/20 font-semibold text-accent"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
                     {mode === "all"
-                      ? isZh ? "全部" : "All"
+                      ? isZh
+                        ? "全部"
+                        : "All"
                       : mode === "buy"
-                      ? isZh ? "看多" : "Buy"
-                      : mode === "hold"
-                      ? isZh ? "中性" : "Hold"
-                      : isZh ? "看空" : "Sell"}
+                        ? isZh
+                          ? "看多"
+                          : "Buy"
+                        : mode === "hold"
+                          ? isZh
+                            ? "中性"
+                            : "Hold"
+                          : isZh
+                            ? "看空"
+                            : "Sell"}
                   </button>
                 ))}
               </div>
@@ -498,21 +542,26 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
           {/* Table Container */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-white/[0.06] text-slate-400 font-medium bg-surface-0/40">
-                  <th className="py-3 px-4">{t.colFirm}</th>
-                  <th className="py-3 px-3">{t.colRating}</th>
-                  <th className="py-3 px-4 text-right">{t.colTarget}</th>
-                  <th className="py-3 px-3 text-right">{t.colUpside}</th>
-                  <th className="py-3 px-4 text-right">{t.colDate}</th>
+                <tr className="border-b border-white/[0.06] bg-surface-0/40 font-medium text-slate-400">
+                  <th className="px-4 py-3">{t.colFirm}</th>
+                  <th className="p-3">{t.colRating}</th>
+                  <th className="px-4 py-3 text-right">{t.colTarget}</th>
+                  <th className="p-3 text-right">{t.colUpside}</th>
+                  <th className="px-4 py-3 text-right">{t.colDate}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
                 {filteredEstimates.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
-                      {isZh ? "未找到匹配的分析师评级记录" : "No matching analyst estimates found"}
+                    <td
+                      colSpan={5}
+                      className="py-8 text-center text-xs text-slate-500"
+                    >
+                      {isZh
+                        ? "未找到匹配的分析师评级记录"
+                        : "No matching analyst estimates found"}
                     </td>
                   </tr>
                 ) : (
@@ -523,18 +572,18 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                     return (
                       <tr
                         key={`${item.firm}-${idx}`}
-                        className="hover:bg-surface-2/40 transition-colors group"
+                        className="group transition-colors hover:bg-surface-2/40"
                       >
                         {/* Firm & Analyst */}
-                        <td className="py-3.5 px-4">
+                        <td className="px-4 py-3.5">
                           <div className="flex flex-col">
-                            <div className="font-semibold text-white flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 font-semibold text-white">
                               <span>{item.firm}</span>
                               {actionStyle && item.action && (
                                 <span
-                                  className={`text-[10px] px-1.5 py-0.5 rounded border inline-flex items-center gap-0.5 font-medium ${actionStyle.className}`}
+                                  className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-medium ${actionStyle.className}`}
                                 >
-                                  <actionStyle.icon className="w-2.5 h-2.5" />
+                                  <actionStyle.icon className="size-2.5" />
                                   {item.action}
                                 </span>
                               )}
@@ -545,7 +594,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                               </span>
                             )}
                             {item.notes && (
-                              <span className="text-[10px] text-slate-500 mt-1 line-clamp-1 italic group-hover:line-clamp-none transition-all">
+                              <span className="mt-1 line-clamp-1 text-[10px] italic text-slate-500 transition-all group-hover:line-clamp-none">
                                 &quot;{item.notes}&quot;
                               </span>
                             )}
@@ -553,35 +602,36 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         </td>
 
                         {/* Rating */}
-                        <td className="py-3.5 px-3 whitespace-nowrap">
+                        <td className="whitespace-nowrap px-3 py-3.5">
                           <span
-                            className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${ratingStyle.className}`}
+                            className={`inline-block rounded-full border px-2.5 py-1 text-[11px] font-semibold ${ratingStyle.className}`}
                           >
                             {ratingStyle.label}
                           </span>
                         </td>
 
                         {/* 52W Price Target */}
-                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        <td className="whitespace-nowrap px-4 py-3.5 text-right">
                           <div className="flex flex-col items-end">
-                            <span className="font-mono font-bold text-white text-sm">
+                            <span className="font-mono text-sm font-bold text-white">
                               ${item.priceTarget.toFixed(2)}
                             </span>
                             {item.priorPriceTarget && (
-                              <span className="text-[11px] text-slate-400 font-mono">
-                                {t.fromPrior} ${item.priorPriceTarget.toFixed(2)}
+                              <span className="font-mono text-[11px] text-slate-400">
+                                {t.fromPrior} $
+                                {item.priorPriceTarget.toFixed(2)}
                               </span>
                             )}
                           </div>
                         </td>
 
                         {/* Upside % */}
-                        <td className="py-3.5 px-3 text-right whitespace-nowrap">
+                        <td className="whitespace-nowrap px-3 py-3.5 text-right">
                           <span
-                            className={`inline-block font-mono font-bold px-2 py-0.5 rounded text-xs ${
+                            className={`inline-block rounded px-2 py-0.5 font-mono text-xs font-bold ${
                               item.upsidePct >= 0
-                                ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
-                                : "text-rose-400 bg-rose-500/10 border border-rose-500/20"
+                                ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
                             }`}
                           >
                             {item.upsidePct >= 0 ? "+" : ""}
@@ -590,7 +640,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         </td>
 
                         {/* Date */}
-                        <td className="py-3.5 px-4 text-right text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                        <td className="whitespace-nowrap px-4 py-3.5 text-right font-mono text-[11px] text-slate-400">
                           {item.date}
                         </td>
                       </tr>
@@ -603,55 +653,63 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         </div>
 
         {/* Right: Analyst Ratings Synthesis Card (lg:col-span-4) */}
-        <div className="lg:col-span-4 flex flex-col gap-5">
+        <div className="flex flex-col gap-5 lg:col-span-4">
           {/* Narrative Card */}
-          <div className="glass-panel p-5 rounded-2xl border border-white/[0.08] flex flex-col h-full">
-            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/[0.08]">
-              <div className="p-1.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
-                <Sparkles className="w-4 h-4" />
+          <div className="glass-panel flex h-full flex-col rounded-2xl border border-white/[0.08] p-5">
+            <div className="mb-3 flex items-center gap-2 border-b border-white/[0.08] pb-3">
+              <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
+                <Sparkles className="size-4" />
               </div>
-              <h3 className="text-sm font-semibold text-white tracking-wide">
+              <h3 className="text-sm font-semibold tracking-wide text-white">
                 {t.synthesisTitle}
               </h3>
             </div>
 
-            <div className="relative pl-3 border-l-2 border-accent/60 my-2">
-              <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+            <div className="relative my-2 border-l-2 border-accent/60 pl-3">
+              <p className="whitespace-pre-line text-xs leading-relaxed text-slate-300">
                 {synthesisNarrative}
               </p>
             </div>
 
             {/* Quick Synthesis Highlights */}
-            <div className="mt-auto pt-4 border-t border-white/[0.06] space-y-2.5">
+            <div className="mt-auto space-y-2.5 border-t border-white/[0.06] pt-4">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {isZh ? "共识核心特征" : "Consensus Anatomy"}
               </div>
 
-              <div className="p-2.5 rounded-xl bg-surface-2/60 border border-white/[0.04] flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">
                   {isZh ? "最高目标券商" : "Street High"}
                 </span>
                 <span className="font-mono font-bold text-emerald-400">
                   ${high.toFixed(2)}{" "}
                   <span className="text-[10px] text-slate-500">
-                    ({current > 0 ? `+${(((high - current) / current) * 100).toFixed(0)}%` : ""})
+                    (
+                    {current > 0
+                      ? `+${(((high - current) / current) * 100).toFixed(0)}%`
+                      : ""}
+                    )
                   </span>
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-surface-2/60 border border-white/[0.04] flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">
                   {isZh ? "最低目标券商" : "Street Low"}
                 </span>
                 <span className="font-mono font-bold text-slate-300">
                   ${low.toFixed(2)}{" "}
                   <span className="text-[10px] text-slate-500">
-                    ({current > 0 ? `${(((low - current) / current) * 100).toFixed(0)}%` : ""})
+                    (
+                    {current > 0
+                      ? `${(((low - current) / current) * 100).toFixed(0)}%`
+                      : ""}
+                    )
                   </span>
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-surface-2/60 border border-white/[0.04] flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">
                   {isZh ? "目标价跨度 (High - Low)" : "Target Spread"}
                 </span>
@@ -666,32 +724,32 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
       {/* Sources & Citations Section if Available */}
       {sources && sources.length > 0 && (
-        <div className="glass-panel p-5 rounded-2xl border border-white/[0.08]">
-          <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-slate-300 uppercase tracking-wider">
-            <ExternalLink className="w-3.5 h-3.5 text-accent" />
+        <div className="glass-panel rounded-2xl border border-white/[0.08] p-5">
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <ExternalLink className="size-3.5 text-accent" />
             <span>{t.sourcesTitle}</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {sources.map((source, idx) => (
               <a
                 key={idx}
                 href={source.url || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-xl bg-surface-1 border border-white/[0.06] hover:border-accent/40 hover:bg-surface-2 transition-all flex flex-col justify-between group"
+                className="group flex flex-col justify-between rounded-xl border border-white/[0.06] bg-surface-1 p-3 transition-all hover:border-accent/40 hover:bg-surface-2"
               >
                 <div>
-                  <div className="text-xs font-semibold text-slate-200 group-hover:text-accent transition-colors line-clamp-2">
+                  <div className="line-clamp-2 text-xs font-semibold text-slate-200 transition-colors group-hover:text-accent">
                     {source.title}
                   </div>
                   {source.publisher && (
-                    <div className="text-[11px] text-slate-400 mt-1">
+                    <div className="mt-1 text-[11px] text-slate-400">
                       {source.publisher}
                     </div>
                   )}
                 </div>
                 {source.date && (
-                  <div className="text-[10px] text-slate-500 font-mono mt-2">
+                  <div className="mt-2 font-mono text-[10px] text-slate-500">
                     {source.date}
                   </div>
                 )}

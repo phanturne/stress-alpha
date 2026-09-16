@@ -64,7 +64,11 @@ export const FactsSchema = z.object({
   currentPrice: z.number(),
   marketCapBillions: z.number().optional().default(0),
   trailingEps: z.number().optional().default(0),
-  forwardEpsConsensus: z.number().describe("Next FY consensus EPS").optional().default(0),
+  forwardEpsConsensus: z
+    .number()
+    .describe("Next FY consensus EPS")
+    .optional()
+    .default(0),
 
   // Metadata
   sources: z.array(SourceSchema).optional().default([]),
@@ -100,10 +104,19 @@ export type Catalysts = z.infer<typeof CatalystsSchema>;
 // --- StressAlpha Flow-Through & Stress-Testing Models ---
 export const UpstreamDriverSchema = z.object({
   id: z.string().describe("Unique identifier e.g. hyperscaler-capex"),
-  name: z.string().describe("Readable name e.g. Hyperscaler Cloud CapEx Growth"),
-  exposureShare: z.number().min(0).max(1).describe("Share of revenue exposed to this driver"),
+  name: z
+    .string()
+    .describe("Readable name e.g. Hyperscaler Cloud CapEx Growth"),
+  exposureShare: z
+    .number()
+    .min(0)
+    .max(1)
+    .describe("Share of revenue exposed to this driver"),
   elasticity: z.number().describe("Demand elasticity multiplier, e.g. 0.85"),
-  defaultShockPct: z.number().default(0).describe("Baseline shock pct (0 for unperturbed)"),
+  defaultShockPct: z
+    .number()
+    .default(0)
+    .describe("Baseline shock pct (0 for unperturbed)"),
   minShockPct: z.number().default(-50),
   maxShockPct: z.number().default(50),
 });
@@ -125,7 +138,9 @@ export const FinancialModelBaselineSchema = z.object({
   multipleRegimes: MultipleRegimesSchema,
   upstreamDrivers: z.array(UpstreamDriverSchema).default([]),
 });
-export type FinancialModelBaseline = z.infer<typeof FinancialModelBaselineSchema>;
+export type FinancialModelBaseline = z.infer<
+  typeof FinancialModelBaselineSchema
+>;
 
 export const ValuationBandSchema = z.object({
   regime: z.enum(["bull", "base", "panic"]),
@@ -197,9 +212,12 @@ export type ReactionEvent = z.infer<typeof ReactionEventSchema>;
 export const ReactionsSchema = z.object({
   ticker: z.string(),
   events: z.array(ReactionEventSchema).default([]),
-  conditionalFraming: z.string().optional().describe(
-    "Summary of what conditions historically produce positive/negative reactions"
-  ),
+  conditionalFraming: z
+    .string()
+    .optional()
+    .describe(
+      "Summary of what conditions historically produce positive/negative reactions"
+    ),
 });
 export type Reactions = z.infer<typeof ReactionsSchema>;
 
@@ -222,18 +240,22 @@ export type AnalystConcernTopic = z.infer<typeof AnalystConcernTopicSchema>;
 export const EarningsSentimentSchema = z.object({
   ticker: z.string().optional(),
   quarter: z.string().optional(),
-  managementTone: z.object({
-    overallConfidence: z.number(),
-    specificity: z.number(),
-    forwardConfidence: z.number(),
-    capexJustification: z.number(),
-    competitivePositioning: z.number(),
-    riskAcknowledgment: z.number(),
-    evidenceNotes: z.string().optional(),
-  }).optional(),
-  analystConcerns: z.object({
-    topTopics: z.array(AnalystConcernTopicSchema).optional().default([]),
-  }).optional(),
+  managementTone: z
+    .object({
+      overallConfidence: z.number(),
+      specificity: z.number(),
+      forwardConfidence: z.number(),
+      capexJustification: z.number(),
+      competitivePositioning: z.number(),
+      riskAcknowledgment: z.number(),
+      evidenceNotes: z.string().optional(),
+    })
+    .optional(),
+  analystConcerns: z
+    .object({
+      topTopics: z.array(AnalystConcernTopicSchema).optional().default([]),
+    })
+    .optional(),
   keyQuotes: z.array(KeyQuoteSchema).optional().default([]),
 });
 export type EarningsSentiment = z.infer<typeof EarningsSentimentSchema>;
@@ -248,11 +270,13 @@ export type NewRiskFactor = z.infer<typeof NewRiskFactorSchema>;
 
 export const FilingSectionSchema = z.object({
   section: z.string(),
-  keyFindings: z.array(z.object({
-    finding: z.string(),
-    implication: z.string().optional(),
-    novelty: z.string().optional(),
-  })),
+  keyFindings: z.array(
+    z.object({
+      finding: z.string(),
+      implication: z.string().optional(),
+      novelty: z.string().optional(),
+    })
+  ),
 });
 export type FilingSection = z.infer<typeof FilingSectionSchema>;
 
@@ -275,7 +299,9 @@ export const MoatSourceSchema = z.object({
   ]),
   strength: z.enum(["Strong", "Moderate", "Weak", "None"]),
   description: z.string(),
-  durabilityYears: z.number().describe("Estimated years of sustainable advantage"),
+  durabilityYears: z
+    .number()
+    .describe("Estimated years of sustainable advantage"),
 });
 export type MoatSource = z.infer<typeof MoatSourceSchema>;
 
@@ -341,25 +367,44 @@ export type Valuation = z.infer<typeof ValuationSchema>;
 
 // --- Stage 1c: Wall Street Analyst Estimates & Consensus (Perplexity Finance style) ---
 export const AnalystEstimateEntrySchema = z.object({
-  firm: z.string().describe("Brokerage / Investment bank name e.g. Rosenblatt, JP Morgan"),
-  analyst: z.string().optional().nullable().describe("Lead analyst name e.g. Kevin Cassidy, Harlan Sur"),
-  rating: z.enum([
-    "Strong Buy",
-    "Buy",
-    "Outperform",
-    "Overweight",
-    "Hold",
-    "Neutral",
-    "Equal-weight",
-    "Underperform",
-    "Underweight",
-    "Sell",
-  ]).or(z.string()),
+  firm: z
+    .string()
+    .describe("Brokerage / Investment bank name e.g. Rosenblatt, JP Morgan"),
+  analyst: z
+    .string()
+    .optional()
+    .nullable()
+    .describe("Lead analyst name e.g. Kevin Cassidy, Harlan Sur"),
+  rating: z
+    .enum([
+      "Strong Buy",
+      "Buy",
+      "Outperform",
+      "Overweight",
+      "Hold",
+      "Neutral",
+      "Equal-weight",
+      "Underperform",
+      "Underweight",
+      "Sell",
+    ])
+    .or(z.string()),
   priceTarget: z.number().positive(),
   priorPriceTarget: z.number().positive().optional().nullable(),
   upsidePct: z.number(),
   date: z.string().describe("Rating date YYYY-MM-DD or MM/DD/YYYY"),
-  action: z.enum(["Reiterated", "Raised", "Lowered", "Initiated", "Downgraded", "Upgraded"]).or(z.string()).optional().nullable(),
+  action: z
+    .enum([
+      "Reiterated",
+      "Raised",
+      "Lowered",
+      "Initiated",
+      "Downgraded",
+      "Upgraded",
+    ])
+    .or(z.string())
+    .optional()
+    .nullable(),
   notes: z.string().optional().nullable(),
 });
 export type AnalystEstimateEntry = z.infer<typeof AnalystEstimateEntrySchema>;
@@ -374,7 +419,9 @@ export const AnalystConsensusBreakdownSchema = z.object({
   bearishCount: z.number().nonnegative(),
   bearishPct: z.number().min(0).max(100),
 });
-export type AnalystConsensusBreakdown = z.infer<typeof AnalystConsensusBreakdownSchema>;
+export type AnalystConsensusBreakdown = z.infer<
+  typeof AnalystConsensusBreakdownSchema
+>;
 
 export const AnalystPriceTargetsRangeSchema = z.object({
   currentPrice: z.number().positive(),
@@ -384,14 +431,20 @@ export const AnalystPriceTargetsRangeSchema = z.object({
   high: z.number().positive(),
   currency: z.string().default("USD"),
 });
-export type AnalystPriceTargetsRange = z.infer<typeof AnalystPriceTargetsRangeSchema>;
+export type AnalystPriceTargetsRange = z.infer<
+  typeof AnalystPriceTargetsRangeSchema
+>;
 
 export const AnalystEstimatesSchema = z.object({
   ticker: z.string(),
   asOfDate: z.string().optional(),
   consensus: AnalystConsensusBreakdownSchema,
   priceTargets: AnalystPriceTargetsRangeSchema,
-  synthesisNarrative: z.string().describe("Comprehensive synthesis of Wall Street sentiment, target dispersion, and post-earnings revision wave"),
+  synthesisNarrative: z
+    .string()
+    .describe(
+      "Comprehensive synthesis of Wall Street sentiment, target dispersion, and post-earnings revision wave"
+    ),
   estimates: z.array(AnalystEstimateEntrySchema).default([]),
   sources: z.array(SourceSchema).optional().default([]),
 });

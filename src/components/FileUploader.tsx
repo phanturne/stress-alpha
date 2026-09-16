@@ -66,14 +66,17 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         ? ReactionsSchema.safeParse(fileMap["reactions.json"]).data
         : undefined;
       const sentiment = fileMap["earnings-sentiment.json"]
-        ? EarningsSentimentSchema.safeParse(fileMap["earnings-sentiment.json"]).data
+        ? EarningsSentimentSchema.safeParse(fileMap["earnings-sentiment.json"])
+            .data
         : undefined;
       const filing = fileMap["filing-extracts.json"]
         ? FilingExtractsSchema.safeParse(fileMap["filing-extracts.json"]).data
         : undefined;
 
       let baseline = fileMap["stress-baseline.json"]
-        ? FinancialModelBaselineSchema.safeParse(fileMap["stress-baseline.json"]).data
+        ? FinancialModelBaselineSchema.safeParse(
+            fileMap["stress-baseline.json"]
+          ).data
         : scenarios.baseline;
 
       if (!baseline) {
@@ -109,12 +112,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg bg-surface-1 rounded-2xl border border-border p-6 shadow-2xl flex flex-col gap-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="relative flex w-full max-w-lg flex-col gap-4 rounded-2xl border border-border bg-surface-1 p-6 shadow-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Upload className="w-5 h-5 text-accent" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <Upload className="size-5 text-accent" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
               {t.title}
             </h3>
           </div>
@@ -122,20 +125,20 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-2 transition-colors"
+              className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-surface-2 hover:text-white"
             >
-              <X className="w-4 h-4" />
+              <X className="size-4" />
             </button>
           )}
         </div>
 
-        <p className="text-xs text-slate-400 leading-relaxed">
+        <p className="text-xs leading-relaxed text-slate-400">
           {t.description}
         </p>
 
         {error && (
-          <div className="p-3 rounded-lg bg-fintech-redGlow/10 border border-fintech-red/30 flex items-center gap-2 text-xs text-fintech-red">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="flex items-center gap-2 rounded-lg border border-fintech-red/30 bg-fintech-redGlow/10 p-3 text-xs text-fintech-red">
+            <AlertCircle className="size-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -154,21 +157,21 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
               processFiles(e.dataTransfer.files);
             }
           }}
-          className={`border-2 border-dashed rounded-xl p-8 text-center flex flex-col items-center justify-center gap-3 transition-all ${
+          className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-all ${
             isDragging
-              ? "border-accent bg-surface-2 scale-[1.01]"
-              : "border-border hover:border-accent/40 bg-surface-0/60"
+              ? "scale-[1.01] border-accent bg-surface-2"
+              : "border-border bg-surface-0/60 hover:border-accent/40"
           }`}
         >
-          <FolderUp className="w-10 h-10 text-accent" />
-          <div className="text-xs text-slate-300 font-medium">
+          <FolderUp className="size-10 text-accent" />
+          <div className="text-xs font-medium text-slate-300">
             {t.dropzoneTitle}
           </div>
-          <div className="text-[10px] text-slate-500 font-mono">
+          <div className="font-mono text-[10px] text-slate-500">
             {t.dropzoneHint}
           </div>
 
-          <div className="flex items-center gap-2 mt-2">
+          <div className="mt-2 flex items-center gap-2">
             <input
               ref={folderInputRef}
               type="file"
@@ -182,7 +185,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             <button
               type="button"
               onClick={() => folderInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs font-semibold text-white transition-colors"
+              className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-surface-3"
             >
               {t.chooseFolder}
             </button>
@@ -198,7 +201,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             <button
               type="button"
               onClick={() => filesInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-xs font-semibold text-slate-300 transition-colors"
+              className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-surface-3"
             >
               {t.selectFiles}
             </button>
