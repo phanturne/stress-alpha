@@ -21,14 +21,11 @@ export const MemoView: React.FC<MemoViewProps> = ({
   locale = "zh",
   onLocaleChange,
 }) => {
-  const [memoLang, setMemoLang] = useState<Locale>(locale);
-
-  React.useEffect(() => {
-    setMemoLang(locale);
-  }, [locale]);
+  const [selectedLang, setSelectedLang] = useState<Locale | null>(null);
+  const memoLang = selectedLang ?? locale;
 
   const handleLangChange = (lang: Locale) => {
-    setMemoLang(lang);
+    setSelectedLang(lang);
     onLocaleChange?.(lang);
   };
 

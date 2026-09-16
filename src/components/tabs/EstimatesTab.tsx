@@ -43,17 +43,6 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
   const [sortBy, setSortBy] = useState<"date" | "upside" | "target">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  if (!estimatesData) {
-    return (
-      <div className="p-12 text-center text-sm text-slate-400 glass-panel rounded-xl">
-        {t.empty}
-      </div>
-    );
-  }
-
-  const { consensus, priceTargets, synthesisNarrative, estimates = [], sources = [] } = estimatesData;
-  const effectiveCurrentPrice = priceTargets?.currentPrice || propCurrentPrice || 0;
-
   // Rating badge styling helper
   const getRatingBadge = (rating: string) => {
     const r = rating.toLowerCase();
@@ -117,7 +106,8 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
   // Filtering & Sorting
   const filteredEstimates = useMemo(() => {
-    return estimates
+    const rawEstimates = estimatesData?.estimates ?? [];
+    return rawEstimates
       .filter((item) => {
         const matchesSearch =
           item.firm.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,7 +140,18 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         }
         return sortOrder === "desc" ? -diff : diff;
       });
-  }, [estimates, searchTerm, ratingFilter, sortBy, sortOrder]);
+  }, [estimatesData?.estimates, searchTerm, ratingFilter, sortBy, sortOrder]);
+
+  if (!estimatesData) {
+    return (
+      <div className="p-12 text-center text-sm text-slate-400 glass-panel rounded-xl">
+        {t.empty}
+      </div>
+    );
+  }
+
+  const { consensus, priceTargets, synthesisNarrative, sources = [] } = estimatesData;
+  const effectiveCurrentPrice = priceTargets?.currentPrice || propCurrentPrice || 0;
 
   // Track Calculations
   const low = priceTargets.low;

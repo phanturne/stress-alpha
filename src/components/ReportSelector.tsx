@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FolderOpen, RefreshCw, ChevronDown, Check, Sparkles } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -23,7 +23,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     setIsFetching(true);
     try {
       const res = await fetch("/api/reports");
@@ -36,10 +36,23 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
     } finally {
       setIsFetching(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchReports();
+    let ignore = false;
+    fetch("/api/reports")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!ignore && data?.reports) {
+          setReports(data.reports);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load reports:", err);
+      });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const currentReport = reports.find((r) => r.slug === currentSlug);

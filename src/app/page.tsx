@@ -6,13 +6,9 @@ import {
   Sparkles,
   TrendingUp,
   Layers,
-  Mic,
   FileSearch,
-  History,
-  Grid,
   FileText,
   Check,
-  AlertCircle,
   Loader2,
   ShieldCheck,
   Target,
@@ -54,8 +50,10 @@ export default function HomePage() {
     try {
       const savedLocale = localStorage.getItem("stress_alpha_locale") as Locale | null;
       if (savedLocale === "en" || savedLocale === "zh") {
-        setLocale(savedLocale);
-        setReportDocLang(savedLocale);
+        Promise.resolve().then(() => {
+          setLocale(savedLocale);
+          setReportDocLang(savedLocale);
+        });
       }
     } catch (e) {
       console.warn("Could not load locale preference:", e);
@@ -64,7 +62,7 @@ export default function HomePage() {
 
   const t = getTranslations(locale);
 
-  const handleToggleLocale = (newLocale: Locale) => {
+  const handleToggleLocale = useCallback((newLocale: Locale) => {
     setLocale(newLocale);
     setReportDocLang(newLocale);
     try {
@@ -72,7 +70,7 @@ export default function HomePage() {
     } catch (e) {
       console.warn("Could not save locale preference:", e);
     }
-  };
+  }, []);
 
   const [stressParams, setStressParams] = useState<StressTestParams>({
     driverShocks: {},
@@ -216,7 +214,7 @@ export default function HomePage() {
     }));
   };
 
-  const handleResetDefaults = () => {
+  const handleResetDefaults = useCallback(() => {
     if (!reportData?.baseline) return;
     const defaultShocks: Record<string, number> = {};
     for (const d of reportData.baseline.upstreamDrivers) {
@@ -228,7 +226,7 @@ export default function HomePage() {
       fixedOpexShiftPct: 0,
     });
     showToast(t.page.resetSlidersToast);
-  };
+  }, [reportData?.baseline, t.page.resetSlidersToast]);
 
   // Catalyst probability changes
   const handleCatalystProbabilityChange = (idx: number, prob: number) => {
