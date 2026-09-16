@@ -75,6 +75,46 @@ Operating EPS (adjusted): **$3.23**
 
 > The explosive rollout of GPU supercomputing clusters for frontier generative AI models has ignited an unprecedented optical interconnect supercycle. Inter-GPU bandwidth demands have compressed transition cycles from 400G to 800G and 1.6T, elevating high-speed Indium Phosphide (InP) lasers and optical transceivers into mission-critical hardware. Lumentum's strategic acquisition of Cloud Light successfully transformed the company from a merchant laser component supplier into an integrated tier-1 transceiver powerhouse, driving FY2026 Q4 revenue up +109.3% YoY to $1.006B and expanding operating margins to 36.6%. The company's Narrow Moat is actively widening as hyperscalers commit to multi-year capacity reservations for next-gen 200G/lane EMLs and Co-Packaged Optics (CPO) architectures.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Strong Buy** (26 analysts: 22 Bullish [84.6%], 4 Neutral [15.4%], 0 Bearish [0%])
+- **Price Targets:** Low $820 | Avg **$1149.38** | Median $1168 | High $1400
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, LITE is covered by 26 sell-side institutions with an overall 'Strong Buy' consensus (84.6% Bullish). Price targets range from a Street low of $820.00 to a high of $1400.00, centering around a mean consensus target of $1149.38 (+37.6% vs. current $835.03). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Deutsche Bank** | — | Buy | $1200 | +43.7% | 2026-09-01 | Reiterated | Target adjusted to $1200.00 based on post-earnings sell-side modeling. |
+| **Evercore ISI Group** | — | Outperform | $1100 | +31.7% | 2026-08-31 | Reiterated | Target adjusted to $1100.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Equal-Weight | $1000 | +19.8% | 2026-08-12 | Raised | Target adjusted to $1000.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Hold | $820 | -1.8% | 2026-08-12 | Raised | Target adjusted to $820.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $1280 | +53.3% | 2026-08-12 | Raised | Target adjusted to $1280.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Outperform | $1140 | +36.5% | 2026-08-12 | Raised | Target adjusted to $1140.00 based on post-earnings sell-side modeling. |
+| **Rosenblatt** | — | Buy | $1300 | +55.7% | 2026-08-12 | Reiterated | Target adjusted to $1300.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Neutral | $1000 | +19.8% | 2026-08-12 | Lowered | Target adjusted to $1000.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $1000 | +19.8% | 2026-07-20 | Reiterated | Target adjusted to $1000.00 based on post-earnings sell-side modeling. |
+| **Needham** | — | Buy | $1040 | +24.5% | 2026-06-09 | Reiterated | Target adjusted to $1040.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Neutral | $960 | +15% | 2026-05-06 | Raised | Target adjusted to $960.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $1100 | +31.7% | 2026-05-05 | Raised | Target adjusted to $1100.00 based on post-earnings sell-side modeling. |
+| **Rothschild & Co** | — | Buy | $1270 | +52.1% | 2026-05-01 | Reiterated | Target adjusted to $1270.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $560 | -32.9% | 2026-02-05 | Raised | Target adjusted to $560.00 based on post-earnings sell-side modeling. |
+| **B. Riley Securities** | — | Buy | $526 | -37% | 2026-02-04 | Raised | Target adjusted to $526.00 based on post-earnings sell-side modeling. |
+| **Susquehanna** | — | Positive | $550 | -34.1% | 2026-02-04 | Raised | Target adjusted to $550.00 based on post-earnings sell-side modeling. |
+| **Raymond James** | — | Strong Buy | $145 | -82.6% | 2025-08-13 | Raised | Target adjusted to $145.00 based on post-earnings sell-side modeling. |
+| **Northland Capital Markets** | — | Market Perform | $70 | -91.6% | 2025-02-07 | Raised | Target adjusted to $70.00 based on post-earnings sell-side modeling. |
+| **Jefferies** | — | Buy | $65 | -92.2% | 2024-08-15 | Raised | Target adjusted to $65.00 based on post-earnings sell-side modeling. |
+| **Craig-Hallum** | — | Buy | $70 | -91.6% | 2024-08-15 | Raised | Target adjusted to $70.00 based on post-earnings sell-side modeling. |
+| **Loop Capital** | — | Buy | $55 | -93.4% | 2023-05-10 | Lowered | Target adjusted to $55.00 based on post-earnings sell-side modeling. |
+| **Goldman Sachs** | — | Neutral | $86 | -89.7% | 2021-06-01 | Lowered | Target adjusted to $86.00 based on post-earnings sell-side modeling. |
+| **MKM Partners** | — | Buy | $86 | -89.7% | 2021-05-13 | Lowered | Target adjusted to $86.00 based on post-earnings sell-side modeling. |
+| **DA Davidson** | — | Neutral | $77 | -90.8% | 2017-06-23 | Reiterated | Target adjusted to $77.00 based on post-earnings sell-side modeling. |
+| **Piper Sandler** | — | Overweight | $31 | -96.3% | 2016-02-22 | Reiterated | Target adjusted to $31.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Sector Perform | $20 | -97.6% | 2015-09-09 | Lowered | Target adjusted to $20.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $21.74

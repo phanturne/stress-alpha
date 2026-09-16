@@ -1,0 +1,363 @@
+{
+  "ticker": "MU",
+  "asOfDate": "2026-09-15",
+  "consensus": {
+    "consensus": "强烈推荐买入 (Strong Buy)",
+    "totalAnalysts": 49,
+    "bullishCount": 45,
+    "bullishPct": 91.8,
+    "neutralCount": 4,
+    "neutralPct": 8.2,
+    "bearishCount": 0,
+    "bearishPct": 0.0
+  },
+  "priceTargets": {
+    "currentPrice": 923.75,
+    "low": 361.0,
+    "average": 1513.11,
+    "median": 1540.0,
+    "high": 2200.0,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "根据雅虎财经 (Yahoo Finance) 实时卖方共识数据，华尔街共有 49 家机构覆盖 MU，综合评级为『强烈推荐买入 (Strong Buy)』（看多比例 91.8%）。52周目标价区间介于最低 $361.00 与最高 $2200.00 之间，市场共识均价为 $1513.11（较当前现价 $923.75 预期空间 +63.8%）。各大投行与券商在财报发布后密集更新了盈利预测模型，反映出机构对行业景气度及资本开支节奏的动态调整。",
+  "estimates": [
+    {
+      "firm": "Mizuho",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1300.0,
+      "priorPriceTarget": 1375.0,
+      "upsidePct": 40.7,
+      "date": "2026-08-25",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1300.00。"
+    },
+    {
+      "firm": "New Street Research",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1250.0,
+      "priorPriceTarget": null,
+      "upsidePct": 35.3,
+      "date": "2026-08-14",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1250.00。"
+    },
+    {
+      "firm": "Citigroup",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1150.0,
+      "priorPriceTarget": 1400.0,
+      "upsidePct": 24.5,
+      "date": "2026-08-07",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1150.00。"
+    },
+    {
+      "firm": "Keybanc",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1750.0,
+      "priorPriceTarget": 1600.0,
+      "upsidePct": 89.4,
+      "date": "2026-07-14",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1750.00。"
+    },
+    {
+      "firm": "Cantor Fitzgerald",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 2000.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 116.5,
+      "date": "2026-06-29",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $2000.00。"
+    },
+    {
+      "firm": "Barclays",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 2000.0,
+      "priorPriceTarget": 1175.0,
+      "upsidePct": 116.5,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $2000.00。"
+    },
+    {
+      "firm": "Goldman Sachs",
+      "analyst": null,
+      "rating": "中性 (Neutral)",
+      "priceTarget": 1100.0,
+      "priorPriceTarget": 900.0,
+      "upsidePct": 19.1,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1100.00。"
+    },
+    {
+      "firm": "Morgan Stanley",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1200.0,
+      "priorPriceTarget": 1050.0,
+      "upsidePct": 29.9,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1200.00。"
+    },
+    {
+      "firm": "Raymond James",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 1100.0,
+      "upsidePct": 62.4,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1500.00。"
+    },
+    {
+      "firm": "Deutsche Bank",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1550.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 67.8,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1550.00。"
+    },
+    {
+      "firm": "Wedbush",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1400.0,
+      "priorPriceTarget": 1300.0,
+      "upsidePct": 51.6,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1400.00。"
+    },
+    {
+      "firm": "DA Davidson",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 2000.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 116.5,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $2000.00。"
+    },
+    {
+      "firm": "Wells Fargo",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1525.0,
+      "priorPriceTarget": 1220.0,
+      "upsidePct": 65.1,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1525.00。"
+    },
+    {
+      "firm": "RBC Capital",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 1200.0,
+      "upsidePct": 62.4,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1500.00。"
+    },
+    {
+      "firm": "TD Cowen",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1600.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 73.2,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1600.00。"
+    },
+    {
+      "firm": "Susquehanna",
+      "analyst": null,
+      "rating": "积极 (Positive)",
+      "priceTarget": 2000.0,
+      "priorPriceTarget": 1750.0,
+      "upsidePct": 116.5,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $2000.00。"
+    },
+    {
+      "firm": "Rosenblatt",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 1200.0,
+      "upsidePct": 62.4,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1500.00。"
+    },
+    {
+      "firm": "B of A Securities",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1550.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 67.8,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1550.00。"
+    },
+    {
+      "firm": "Needham",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1650.0,
+      "priorPriceTarget": 1550.0,
+      "upsidePct": 78.6,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1650.00。"
+    },
+    {
+      "firm": "Stifel",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 550.0,
+      "upsidePct": 62.4,
+      "date": "2026-06-18",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1500.00。"
+    },
+    {
+      "firm": "Wolfe Research",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1250.0,
+      "priorPriceTarget": 550.0,
+      "upsidePct": 35.3,
+      "date": "2026-06-11",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1250.00。"
+    },
+    {
+      "firm": "UBS",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1625.0,
+      "priorPriceTarget": 535.0,
+      "upsidePct": 75.9,
+      "date": "2026-05-26",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1625.00。"
+    },
+    {
+      "firm": "Melius Research",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1100.0,
+      "priorPriceTarget": 700.0,
+      "upsidePct": 19.1,
+      "date": "2026-05-19",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1100.00。"
+    },
+    {
+      "firm": "JP Morgan",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 550.0,
+      "priorPriceTarget": 350.0,
+      "upsidePct": -40.5,
+      "date": "2026-03-19",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $550.00。"
+    },
+    {
+      "firm": "Bernstein",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 510.0,
+      "priorPriceTarget": 330.0,
+      "upsidePct": -44.8,
+      "date": "2026-03-18",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $510.00。"
+    },
+    {
+      "firm": "Lynx Global",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 550.0,
+      "priorPriceTarget": 325.0,
+      "upsidePct": -40.5,
+      "date": "2026-01-12",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $550.00。"
+    },
+    {
+      "firm": "Piper Sandler",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 400.0,
+      "priorPriceTarget": 275.0,
+      "upsidePct": -56.7,
+      "date": "2026-01-07",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $400.00。"
+    },
+    {
+      "firm": "HSBC",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 330.0,
+      "priorPriceTarget": null,
+      "upsidePct": -64.3,
+      "date": "2025-12-09",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $330.00。"
+    },
+    {
+      "firm": "Itau BBA",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 249.0,
+      "priorPriceTarget": null,
+      "upsidePct": -73.0,
+      "date": "2025-10-07",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $249.00。"
+    },
+    {
+      "firm": "CLSA",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 155.0,
+      "priorPriceTarget": null,
+      "upsidePct": -83.2,
+      "date": "2025-08-27",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $155.00。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Yahoo Finance MU Analyst Research & Price Targets",
+      "publisher": "Yahoo Finance API / Sell-Side Consensus",
+      "url": "https://finance.yahoo.com/quote/MU/analysis",
+      "date": "2026-09-15"
+    }
+  ]
+}

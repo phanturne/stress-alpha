@@ -77,6 +77,50 @@ Operating EPS (adjusted): **$2.85**
 
 > Alphabet maintains an exceptionally wide and durable economic moat anchored across 5 core pillars. Its dominant position in global search (89%+ query volume) and video streaming (YouTube #1 in US TV screen time) generates unmatched multi-sided network effects and high-margin advertising cash flows. In enterprise computing, Google Cloud has transitioned into a highly profitable growth engine (15.0% operating margin, +29.3% YoY growth). While DOJ antitrust remedies and high AI infrastructure capex ($52-55B) introduce regulatory and depreciation friction, Alphabet's decade-long custom silicon advantage (TPU v6 Trillium) and ownership of global fiber backbones insulate it from third-party hardware markups, ensuring enduring competitive defensibility through 2035.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Strong Buy** (63 analysts: 58 Bullish [92.1%], 5 Neutral [7.9%], 0 Bearish [0%])
+- **Price Targets:** Low $340 | Avg **$428.07** | Median $429 | High $515
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, GOOGL is covered by 63 sell-side institutions with an overall 'Strong Buy' consensus (92.1% Bullish). Price targets range from a Street low of $340.00 to a high of $515.00, centering around a mean consensus target of $428.07 (+24.1% vs. current $344.98). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Rosenblatt** | — | Buy | $410 | +18.8% | 2026-09-03 | Reiterated | Target adjusted to $410.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Neutral | $379 | +9.9% | 2026-07-23 | Lowered | Target adjusted to $379.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $400 | +15.9% | 2026-07-23 | Lowered | Target adjusted to $400.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $420 | +21.7% | 2026-07-23 | Lowered | Target adjusted to $420.00 based on post-earnings sell-side modeling. |
+| **BMO Capital** | — | Outperform | $465 | +34.8% | 2026-07-23 | Raised | Target adjusted to $465.00 based on post-earnings sell-side modeling. |
+| **DA Davidson** | — | Neutral | $350 | +1.5% | 2026-07-23 | Lowered | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $425 | +23.2% | 2026-07-23 | Reiterated | Target adjusted to $425.00 based on post-earnings sell-side modeling. |
+| **Roth Capital** | — | Buy | $440 | +27.5% | 2026-07-23 | Raised | Target adjusted to $440.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $425 | +23.2% | 2026-07-23 | Raised | Target adjusted to $425.00 based on post-earnings sell-side modeling. |
+| **Wedbush** | — | Outperform | $445 | +29% | 2026-07-23 | Reiterated | Target adjusted to $445.00 based on post-earnings sell-side modeling. |
+| **Wells Fargo** | — | Overweight | $411 | +19.1% | 2026-07-23 | Lowered | Target adjusted to $411.00 based on post-earnings sell-side modeling. |
+| **Cantor Fitzgerald** | — | Overweight | $420 | +21.7% | 2026-07-23 | Lowered | Target adjusted to $420.00 based on post-earnings sell-side modeling. |
+| **Piper Sandler** | — | Overweight | $395 | +14.5% | 2026-07-23 | Lowered | Target adjusted to $395.00 based on post-earnings sell-side modeling. |
+| **Pivotal Research** | — | Buy | $475 | +37.7% | 2026-07-23 | Raised | Target adjusted to $475.00 based on post-earnings sell-side modeling. |
+| **Citizens** | — | Market Outperform | $515 | +49.3% | 2026-07-22 | Reiterated | Target adjusted to $515.00 based on post-earnings sell-side modeling. |
+| **Keybanc** | — | Overweight | $445 | +29% | 2026-07-10 | Raised | Target adjusted to $445.00 based on post-earnings sell-side modeling. |
+| **Needham** | — | Buy | $450 | +30.4% | 2026-06-03 | Reiterated | Target adjusted to $450.00 based on post-earnings sell-side modeling. |
+| **HSBC** | — | Buy | $420 | +21.7% | 2026-06-02 | Lowered | Target adjusted to $420.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Outperform | $460 | +33.3% | 2026-05-06 | Raised | Target adjusted to $460.00 based on post-earnings sell-side modeling. |
+| **Freedom Broker** | — | Hold | $400 | +15.9% | 2026-05-04 | Raised | Target adjusted to $400.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $420 | +21.7% | 2026-05-01 | Raised | Target adjusted to $420.00 based on post-earnings sell-side modeling. |
+| **Canaccord Genuity** | — | Buy | $450 | +30.4% | 2026-04-30 | Raised | Target adjusted to $450.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Market Perform | $390 | +13.1% | 2026-04-30 | Raised | Target adjusted to $390.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $447 | +29.6% | 2026-04-30 | Raised | Target adjusted to $447.00 based on post-earnings sell-side modeling. |
+| **Susquehanna** | — | Positive | $460 | +33.3% | 2026-04-30 | Raised | Target adjusted to $460.00 based on post-earnings sell-side modeling. |
+| **Guggenheim** | — | Buy | $450 | +30.4% | 2026-04-30 | Raised | Target adjusted to $450.00 based on post-earnings sell-side modeling. |
+| **Evercore ISI Group** | — | Outperform | $420 | +21.7% | 2026-04-30 | Raised | Target adjusted to $420.00 based on post-earnings sell-side modeling. |
+| **Tigress Financial** | — | Strong Buy | $415 | +20.3% | 2026-02-19 | Raised | Target adjusted to $415.00 based on post-earnings sell-side modeling. |
+| **Argus Research** | — | Buy | $385 | +11.6% | 2026-02-06 | Raised | Target adjusted to $385.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $395 | +14.5% | 2026-02-05 | Raised | Target adjusted to $395.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $11.89

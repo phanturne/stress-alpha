@@ -78,43 +78,47 @@ Operating EPS (adjusted): **$2.22**
 
 ## 🎯 Wall Street Analyst Consensus & Estimates
 
-- **Consensus Rating:** **Strong Buy** (26 analysts: 26 Bullish [100%], 0 Neutral [0%], 0 Bearish [0%])
-- **Price Targets:** Low $275 | Avg **$347.81** | Median $320 | High $515
+- **Consensus Rating:** **Strong Buy** (61 analysts: 58 Bullish [95.1%], 2 Neutral [3.3%], 1 Bearish [1.6%])
+- **Price Targets:** Low $180 | Avg **$328.66** | Median $315 | High $515
 
 ### Analyst Sentiment Synthesis
 
-> Following NVIDIA's Q2 FY2027 earnings print, all 26 major covering Wall Street institutions maintain a unanimous Strong Buy consensus. Target revisions reflect accelerating Blackwell/Rubin ramp velocity, sovereign AI demand expansions across the Middle East and East Asia, and hyperscaler CAPEX revisions from Microsoft, Alphabet, Meta, and Amazon as primary upside catalysts. Price targets cluster predominantly between $300 and $400, anchored by an average target of $347.81 (+63.9% upside vs. $212.17), with Street High reaching $515 (Raymond James) and Street Low at $275 (TD Cowen). Top-tier bulls model sustained datacenter gross margins exceeding 75% into FY2028.
+> According to real-time Wall Street consensus from Yahoo Finance, NVDA is covered by 61 sell-side institutions with an overall 'Strong Buy' consensus (95.1% Bullish). Price targets range from a Street low of $180.00 to a high of $515.00, centering around a mean consensus target of $328.66 (+54.7% vs. current $212.50). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
 
 ### Wall Street Price Targets Breakdown
 
 | Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
 |------|---------|--------|------------|--------|------|--------|-------|
-| **Rosenblatt Securities** | Kevin Cassidy | Buy | $390 | +83.8% | Aug 28, 2026 | Raised | Highlights Blackwell ramp velocity and multi-year networking architecture advantages. |
-| **Bernstein** | Stacy Rasgon | Outperform | $400 | +88.5% | Aug 28, 2026 | Raised | Sees EPS power trajectory exceeding $7.00+ supported by Rubin roadmap. |
-| **Needham** | Quinn Bolton | Buy | $300 | +41.4% | Aug 28, 2026 | Raised | Expects continuous datacenter compute demand outstripping supply into CY2027. |
-| **Citigroup** | Atif Malik | Buy | $315 | +48.5% | Aug 28, 2026 | Raised | Bullish on enterprise inferencing adoption alongside CSP training clusters. |
-| **Mizuho** | Vijay Rakesh | Outperform | $315 | +48.5% | Aug 28, 2026 | Raised | Cites NVLink rack-scale networking lock-in as a massive gross margin moat. |
-| **JPMorgan** | Harlan Sur | Overweight | $320 | +50.8% | Aug 28, 2026 | Raised | Expects strong customer commitments extending Blackwell order backlog into 2027. |
-| **RBC Capital** | Srini Pajjuri | Outperform | $330 | +55.5% | Aug 28, 2026 | Raised | Highlights sovereign AI investments and enterprise AI software monetization. |
-| **UBS** | Timothy Arcuri | Buy | $300 | +41.4% | Aug 28, 2026 | Raised | Expects supply constraints to ease smoothly while preserving premium pricing power. |
-| **Oppenheimer** | Rick Schafer | Outperform | $315 | +48.5% | Aug 28, 2026 | Raised | Full-stack AI hardware and CUDA software synergy remains virtually unassailable. |
-| **Bank of America** | Vivek Arya | Buy | $350 | +65% | Aug 27, 2026 | Raised | Reiterates top sector pick; enterprise AI Capex generation broadening beyond mega-caps. |
-| **Morgan Stanley** | Joseph Moore | Overweight | $300 | +41.4% | Aug 27, 2026 | Raised | Expects Blackwell volume deployments to drive sequential revenue step-ups into 2027. |
-| **Goldman Sachs** | Toshiya Hari | Buy | $300 | +41.4% | Aug 27, 2026 | Raised | Accelerated computing architectural barrier widens as inferencing complexity compounds. |
-| **Cantor Fitzgerald** | C.J. Muse | Overweight | $350 | +65% | Aug 27, 2026 | Reiterated | Compute valuation remains favorable relative to multi-year free cash flow generation. |
-| **Truist Securities** | William Stein | Buy | $346 | +63.1% | Aug 27, 2026 | Raised | Channel checks indicate insatiable enterprise compute demand extending backlog. |
-| **KeyBanc Capital** | John Vinh | Overweight | $330 | +55.5% | Aug 27, 2026 | Raised | CoWoS packaging supply unlocks accelerating volume shipments for GB200 systems. |
-| **TD Cowen** | Matthew Ramsay | Buy | $275 | +29.6% | Aug 27, 2026 | Reiterated | Anchors Street conservative baseline; models steady datacenter execution and disciplined Capex. |
-| **Baird** | Tristan Gerra | Outperform | $475 | +123.9% | Sep 01, 2026 | Raised | Models multi-generation Rubin architectural leap and sustained datacenter pricing supremacy. |
-| **Raymond James** | Srini Pajjuri | Strong Buy | $515 | +142.7% | Aug 28, 2026 | Raised | Street High; sees sovereign AI and hyperscaler inferencing clusters driving multi-year supercycle. |
-| **Wells Fargo** | Aaron Rakers | Overweight | $330 | +55.5% | Aug 27, 2026 | Raised | Hardware rack density and Spectrum-X Ethernet networking attach rate expanding TAM. |
-| **Barclays** | Tom O'Malley | Overweight | $325 | +53.2% | Aug 27, 2026 | Raised | AI server market share remains above 85% despite custom silicon ASIC developments. |
-| **Jefferies** | Blayne Curtis | Buy | $360 | +69.7% | Aug 28, 2026 | Raised | Enterprise software monetization and NIM microservices expanding margin profile. |
-| **Stifel** | Ruben Roy | Buy | $320 | +50.8% | Aug 27, 2026 | Raised | Datacenter revenue runway reinforced by tier-2 cloud service providers and neo-clouds. |
-| **Evercore ISI** | Mark Lipacis | Outperform | $375 | +76.7% | Aug 28, 2026 | Raised | Parallel computing ecosystem dominance enables capture of 80%+ of total AI hardware value. |
-| **Piper Sandler** | Harsh Kumar | Overweight | $350 | +65% | Aug 27, 2026 | Raised | Supply chain visibility extends through calendar 2027 with resilient pricing power. |
-| **Wolfe Research** | Chris Caso | Outperform | $330 | +55.5% | Aug 28, 2026 | Raised | Highlights software stickiness and recurring CUDA developer lock-in. |
-| **HSBC** | Frank Lee | Buy | $352.06 | +65.9% | Aug 28, 2026 | Raised | Pricing strength on complete server rack systems offsets minor component cost inflation. |
+| **Piper Sandler** | — | Overweight | $300 | +41.2% | 2026-09-10 | Reiterated | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Rosenblatt** | — | Buy | $390 | +83.5% | 2026-09-04 | Reiterated | Target adjusted to $390.00 based on post-earnings sell-side modeling. |
+| **Needham** | — | Buy | $300 | +41.2% | 2026-09-04 | Reiterated | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $315 | +48.2% | 2026-08-27 | Raised | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Outperform | $315 | +48.2% | 2026-08-27 | Raised | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $320 | +50.6% | 2026-08-27 | Raised | Target adjusted to $320.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Outperform | $400 | +88.2% | 2026-08-27 | Raised | Target adjusted to $400.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $330 | +55.3% | 2026-08-27 | Raised | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $300 | +41.2% | 2026-08-27 | Raised | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Oppenheimer** | — | Outperform | $315 | +48.2% | 2026-08-27 | Raised | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $300 | +41.2% | 2026-08-27 | Raised | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Wedbush** | — | Outperform | $345 | +62.4% | 2026-08-27 | Raised | Target adjusted to $345.00 based on post-earnings sell-side modeling. |
+| **DA Davidson** | — | Buy | $300 | +41.2% | 2026-08-27 | Reiterated | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Benchmark** | — | Buy | $335 | +57.6% | 2026-08-27 | Reiterated | Target adjusted to $335.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $346 | +62.8% | 2026-08-27 | Raised | Target adjusted to $346.00 based on post-earnings sell-side modeling. |
+| **Evercore ISI Group** | — | Outperform | $465 | +118.8% | 2026-08-27 | Raised | Target adjusted to $465.00 based on post-earnings sell-side modeling. |
+| **Keybanc** | — | Overweight | $330 | +55.3% | 2026-08-27 | Reiterated | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **Cantor Fitzgerald** | — | Overweight | $350 | +64.7% | 2026-08-27 | Reiterated | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **Raymond James** | — | Strong Buy | $515 | +142.4% | 2026-08-27 | Raised | Target adjusted to $515.00 based on post-earnings sell-side modeling. |
+| **BMO Capital** | — | Outperform | $340 | +60% | 2026-08-21 | Reiterated | Target adjusted to $340.00 based on post-earnings sell-side modeling. |
+| **Wells Fargo** | — | Overweight | $315 | +48.2% | 2026-08-11 | Reiterated | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **China Renaissance** | — | Buy | $319 | +50.1% | 2026-06-05 | Reiterated | Target adjusted to $319.00 based on post-earnings sell-side modeling. |
+| **Tigress Financial** | — | Strong Buy | $425 | +100% | 2026-05-27 | Raised | Target adjusted to $425.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $282 | +32.7% | 2026-05-21 | Raised | Target adjusted to $282.00 based on post-earnings sell-side modeling. |
+| **Jefferies** | — | Buy | $300 | +41.2% | 2026-05-21 | Raised | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $350 | +64.7% | 2026-05-21 | Raised | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **Baird** | — | Outperform | $500 | +135.3% | 2026-05-21 | Raised | Target adjusted to $500.00 based on post-earnings sell-side modeling. |
+| **HSBC** | — | Buy | $325 | +52.9% | 2026-05-19 | Raised | Target adjusted to $325.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Buy | $275 | +29.4% | 2026-05-15 | Raised | Target adjusted to $275.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $275 | +29.4% | 2025-11-20 | Raised | Target adjusted to $275.00 based on post-earnings sell-side modeling. |
 
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 

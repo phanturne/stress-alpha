@@ -1,0 +1,363 @@
+{
+  "ticker": "LLY",
+  "asOfDate": "2026-09-15",
+  "consensus": {
+    "consensus": "买入 (Buy)",
+    "totalAnalysts": 30,
+    "bullishCount": 25,
+    "bullishPct": 83.3,
+    "neutralCount": 3,
+    "neutralPct": 10.0,
+    "bearishCount": 2,
+    "bearishPct": 6.7
+  },
+  "priceTargets": {
+    "currentPrice": 1142.2,
+    "low": 930.0,
+    "average": 1324.87,
+    "median": 1385.0,
+    "high": 1600.0,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "根据雅虎财经 (Yahoo Finance) 实时卖方共识数据，华尔街共有 30 家机构覆盖 LLY，综合评级为『买入 (Buy)』（看多比例 83.3%）。52周目标价区间介于最低 $930.00 与最高 $1600.00 之间，市场共识均价为 $1324.87（较当前现价 $1142.20 预期空间 +16.0%）。各大投行与券商在财报发布后密集更新了盈利预测模型，反映出机构对行业景气度及资本开支节奏的动态调整。",
+  "estimates": [
+    {
+      "firm": "HSBC",
+      "analyst": null,
+      "rating": "Reduce",
+      "priceTarget": 940.0,
+      "priorPriceTarget": 850.0,
+      "upsidePct": -17.7,
+      "date": "2026-09-10",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $940.00。"
+    },
+    {
+      "firm": "Truist Securities",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1376.0,
+      "priorPriceTarget": 1370.0,
+      "upsidePct": 20.5,
+      "date": "2026-08-07",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1376.00。"
+    },
+    {
+      "firm": "Wells Fargo",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1330.0,
+      "priorPriceTarget": 1280.0,
+      "upsidePct": 16.4,
+      "date": "2026-08-06",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1330.00。"
+    },
+    {
+      "firm": "Cantor Fitzgerald",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1410.0,
+      "priorPriceTarget": 1350.0,
+      "upsidePct": 23.4,
+      "date": "2026-08-06",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1410.00。"
+    },
+    {
+      "firm": "Citigroup",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1600.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 40.1,
+      "date": "2026-07-15",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1600.00。"
+    },
+    {
+      "firm": "Bernstein",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1385.0,
+      "priorPriceTarget": 1300.0,
+      "upsidePct": 21.3,
+      "date": "2026-07-14",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1385.00。"
+    },
+    {
+      "firm": "UBS",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1425.0,
+      "priorPriceTarget": 1250.0,
+      "upsidePct": 24.8,
+      "date": "2026-07-13",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1425.00。"
+    },
+    {
+      "firm": "Guggenheim",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1273.0,
+      "priorPriceTarget": 1235.0,
+      "upsidePct": 11.5,
+      "date": "2026-07-13",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1273.00。"
+    },
+    {
+      "firm": "B of A Securities",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1334.0,
+      "priorPriceTarget": 1251.0,
+      "upsidePct": 16.8,
+      "date": "2026-07-10",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1334.00。"
+    },
+    {
+      "firm": "Morgan Stanley",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1347.0,
+      "priorPriceTarget": 1344.0,
+      "upsidePct": 17.9,
+      "date": "2026-07-08",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1347.00。"
+    },
+    {
+      "firm": "RBC Capital",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 1250.0,
+      "upsidePct": 31.3,
+      "date": "2026-07-08",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1500.00。"
+    },
+    {
+      "firm": "JP Morgan",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1400.0,
+      "priorPriceTarget": 1300.0,
+      "upsidePct": 22.6,
+      "date": "2026-07-07",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1400.00。"
+    },
+    {
+      "firm": "Leerink Partners",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1232.0,
+      "priorPriceTarget": 1119.0,
+      "upsidePct": 7.9,
+      "date": "2026-06-25",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1232.00。"
+    },
+    {
+      "firm": "Jefferies",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1350.0,
+      "priorPriceTarget": 1330.0,
+      "upsidePct": 18.2,
+      "date": "2026-06-09",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1350.00。"
+    },
+    {
+      "firm": "Barclays",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 1400.0,
+      "priorPriceTarget": 1350.0,
+      "upsidePct": 22.6,
+      "date": "2026-05-05",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1400.00。"
+    },
+    {
+      "firm": "Wolfe Research",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1325.0,
+      "priorPriceTarget": 1325.0,
+      "upsidePct": 16.0,
+      "date": "2026-05-04",
+      "action": "重申 (Maintained)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1325.00。"
+    },
+    {
+      "firm": "Freedom Broker",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1200.0,
+      "priorPriceTarget": 1050.0,
+      "upsidePct": 5.1,
+      "date": "2026-02-10",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1200.00。"
+    },
+    {
+      "firm": "Deutsche Bank",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 1285.0,
+      "priorPriceTarget": 1200.0,
+      "upsidePct": 12.5,
+      "date": "2026-02-09",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1285.00。"
+    },
+    {
+      "firm": "BMO Capital",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 1200.0,
+      "priorPriceTarget": 1100.0,
+      "upsidePct": 5.1,
+      "date": "2025-12-04",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $1200.00。"
+    },
+    {
+      "firm": "Berenberg",
+      "analyst": null,
+      "rating": "持有 (Hold)",
+      "priceTarget": 830.0,
+      "priorPriceTarget": 970.0,
+      "upsidePct": -27.3,
+      "date": "2025-09-17",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $830.00。"
+    },
+    {
+      "firm": "Goldman Sachs",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 888.0,
+      "priorPriceTarget": 892.0,
+      "upsidePct": -22.3,
+      "date": "2025-04-08",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $888.00。"
+    },
+    {
+      "firm": "Argus Research",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 840.0,
+      "priorPriceTarget": 770.0,
+      "upsidePct": -26.5,
+      "date": "2024-05-14",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $840.00。"
+    },
+    {
+      "firm": "DZ Bank",
+      "analyst": null,
+      "rating": "持有 (Hold)",
+      "priceTarget": 820.0,
+      "priorPriceTarget": null,
+      "upsidePct": -28.2,
+      "date": "2024-02-21",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $820.00。"
+    },
+    {
+      "firm": "Daiwa Capital",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 610.0,
+      "priorPriceTarget": null,
+      "upsidePct": -46.6,
+      "date": "2023-12-21",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $610.00。"
+    },
+    {
+      "firm": "Credit Suisse",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 580.0,
+      "priorPriceTarget": 490.0,
+      "upsidePct": -49.2,
+      "date": "2023-08-09",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $580.00。"
+    },
+    {
+      "firm": "TD Cowen",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 500.0,
+      "priorPriceTarget": 430.0,
+      "upsidePct": -56.2,
+      "date": "2023-05-23",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $500.00。"
+    },
+    {
+      "firm": "SVB Securities",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 458.0,
+      "priorPriceTarget": 410.0,
+      "upsidePct": -59.9,
+      "date": "2023-05-01",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $458.00。"
+    },
+    {
+      "firm": "Societe Generale",
+      "analyst": null,
+      "rating": "卖出 (Sell)",
+      "priceTarget": 278.0,
+      "priorPriceTarget": null,
+      "upsidePct": -75.7,
+      "date": "2023-02-16",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $278.00。"
+    },
+    {
+      "firm": "SVB Leerink",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 410.0,
+      "priorPriceTarget": 384.0,
+      "upsidePct": -64.1,
+      "date": "2022-12-16",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $410.00。"
+    },
+    {
+      "firm": "Cowen & Co.",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 430.0,
+      "priorPriceTarget": 390.0,
+      "upsidePct": -62.4,
+      "date": "2022-12-05",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $430.00。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Yahoo Finance LLY Analyst Research & Price Targets",
+      "publisher": "Yahoo Finance API / Sell-Side Consensus",
+      "url": "https://finance.yahoo.com/quote/LLY/analysis",
+      "date": "2026-09-15"
+    }
+  ]
+}

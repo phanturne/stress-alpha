@@ -80,6 +80,50 @@ Operating EPS (adjusted): **$1.26**
 
 > Alibaba maintains a Wide Economic Moat anchored in self-reinforcing network effects across its 1B+ consumer commerce ecosystem and high switching costs across Alibaba Cloud's enterprise infrastructure. While domestic competition from PDD (value goods) and Douyin/Tencent (live-streaming commerce) eroded market share in 2021-2024, Alibaba has successfully stabilized its market footprint in FY2026-FY2027 through user-centric reforms, the 0.6% software service fee, and Quanzhantui ad monetization. Furthermore, Cloud Intelligence has emerged as Asia's indisputable leader in foundational AI models, where the Qwen ecosystem mirrors the open-source flywheel of Meta's Llama in Western markets. Durabilities are calibrated to 5-7 years reflecting rapid technological cycles in Chinese internet and hardware infrastructure. With $60B+ in net cash and aggressive share buybacks, Alibaba possesses formidable financial defenses against domestic peers.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Strong Buy** (40 analysts: 38 Bullish [95%], 1 Neutral [2.5%], 1 Bearish [2.5%])
+- **Price Targets:** Low $95.23 | Avg **$186.09** | Median $188.53 | High $238.29
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, BABA is covered by 40 sell-side institutions with an overall 'Strong Buy' consensus (95.0% Bullish). Price targets range from a Street low of $95.23 to a high of $238.29, centering around a mean consensus target of $186.09 (+70.2% vs. current $109.34). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Susquehanna** | — | Positive | $190 | +73.8% | 2026-08-28 | Raised | Target adjusted to $190.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $210 | +92.1% | 2026-08-21 | Raised | Target adjusted to $210.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $200 | +82.9% | 2026-08-21 | Raised | Target adjusted to $200.00 based on post-earnings sell-side modeling. |
+| **Baird** | — | Outperform | $160 | +46.3% | 2026-08-21 | Lowered | Target adjusted to $160.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Outperform | $195 | +78.3% | 2026-05-14 | Raised | Target adjusted to $195.00 based on post-earnings sell-side modeling. |
+| **Jefferies** | — | Buy | $212 | +93.9% | 2026-03-19 | Lowered | Target adjusted to $212.00 based on post-earnings sell-side modeling. |
+| **Freedom Broker** | — | Hold | $180 | +64.6% | 2026-01-06 | Raised | Target adjusted to $180.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $225 | +105.8% | 2025-11-26 | Raised | Target adjusted to $225.00 based on post-earnings sell-side modeling. |
+| **Benchmark** | — | Buy | $195 | +78.3% | 2025-11-26 | Reiterated | Target adjusted to $195.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Outperform | $190 | +73.8% | 2025-11-26 | Lowered | Target adjusted to $190.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $195 | +78.3% | 2025-09-24 | Raised | Target adjusted to $195.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $180 | +64.6% | 2025-02-24 | Raised | Target adjusted to $180.00 based on post-earnings sell-side modeling. |
+| **Loop Capital** | — | Buy | $115 | +5.2% | 2024-08-29 | Reiterated | Target adjusted to $115.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $100 | -8.5% | 2024-08-16 | Lowered | Target adjusted to $100.00 based on post-earnings sell-side modeling. |
+| **Goldman Sachs** | — | Buy | $105 | -4% | 2024-02-08 | Lowered | Target adjusted to $105.00 based on post-earnings sell-side modeling. |
+| **Macquarie** | — | Neutral | $85.4 | -21.9% | 2024-02-08 | Reiterated | Target adjusted to $85.40 based on post-earnings sell-side modeling. |
+| **DZ Bank** | — | Buy | $120 | +9.7% | 2023-08-11 | Reiterated | Target adjusted to $120.00 based on post-earnings sell-side modeling. |
+| **HSBC** | — | Buy | $140 | +28% | 2023-05-19 | Lowered | Target adjusted to $140.00 based on post-earnings sell-side modeling. |
+| **KGI Securities** | — | Outperform | $120 | +9.7% | 2023-02-24 | Reiterated | Target adjusted to $120.00 based on post-earnings sell-side modeling. |
+| **Deutsche Bank** | — | Buy | $155 | +41.8% | 2023-01-13 | Raised | Target adjusted to $155.00 based on post-earnings sell-side modeling. |
+| **Nomura Instinet** | — | Buy | $138 | +26.2% | 2023-01-10 | Raised | Target adjusted to $138.00 based on post-earnings sell-side modeling. |
+| **BOCOM International** | — | Buy | $127 | +16.2% | 2022-11-18 | Raised | Target adjusted to $127.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $135 | +23.5% | 2022-11-18 | Lowered | Target adjusted to $135.00 based on post-earnings sell-side modeling. |
+| **US Tiger Securities, Inc** | — | Buy | $110 | +0.6% | 2022-11-17 | Lowered | Target adjusted to $110.00 based on post-earnings sell-side modeling. |
+| **CLSA** | — | Buy | $158 | +44.5% | 2022-10-11 | Lowered | Target adjusted to $158.00 based on post-earnings sell-side modeling. |
+| **Credit Suisse** | — | Outperform | $152 | +39% | 2022-09-29 | Lowered | Target adjusted to $152.00 based on post-earnings sell-side modeling. |
+| **CMB International** | — | Buy | $151 | +38.1% | 2022-07-08 | Raised | Target adjusted to $151.00 based on post-earnings sell-side modeling. |
+| **Atlantic Equities** | — | Neutral | $115 | +5.2% | 2022-05-31 | Lowered | Target adjusted to $115.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $135 | +23.5% | 2022-02-25 | Lowered | Target adjusted to $135.00 based on post-earnings sell-side modeling. |
+| **Raymond James** | — | Outperform | $200 | +82.9% | 2022-01-19 | Lowered | Target adjusted to $200.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $10.46

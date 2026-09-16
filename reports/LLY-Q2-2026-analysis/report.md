@@ -80,6 +80,50 @@ Operating EPS (adjusted): **$11.41**
 
 > The global cardiometabolic and obesity market represents an unprecedented structural growth tailwind projected to surpass $130B by 2030. The competitive landscape is functionally an asymmetric duopoly between Eli Lilly and Novo Nordisk. Lilly is steadily gaining market share in new-to-brand prescriptions (NBRx) driven by tirzepatide's clinical superiority in absolute weight reduction (-22.5% vs -15.0% for semaglutide) and dual GIP-mediated metabolic tolerability. While mid-cap challengers (Viking, Amgen) and pharma incumbents (Roche, Pfizer) are advancing next-gen unimolecular multi-agonists and oral modalities, Lilly's proprietary manufacturing moat ($18B+ Capex), clinical pipeline depth (Retatrutide Phase 3, Orforglipron Phase 3), and entrenched patent defenses will insulate its market leadership and superior operating margins (40%+) through the 2030s.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Buy** (30 analysts: 25 Bullish [83.3%], 3 Neutral [10%], 2 Bearish [6.7%])
+- **Price Targets:** Low $930 | Avg **$1324.87** | Median $1385 | High $1600
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, LLY is covered by 30 sell-side institutions with an overall 'Buy' consensus (83.3% Bullish). Price targets range from a Street low of $930.00 to a high of $1600.00, centering around a mean consensus target of $1324.87 (+16.0% vs. current $1142.20). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **HSBC** | — | Reduce | $940 | -17.7% | 2026-09-10 | Raised | Target adjusted to $940.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $1376 | +20.5% | 2026-08-07 | Raised | Target adjusted to $1376.00 based on post-earnings sell-side modeling. |
+| **Wells Fargo** | — | Overweight | $1330 | +16.4% | 2026-08-06 | Raised | Target adjusted to $1330.00 based on post-earnings sell-side modeling. |
+| **Cantor Fitzgerald** | — | Overweight | $1410 | +23.4% | 2026-08-06 | Raised | Target adjusted to $1410.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $1600 | +40.1% | 2026-07-15 | Raised | Target adjusted to $1600.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Outperform | $1385 | +21.3% | 2026-07-14 | Raised | Target adjusted to $1385.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $1425 | +24.8% | 2026-07-13 | Raised | Target adjusted to $1425.00 based on post-earnings sell-side modeling. |
+| **Guggenheim** | — | Buy | $1273 | +11.5% | 2026-07-13 | Lowered | Target adjusted to $1273.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $1334 | +16.8% | 2026-07-10 | Raised | Target adjusted to $1334.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $1347 | +17.9% | 2026-07-08 | Raised | Target adjusted to $1347.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $1500 | +31.3% | 2026-07-08 | Raised | Target adjusted to $1500.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $1400 | +22.6% | 2026-07-07 | Raised | Target adjusted to $1400.00 based on post-earnings sell-side modeling. |
+| **Leerink Partners** | — | Outperform | $1232 | +7.9% | 2026-06-25 | Raised | Target adjusted to $1232.00 based on post-earnings sell-side modeling. |
+| **Jefferies** | — | Buy | $1350 | +18.2% | 2026-06-09 | Raised | Target adjusted to $1350.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $1400 | +22.6% | 2026-05-05 | Raised | Target adjusted to $1400.00 based on post-earnings sell-side modeling. |
+| **Wolfe Research** | — | Outperform | $1325 | +16% | 2026-05-04 | Reiterated | Target adjusted to $1325.00 based on post-earnings sell-side modeling. |
+| **Freedom Broker** | — | Buy | $1200 | +5.1% | 2026-02-10 | Raised | Target adjusted to $1200.00 based on post-earnings sell-side modeling. |
+| **Deutsche Bank** | — | Buy | $1285 | +12.5% | 2026-02-09 | Raised | Target adjusted to $1285.00 based on post-earnings sell-side modeling. |
+| **BMO Capital** | — | Outperform | $1200 | +5.1% | 2025-12-04 | Raised | Target adjusted to $1200.00 based on post-earnings sell-side modeling. |
+| **Berenberg** | — | Hold | $830 | -27.3% | 2025-09-17 | Lowered | Target adjusted to $830.00 based on post-earnings sell-side modeling. |
+| **Goldman Sachs** | — | Buy | $888 | -22.3% | 2025-04-08 | Lowered | Target adjusted to $888.00 based on post-earnings sell-side modeling. |
+| **Argus Research** | — | Buy | $840 | -26.5% | 2024-05-14 | Raised | Target adjusted to $840.00 based on post-earnings sell-side modeling. |
+| **DZ Bank** | — | Hold | $820 | -28.2% | 2024-02-21 | Reiterated | Target adjusted to $820.00 based on post-earnings sell-side modeling. |
+| **Daiwa Capital** | — | Outperform | $610 | -46.6% | 2023-12-21 | Reiterated | Target adjusted to $610.00 based on post-earnings sell-side modeling. |
+| **Credit Suisse** | — | Outperform | $580 | -49.2% | 2023-08-09 | Raised | Target adjusted to $580.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Outperform | $500 | -56.2% | 2023-05-23 | Raised | Target adjusted to $500.00 based on post-earnings sell-side modeling. |
+| **SVB Securities** | — | Outperform | $458 | -59.9% | 2023-05-01 | Raised | Target adjusted to $458.00 based on post-earnings sell-side modeling. |
+| **Societe Generale** | — | Sell | $278 | -75.7% | 2023-02-16 | Reiterated | Target adjusted to $278.00 based on post-earnings sell-side modeling. |
+| **SVB Leerink** | — | Outperform | $410 | -64.1% | 2022-12-16 | Raised | Target adjusted to $410.00 based on post-earnings sell-side modeling. |
+| **Cowen & Co.** | — | Outperform | $430 | -62.4% | 2022-12-05 | Raised | Target adjusted to $430.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $47.61

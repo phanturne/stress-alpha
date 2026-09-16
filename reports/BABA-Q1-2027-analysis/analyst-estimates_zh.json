@@ -1,0 +1,363 @@
+{
+  "ticker": "BABA",
+  "asOfDate": "2026-09-15",
+  "consensus": {
+    "consensus": "强烈推荐买入 (Strong Buy)",
+    "totalAnalysts": 40,
+    "bullishCount": 38,
+    "bullishPct": 95.0,
+    "neutralCount": 1,
+    "neutralPct": 2.5,
+    "bearishCount": 1,
+    "bearishPct": 2.5
+  },
+  "priceTargets": {
+    "currentPrice": 109.34,
+    "low": 95.23,
+    "average": 186.09,
+    "median": 188.53,
+    "high": 238.29,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "根据雅虎财经 (Yahoo Finance) 实时卖方共识数据，华尔街共有 40 家机构覆盖 BABA，综合评级为『强烈推荐买入 (Strong Buy)』（看多比例 95.0%）。52周目标价区间介于最低 $95.23 与最高 $238.29 之间，市场共识均价为 $186.09（较当前现价 $109.34 预期空间 +70.2%）。各大投行与券商在财报发布后密集更新了盈利预测模型，反映出机构对行业景气度及资本开支节奏的动态调整。",
+  "estimates": [
+    {
+      "firm": "Susquehanna",
+      "analyst": null,
+      "rating": "积极 (Positive)",
+      "priceTarget": 190.0,
+      "priorPriceTarget": 185.0,
+      "upsidePct": 73.8,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $190.00。"
+    },
+    {
+      "firm": "JP Morgan",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 210.0,
+      "priorPriceTarget": 205.0,
+      "upsidePct": 92.1,
+      "date": "2026-08-21",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $210.00。"
+    },
+    {
+      "firm": "Barclays",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 200.0,
+      "priorPriceTarget": 195.0,
+      "upsidePct": 82.9,
+      "date": "2026-08-21",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $200.00。"
+    },
+    {
+      "firm": "Baird",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 160.0,
+      "priorPriceTarget": 164.0,
+      "upsidePct": 46.3,
+      "date": "2026-08-21",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $160.00。"
+    },
+    {
+      "firm": "Mizuho",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 195.0,
+      "priorPriceTarget": 190.0,
+      "upsidePct": 78.3,
+      "date": "2026-05-14",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $195.00。"
+    },
+    {
+      "firm": "Jefferies",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 212.0,
+      "priorPriceTarget": 225.0,
+      "upsidePct": 93.9,
+      "date": "2026-03-19",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $212.00。"
+    },
+    {
+      "firm": "Freedom Broker",
+      "analyst": null,
+      "rating": "持有 (Hold)",
+      "priceTarget": 180.0,
+      "priorPriceTarget": 140.0,
+      "upsidePct": 64.6,
+      "date": "2026-01-06",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $180.00。"
+    },
+    {
+      "firm": "Citigroup",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 225.0,
+      "priorPriceTarget": 218.0,
+      "upsidePct": 105.8,
+      "date": "2025-11-26",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $225.00。"
+    },
+    {
+      "firm": "Benchmark",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 195.0,
+      "priorPriceTarget": 195.0,
+      "upsidePct": 78.3,
+      "date": "2025-11-26",
+      "action": "重申 (Maintained)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $195.00。"
+    },
+    {
+      "firm": "Bernstein",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 190.0,
+      "priorPriceTarget": 200.0,
+      "upsidePct": 73.8,
+      "date": "2025-11-26",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $190.00。"
+    },
+    {
+      "firm": "B of A Securities",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 195.0,
+      "priorPriceTarget": 168.0,
+      "upsidePct": 78.3,
+      "date": "2025-09-24",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $195.00。"
+    },
+    {
+      "firm": "Morgan Stanley",
+      "analyst": null,
+      "rating": "超配 (Overweight)",
+      "priceTarget": 180.0,
+      "priorPriceTarget": 100.0,
+      "upsidePct": 64.6,
+      "date": "2025-02-24",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $180.00。"
+    },
+    {
+      "firm": "Loop Capital",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 115.0,
+      "priorPriceTarget": 115.0,
+      "upsidePct": 5.2,
+      "date": "2024-08-29",
+      "action": "重申 (Maintained)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $115.00。"
+    },
+    {
+      "firm": "Truist Securities",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 100.0,
+      "priorPriceTarget": 110.0,
+      "upsidePct": -8.5,
+      "date": "2024-08-16",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $100.00。"
+    },
+    {
+      "firm": "Goldman Sachs",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 105.0,
+      "priorPriceTarget": 121.0,
+      "upsidePct": -4.0,
+      "date": "2024-02-08",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $105.00。"
+    },
+    {
+      "firm": "Macquarie",
+      "analyst": null,
+      "rating": "中性 (Neutral)",
+      "priceTarget": 85.4,
+      "priorPriceTarget": null,
+      "upsidePct": -21.9,
+      "date": "2024-02-08",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $85.40。"
+    },
+    {
+      "firm": "DZ Bank",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 120.0,
+      "priorPriceTarget": null,
+      "upsidePct": 9.7,
+      "date": "2023-08-11",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $120.00。"
+    },
+    {
+      "firm": "HSBC",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 140.0,
+      "priorPriceTarget": 143.0,
+      "upsidePct": 28.0,
+      "date": "2023-05-19",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $140.00。"
+    },
+    {
+      "firm": "KGI Securities",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 120.0,
+      "priorPriceTarget": null,
+      "upsidePct": 9.7,
+      "date": "2023-02-24",
+      "action": "首次覆盖 (Initiated)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $120.00。"
+    },
+    {
+      "firm": "Deutsche Bank",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 155.0,
+      "priorPriceTarget": 140.0,
+      "upsidePct": 41.8,
+      "date": "2023-01-13",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $155.00。"
+    },
+    {
+      "firm": "Nomura Instinet",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 138.0,
+      "priorPriceTarget": 110.0,
+      "upsidePct": 26.2,
+      "date": "2023-01-10",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $138.00。"
+    },
+    {
+      "firm": "BOCOM International",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 127.0,
+      "priorPriceTarget": 124.0,
+      "upsidePct": 16.2,
+      "date": "2022-11-18",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $127.00。"
+    },
+    {
+      "firm": "UBS",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 135.0,
+      "priorPriceTarget": 140.0,
+      "upsidePct": 23.5,
+      "date": "2022-11-18",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $135.00。"
+    },
+    {
+      "firm": "US Tiger Securities, Inc",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 110.0,
+      "priorPriceTarget": 120.0,
+      "upsidePct": 0.6,
+      "date": "2022-11-17",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $110.00。"
+    },
+    {
+      "firm": "CLSA",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 158.0,
+      "priorPriceTarget": 180.0,
+      "upsidePct": 44.5,
+      "date": "2022-10-11",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $158.00。"
+    },
+    {
+      "firm": "Credit Suisse",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 152.0,
+      "priorPriceTarget": 166.0,
+      "upsidePct": 39.0,
+      "date": "2022-09-29",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $152.00。"
+    },
+    {
+      "firm": "CMB International",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 151.0,
+      "priorPriceTarget": 150.6,
+      "upsidePct": 38.1,
+      "date": "2022-07-08",
+      "action": "上调 (Raised)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $151.00。"
+    },
+    {
+      "firm": "Atlantic Equities",
+      "analyst": null,
+      "rating": "中性 (Neutral)",
+      "priceTarget": 115.0,
+      "priorPriceTarget": 140.0,
+      "upsidePct": 5.2,
+      "date": "2022-05-31",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $115.00。"
+    },
+    {
+      "firm": "Stifel",
+      "analyst": null,
+      "rating": "买入 (Buy)",
+      "priceTarget": 135.0,
+      "priorPriceTarget": 150.0,
+      "upsidePct": 23.5,
+      "date": "2022-02-25",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $135.00。"
+    },
+    {
+      "firm": "Raymond James",
+      "analyst": null,
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 200.0,
+      "priorPriceTarget": 220.0,
+      "upsidePct": 82.9,
+      "date": "2022-01-19",
+      "action": "下调 (Lowered)",
+      "notes": "结合最新季度财报盈利与自由现金流表现，将目标价锚定至 $200.00。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Yahoo Finance BABA Analyst Research & Price Targets",
+      "publisher": "Yahoo Finance API / Sell-Side Consensus",
+      "url": "https://finance.yahoo.com/quote/BABA/analysis",
+      "date": "2026-09-15"
+    }
+  ]
+}

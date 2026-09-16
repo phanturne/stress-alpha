@@ -76,6 +76,50 @@ Operating EPS (adjusted): **$25.11**
 
 > Micron operates within a rationalized 3-player global DRAM oligopoly alongside Samsung Electronics and SK Hynix, which together control >95% of global market supply. The rapid architectural transition to High-Bandwidth Memory (HBM3e/HBM4) has structurally altered memory dynamics from commoditized cyclical pricing toward high-margin, custom co-engineered accelerators with multi-year supply contracts. Micron's breakthrough in 8-high and 12-high HBM3e offering 30% superior power efficiency has established it as a primary tier-1 supplier alongside SK Hynix. In NAND, where industry consolidation is less complete (Samsung, SK Hynix/Solidigm, Micron, Kioxia, WDC), Micron differentiates via high-density 60TB+ D5/QLC Enterprise SSDs that displace HDDs in AI data centers. Given cyclical capital intensity and rapid 4-6 year technology migration curves, Micron maintains a defensible Narrow Economic Moat with a Widening trend.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Strong Buy** (49 analysts: 45 Bullish [91.8%], 4 Neutral [8.2%], 0 Bearish [0%])
+- **Price Targets:** Low $361 | Avg **$1513.11** | Median $1540 | High $2200
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, MU is covered by 49 sell-side institutions with an overall 'Strong Buy' consensus (91.8% Bullish). Price targets range from a Street low of $361.00 to a high of $2200.00, centering around a mean consensus target of $1513.11 (+63.8% vs. current $923.75). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Mizuho** | — | Outperform | $1300 | +40.7% | 2026-08-25 | Lowered | Target adjusted to $1300.00 based on post-earnings sell-side modeling. |
+| **New Street Research** | — | Buy | $1250 | +35.3% | 2026-08-14 | Reiterated | Target adjusted to $1250.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $1150 | +24.5% | 2026-08-07 | Lowered | Target adjusted to $1150.00 based on post-earnings sell-side modeling. |
+| **Keybanc** | — | Overweight | $1750 | +89.4% | 2026-07-14 | Raised | Target adjusted to $1750.00 based on post-earnings sell-side modeling. |
+| **Cantor Fitzgerald** | — | Overweight | $2000 | +116.5% | 2026-06-29 | Raised | Target adjusted to $2000.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $2000 | +116.5% | 2026-06-25 | Raised | Target adjusted to $2000.00 based on post-earnings sell-side modeling. |
+| **Goldman Sachs** | — | Neutral | $1100 | +19.1% | 2026-06-25 | Raised | Target adjusted to $1100.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $1200 | +29.9% | 2026-06-25 | Raised | Target adjusted to $1200.00 based on post-earnings sell-side modeling. |
+| **Raymond James** | — | Outperform | $1500 | +62.4% | 2026-06-25 | Raised | Target adjusted to $1500.00 based on post-earnings sell-side modeling. |
+| **Deutsche Bank** | — | Buy | $1550 | +67.8% | 2026-06-25 | Raised | Target adjusted to $1550.00 based on post-earnings sell-side modeling. |
+| **Wedbush** | — | Outperform | $1400 | +51.6% | 2026-06-25 | Raised | Target adjusted to $1400.00 based on post-earnings sell-side modeling. |
+| **DA Davidson** | — | Buy | $2000 | +116.5% | 2026-06-25 | Raised | Target adjusted to $2000.00 based on post-earnings sell-side modeling. |
+| **Wells Fargo** | — | Overweight | $1525 | +65.1% | 2026-06-25 | Raised | Target adjusted to $1525.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $1500 | +62.4% | 2026-06-25 | Raised | Target adjusted to $1500.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Buy | $1600 | +73.2% | 2026-06-25 | Raised | Target adjusted to $1600.00 based on post-earnings sell-side modeling. |
+| **Susquehanna** | — | Positive | $2000 | +116.5% | 2026-06-25 | Raised | Target adjusted to $2000.00 based on post-earnings sell-side modeling. |
+| **Rosenblatt** | — | Buy | $1500 | +62.4% | 2026-06-25 | Raised | Target adjusted to $1500.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $1550 | +67.8% | 2026-06-25 | Raised | Target adjusted to $1550.00 based on post-earnings sell-side modeling. |
+| **Needham** | — | Buy | $1650 | +78.6% | 2026-06-25 | Raised | Target adjusted to $1650.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $1500 | +62.4% | 2026-06-18 | Raised | Target adjusted to $1500.00 based on post-earnings sell-side modeling. |
+| **Wolfe Research** | — | Outperform | $1250 | +35.3% | 2026-06-11 | Raised | Target adjusted to $1250.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $1625 | +75.9% | 2026-05-26 | Raised | Target adjusted to $1625.00 based on post-earnings sell-side modeling. |
+| **Melius Research** | — | Buy | $1100 | +19.1% | 2026-05-19 | Raised | Target adjusted to $1100.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $550 | -40.5% | 2026-03-19 | Raised | Target adjusted to $550.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Outperform | $510 | -44.8% | 2026-03-18 | Raised | Target adjusted to $510.00 based on post-earnings sell-side modeling. |
+| **Lynx Global** | — | Buy | $550 | -40.5% | 2026-01-12 | Raised | Target adjusted to $550.00 based on post-earnings sell-side modeling. |
+| **Piper Sandler** | — | Overweight | $400 | -56.7% | 2026-01-07 | Raised | Target adjusted to $400.00 based on post-earnings sell-side modeling. |
+| **HSBC** | — | Buy | $330 | -64.3% | 2025-12-09 | Reiterated | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **Itau BBA** | — | Outperform | $249 | -73% | 2025-10-07 | Reiterated | Target adjusted to $249.00 based on post-earnings sell-side modeling. |
+| **CLSA** | — | Outperform | $155 | -83.2% | 2025-08-27 | Reiterated | Target adjusted to $155.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $63.03

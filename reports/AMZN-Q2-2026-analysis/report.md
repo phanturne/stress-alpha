@@ -78,6 +78,50 @@ Operating EPS (adjusted): **$1.87**
 
 > Amazon operates a formidable multi-engine ecosystem spanning global e-commerce, third-party seller logistics (FBA), high-margin retail media advertising, and hyperscale cloud infrastructure (AWS). AWS growth has re-accelerated to +36.7% YoY, capturing significant incremental enterprise generative AI workloads through Amazon Bedrock and custom Trainium2/Inferentia2 silicon. Advertising revenue continues to expand at +26% YoY with industry-leading ROAS driven by high-intent shopping queries. The integration of robotics across North American regional fulfillment networks has driven structural cost-to-serve reductions, cementing Amazon's Wide Moat across both commercial cloud and physical distribution.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Strong Buy** (61 analysts: 59 Bullish [96.7%], 2 Neutral [3.3%], 0 Bearish [0%])
+- **Price Targets:** Low $230 | Avg **$328.17** | Median $325.5 | High $405
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, AMZN is covered by 61 sell-side institutions with an overall 'Strong Buy' consensus (96.7% Bullish). Price targets range from a Street low of $230.00 to a high of $405.00, centering around a mean consensus target of $328.17 (+20.8% vs. current $271.58). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Wells Fargo** | — | Overweight | $338 | +24.5% | 2026-09-03 | Raised | Target adjusted to $338.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $318 | +17.1% | 2026-07-31 | Raised | Target adjusted to $318.00 based on post-earnings sell-side modeling. |
+| **Telsey Advisory Group** | — | Outperform | $335 | +23.4% | 2026-07-31 | Raised | Target adjusted to $335.00 based on post-earnings sell-side modeling. |
+| **Bernstein** | — | Outperform | $320 | +17.8% | 2026-07-31 | Raised | Target adjusted to $320.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Buy | $350 | +28.9% | 2026-07-31 | Raised | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $330 | +21.5% | 2026-07-31 | Raised | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Outperform | $330 | +21.5% | 2026-07-31 | Raised | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Buy | $350 | +28.9% | 2026-07-31 | Raised | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **DA Davidson** | — | Neutral | $250 | -7.9% | 2026-07-31 | Reiterated | Target adjusted to $250.00 based on post-earnings sell-side modeling. |
+| **Cantor Fitzgerald** | — | Overweight | $320 | +17.8% | 2026-07-31 | Lowered | Target adjusted to $320.00 based on post-earnings sell-side modeling. |
+| **Piper Sandler** | — | Overweight | $320 | +17.8% | 2026-07-31 | Raised | Target adjusted to $320.00 based on post-earnings sell-side modeling. |
+| **Benchmark** | — | Buy | $400 | +47.3% | 2026-07-31 | Raised | Target adjusted to $400.00 based on post-earnings sell-side modeling. |
+| **Wedbush** | — | Outperform | $310 | +14.1% | 2026-07-31 | Raised | Target adjusted to $310.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $350 | +28.9% | 2026-07-31 | Raised | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **Citizens** | — | Market Outperform | $315 | +16% | 2026-07-31 | Reiterated | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **Needham** | — | Buy | $300 | +10.5% | 2026-07-31 | Reiterated | Target adjusted to $300.00 based on post-earnings sell-side modeling. |
+| **Keybanc** | — | Overweight | $350 | +28.9% | 2026-07-31 | Raised | Target adjusted to $350.00 based on post-earnings sell-side modeling. |
+| **Rosenblatt** | — | Buy | $345 | +27% | 2026-07-31 | Raised | Target adjusted to $345.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $365 | +34.4% | 2026-07-31 | Raised | Target adjusted to $365.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $365 | +34.4% | 2026-07-31 | Raised | Target adjusted to $365.00 based on post-earnings sell-side modeling. |
+| **BMO Capital** | — | Outperform | $360 | +32.6% | 2026-07-28 | Raised | Target adjusted to $360.00 based on post-earnings sell-side modeling. |
+| **Stifel** | — | Buy | $319 | +17.5% | 2026-05-01 | Raised | Target adjusted to $319.00 based on post-earnings sell-side modeling. |
+| **Canaccord Genuity** | — | Buy | $330 | +21.5% | 2026-04-30 | Raised | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $330 | +21.5% | 2026-04-30 | Raised | Target adjusted to $330.00 based on post-earnings sell-side modeling. |
+| **Susquehanna** | — | Positive | $325 | +19.7% | 2026-04-30 | Raised | Target adjusted to $325.00 based on post-earnings sell-side modeling. |
+| **Guggenheim** | — | Buy | $320 | +17.8% | 2026-04-30 | Raised | Target adjusted to $320.00 based on post-earnings sell-side modeling. |
+| **Evercore ISI Group** | — | Outperform | $315 | +16% | 2026-04-30 | Raised | Target adjusted to $315.00 based on post-earnings sell-side modeling. |
+| **Scotiabank** | — | Sector Outperform | $325 | +19.7% | 2026-04-30 | Raised | Target adjusted to $325.00 based on post-earnings sell-side modeling. |
+| **Oppenheimer** | — | Outperform | $275 | +1.3% | 2026-04-24 | Raised | Target adjusted to $275.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $298 | +9.7% | 2026-04-20 | Raised | Target adjusted to $298.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $10.5

@@ -1,0 +1,363 @@
+{
+  "ticker": "LLY",
+  "asOfDate": "2026-09-15",
+  "consensus": {
+    "consensus": "Buy",
+    "totalAnalysts": 30,
+    "bullishCount": 25,
+    "bullishPct": 83.3,
+    "neutralCount": 3,
+    "neutralPct": 10.0,
+    "bearishCount": 2,
+    "bearishPct": 6.7
+  },
+  "priceTargets": {
+    "currentPrice": 1142.2,
+    "low": 930.0,
+    "average": 1324.87,
+    "median": 1385.0,
+    "high": 1600.0,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "According to real-time Wall Street consensus from Yahoo Finance, LLY is covered by 30 sell-side institutions with an overall 'Buy' consensus (83.3% Bullish). Price targets range from a Street low of $930.00 to a high of $1600.00, centering around a mean consensus target of $1324.87 (+16.0% vs. current $1142.20). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.",
+  "estimates": [
+    {
+      "firm": "HSBC",
+      "analyst": null,
+      "rating": "Reduce",
+      "priceTarget": 940.0,
+      "priorPriceTarget": 850.0,
+      "upsidePct": -17.7,
+      "date": "2026-09-10",
+      "action": "Raised",
+      "notes": "Target adjusted to $940.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Truist Securities",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1376.0,
+      "priorPriceTarget": 1370.0,
+      "upsidePct": 20.5,
+      "date": "2026-08-07",
+      "action": "Raised",
+      "notes": "Target adjusted to $1376.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Wells Fargo",
+      "analyst": null,
+      "rating": "Overweight",
+      "priceTarget": 1330.0,
+      "priorPriceTarget": 1280.0,
+      "upsidePct": 16.4,
+      "date": "2026-08-06",
+      "action": "Raised",
+      "notes": "Target adjusted to $1330.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Cantor Fitzgerald",
+      "analyst": null,
+      "rating": "Overweight",
+      "priceTarget": 1410.0,
+      "priorPriceTarget": 1350.0,
+      "upsidePct": 23.4,
+      "date": "2026-08-06",
+      "action": "Raised",
+      "notes": "Target adjusted to $1410.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Citigroup",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1600.0,
+      "priorPriceTarget": 1500.0,
+      "upsidePct": 40.1,
+      "date": "2026-07-15",
+      "action": "Raised",
+      "notes": "Target adjusted to $1600.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Bernstein",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 1385.0,
+      "priorPriceTarget": 1300.0,
+      "upsidePct": 21.3,
+      "date": "2026-07-14",
+      "action": "Raised",
+      "notes": "Target adjusted to $1385.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "UBS",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1425.0,
+      "priorPriceTarget": 1250.0,
+      "upsidePct": 24.8,
+      "date": "2026-07-13",
+      "action": "Raised",
+      "notes": "Target adjusted to $1425.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Guggenheim",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1273.0,
+      "priorPriceTarget": 1235.0,
+      "upsidePct": 11.5,
+      "date": "2026-07-13",
+      "action": "Lowered",
+      "notes": "Target adjusted to $1273.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "B of A Securities",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1334.0,
+      "priorPriceTarget": 1251.0,
+      "upsidePct": 16.8,
+      "date": "2026-07-10",
+      "action": "Raised",
+      "notes": "Target adjusted to $1334.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Morgan Stanley",
+      "analyst": null,
+      "rating": "Overweight",
+      "priceTarget": 1347.0,
+      "priorPriceTarget": 1344.0,
+      "upsidePct": 17.9,
+      "date": "2026-07-08",
+      "action": "Raised",
+      "notes": "Target adjusted to $1347.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "RBC Capital",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 1500.0,
+      "priorPriceTarget": 1250.0,
+      "upsidePct": 31.3,
+      "date": "2026-07-08",
+      "action": "Raised",
+      "notes": "Target adjusted to $1500.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "JP Morgan",
+      "analyst": null,
+      "rating": "Overweight",
+      "priceTarget": 1400.0,
+      "priorPriceTarget": 1300.0,
+      "upsidePct": 22.6,
+      "date": "2026-07-07",
+      "action": "Raised",
+      "notes": "Target adjusted to $1400.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Leerink Partners",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 1232.0,
+      "priorPriceTarget": 1119.0,
+      "upsidePct": 7.9,
+      "date": "2026-06-25",
+      "action": "Raised",
+      "notes": "Target adjusted to $1232.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Jefferies",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1350.0,
+      "priorPriceTarget": 1330.0,
+      "upsidePct": 18.2,
+      "date": "2026-06-09",
+      "action": "Raised",
+      "notes": "Target adjusted to $1350.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Barclays",
+      "analyst": null,
+      "rating": "Overweight",
+      "priceTarget": 1400.0,
+      "priorPriceTarget": 1350.0,
+      "upsidePct": 22.6,
+      "date": "2026-05-05",
+      "action": "Raised",
+      "notes": "Target adjusted to $1400.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Wolfe Research",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 1325.0,
+      "priorPriceTarget": 1325.0,
+      "upsidePct": 16.0,
+      "date": "2026-05-04",
+      "action": "Reiterated",
+      "notes": "Target adjusted to $1325.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Freedom Broker",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1200.0,
+      "priorPriceTarget": 1050.0,
+      "upsidePct": 5.1,
+      "date": "2026-02-10",
+      "action": "Raised",
+      "notes": "Target adjusted to $1200.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Deutsche Bank",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 1285.0,
+      "priorPriceTarget": 1200.0,
+      "upsidePct": 12.5,
+      "date": "2026-02-09",
+      "action": "Raised",
+      "notes": "Target adjusted to $1285.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "BMO Capital",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 1200.0,
+      "priorPriceTarget": 1100.0,
+      "upsidePct": 5.1,
+      "date": "2025-12-04",
+      "action": "Raised",
+      "notes": "Target adjusted to $1200.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Berenberg",
+      "analyst": null,
+      "rating": "Hold",
+      "priceTarget": 830.0,
+      "priorPriceTarget": 970.0,
+      "upsidePct": -27.3,
+      "date": "2025-09-17",
+      "action": "Lowered",
+      "notes": "Target adjusted to $830.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Goldman Sachs",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 888.0,
+      "priorPriceTarget": 892.0,
+      "upsidePct": -22.3,
+      "date": "2025-04-08",
+      "action": "Lowered",
+      "notes": "Target adjusted to $888.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Argus Research",
+      "analyst": null,
+      "rating": "Buy",
+      "priceTarget": 840.0,
+      "priorPriceTarget": 770.0,
+      "upsidePct": -26.5,
+      "date": "2024-05-14",
+      "action": "Raised",
+      "notes": "Target adjusted to $840.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "DZ Bank",
+      "analyst": null,
+      "rating": "Hold",
+      "priceTarget": 820.0,
+      "priorPriceTarget": null,
+      "upsidePct": -28.2,
+      "date": "2024-02-21",
+      "action": "Reiterated",
+      "notes": "Target adjusted to $820.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Daiwa Capital",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 610.0,
+      "priorPriceTarget": null,
+      "upsidePct": -46.6,
+      "date": "2023-12-21",
+      "action": "Reiterated",
+      "notes": "Target adjusted to $610.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Credit Suisse",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 580.0,
+      "priorPriceTarget": 490.0,
+      "upsidePct": -49.2,
+      "date": "2023-08-09",
+      "action": "Raised",
+      "notes": "Target adjusted to $580.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "TD Cowen",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 500.0,
+      "priorPriceTarget": 430.0,
+      "upsidePct": -56.2,
+      "date": "2023-05-23",
+      "action": "Raised",
+      "notes": "Target adjusted to $500.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "SVB Securities",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 458.0,
+      "priorPriceTarget": 410.0,
+      "upsidePct": -59.9,
+      "date": "2023-05-01",
+      "action": "Raised",
+      "notes": "Target adjusted to $458.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Societe Generale",
+      "analyst": null,
+      "rating": "Sell",
+      "priceTarget": 278.0,
+      "priorPriceTarget": null,
+      "upsidePct": -75.7,
+      "date": "2023-02-16",
+      "action": "Reiterated",
+      "notes": "Target adjusted to $278.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "SVB Leerink",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 410.0,
+      "priorPriceTarget": 384.0,
+      "upsidePct": -64.1,
+      "date": "2022-12-16",
+      "action": "Raised",
+      "notes": "Target adjusted to $410.00 based on post-earnings sell-side modeling."
+    },
+    {
+      "firm": "Cowen & Co.",
+      "analyst": null,
+      "rating": "Outperform",
+      "priceTarget": 430.0,
+      "priorPriceTarget": 390.0,
+      "upsidePct": -62.4,
+      "date": "2022-12-05",
+      "action": "Raised",
+      "notes": "Target adjusted to $430.00 based on post-earnings sell-side modeling."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Yahoo Finance LLY Analyst Research & Price Targets",
+      "publisher": "Yahoo Finance API / Sell-Side Consensus",
+      "url": "https://finance.yahoo.com/quote/LLY/analysis",
+      "date": "2026-09-15"
+    }
+  ]
+}

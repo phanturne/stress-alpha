@@ -76,6 +76,50 @@ Operating EPS (adjusted): **$3.45**
 
 > The convergence of artificial intelligence supercomputing clusters, industrial electrification, and aggressive coal plant retirements has created the most acute power generation bottleneck in five decades. Hyperscalers and global utilities are facing severe grid interconnection backlogs extending out to 2030, transforming firm dispatchable power equipment from a cyclical commodity into a critical strategic choke-point. In this environment, GE Vernova operates from a position of profound competitive advantage. Its 2,200+ operating gas turbine fleet provides an enduring moat through multi-decade CSAs, generating high-margin, recurring aftermarket cash flows that self-fund expansion in Electrification (transformers, HVDC, switchgear) where data center demand has doubled. While legacy offshore wind contracts (e.g. Vineyard Wind) remain a near-term margin headwind, GEV's Power and Electrification divisions possess formidable pricing power, extending delivery slot visibility through 2029 and widening its economic moat against global peers.
 
+## 🎯 Wall Street Analyst Consensus & Estimates
+
+- **Consensus Rating:** **Buy** (37 analysts: 30 Bullish [81.1%], 7 Neutral [18.9%], 0 Bearish [0%])
+- **Price Targets:** Low $940 | Avg **$1237.34** | Median $1250 | High $1450
+
+### Analyst Sentiment Synthesis
+
+> According to real-time Wall Street consensus from Yahoo Finance, GEV is covered by 37 sell-side institutions with an overall 'Buy' consensus (81.1% Bullish). Price targets range from a Street low of $940.00 to a high of $1450.00, centering around a mean consensus target of $1237.34 (+39.7% vs. current $885.51). Recent broker actions reflect ongoing revisions as institutional desks update forward EPS projections and multiple assumptions.
+
+### Wall Street Price Targets Breakdown
+
+| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |
+|------|---------|--------|------------|--------|------|--------|-------|
+| **Bernstein** | — | Outperform | $1298 | +46.6% | 2026-09-15 | Reiterated | Target adjusted to $1298.00 based on post-earnings sell-side modeling. |
+| **GLJ Research** | — | Sell | $470 | -46.9% | 2026-09-14 | Reiterated | Target adjusted to $470.00 based on post-earnings sell-side modeling. |
+| **Mizuho** | — | Neutral | $949 | +7.2% | 2026-07-27 | Raised | Target adjusted to $949.00 based on post-earnings sell-side modeling. |
+| **JP Morgan** | — | Overweight | $1330 | +50.2% | 2026-07-23 | Raised | Target adjusted to $1330.00 based on post-earnings sell-side modeling. |
+| **Morgan Stanley** | — | Overweight | $1350 | +52.5% | 2026-07-23 | Raised | Target adjusted to $1350.00 based on post-earnings sell-side modeling. |
+| **TD Cowen** | — | Buy | $1235 | +39.5% | 2026-07-23 | Raised | Target adjusted to $1235.00 based on post-earnings sell-side modeling. |
+| **RBC Capital** | — | Outperform | $1225 | +38.3% | 2026-07-23 | Raised | Target adjusted to $1225.00 based on post-earnings sell-side modeling. |
+| **Oppenheimer** | — | Outperform | $1338 | +51.1% | 2026-07-23 | Raised | Target adjusted to $1338.00 based on post-earnings sell-side modeling. |
+| **Guggenheim** | — | Buy | $1450 | +63.7% | 2026-07-23 | Raised | Target adjusted to $1450.00 based on post-earnings sell-side modeling. |
+| **Jefferies** | — | Buy | $1210 | +36.6% | 2026-06-11 | Lowered | Target adjusted to $1210.00 based on post-earnings sell-side modeling. |
+| **BNP Paribas** | — | Neutral | $1190 | +34.4% | 2026-04-27 | Reiterated | Target adjusted to $1190.00 based on post-earnings sell-side modeling. |
+| **Barclays** | — | Overweight | $1250 | +41.2% | 2026-04-23 | Raised | Target adjusted to $1250.00 based on post-earnings sell-side modeling. |
+| **Evercore ISI Group** | — | Outperform | $1350 | +52.5% | 2026-04-23 | Raised | Target adjusted to $1350.00 based on post-earnings sell-side modeling. |
+| **BMO Capital** | — | Outperform | $1250 | +41.2% | 2026-04-23 | Raised | Target adjusted to $1250.00 based on post-earnings sell-side modeling. |
+| **Baird** | — | Outperform | $1400 | +58.1% | 2026-04-23 | Raised | Target adjusted to $1400.00 based on post-earnings sell-side modeling. |
+| **Citigroup** | — | Neutral | $1110 | +25.4% | 2026-04-13 | Raised | Target adjusted to $1110.00 based on post-earnings sell-side modeling. |
+| **Susquehanna** | — | Positive | $1080 | +22% | 2026-04-09 | Raised | Target adjusted to $1080.00 based on post-earnings sell-side modeling. |
+| **Wells Fargo** | — | Overweight | $896 | +1.2% | 2026-03-31 | Raised | Target adjusted to $896.00 based on post-earnings sell-side modeling. |
+| **Rothschild & Co** | — | Buy | $1100 | +24.2% | 2026-03-09 | Raised | Target adjusted to $1100.00 based on post-earnings sell-side modeling. |
+| **Goldman Sachs** | — | Buy | $925 | +4.5% | 2026-01-29 | Raised | Target adjusted to $925.00 based on post-earnings sell-side modeling. |
+| **UBS** | — | Buy | $835 | -5.7% | 2025-12-10 | Raised | Target adjusted to $835.00 based on post-earnings sell-side modeling. |
+| **B of A Securities** | — | Buy | $804 | -9.2% | 2025-12-10 | Raised | Target adjusted to $804.00 based on post-earnings sell-side modeling. |
+| **Melius Research** | — | Buy | $740 | -16.4% | 2025-09-15 | Reiterated | Target adjusted to $740.00 based on post-earnings sell-side modeling. |
+| **HSBC** | — | Hold | $580 | -34.5% | 2025-09-05 | Raised | Target adjusted to $580.00 based on post-earnings sell-side modeling. |
+| **Seaport Global** | — | Buy | $630 | -28.9% | 2025-07-10 | Reiterated | Target adjusted to $630.00 based on post-earnings sell-side modeling. |
+| **Johnson Rice** | — | Buy | $425 | -52% | 2025-02-07 | Reiterated | Target adjusted to $425.00 based on post-earnings sell-side modeling. |
+| **Truist Securities** | — | Buy | $470 | -46.9% | 2025-01-23 | Raised | Target adjusted to $470.00 based on post-earnings sell-side modeling. |
+| **Wolfe Research** | — | Outperform | $403 | -54.5% | 2024-12-04 | Reiterated | Target adjusted to $403.00 based on post-earnings sell-side modeling. |
+| **Daiwa Capital** | — | Buy | $336 | -62.1% | 2024-10-30 | Raised | Target adjusted to $336.00 based on post-earnings sell-side modeling. |
+| **Deutsche Bank** | — | Buy | $354 | -60% | 2024-10-21 | Reiterated | Target adjusted to $354.00 based on post-earnings sell-side modeling. |
+
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
 - **Stressed Diluted EPS:** $25.17
