@@ -1,0 +1,200 @@
+{
+  "ticker": "GEV",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 881.21,
+  "weightedFairValue": 1056.85,
+  "upsidePct": 19.93,
+  "scenarioResults": [
+    {
+      "name": "Bull",
+      "probability": 0.35,
+      "fairValue": 1334,
+      "upsideFromCurrent": 51.38
+    },
+    {
+      "name": "Base",
+      "probability": 0.45,
+      "fairValue": 1071,
+      "upsideFromCurrent": 21.54
+    },
+    {
+      "name": "Bear",
+      "probability": 0.2,
+      "fairValue": 540,
+      "upsideFromCurrent": -38.72
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull",
+      "parameter": "EPS +10%",
+      "baseValue": 29,
+      "altValue": 31.9,
+      "fairValueDelta": 133.4
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "EPS -10%",
+      "baseValue": 29,
+      "altValue": 26.1,
+      "fairValueDelta": -133.4
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple +2",
+      "baseValue": 46,
+      "altValue": 48,
+      "fairValueDelta": 58
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 46,
+      "altValue": 44,
+      "fairValueDelta": -58
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS +10%",
+      "baseValue": 25.5,
+      "altValue": 28.05,
+      "fairValueDelta": 107.1
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS -10%",
+      "baseValue": 25.5,
+      "altValue": 22.95,
+      "fairValueDelta": -107.1
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple +2",
+      "baseValue": 42,
+      "altValue": 44,
+      "fairValueDelta": 51
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple -2",
+      "baseValue": 42,
+      "altValue": 40,
+      "fairValueDelta": -51
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS +10%",
+      "baseValue": 20,
+      "altValue": 22,
+      "fairValueDelta": 54
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS -10%",
+      "baseValue": 20,
+      "altValue": 18,
+      "fairValueDelta": -54
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple +2",
+      "baseValue": 27,
+      "altValue": 29,
+      "fairValueDelta": 40
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple -2",
+      "baseValue": 27,
+      "altValue": 25,
+      "fairValueDelta": -40
+    }
+  ],
+  "consensusTarget": 1155.28,
+  "verdictVsConsensus": "Below consensus ($1155.28) by 8.52% — more cautious",
+  "baseline": {
+    "baseRevenueBillions": 52.5,
+    "baseGrossMarginPct": 28.5,
+    "fixedOpexBillions": 6.7,
+    "taxRatePct": 18,
+    "dilutedSharesBillions": 0.269,
+    "multipleRegimes": {
+      "bull": 48,
+      "base": 40,
+      "panic": 22
+    },
+    "upstreamDrivers": [
+      {
+        "id": "hyperscaler-power-interconnection-capex",
+        "name": "Hyperscaler AI Data Center Power Interconnection & Grid CapEx",
+        "exposureShare": 0.38,
+        "elasticity": 1.2,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 50
+      },
+      {
+        "id": "gas-turbine-slot-pricing-power",
+        "name": "Heavy-Duty Gas Turbine Equipment & Delivery Slot Pricing",
+        "exposureShare": 0.35,
+        "elasticity": 0.95,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "offshore-wind-warranty-remediation",
+        "name": "Offshore Wind Legacy Warranty & Contract Remediation Headwinds",
+        "exposureShare": 0.27,
+        "elasticity": 0.7,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 50
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 52.5,
+    "stressGrossProfitBillions": 14.96,
+    "stressOperatingIncomeBillions": 8.26,
+    "stressNetIncomeBillions": 6.77,
+    "stressEps": 25.17,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (48x P/E)",
+        "multiple": 48,
+        "targetPrice": 1208.16,
+        "deltaFromCurrentPct": 37.1
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (40x P/E)",
+        "multiple": 40,
+        "targetPrice": 1006.8,
+        "deltaFromCurrentPct": 14.25
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (22x P/E)",
+        "multiple": 22,
+        "targetPrice": 553.74,
+        "deltaFromCurrentPct": -37.16
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 14.25,
+      "downsideToPanicPct": -37.16,
+      "upsideToBullPct": 37.1,
+      "marketPricedInMultiple": 35.01,
+      "riskRewardRatio": 1
+    },
+    "driverShocksApplied": {
+      "hyperscaler-power-interconnection-capex": 0,
+      "gas-turbine-slot-pricing-power": 0,
+      "offshore-wind-warranty-remediation": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

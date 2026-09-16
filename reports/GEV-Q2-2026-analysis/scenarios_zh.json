@@ -1,0 +1,60 @@
+{
+  "ticker": "GEV",
+  "basisYear": "FY2027",
+  "currentPrice": 881.21,
+  "consensusTarget": 1155.28,
+  "scenarios": [
+    {
+      "name": "乐观情景 (Bull)",
+      "probability": 0.35,
+      "forwardEps": 29.00,
+      "multiple": 46,
+      "assumptions": [
+        "头部云厂商 AI 数据中心供电紧缺超级周期加速，直采航衍机与 HA 级燃机年化新签订单突破 120 亿美元",
+        "发电板块燃机排产机位被抢购一空并全面锁定至 2030 年，驱动设备综合结算均价提升 15% 且预留定金充沛",
+        "电气化板块在特高压直流输电与大型电力变压器规模效应驱动下，EBITDA 利润率突破 17.5%",
+        "陆上风电营业利润率冲高至 9.0%，且海上风电遗留合同亏损被有效隔离并提前完成叶片修复交付",
+        "估值倍数向顶级工业科技复合龙头重估，扩张至 46 倍 2027 财年每股收益"
+      ],
+      "keyDrivers": [
+        "hyperscaler-datacenter-interconnection-supercycle",
+        "gas-turbine-delivery-slot-scarcity",
+        "electrification-grid-solutions-margin-expansion"
+      ]
+    },
+    {
+      "name": "基准情景 (Base)",
+      "probability": 0.45,
+      "forwardEps": 25.50,
+      "multiple": 42,
+      "assumptions": [
+        "2027 财年合并营收达到 525 亿美元，综合营业利润率稳健扩张至约 15.5%",
+        "发电板块实现 12%-14% 内生平稳增长，燃机在手机位储备如期突破 125 GW",
+        "电气化业务保持 30% 以上高增，高毛利电网解决方案与变电站成套设备平稳交付",
+        "陆上风电实现中个位数良性利润（约 5%），海上风电年化拖累收窄至 2 亿美元以内",
+        "估值倍数稳定在 2027 财年预估 EPS 的 42 倍水平"
+      ],
+      "keyDrivers": [
+        "gas-turbine-delivery-slot-scarcity",
+        "electrification-grid-solutions-margin-expansion",
+        "onshore-wind-profitability-turnaround"
+      ]
+    },
+    {
+      "name": "悲观情景 (Bear)",
+      "probability": 0.20,
+      "forwardEps": 20.00,
+      "multiple": 27,
+      "assumptions": [
+        "科技巨头数据中心资本开支因电网并网监管审批延误而出现阶段性消化放缓",
+        "海上风机叶片质保修复支出超预期，Vineyard Wind 仲裁违约赔偿持续带来年化超 6 亿美元现金失血",
+        "取向电工钢（GOES）与高压变压器产业链瓶颈加剧，压制电气化板块交付进度与收入确认",
+        "市场周期见顶担忧升温，远期估值倍数回撤至 2027 财年预估 EPS 的 27 倍"
+      ],
+      "keyDrivers": [
+        "offshore-wind-warranty-remediation-tail-risk",
+        "utility-transformer-lead-time-bottleneck"
+      ]
+    }
+  ]
+}

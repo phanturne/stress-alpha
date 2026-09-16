@@ -1,0 +1,108 @@
+{
+  "ticker": "MU",
+  "overallMoatRating": "Narrow",
+  "moatTrend": "Widening",
+  "moatSources": [
+    {
+      "source": "Efficient Scale",
+      "strength": "Strong",
+      "durabilityYears": 6,
+      "description": "The global DRAM industry has consolidated into a highly disciplined 3-player oligopoly (Micron, Samsung, SK Hynix) controlling >95% of worldwide production. Constructing a modern sub-10nm DRAM wafer fab requires $15B-$20B in capital expenditure, 3+ years of construction and equipment commissioning, and scarce EUV lithography allocations from ASML. Market participants understand that irrational capacity additions destroy capital returns for all players, sustaining an efficient scale barrier."
+    },
+    {
+      "source": "Cost Advantage",
+      "strength": "Moderate",
+      "durabilityYears": 5,
+      "description": "Micron achieved cost parity and bit-density leadership on its 1-beta DRAM node without requiring high-cost EUV tools, and is currently ramping its 1-gamma node utilizing EUV in Hiroshima, Japan and Taichung, Taiwan. Additionally, Micron's in-house monolithic 232-layer and 276-layer 3D NAND architectures enable low-cost bit production for high-density QLC Enterprise SSDs."
+    },
+    {
+      "source": "Intangible Assets",
+      "strength": "Moderate",
+      "durabilityYears": 5,
+      "description": "Over 30,000 global patents covering DRAM cell scaling, high-aspect-ratio 3D NAND etch processes, and specialized Through-Silicon Via (TSV) advanced packaging. Proprietary thermal dissipation and circuit architectures enable Micron's 8-high and 12-high HBM3e modules to consume ~30% less power than competing stacks, creating intellectual property differentiation in power-constrained AI datacenters."
+    },
+    {
+      "source": "Switching Costs",
+      "strength": "Moderate",
+      "durabilityYears": 4,
+      "description": "While standardized commodity memory has minimal switching costs, high-performance HBM3e and HBM4 architectures require 9-12 months of deep collaborative co-design, electrical qualification, and custom base-die integration with GPU vendors (NVIDIA, AMD) and TSMC CoWoS packaging lines. Once an accelerator platform is validated and deployed in mass production, swapping HBM suppliers mid-cycle is commercially and technically prohibitive."
+    },
+    {
+      "source": "Network Effects",
+      "strength": "None",
+      "durabilityYears": 0,
+      "description": "Standardized semiconductor memory components and JEDEC-compliant DRAM/NAND devices do not exhibit user-driven network effects."
+    }
+  ],
+  "competitors": [
+    {
+      "ticker": "005930.KS",
+      "name": "Samsung Electronics Co., Ltd.",
+      "marketCapBillions": 390.0,
+      "revenueBillions": 215.0,
+      "revenueGrowthPct": 24.0,
+      "grossMarginPct": 38.0,
+      "operatingMarginPct": 18.5,
+      "forwardPe": 11.5,
+      "marketSharePct": 41.0,
+      "productComparison": "Broadest memory and semiconductor portfolio worldwide, encompassing 1b/1c DRAM, 12-high HBM3e/HBM4, and V-NAND flash, coupled with captive foundry and device manufacturing.",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "Advantage: Unmatched cleanroom footprint, cash reserves, and multi-fab economies of scale in Pyeongtaek and Taylor. Vulnerability: Delayed validation yield cycles for 12-high HBM3e at NVIDIA, allowing Micron and SK Hynix to capture early premium HBM allocations."
+    },
+    {
+      "ticker": "000660.KS",
+      "name": "SK Hynix Inc.",
+      "marketCapBillions": 125.0,
+      "revenueBillions": 48.0,
+      "revenueGrowthPct": 75.0,
+      "grossMarginPct": 49.0,
+      "operatingMarginPct": 38.0,
+      "forwardPe": 8.5,
+      "marketSharePct": 34.0,
+      "productComparison": "Incumbent market share leader in AI memory, dominating HBM3 and HBM3e shipments via proprietary Advanced MR-MUF packaging and high-speed 1b-nm server DDR5.",
+      "pricingPower": "Superior",
+      "keyAdvantageOrVulnerability": "Advantage: Deepest technical co-design partnership with NVIDIA and TSMC, commanding premier HBM volume share and industry-leading operating profitability. Vulnerability: High single-customer concentration and aggressive capital expenditure needs for the Yongin semiconductor cluster."
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital Corporation",
+      "marketCapBillions": 28.0,
+      "revenueBillions": 15.5,
+      "revenueGrowthPct": 28.0,
+      "grossMarginPct": 35.0,
+      "operatingMarginPct": 17.0,
+      "forwardPe": 10.5,
+      "marketSharePct": 14.0,
+      "productComparison": "Specialized NAND Flash memory (BiCS joint venture with Kioxia) and mass-capacity enterprise nearline hard disk drives (Ultrastar HDDs).",
+      "pricingPower": "Parity",
+      "keyAdvantageOrVulnerability": "Advantage: Dominant enterprise nearline HDD install base providing complementary hyperscaler cloud storage relationships. Vulnerability: Completely absent from DRAM and HBM, leaving the company exposed strictly to cyclical NAND pricing fluctuations."
+    },
+    {
+      "ticker": "285A.T",
+      "name": "Kioxia Holdings Corporation",
+      "marketCapBillions": 16.5,
+      "revenueBillions": 11.0,
+      "revenueGrowthPct": 32.0,
+      "grossMarginPct": 32.0,
+      "operatingMarginPct": 14.0,
+      "forwardPe": 12.0,
+      "marketSharePct": 13.5,
+      "productComparison": "Dedicated NAND Flash specialist producing BiCS 3D NAND flash memories, client SSDs, and enterprise storage arrays.",
+      "pricingPower": "Inferior",
+      "keyAdvantageOrVulnerability": "Advantage: Proprietary 3D BiCS Flash stacking IP and cost-shared wafer manufacturing operations at Yokkaichi and Kitakami. Vulnerability: Pure NAND exposure lacking DRAM balance, sub-scale R&D budget relative to Samsung/Micron, and significant historical leverage."
+    }
+  ],
+  "competitiveDynamicsSummary": "Micron operates within a rationalized 3-player global DRAM oligopoly alongside Samsung Electronics and SK Hynix, which together control >95% of global market supply. The rapid architectural transition to High-Bandwidth Memory (HBM3e/HBM4) has structurally altered memory dynamics from commoditized cyclical pricing toward high-margin, custom co-engineered accelerators with multi-year supply contracts. Micron's breakthrough in 8-high and 12-high HBM3e offering 30% superior power efficiency has established it as a primary tier-1 supplier alongside SK Hynix. In NAND, where industry consolidation is less complete (Samsung, SK Hynix/Solidigm, Micron, Kioxia, WDC), Micron differentiates via high-density 60TB+ D5/QLC Enterprise SSDs that displace HDDs in AI data centers. Given cyclical capital intensity and rapid 4-6 year technology migration curves, Micron maintains a defensible Narrow Economic Moat with a Widening trend.",
+  "sources": [
+    {
+      "url": "https://www.morningstar.com/stocks/xnas/mu/quote",
+      "title": "Morningstar Equity Research: Micron Technology Inc Moat Analysis",
+      "date": "2026-06-26"
+    },
+    {
+      "url": "https://investors.micron.com",
+      "title": "Micron Technology Q3 FY2026 Investor Presentation",
+      "date": "2026-06-25"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "baseRevenueBillions": 152.0,
+  "baseGrossMarginPct": 38.5,
+  "fixedOpexBillions": 34.2,
+  "taxRatePct": 17.5,
+  "dilutedSharesBillions": 2.38,
+  "multipleRegimes": {
+    "bull": 15.5,
+    "base": 11.5,
+    "panic": 7.5
+  },
+  "upstreamDrivers": [
+    {
+      "id": "china-retail-macro-consumption",
+      "name": "China Domestic Retail Consumption & E-Commerce GMV Growth",
+      "exposureShare": 0.44,
+      "elasticity": 1.1,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "cloud-ai-enterprise-capex",
+      "name": "China Enterprise GenAI & Public Cloud Infrastructure Spending",
+      "exposureShare": 0.15,
+      "elasticity": 1.35,
+      "defaultShockPct": 0,
+      "minShockPct": -50,
+      "maxShockPct": 50
+    },
+    {
+      "id": "cross-border-trade-tariffs",
+      "name": "Cross-Border E-Commerce De Minimis Exemption & Tariff Policy (US/EU)",
+      "exposureShare": 0.18,
+      "elasticity": 0.85,
+      "defaultShockPct": 0,
+      "minShockPct": -50,
+      "maxShockPct": 30
+    },
+    {
+      "id": "cmr-take-rate-monetization",
+      "name": "Taobao/Tmall Software Fee (0.6%) & Quanzhantui Ad Engine Adoption",
+      "exposureShare": 0.23,
+      "elasticity": 0.95,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    }
+  ]
+}

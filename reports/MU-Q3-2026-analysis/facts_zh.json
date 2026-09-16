@@ -1,0 +1,86 @@
+{
+  "ticker": "MU",
+  "company": "美光科技公司 (Micron Technology, Inc.)",
+  "quarter": "2026财年第三季度 (Q3 2026)",
+  "reportDate": "2026-06-25",
+  "revenueBillions": 11.45,
+  "revenueGrowthPct": 68.1,
+  "revenueEstimateBillions": 10.95,
+  "operatingIncomeBillions": 4.12,
+  "operatingMarginPct": 36.0,
+  "operatingIncomeGrowthPct": 188.0,
+  "epsReported": 3.32,
+  "epsConsensus": 2.85,
+  "epsOperating": 3.03,
+  "segments": [
+    {
+      "name": "计算与网络业务部 (CNBU)",
+      "revenueBillions": 5.45,
+      "growthPct": 85.0,
+      "operatingIncomeBillions": 2.56,
+      "operatingMarginPct": 47.0
+    },
+    {
+      "name": "移动业务部 (MBU)",
+      "revenueBillions": 2.15,
+      "growthPct": 42.0,
+      "operatingIncomeBillions": 0.58,
+      "operatingMarginPct": 27.0
+    },
+    {
+      "name": "嵌入式业务部 (EBU)",
+      "revenueBillions": 1.45,
+      "growthPct": 26.0,
+      "operatingIncomeBillions": 0.36,
+      "operatingMarginPct": 25.0
+    },
+    {
+      "name": "存储业务部 (SBU)",
+      "revenueBillions": 2.40,
+      "growthPct": 82.0,
+      "operatingIncomeBillions": 0.62,
+      "operatingMarginPct": 26.0
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "《芯片与科学法案》第四篇直接资本补贴里程碑确认",
+      "amountBillions": 0.38,
+      "isOperating": false,
+      "note": "博伊西 (Boise) 和雪城 (Syracuse) 超级晶圆厂建设里程碑达成的直接联邦及爱达荷州资本支出补贴确认；非经常性资本补贴推高了GAAP净利润。"
+    },
+    {
+      "description": "离散型海外税务估值拨备释放收益",
+      "amountBillions": 0.18,
+      "isOperating": false,
+      "note": "根据ASC 740准则评估递延所得税资产及国际架构重组带来的离散型非经常性税收抵免，推高了GAAP净利润。"
+    },
+    {
+      "description": "前期成本与市价孰低法 (LCM) 存货跌价准备转回",
+      "amountBillions": 0.12,
+      "isOperating": true,
+      "note": "此前计提跌价准备的传统3D NAND晶圆存货恢复价值并对外销售，为本季度经营性毛利率带来约1.2亿美元（约105个基点）的提振。"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 4.50,
+  "guidanceOperatingIncomeHighBillions": 4.90,
+  "guidanceRevenueLowBillions": 12.20,
+  "guidanceRevenueHighBillions": 12.80,
+  "currentPrice": 145.00,
+  "marketCapBillions": 165.30,
+  "trailingEps": 7.95,
+  "forwardEpsConsensus": 12.00,
+  "sources": [
+    {
+      "url": "https://investors.micron.com/news-releases/news-release-details/micron-technology-inc-reports-results-third-quarter-fiscal-2026",
+      "title": "美光科技公布2026财年第三季度财务业绩",
+      "date": "2026-06-25"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0000723125",
+      "title": "美国SEC Form 10-Q 季度报告 - 美光科技 2026财年第三季度",
+      "date": "2026-06-26"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

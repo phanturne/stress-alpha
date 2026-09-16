@@ -1,0 +1,50 @@
+{
+  "ticker": "BABA",
+  "events": [
+    {
+      "date": "2026-08-15",
+      "event": "Q1 FY2027 earnings: Cloud revenue accelerates +18.5%, CMR take rate stabilizes with 0.6% software fee, clean operating EPS beats by $0.08",
+      "priceMovePct": 6.8,
+      "context": "Market rewarded decisive operational proof that core e-commerce monetization has stabilized alongside triple-digit public cloud AI growth, triggering strong institutional short-covering.",
+      "source": {
+        "url": "https://www.bloomberg.com",
+        "title": "Alibaba Rallies as Cloud AI Surge and Taobao Fees Boost Earnings",
+        "date": "2026-08-15"
+      }
+    },
+    {
+      "date": "2026-02-12",
+      "event": "Q3 FY2026 earnings: Revenue matches consensus but aggressive AIDC cross-border subsidies drag segment operating margins",
+      "priceMovePct": -4.2,
+      "context": "Investors punished continued overseas cash burn and cautious consumer spending commentary in Tier-3/4 domestic retail markets.",
+      "source": {
+        "url": "https://www.reuters.com",
+        "title": "Alibaba Shares Drop on Heavier E-Commerce and Global Logistics Investments",
+        "date": "2026-02-12"
+      }
+    },
+    {
+      "date": "2025-08-28",
+      "event": "Completion of HKEX dual-primary listing conversion and announcement of Southbound Stock Connect inclusion",
+      "priceMovePct": 5.5,
+      "context": "Mainland Chinese mutual fund liquidity access provided strong technical support, dampening ADR regulatory risk discount.",
+      "source": {
+        "url": "https://www.scmp.com",
+        "title": "Alibaba HK Shares Jump as Stock Connect Inclusion Fuels Inflows",
+        "date": "2025-08-28"
+      }
+    },
+    {
+      "date": "2025-05-15",
+      "event": "Q4 FY2025 earnings: Top-line growth moderates to 4%, board expands share repurchase program to $25B and declares annual dividend",
+      "priceMovePct": 2.1,
+      "context": "Aggressive capital returns and commitment to high-single-digit share count reduction established an effective valuation floor.",
+      "source": {
+        "url": "https://www.wsj.com",
+        "title": "Alibaba Boosts Buyback and Dividend to Reassure Value Investors",
+        "date": "2025-05-15"
+      }
+    }
+  ],
+  "conditionalFraming": "Alibaba's post-earnings stock reactions reflect asymmetric sensitivity to two operational anchors: domestic Customer Management Revenue (CMR) take-rate stabilization and Cloud Intelligence profitability. When CMR lags GMV due to merchant subsidies and cross-border losses widen (e.g. Feb 2026: -4.2%), the market aggressively de-rates the multiple. Conversely, when Cloud AI demonstrates accelerating double-digit revenue with expanding margins while CMR matches GMV growth (e.g. Aug 2026: +6.8%), the stock exhibits explosive relief rallies. Capital return execution ($12B+ annual buybacks) provides a resilient downside put at 7-8x P/E, meaning earnings beats trigger sharp upward multiple re-ratings toward 12-14x."
+}

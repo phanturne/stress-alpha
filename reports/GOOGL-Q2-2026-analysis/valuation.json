@@ -1,0 +1,200 @@
+{
+  "ticker": "GOOGL",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 182.5,
+  "weightedFairValue": 209.27,
+  "upsidePct": 14.67,
+  "scenarioResults": [
+    {
+      "name": "Bull",
+      "probability": 0.25,
+      "fairValue": 268.8,
+      "upsideFromCurrent": 47.29
+    },
+    {
+      "name": "Base",
+      "probability": 0.55,
+      "fairValue": 207.9,
+      "upsideFromCurrent": 13.92
+    },
+    {
+      "name": "Bear",
+      "probability": 0.2,
+      "fairValue": 138.6,
+      "upsideFromCurrent": -24.05
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull",
+      "parameter": "EPS +10%",
+      "baseValue": 11.2,
+      "altValue": 12.32,
+      "fairValueDelta": 26.88
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "EPS -10%",
+      "baseValue": 11.2,
+      "altValue": 10.08,
+      "fairValueDelta": -26.88
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple +2",
+      "baseValue": 24,
+      "altValue": 26,
+      "fairValueDelta": 22.4
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 24,
+      "altValue": 22,
+      "fairValueDelta": -22.4
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS +10%",
+      "baseValue": 9.9,
+      "altValue": 10.89,
+      "fairValueDelta": 20.79
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS -10%",
+      "baseValue": 9.9,
+      "altValue": 8.91,
+      "fairValueDelta": -20.79
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple +2",
+      "baseValue": 21,
+      "altValue": 23,
+      "fairValueDelta": 19.8
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple -2",
+      "baseValue": 21,
+      "altValue": 19,
+      "fairValueDelta": -19.8
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS +10%",
+      "baseValue": 8.4,
+      "altValue": 9.24,
+      "fairValueDelta": 13.86
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS -10%",
+      "baseValue": 8.4,
+      "altValue": 7.56,
+      "fairValueDelta": -13.86
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple +2",
+      "baseValue": 16.5,
+      "altValue": 18.5,
+      "fairValueDelta": 16.8
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple -2",
+      "baseValue": 16.5,
+      "altValue": 14.5,
+      "fairValueDelta": -16.8
+    }
+  ],
+  "consensusTarget": 215,
+  "verdictVsConsensus": "In line with consensus ($215) — delta -2.67%",
+  "baseline": {
+    "baseRevenueBillions": 435,
+    "baseGrossMarginPct": 57.5,
+    "fixedOpexBillions": 107.6,
+    "taxRatePct": 16.5,
+    "dilutedSharesBillions": 12.35,
+    "multipleRegimes": {
+      "bull": 25,
+      "base": 20.5,
+      "panic": 14.5
+    },
+    "upstreamDrivers": [
+      {
+        "id": "search-ad-demand",
+        "name": "Global Digital Advertising & Search Query Demand",
+        "exposureShare": 0.7,
+        "elasticity": 0.85,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "enterprise-cloud-ai-spend",
+        "name": "Enterprise Cloud AI Adoption & Infrastructure CapEx Spend",
+        "exposureShare": 0.18,
+        "elasticity": 1.1,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "consumer-subscriptions-hardware",
+        "name": "YouTube & Google One Consumer Subscriptions and Hardware",
+        "exposureShare": 0.12,
+        "elasticity": 0.7,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 435,
+    "stressGrossProfitBillions": 250.12,
+    "stressOperatingIncomeBillions": 142.52,
+    "stressNetIncomeBillions": 119,
+    "stressEps": 9.64,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (25x P/E)",
+        "multiple": 25,
+        "targetPrice": 241,
+        "deltaFromCurrentPct": 32.05
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (20.5x P/E)",
+        "multiple": 20.5,
+        "targetPrice": 197.62,
+        "deltaFromCurrentPct": 8.28
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (14.5x P/E)",
+        "multiple": 14.5,
+        "targetPrice": 139.78,
+        "deltaFromCurrentPct": -23.41
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 8.28,
+      "downsideToPanicPct": -23.41,
+      "upsideToBullPct": 32.05,
+      "marketPricedInMultiple": 18.93,
+      "riskRewardRatio": 1.37
+    },
+    "driverShocksApplied": {
+      "search-ad-demand": 0,
+      "enterprise-cloud-ai-spend": 0,
+      "consumer-subscriptions-hardware": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

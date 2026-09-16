@@ -1,0 +1,56 @@
+{
+  "ticker": "MU",
+  "basisYear": "FY2027",
+  "currentPrice": 145.00,
+  "consensusTarget": 175.00,
+  "scenarios": [
+    {
+      "name": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "probability": 0.25,
+      "forwardEps": 15.50,
+      "multiple": 14.0,
+      "assumptions": [
+        "HBM3e 12-high and early HBM4 achieve >25% global market share on NVIDIA Blackwell Ultra and AMD MI350 platforms with gross margins exceeding 52%.",
+        "PC and smartphone AI content inflects aggressively to 16GB-32GB DRAM baseline, creating severe industry wafer deficit and driving mid-teens DDR5 ASP increases.",
+        "Enterprise SSD revenue expands >100% YoY as high-density 60TB+ QLC SSDs capture massive hyperscaler data lake share from mechanical hard drives."
+      ],
+      "keyDrivers": [
+        "hbm-sold-out-allocation",
+        "enterprise-ssd-ai-inferencing",
+        "dram-asp-expansion"
+      ]
+    },
+    {
+      "name": "Base: Controlled Disciplined Oligopoly Expansion",
+      "probability": 0.55,
+      "forwardEps": 12.80,
+      "multiple": 12.5,
+      "assumptions": [
+        "Full fiscal year 2027 revenue crosses $52.5B with company gross margin averaging 43.5% across DRAM and NAND.",
+        "Calendar 2026/2027 HBM capacity remains 100% sold out under firm supply contracts; 1-gamma EUV DRAM transition proceeds smoothly.",
+        "Samsung enters 12-high HBM3e supply chains with modest volumes, stabilizing industry pricing without triggering price competition."
+      ],
+      "keyDrivers": [
+        "hbm-sold-out-allocation",
+        "on-device-ai-dram-content",
+        "samsung-skhynix-hbm-competition"
+      ]
+    },
+    {
+      "name": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "probability": 0.20,
+      "forwardEps": 7.50,
+      "multiple": 9.0,
+      "assumptions": [
+        "Hyperscalers initiate a multi-quarter AI hardware procurement pause in H2 FY2027, tempering server DRAM bit shipments.",
+        "Samsung aggressively expands 1b DRAM wafer output from Pyeongtaek Fab P4, compressing standard DDR5 blended ASPs by 20%.",
+        "Advanced packaging yield losses during early HBM4 16-high transition compress company gross margin down to 31%."
+      ],
+      "keyDrivers": [
+        "memory-capex-overbuilding",
+        "samsung-skhynix-hbm-competition",
+        "dram-asp-expansion"
+      ]
+    }
+  ]
+}

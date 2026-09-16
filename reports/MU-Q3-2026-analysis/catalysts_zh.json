@@ -1,0 +1,92 @@
+{
+  "ticker": "MU",
+  "catalysts": [
+    {
+      "id": "hbm-sold-out-allocation",
+      "title": "英伟达 Blackwell 与 AMD MI350 架构搭载驱动 HBM3e/HBM4 产能售罄至 2026/2027 自然年",
+      "direction": "growth",
+      "probability": 0.90,
+      "probabilityAnchor": "管理层证实 2026 自然年全部 HBM 产能已在约束性长期供应协议下 100% 签约售罄，且 2027 自然年逾 80% 的有效产能已被英伟达 Blackwell Ultra/Rubin 以及 AMD Instinct 平台锁定预订。",
+      "horizon": "near-term",
+      "description": "美光 24GB (8层堆叠) 和 36GB (12层堆叠) HBM3e 模块相比竞品具备降低 30% 功耗的核心优势。英伟达 GB200/B200 及 AMD MI350 算力集群的高渗透率确保了美光内存毛利率维持结构性高位 (>50%) 并创造数十亿美元增量年化营收。",
+      "evidence": [
+        {
+          "fact": "计算与网络业务部 (CNBU) 营收同比大幅增长 85% 至 54.5 亿美元，主要由面向顶级云端 AI 加速卡客户的高毛利 HBM3e 批量出货驱动。"
+        },
+        {
+          "fact": "美光 12 层堆叠 36GB HBM3e 产品已成功通过英伟达验证并率先先于三星实现大规模量产交付。"
+        }
+      ]
+    },
+    {
+      "id": "enterprise-ssd-ai-inferencing",
+      "title": "AI 推理与企业级数据湖驱动高密度企业级 SSD (D5/QLC) 需求爆发",
+      "direction": "growth",
+      "probability": 0.85,
+      "probabilityAnchor": "存储业务部 (SBU) 营收同比增长 82% 至 24.0 亿美元，主要受云端超大规模服务商在大模型权重读取、检查点保存与 RAG 检索数据流中全面以美光 60TB+ D5/QLC 企业级 SSD 替代机械硬盘 (HDD) 驱动。",
+      "horizon": "near-term",
+      "description": "前沿逻辑推理模型要求极高的状态持久化与并发检索吞吐量。美光自主研发的 232 层及 276 层单片 QLC NAND 提供了巨大的能耗与存储密度优势，成功将传统同质化 NAND 颗粒转化为高利润率的数据中心解决方案。",
+      "evidence": [
+        {
+          "fact": "Q3 财季美光企业级 SSD 营收同比攀升超过 120%，稳固确立了美光全球第二大数据中心高密度 QLC SSD 供应商的地位。"
+        }
+      ]
+    },
+    {
+      "id": "dram-asp-expansion",
+      "title": "DRAM 综合平均售价 (ASP) 扩张与清洁晶圆厂产线产能结构性紧缺",
+      "direction": "growth",
+      "probability": 0.80,
+      "probabilityAnchor": "制造相同容量 (Gb) 的 HBM 芯片需消耗约 3 倍于常规 DDR5 的标准晶圆面积，引发全行业洁净室晶圆产能向 HBM 倾斜，推动通用 DRAM 综合合约售价环比实现中至高个位数稳步上涨。",
+      "horizon": "medium-term",
+      "description": "由于三大内存芯片巨头（美光、SK海力士、三星）将大量先进制程晶圆产能转向 HBM3e/HBM4，通用 PC、服务器及移动端使用的标准 DDR5、LPDDR5X 面临长期产能挤压，带动全品类产品议价权与经营杠杆释放。",
+      "evidence": [
+        {
+          "fact": "美光公布 2026 财年第三季度 DRAM 综合平均售价环比录得中个位数增长，且第四财季指引显示均价仍将延续扩张趋势。"
+        }
+      ]
+    },
+    {
+      "id": "on-device-ai-dram-content",
+      "title": "PC 与智能手机端侧 AI 普及推动单机内存容量结构性跃升 (16GB-32GB DRAM)",
+      "direction": "growth",
+      "probability": 0.75,
+      "probabilityAnchor": "新一代端侧生成式 AI 手机与 Copilot+ PC 将系统内存基线门槛从传统的 8GB-12GB 提升至 16GB LPDDR5X，高端旗舰终端更是普及至 24GB-32GB 以支撑本地 7B-13B 参数大模型低延迟运行。",
+      "horizon": "medium-term",
+      "description": "即便在全球消费电子终端出货量仅呈现低个位数温和增长的背景下，单机硅含量 (Silicon Content per Box) 依然激增 40% 至 70%。美光 1-beta 制程超低功耗 LPDDR5X 完美契合边缘端 AI 苛刻的高带宽与低热功耗限制。",
+      "evidence": [
+        {
+          "fact": "移动业务部 (MBU) 营收同比增长 42% 至 21.5 亿美元，充分反映了旗舰 AI 手机新品上市引发的内存容量扩容红利。"
+        }
+      ]
+    },
+    {
+      "id": "samsung-skhynix-hbm-competition",
+      "title": "三星与 SK 海力士在 HBM 先进封装与良率恢复上的竞争压制风险",
+      "direction": "risk",
+      "probability": 0.55,
+      "probabilityAnchor": "三星正在持续攻关先进封装工艺并逐步克服 12 层 HBM3e 的热翘曲与良率瓶颈，而 SK 海力士凭借与台积电及英伟达的深度绑定牢牢占据现有最大市场份额。",
+      "horizon": "medium-term",
+      "description": "若三星顺利完成 12 层堆叠 HBM3e 在顶级客户处的大规模验证并快速切换 1b 纳米晶圆产能，2027 自然年中期 HBM 供应紧张局面可能得到一定缓解，进而收窄 HBM 溢价空间，并对美光 25% 的市场份额目标构成竞争压力。",
+      "evidence": [
+        {
+          "fact": "SK海力士宣布追加投资清州 M15X 晶圆厂并扩建 MR-MUF 封装产线，以捍卫其在一线 GPU 核心供应链中的主导供应权重。"
+        }
+      ]
+    },
+    {
+      "id": "memory-capex-overbuilding",
+      "title": "存储行业上行周期顶点过度资本开支与晶圆厂过度扩建风险",
+      "direction": "risk",
+      "probability": 0.40,
+      "probabilityAnchor": "半导体存储历史周期规律表明，连续数个季度的价格上涨和高利润率往往会刺激全行业在博伊西、雪城、平泽及龙仁等基地过度投建洁净室和硅片产能。",
+      "horizon": "long-term",
+      "description": "美光及其竞争对手在多国《芯片法案》巨额补贴支持下正承诺数百亿美元的超级晶圆厂投资。一旦超大规模云厂商在 2027 财年下半年进入 AI 资本开支消化期，新增产能集中释放可能再度引发行业典型的周期性过剩。",
+      "evidence": [
+        {
+          "fact": "美光将 2026 财年资本开支预算上调至 85-90 亿美元，并预期随着博伊西新厂厂房施工加速，2027 财年资本开支将进一步扩大。"
+        }
+      ]
+    }
+  ]
+}

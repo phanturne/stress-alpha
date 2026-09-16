@@ -1,0 +1,36 @@
+{
+  "ticker": "MU",
+  "conditionalFraming": "Micron stock historically stages strong rallies (+6% to +15%) when quarterly gross margin guidance expands sequentially by >300 bps and management confirms tight wafer supply and full-year HBM capacity sellouts. Negative reactions (-3% to -8%) occur when capital expenditure guidance rises faster than operating cash flow, sparking fears of peak-cycle overbuilding, or when consumer PC/smartphone DRAM softness overshadows data center strength.",
+  "events": [
+    {
+      "date": "2026-06-25",
+      "event": "Q3 FY2026 Earnings Release",
+      "priceMovePct": 6.8,
+      "context": "Reported revenue of $11.45B (beating $10.95B estimate) and clean operating EPS of $3.03 (beating $2.85 consensus); provided blowout Q4 guidance of $12.50B revenue and guided gross margins to 42.5%."
+    },
+    {
+      "date": "2026-03-20",
+      "event": "Q2 FY2026 Earnings Release",
+      "priceMovePct": 8.4,
+      "context": "Confirmed commercial volume shipments of 12-high 36GB HBM3e for NVIDIA Blackwell GB200 systems; full-year calendar 2026 HBM allocation completely sold out."
+    },
+    {
+      "date": "2025-12-18",
+      "event": "Q1 FY2026 Earnings Release",
+      "priceMovePct": 4.5,
+      "context": "DRAM blended ASPs climbed 12% QoQ driven by server DDR5 and high-density Enterprise SSD shipments; guided Q2 revenue above street expectations."
+    },
+    {
+      "date": "2025-09-24",
+      "event": "Q4 FY2025 Earnings Release",
+      "priceMovePct": 14.7,
+      "context": "Breakout quarter signaling the decisive end of the memory downcycle; gross margins surged back into positive territory at 36.5% with stellar guidance across cloud AI segments."
+    },
+    {
+      "date": "2025-06-26",
+      "event": "Q3 FY2025 Earnings Release",
+      "priceMovePct": -3.2,
+      "context": "Delivered solid AI memory revenue, but announcement of an elevated $8.1B FY2025 capex plan triggered temporary investor concerns regarding premature supply additions."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "ticker": "BABA",
+  "catalysts": [
+    {
+      "id": "cloud-ai-acceleration",
+      "title": "云智能AI商业化加速与开源通义千问 (Qwen) 生态爆发",
+      "direction": "growth",
+      "probability": 0.85,
+      "probabilityAnchor": "阿里云营收同比提速至+18.5%，AI相关产品收入连续五个季度实现三位数暴增；通义千问开源模型累计衍生下载与企业部署突破90,000个。",
+      "horizon": "near-term",
+      "description": "自研通义千问 (Qwen 2.5 / Qwen 3) 旗舰模型确立了阿里云在亚太与中国企业级AI基础设施市场的核心底座地位。混合云算力部署、百炼大模型平台订阅与推理Token计费拉动公有云业务结构性利润率扩张。",
+      "evidence": [
+        {
+          "fact": "2027财年第一季度AI相关产品营收维持三位数高增，带动云智能分部调整后EBITA利润率提升至11.0%。"
+        },
+        {
+          "fact": "中国前50大头部互联网及软件游戏企业中超过半数在阿里云GPU实例上调用或微调Qwen开源模型。"
+        }
+      ]
+    },
+    {
+      "id": "cmr-monetization-stabilization",
+      "title": "基础软件服务费 (0.6%) 与全站推广告引擎拉动客户管理收入 (CMR) 企稳拐点",
+      "direction": "growth",
+      "probability": 0.80,
+      "probabilityAnchor": "淘天平台全面推行0.6%基础软件服务费，叠加全站推AI营销工具普及，彻底扭转了此前平台GMV与CMR增速倒挂的局面。",
+      "horizon": "near-term",
+      "description": "淘宝和天猫商家货币化率（Take Rate）迎来实质性改善。千分之六的交易服务费与全自动化算法投放工具全面渗透，驱动淘天核心国内电商调整后EBITA重回稳健正向扩张通道。",
+      "evidence": [
+        {
+          "fact": "Q1财季客户管理收入 (CMR) 同比增长2.8%，在经历六个季度的货币化率逆风后重新与平台GMV增速达成平价收敛。"
+        },
+        {
+          "fact": "全站推自动化ROI竞价营销工具在天猫活跃品牌商家中的渗透率突破35%。"
+        }
+      ]
+    },
+    {
+      "id": "aidc-profitability-inflection",
+      "title": "阿里国际数字商业 (AIDC) 盈利拐点逼近与 Choice 模式单量经济效益改善",
+      "direction": "growth",
+      "probability": 0.65,
+      "probabilityAnchor": "AIDC当季营收达51.5亿美元（同比+24.2%），得益于速卖通 Choice 履约集约化，分部经营亏损环比大幅收窄45%至-3.8亿美元。",
+      "horizon": "medium-term",
+      "description": "全球速卖通 (AliExpress) Choice 全托管/半托管模式依托菜鸟全球5日达枢纽与本地化退换货网络，在欧洲、中东及拉美关键走廊实现单位经济效益转正，正按计划向2028财年EBITA盈亏平衡点迈进。",
+      "evidence": [
+        {
+          "fact": "Choice业务占速卖通总订单比例超过75%，跨境单均跨境干线与末端配送履约成本同比下降18%。"
+        },
+        {
+          "fact": "土耳其电商领头羊 Trendyol 保持稳健盈利，并在中东欧市场加速形成区域护城河。"
+        }
+      ]
+    },
+    {
+      "id": "share-buyback-accretion",
+      "title": "超百亿美元股份回购增厚EPS与港美双重主要上市吸引南向资金沉淀",
+      "direction": "growth",
+      "probability": 0.85,
+      "probabilityAnchor": "阿里巴巴过去12个月在250亿美元授权额度下累计回购注销了5.8%的流通股ADS，并派发年化股息率约2.2%的现金红利。",
+      "horizon": "near-term",
+      "description": "公司坚持以严苛的资本回报纪律压降稀释ADS总股数至23.0亿股区间，机械性推高每股经营收益；同时完成香港双重主要上市，纳入港股通后持续吸引内地保险与公募被动长线资金建仓。",
+      "evidence": [
+        {
+          "fact": "2027财年第一季度管理层耗资41亿美元执行股份回购，截至2027年3月前的现有回购授权额度尚余180亿美元。"
+        },
+        {
+          "fact": "南向港股通资金持有阿里巴巴普通股占流通股比例提升至6.5%以上。"
+        }
+      ]
+    },
+    {
+      "id": "china-macro-consumption",
+      "title": "国内宏观消费复苏斜率与居民储蓄倾向风险",
+      "direction": "risk",
+      "probability": 0.55,
+      "probabilityAnchor": "国内居民储蓄率依然处于高位，下沉市场与非必需消费品领域呈现低价防守型消费特征。",
+      "horizon": "medium-term",
+      "description": "若居民资产负债表修复周期拉长，高客单价可选消费GMV增速可能持续承压，迫使淘天加大针对低价带的商户补贴与仅退款/运费险保障成本，抑制核心电商利润率弹性。",
+      "evidence": [
+        {
+          "fact": "全国实物商品网上零售额同比增长6.4%，反映出各平台在性价比供给端激烈的存量争夺。"
+        },
+        {
+          "fact": "在白牌服饰与小家电品类中，淘天仍需通过佣金减免补贴与竞对进行防御性价格带卡位。"
+        }
+      ]
+    },
+    {
+      "id": "cross-border-tariffs-risk",
+      "title": "欧美跨境电商小额包裹免税额度 (De Minimis) 政策收紧与关税壁垒",
+      "direction": "risk",
+      "probability": 0.60,
+      "probabilityAnchor": "美国两党国会提案及欧盟海关改革计划拟取消针对小包裹的800美元/150欧元跨境直邮小额免税条款。",
+      "horizon": "medium-term",
+      "description": "若欧美主要发达市场全面废止或大幅下调跨境直邮小额包裹免税豁免，将导致速卖通包裹面临关税缴纳、清关延误及报关合规成本上升，削弱中国跨境产业带商品在海外终端的价格竞争力。",
+      "evidence": [
+        {
+          "fact": "美国国会及监管机构多次推动针对低货值直邮航运包裹的全面报关合规与原产地审查法案。"
+        },
+        {
+          "fact": "欧盟理事会正式审议在2027年前取消150欧元以内跨境B2C包裹零关税待遇的立法草案。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "ticker": "BABA",
+  "basisYear": "FY2028",
+  "currentPrice": 88.50,
+  "consensusTarget": 110.00,
+  "scenarios": [
+    {
+      "name": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "probability": 0.25,
+      "forwardEps": 10.80,
+      "multiple": 14.5,
+      "assumptions": [
+        "Cloud Intelligence AI product revenue compounds at >100% CAGR, driving segment EBITA margins toward 15% as Qwen open-source model enterprise subscriptions surge.",
+        "Taobao/Tmall customer management revenue (CMR) growth accelerates past GMV growth as the universal 0.6% software service fee and Quanzhantui ad engine achieve full merchant penetration.",
+        "AIDC international commerce achieves segment-level adjusted EBITA breakeven as AliExpress Choice unit fulfillment costs drop via Cainiao global sorting hubs.",
+        "Disciplined share repurchases of $12B+ annually retire ~5% of outstanding ADS count each year, providing strong mechanical EPS accretion."
+      ],
+      "keyDrivers": [
+        "cloud-ai-acceleration",
+        "cmr-monetization-stabilization",
+        "aidc-profitability-inflection",
+        "share-buyback-accretion"
+      ]
+    },
+    {
+      "name": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "probability": 0.55,
+      "forwardEps": 9.40,
+      "multiple": 11.5,
+      "assumptions": [
+        "Taobao/Tmall GMV expands at low-single digits (3-4% YoY), defending market share against Pinduoduo and Douyin in core apparel and FMCG categories.",
+        "Cloud Intelligence delivers mid-teens revenue growth (14-16% YoY) with public cloud margins stabilizing around 10-12% adjusted EBITA.",
+        "AIDC international retail losses narrow sustainably to under -$1.0B annually, with AliExpress Choice and Trendyol expanding high-retention consumer cohorts.",
+        "Free cash flow conversion remains resilient at >$16B annually, funding $12B in ADS buybacks alongside regular annual dividend distributions (~2.2% yield)."
+      ],
+      "keyDrivers": [
+        "cmr-monetization-stabilization",
+        "china-macro-consumption",
+        "share-buyback-accretion"
+      ]
+    },
+    {
+      "name": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "probability": 0.20,
+      "forwardEps": 7.60,
+      "multiple": 8.5,
+      "assumptions": [
+        "Domestic consumption deflation persists, forcing aggressive merchant subsidies and defensive price-matching that dilute CMR take rates.",
+        "US and EU eliminate Section 321 de minimis tax exemptions on low-value parcels, reducing AliExpress cross-border parcel volumes and delaying AIDC breakeven.",
+        "Tightening of US semiconductor export controls constrains high-end GPU cluster expansions for Cloud Intelligence, slowing enterprise GenAI adoption.",
+        "Fierce cloud infrastructure price competition from state-backed telecom operators and Tencent compresses cloud gross margins below 8%."
+      ],
+      "keyDrivers": [
+        "cross-border-tariffs-risk",
+        "china-macro-consumption",
+        "cloud-ai-acceleration"
+      ]
+    }
+  ]
+}

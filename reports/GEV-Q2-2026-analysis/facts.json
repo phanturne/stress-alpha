@@ -1,0 +1,83 @@
+{
+  "ticker": "GEV",
+  "company": "GE Vernova Inc.",
+  "quarter": "Q2 2026",
+  "reportDate": "2026-07-22",
+  "revenueBillions": 11.10,
+  "revenueGrowthPct": 22.0,
+  "revenueEstimateBillions": 10.75,
+  "operatingIncomeBillions": 0.986,
+  "operatingMarginPct": 8.88,
+  "operatingIncomeGrowthPct": 42.5,
+  "epsReported": 2.47,
+  "epsConsensus": 3.08,
+  "epsOperating": 3.45,
+  "segments": [
+    {
+      "name": "Power",
+      "revenueBillions": 5.50,
+      "growthPct": 14.0,
+      "operatingIncomeBillions": 1.031,
+      "operatingMarginPct": 18.7
+    },
+    {
+      "name": "Electrification",
+      "revenueBillions": 3.60,
+      "growthPct": 68.0,
+      "operatingIncomeBillions": 0.480,
+      "operatingMarginPct": 13.3
+    },
+    {
+      "name": "Wind",
+      "revenueBillions": 2.00,
+      "growthPct": -8.0,
+      "operatingIncomeBillions": -0.275,
+      "operatingMarginPct": -13.8
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Offshore wind blade failure remediation and contract warranty provisions",
+      "amountBillions": 0.320,
+      "isOperating": false,
+      "note": "Non-operating warranty reserves and project remediation charges tied to offshore wind projects (including Vineyard Wind blade failure containment and structural inspections). Excluding this item isolates underlying operating run-rate."
+    },
+    {
+      "description": "Post-spin standalone separation and operational rationalization costs",
+      "amountBillions": 0.045,
+      "isOperating": false,
+      "note": "Transitional standalone IT disentanglement, corporate rebranding, and stranded facility footprint rationalization."
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 4.80,
+  "guidanceOperatingIncomeHighBillions": 5.20,
+  "guidanceRevenueLowBillions": 45.50,
+  "guidanceRevenueHighBillions": 46.50,
+  "currentPrice": 881.21,
+  "marketCapBillions": 237.05,
+  "trailingEps": 12.80,
+  "forwardEpsConsensus": 25.20,
+  "sources": [
+    {
+      "url": "https://www.gevernova.com/investors",
+      "title": "GE Vernova Reports Second Quarter 2026 Financial Results",
+      "date": "2026-07-22"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001996810",
+      "title": "GE Vernova Inc. Form 10-Q Quarterly Report for Period Ended June 30, 2026",
+      "date": "2026-07-23"
+    },
+    {
+      "url": "https://seekingalpha.com/symbol/GEV/earnings/transcripts",
+      "title": "GE Vernova Inc. Q2 2026 Earnings Call Transcript",
+      "date": "2026-07-22"
+    },
+    {
+      "url": "https://finance.yahoo.com/quote/GEV/",
+      "title": "GE Vernova Inc. Market Valuation and Consensus Estimates",
+      "date": "2026-09-15"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

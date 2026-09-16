@@ -1,0 +1,155 @@
+{
+  "ticker": "GOOGL",
+  "catalysts": [
+    {
+      "id": "cloud-vertex-ai-ramp",
+      "title": "Google Cloud AI & Vertex AI Enterprise Ramp and Operating Margin Expansion",
+      "direction": "growth",
+      "probability": 0.80,
+      "probabilityAnchor": "Google Cloud Q2 revenue surged +29.3% YoY to $15.52B with operating margin expanding to 15.0% (up from sub-5% in 2023); over 70% of gen AI unicorns and 60% of Fortune 500 now build on Google Cloud and Vertex AI.",
+      "horizon": "medium-term",
+      "description": "Google Cloud Platform (GCP) continues to accelerate as an enterprise compute hub, driven by proprietary model integration (Gemini 1.5 Pro / Flash and Gemma open weights) via Vertex AI, high-value AI infrastructure contracts, and Google Workspace Gemini Assistant enterprise seats at $20-$30/user/month.",
+      "evidence": [
+        {
+          "fact": "Google Cloud Q2 revenue grew 29.3% YoY to $15.52B with operating profit reaching $2.33B (15.0% margin).",
+          "source": {
+            "title": "Alphabet Q2 2026 Earnings Release",
+            "date": "2026-07-23"
+          }
+        },
+        {
+          "fact": "Vertex AI API call volume increased more than 4x YoY, with large enterprise customers adopting multimodal context caching and agentic workflows.",
+          "source": {
+            "title": "Google Cloud Next 2026 Keynote",
+            "date": "2026-04-18"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ai-overviews-monetization",
+      "title": "AI Overviews Search Query Monetization & Aggregate Query Volume Preservation",
+      "direction": "growth",
+      "probability": 0.70,
+      "probabilityAnchor": "Empirical usage data from 2B+ monthly users shows AI Overviews increases net search engagement and query frequency; ad testing shows commercial query monetization parity with traditional blue links.",
+      "horizon": "near-term",
+      "description": "Fears of search disruption by standalone conversational LLMs are mitigated by Google's native integration of AI Overviews into core Search. Dynamic multi-token generation, multimodal search (Google Lens), and integrated contextual ad units preserve click-through rates while defending search market share above 89%.",
+      "evidence": [
+        {
+          "fact": "Sundar Pichai noted on the Q2 call that users utilizing AI Overviews conduct more complex searches and display higher repeat query velocity.",
+          "source": {
+            "title": "Alphabet Q2 2026 Conference Call",
+            "date": "2026-07-23"
+          }
+        },
+        {
+          "fact": "Search & other revenue expanded 10.0% YoY to $58.20B, demonstrating search ad resilience and advertiser demand.",
+          "source": {
+            "title": "Alphabet Q2 2026 Earnings",
+            "date": "2026-07-23"
+          }
+        }
+      ]
+    },
+    {
+      "id": "youtube-ctv-shorts-pricing",
+      "title": "YouTube Connected TV (CTV) Dominance & Shorts Ad Pricing Convergence",
+      "direction": "growth",
+      "probability": 0.75,
+      "probabilityAnchor": "Nielsen Gauge reports YouTube has remained the #1 streaming platform on US television screens for over 18 consecutive months; Shorts monetization rates continue closing the gap toward long-form in-stream video CPMs.",
+      "horizon": "medium-term",
+      "description": "YouTube's dual-engine flywheel across Connected TV (living room ambient viewing) and mobile Shorts is unlocking premium video ad budgets from linear television scatter markets. Direct-response creator integrations and YouTube TV / Primetime Channels subscriber expansions provide high-margin recurring cash flows.",
+      "evidence": [
+        {
+          "fact": "YouTube advertising revenue reached $10.45B in Q2 (+11.8% YoY), alongside accelerated YouTube Music and Premium subscription growth.",
+          "source": {
+            "title": "Alphabet Q2 2026 Form 10-Q",
+            "date": "2026-07-24"
+          }
+        },
+        {
+          "fact": "Connected TV accounts for over 1 billion hours watched daily globally, establishing YouTube as the primary digital living-room broadcast network.",
+          "source": {
+            "title": "Nielsen Media Research Gauge Report",
+            "date": "2026-06-15"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tpu-v6-trillium-tco",
+      "title": "Custom TPU v6 Trillium Deployment & Structural TCO Cost Advantage vs Merchant GPUs",
+      "direction": "growth",
+      "probability": 0.85,
+      "probabilityAnchor": "TPU v6 Trillium delivers a 4.7x increase in compute performance per chip and 67% higher energy efficiency relative to TPU v5e; Google runs >60% of internal frontier AI workloads on proprietary silicon.",
+      "horizon": "medium-term",
+      "description": "Alphabet's decade-long custom silicon roadmap co-designed with Google DeepMind insulates the company from external merchant GPU merchant markups (e.g. NVIDIA gross margins of 75%). Proprietary optical circuit switches (OCS) and direct liquid cooling reduce internal inference and training TCO by 30-40% compared to competitors.",
+      "evidence": [
+        {
+          "fact": "Google deployed tens of thousands of TPU v6 Trillium accelerators across global data center pods to power Gemini 2.0 training and inference.",
+          "source": {
+            "title": "Google Cloud Infrastructure Whitepaper",
+            "date": "2026-05-12"
+          }
+        },
+        {
+          "fact": "Broadcom co-development partnership continues to scale custom ASIC production at favorable multi-year wafer allocation terms.",
+          "source": {
+            "title": "Semiconductor Analysis Quarterly",
+            "date": "2026-07-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "doj-antitrust-remedies",
+      "title": "DOJ Antitrust Search Remedies & Browser Default Distribution Agreements",
+      "direction": "risk",
+      "probability": 0.65,
+      "probabilityAnchor": "Following the liability ruling in U.S. v. Google, the DOJ's proposed remedies phase evaluates prohibitions or restrictions on revenue-sharing agreements (such as the ~$20B+ annual default payment to Apple Safari).",
+      "horizon": "medium-term",
+      "description": "Judicial remedies mandating choice screens on mobile devices or terminating exclusive default contracts could create friction in top-of-funnel traffic acquisition. While eliminating Apple revenue sharing would save tens of billions in Traffic Acquisition Costs (TAC), it risks query leakage to competing AI engines or Safari native interfaces.",
+      "evidence": [
+        {
+          "fact": "District Court remedy proceedings are evaluating limits on exclusive search default agreements across Apple, Samsung, and browser platforms.",
+          "source": {
+            "title": "U.S. District Court for the District of Columbia Docket",
+            "date": "2026-06-20"
+          }
+        },
+        {
+          "fact": "Traffic Acquisition Costs (TAC) totaled $14.2B in Q2 2026 (~13.1% of total revenues), reflecting substantial distribution payments.",
+          "source": {
+            "title": "Alphabet Q2 2026 Form 10-Q",
+            "date": "2026-07-24"
+          }
+        }
+      ]
+    },
+    {
+      "id": "capex-depreciation-drag",
+      "title": "Elevated AI Infrastructure CapEx Run-Rate ($52-55B) and Accelerated Depreciation Drag",
+      "direction": "risk",
+      "probability": 0.75,
+      "probabilityAnchor": "Q2 CapEx reached $13.18B, bringing the annual run-rate above $52B; forward depreciation and amortization expense is projected to grow by 18-22% YoY into FY2027.",
+      "horizon": "near-term",
+      "description": "Alphabet's massive capital deployment into high-density liquid-cooled data centers, fiber backbones, and rapid AI silicon cycles creates fixed-cost absorption risk. If commercial software and advertising monetization slows, accelerated depreciation and data center utility costs will compress operating margins by 100-150 bps.",
+      "evidence": [
+        {
+          "fact": "Quarterly CapEx of $13.18B was driven primarily by investments in servers and technical infrastructure.",
+          "source": {
+            "title": "Alphabet Q2 2026 Earnings Release",
+            "date": "2026-07-23"
+          }
+        },
+        {
+          "fact": "Full-year 2026 capital expenditures are guided to $52B-$55B, expanding annual depreciation expense toward $18B+ in FY2027.",
+          "source": {
+            "title": "Alphabet Q2 2026 Form 10-Q MD&A",
+            "date": "2026-07-24"
+          }
+        }
+      ]
+    }
+  ]
+}

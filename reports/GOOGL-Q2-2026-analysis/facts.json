@@ -1,0 +1,81 @@
+{
+  "ticker": "GOOGL",
+  "company": "Alphabet Inc.",
+  "quarter": "Q2 2026",
+  "reportDate": "2026-07-23",
+  "revenueBillions": 108.55,
+  "revenueGrowthPct": 12.6,
+  "revenueEstimateBillions": 106.80,
+  "operatingIncomeBillions": 35.82,
+  "operatingMarginPct": 33.0,
+  "operatingIncomeGrowthPct": 14.4,
+  "epsReported": 2.50,
+  "epsConsensus": 2.14,
+  "epsOperating": 2.20,
+  "segments": [
+    {
+      "name": "Google Search & other (Google Services)",
+      "revenueBillions": 58.20,
+      "growthPct": 10.0,
+      "operatingIncomeBillions": 22.75,
+      "operatingMarginPct": 39.1
+    },
+    {
+      "name": "YouTube advertising (Google Services)",
+      "revenueBillions": 10.45,
+      "growthPct": 11.8,
+      "operatingIncomeBillions": 3.85,
+      "operatingMarginPct": 36.8
+    },
+    {
+      "name": "Subscriptions, platforms, and devices (Google Services)",
+      "revenueBillions": 24.00,
+      "growthPct": 11.2,
+      "operatingIncomeBillions": 8.15,
+      "operatingMarginPct": 34.0
+    },
+    {
+      "name": "Google Cloud (GCP & Google Workspace)",
+      "revenueBillions": 15.52,
+      "growthPct": 29.3,
+      "operatingIncomeBillions": 2.33,
+      "operatingMarginPct": 15.0
+    },
+    {
+      "name": "Other Bets",
+      "revenueBillions": 0.38,
+      "growthPct": 2.7,
+      "operatingIncomeBillions": -1.26,
+      "operatingMarginPct": -331.6
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "Unrealized mark-to-market gain on non-marketable equity and private venture securities under ASU 2016-01",
+      "amountBillions": 4.50,
+      "isOperating": false,
+      "note": "GAAP net income includes a $4.50B pre-tax ($3.76B post-tax, or $0.30 per diluted share) non-operating unrealized fair-value mark-to-market gain on private AI and technology equity holdings under ASU 2016-01. Excluding this non-operating item normalizes GAAP headline EPS from $2.50 down to clean operating EPS of $2.20."
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 34.00,
+  "guidanceOperatingIncomeHighBillions": 37.50,
+  "guidanceRevenueLowBillions": 109.00,
+  "guidanceRevenueHighBillions": 113.00,
+  "currentPrice": 182.50,
+  "marketCapBillions": 2253.88,
+  "trailingEps": 8.15,
+  "forwardEpsConsensus": 9.80,
+  "sources": [
+    {
+      "url": "https://abc.xyz/investor/earnings/2026/q2/",
+      "title": "Alphabet Announces Second Quarter 2026 Results",
+      "date": "2026-07-23"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001652044",
+      "title": "SEC Form 10-Q - Alphabet Inc. For the Quarterly Period Ended June 30, 2026",
+      "date": "2026-07-24"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

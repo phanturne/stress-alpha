@@ -1,0 +1,41 @@
+{
+  "baseRevenueBillions": 52.50,
+  "baseGrossMarginPct": 28.50,
+  "fixedOpexBillions": 6.70,
+  "taxRatePct": 18.0,
+  "dilutedSharesBillions": 0.269,
+  "multipleRegimes": {
+    "bull": 48,
+    "base": 40,
+    "panic": 22
+  },
+  "upstreamDrivers": [
+    {
+      "id": "hyperscaler-power-interconnection-capex",
+      "name": "Hyperscaler AI Data Center Power Interconnection & Grid CapEx",
+      "exposureShare": 0.38,
+      "elasticity": 1.20,
+      "defaultShockPct": 0,
+      "minShockPct": -50,
+      "maxShockPct": 50
+    },
+    {
+      "id": "gas-turbine-slot-pricing-power",
+      "name": "Heavy-Duty Gas Turbine Equipment & Delivery Slot Pricing",
+      "exposureShare": 0.35,
+      "elasticity": 0.95,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "offshore-wind-warranty-remediation",
+      "name": "Offshore Wind Legacy Warranty & Contract Remediation Headwinds",
+      "exposureShare": 0.27,
+      "elasticity": 0.70,
+      "defaultShockPct": 0,
+      "minShockPct": -50,
+      "maxShockPct": 50
+    }
+  ]
+}

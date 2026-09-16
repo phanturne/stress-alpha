@@ -1,0 +1,210 @@
+{
+  "ticker": "BABA",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 88.5,
+  "weightedFairValue": 111.53,
+  "upsidePct": 26.02,
+  "scenarioResults": [
+    {
+      "name": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "probability": 0.25,
+      "fairValue": 156.6,
+      "upsideFromCurrent": 76.95
+    },
+    {
+      "name": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "probability": 0.55,
+      "fairValue": 108.1,
+      "upsideFromCurrent": 22.15
+    },
+    {
+      "name": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "probability": 0.2,
+      "fairValue": 64.6,
+      "upsideFromCurrent": -27.01
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "parameter": "EPS +10%",
+      "baseValue": 10.8,
+      "altValue": 11.88,
+      "fairValueDelta": 15.66
+    },
+    {
+      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "parameter": "EPS -10%",
+      "baseValue": 10.8,
+      "altValue": 9.72,
+      "fairValueDelta": -15.66
+    },
+    {
+      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "parameter": "Multiple +2",
+      "baseValue": 14.5,
+      "altValue": 16.5,
+      "fairValueDelta": 21.6
+    },
+    {
+      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "parameter": "Multiple -2",
+      "baseValue": 14.5,
+      "altValue": 12.5,
+      "fairValueDelta": -21.6
+    },
+    {
+      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "parameter": "EPS +10%",
+      "baseValue": 9.4,
+      "altValue": 10.34,
+      "fairValueDelta": 10.81
+    },
+    {
+      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "parameter": "EPS -10%",
+      "baseValue": 9.4,
+      "altValue": 8.46,
+      "fairValueDelta": -10.81
+    },
+    {
+      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "parameter": "Multiple +2",
+      "baseValue": 11.5,
+      "altValue": 13.5,
+      "fairValueDelta": 18.8
+    },
+    {
+      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "parameter": "Multiple -2",
+      "baseValue": 11.5,
+      "altValue": 9.5,
+      "fairValueDelta": -18.8
+    },
+    {
+      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "parameter": "EPS +10%",
+      "baseValue": 7.6,
+      "altValue": 8.36,
+      "fairValueDelta": 6.46
+    },
+    {
+      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "parameter": "EPS -10%",
+      "baseValue": 7.6,
+      "altValue": 6.84,
+      "fairValueDelta": -6.46
+    },
+    {
+      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "parameter": "Multiple +2",
+      "baseValue": 8.5,
+      "altValue": 10.5,
+      "fairValueDelta": 15.2
+    },
+    {
+      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "parameter": "Multiple -2",
+      "baseValue": 8.5,
+      "altValue": 6.5,
+      "fairValueDelta": -15.2
+    }
+  ],
+  "consensusTarget": 110,
+  "verdictVsConsensus": "In line with consensus ($110) — delta +1.39%",
+  "baseline": {
+    "baseRevenueBillions": 152,
+    "baseGrossMarginPct": 38.5,
+    "fixedOpexBillions": 34.2,
+    "taxRatePct": 17.5,
+    "dilutedSharesBillions": 2.38,
+    "multipleRegimes": {
+      "bull": 15.5,
+      "base": 11.5,
+      "panic": 7.5
+    },
+    "upstreamDrivers": [
+      {
+        "id": "china-retail-macro-consumption",
+        "name": "China Domestic Retail Consumption & E-Commerce GMV Growth",
+        "exposureShare": 0.44,
+        "elasticity": 1.1,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "cloud-ai-enterprise-capex",
+        "name": "China Enterprise GenAI & Public Cloud Infrastructure Spending",
+        "exposureShare": 0.15,
+        "elasticity": 1.35,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 50
+      },
+      {
+        "id": "cross-border-trade-tariffs",
+        "name": "Cross-Border E-Commerce De Minimis Exemption & Tariff Policy (US/EU)",
+        "exposureShare": 0.18,
+        "elasticity": 0.85,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 30
+      },
+      {
+        "id": "cmr-take-rate-monetization",
+        "name": "Taobao/Tmall Software Fee (0.6%) & Quanzhantui Ad Engine Adoption",
+        "exposureShare": 0.23,
+        "elasticity": 0.95,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 152,
+    "stressGrossProfitBillions": 58.52,
+    "stressOperatingIncomeBillions": 24.32,
+    "stressNetIncomeBillions": 20.06,
+    "stressEps": 8.43,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (15.5x P/E)",
+        "multiple": 15.5,
+        "targetPrice": 130.67,
+        "deltaFromCurrentPct": 47.65
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (11.5x P/E)",
+        "multiple": 11.5,
+        "targetPrice": 96.95,
+        "deltaFromCurrentPct": 9.55
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (7.5x P/E)",
+        "multiple": 7.5,
+        "targetPrice": 63.22,
+        "deltaFromCurrentPct": -28.56
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 9.55,
+      "downsideToPanicPct": -28.56,
+      "upsideToBullPct": 47.65,
+      "marketPricedInMultiple": 10.5,
+      "riskRewardRatio": 1.67
+    },
+    "driverShocksApplied": {
+      "china-retail-macro-consumption": 0,
+      "cloud-ai-enterprise-capex": 0,
+      "cross-border-trade-tariffs": 0,
+      "cmr-take-rate-monetization": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

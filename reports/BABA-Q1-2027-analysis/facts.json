@@ -1,0 +1,100 @@
+{
+  "ticker": "BABA",
+  "company": "Alibaba Group Holding Limited",
+  "quarter": "Q1 FY2027",
+  "reportDate": "2026-08-14",
+  "revenueBillions": 37.03,
+  "revenueGrowthPct": 7.2,
+  "revenueEstimateBillions": 36.45,
+  "operatingIncomeBillions": 5.28,
+  "operatingMarginPct": 14.26,
+  "operatingIncomeGrowthPct": 8.5,
+  "epsReported": 1.88,
+  "epsConsensus": 2.16,
+  "epsOperating": 2.24,
+  "segments": [
+    {
+      "name": "Taobao and Tmall Group (TTG)",
+      "revenueBillions": 16.25,
+      "growthPct": 2.8,
+      "operatingIncomeBillions": 6.85,
+      "operatingMarginPct": 42.15
+    },
+    {
+      "name": "Cloud Intelligence Group",
+      "revenueBillions": 4.35,
+      "growthPct": 18.5,
+      "operatingIncomeBillions": 0.48,
+      "operatingMarginPct": 11.03
+    },
+    {
+      "name": "Alibaba International Digital Commerce (AIDC)",
+      "revenueBillions": 5.15,
+      "growthPct": 24.2,
+      "operatingIncomeBillions": -0.38,
+      "operatingMarginPct": -7.38
+    },
+    {
+      "name": "Cainiao Smart Logistics Network",
+      "revenueBillions": 4.28,
+      "growthPct": 14.5,
+      "operatingIncomeBillions": 0.16,
+      "operatingMarginPct": 3.74
+    },
+    {
+      "name": "Local Services Group (Amap / Ele.me)",
+      "revenueBillions": 2.55,
+      "growthPct": 12.0,
+      "operatingIncomeBillions": -0.04,
+      "operatingMarginPct": -1.57
+    },
+    {
+      "name": "All Others (DingTalk, Entertainment & New Retail)",
+      "revenueBillions": 4.45,
+      "growthPct": 4.5,
+      "operatingIncomeBillions": -0.15,
+      "operatingMarginPct": -3.37
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "ASU 2016-01 mark-to-market net loss on listed and private equity investments",
+      "amountBillions": -0.85,
+      "isOperating": false,
+      "note": "GAAP results include non-operating mark-to-market valuation losses on publicly traded equity securities and private portfolio holdings under ASU 2016-01, artificially depressing headline GAAP EPS."
+    },
+    {
+      "description": "Share of results and dividend distributions of equity method investees (Ant Group)",
+      "amountBillions": 0.52,
+      "isOperating": false,
+      "note": "Ant Group profit contribution and dividend flow reflecting finalized fintech restructuring, recorded as non-operating investment income."
+    },
+    {
+      "description": "Share-based compensation (SBC) expense and acquired intangible asset amortization",
+      "amountBillions": -0.97,
+      "isOperating": false,
+      "note": "Non-cash stock-based compensation ($0.68B) and acquisition amortization ($0.29B) deducted from GAAP operating income to isolate core cash operating performance."
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 5.40,
+  "guidanceOperatingIncomeHighBillions": 5.75,
+  "guidanceRevenueLowBillions": 38.20,
+  "guidanceRevenueHighBillions": 39.50,
+  "currentPrice": 88.50,
+  "marketCapBillions": 210.60,
+  "trailingEps": 7.82,
+  "forwardEpsConsensus": 9.20,
+  "sources": [
+    {
+      "url": "https://www.alibabagroup.com/en-US/investor-relations",
+      "title": "Alibaba Group Announces June Quarter 2026 Results (Q1 FY2027)",
+      "date": "2026-08-14"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001577552",
+      "title": "SEC Form 6-K - Alibaba Group Holding Limited",
+      "date": "2026-08-15"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

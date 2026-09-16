@@ -1,0 +1,50 @@
+{
+  "ticker": "GEV",
+  "events": [
+    {
+      "date": "2026-09-14",
+      "event": "Contrarian Broker Downgrade & Cyclicality Shakeout",
+      "priceMovePct": -8.62,
+      "context": "GLJ Research initiated coverage with an aggressive Sell rating and a $470 price target, alleging peak-cycle equipment saturation and margin deterioration on 2027 turbine deliveries. The stock sold off -8.62% to $881.21 on heavy institutional volume, creating a sharp dislocation from consensus price targets.",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/GEV/history/",
+        "title": "GE Vernova Historical Stock Quotes & Volume",
+        "date": "2026-09-15"
+      }
+    },
+    {
+      "date": "2026-07-22",
+      "event": "Q2 2026 Earnings Release, Guidance Hike & Order Influx",
+      "priceMovePct": 4.85,
+      "context": "Reported revenue of $11.1B (+22% YoY) beating estimates, while reported EPS of $2.47 missed consensus ($3.08) due to $320M in Vineyard Wind blade remediation charges. However, institutional buyers aggressively stepped in after management raised full-year guidance and disclosed a blowout $24.2B order quarter (+88% organic) with gas turbine backlog reaching 116 GW, pushing the stock up +4.85%.",
+      "source": {
+        "url": "https://www.gevernova.com/investors",
+        "title": "GE Vernova Q2 2026 Post-Earnings Market Reaction",
+        "date": "2026-07-23"
+      }
+    },
+    {
+      "date": "2026-04-24",
+      "event": "Q1 2026 Earnings & AI Hyperscaler Interconnection Boom",
+      "priceMovePct": 12.40,
+      "context": "Blowout Q1 2026 print where Electrification orders surged over +90% YoY and management disclosed initial multi-gigawatt direct aeroderivative supply agreements with cloud hyperscalers to bypass utility interconnection delays. Shares rallied +12.40% to new all-time highs.",
+      "source": {
+        "url": "https://finance.yahoo.com/quote/GEV/history/",
+        "title": "GEV Q1 2026 Price Action",
+        "date": "2026-04-25"
+      }
+    },
+    {
+      "date": "2025-12-10",
+      "event": "2025 Investor Day & Multi-Year EBITDA Margin Target Raise",
+      "priceMovePct": 15.75,
+      "context": "Management updated its long-term financial framework, targeting 14-16% adjusted EBITDA margins by 2028 and outlining >$115B in high-margin CSA recurring service backlog. Shares broke out +15.75% across two trading sessions on massive institutional accumulation.",
+      "source": {
+        "url": "https://www.gevernova.com/investors",
+        "title": "GE Vernova Investor Day Strategic Presentation",
+        "date": "2025-12-11"
+      }
+    }
+  ],
+  "conditionalFraming": "GE Vernova displays strong positive asymmetry when reported earnings or order releases validate accelerating demand in heavy-duty gas turbines, pricing power in factory slot reservations, and hyperscaler direct-contracting momentum in Electrification (driving +5% to +15% rallies). Conversely, headline earnings misses driven by legacy offshore wind warranty noise (such as Vineyard Wind blade remediation) typically produce brief initial dips that are aggressively bought by long-only institutional capital focusing on clean operating run-rates and multi-decade CSA service visibility. Broader cyclical downturn arguments (e.g. GLJ Research's contrarian sell downgrade) create transient valuation drawdowns of 8-10%, presenting favorable risk/reward setups given structural multi-year power equipment scarcity."
+}

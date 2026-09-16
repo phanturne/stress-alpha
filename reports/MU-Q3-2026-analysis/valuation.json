@@ -1,0 +1,200 @@
+{
+  "ticker": "MU",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 145,
+  "weightedFairValue": 155.75,
+  "upsidePct": 7.41,
+  "scenarioResults": [
+    {
+      "name": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "probability": 0.25,
+      "fairValue": 217,
+      "upsideFromCurrent": 49.66
+    },
+    {
+      "name": "Base: Controlled Disciplined Oligopoly Expansion",
+      "probability": 0.55,
+      "fairValue": 160,
+      "upsideFromCurrent": 10.34
+    },
+    {
+      "name": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "probability": 0.2,
+      "fairValue": 67.5,
+      "upsideFromCurrent": -53.45
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "parameter": "EPS +10%",
+      "baseValue": 15.5,
+      "altValue": 17.05,
+      "fairValueDelta": 21.7
+    },
+    {
+      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "parameter": "EPS -10%",
+      "baseValue": 15.5,
+      "altValue": 13.95,
+      "fairValueDelta": -21.7
+    },
+    {
+      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "parameter": "Multiple +2",
+      "baseValue": 14,
+      "altValue": 16,
+      "fairValueDelta": 31
+    },
+    {
+      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "parameter": "Multiple -2",
+      "baseValue": 14,
+      "altValue": 12,
+      "fairValueDelta": -31
+    },
+    {
+      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "parameter": "EPS +10%",
+      "baseValue": 12.8,
+      "altValue": 14.08,
+      "fairValueDelta": 16
+    },
+    {
+      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "parameter": "EPS -10%",
+      "baseValue": 12.8,
+      "altValue": 11.52,
+      "fairValueDelta": -16
+    },
+    {
+      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "parameter": "Multiple +2",
+      "baseValue": 12.5,
+      "altValue": 14.5,
+      "fairValueDelta": 25.6
+    },
+    {
+      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "parameter": "Multiple -2",
+      "baseValue": 12.5,
+      "altValue": 10.5,
+      "fairValueDelta": -25.6
+    },
+    {
+      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "parameter": "EPS +10%",
+      "baseValue": 7.5,
+      "altValue": 8.25,
+      "fairValueDelta": 6.75
+    },
+    {
+      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "parameter": "EPS -10%",
+      "baseValue": 7.5,
+      "altValue": 6.75,
+      "fairValueDelta": -6.75
+    },
+    {
+      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "parameter": "Multiple +2",
+      "baseValue": 9,
+      "altValue": 11,
+      "fairValueDelta": 15
+    },
+    {
+      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "parameter": "Multiple -2",
+      "baseValue": 9,
+      "altValue": 7,
+      "fairValueDelta": -15
+    }
+  ],
+  "consensusTarget": 175,
+  "verdictVsConsensus": "Below consensus ($175) by 11% — more cautious",
+  "baseline": {
+    "baseRevenueBillions": 52.5,
+    "baseGrossMarginPct": 43.5,
+    "fixedOpexBillions": 5.6,
+    "taxRatePct": 14.5,
+    "dilutedSharesBillions": 1.14,
+    "multipleRegimes": {
+      "bull": 15,
+      "base": 12.5,
+      "panic": 8
+    },
+    "upstreamDrivers": [
+      {
+        "id": "hyperscaler-ai-capex",
+        "name": "Cloud Hyperscaler AI Infrastructure & Server CapEx",
+        "exposureShare": 0.48,
+        "elasticity": 1.25,
+        "defaultShockPct": 0,
+        "minShockPct": -50,
+        "maxShockPct": 50
+      },
+      {
+        "id": "hbm-advanced-packaging-yield",
+        "name": "Advanced HBM3e/HBM4 Packaging & TSV Wafer Yields",
+        "exposureShare": 0.28,
+        "elasticity": 0.95,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "edge-device-ai-dram",
+        "name": "On-Device AI Smartphone & PC Memory Upgrades",
+        "exposureShare": 0.24,
+        "elasticity": 0.75,
+        "defaultShockPct": 0,
+        "minShockPct": -35,
+        "maxShockPct": 35
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 52.5,
+    "stressGrossProfitBillions": 22.84,
+    "stressOperatingIncomeBillions": 17.24,
+    "stressNetIncomeBillions": 14.74,
+    "stressEps": 12.93,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (15x P/E)",
+        "multiple": 15,
+        "targetPrice": 193.95,
+        "deltaFromCurrentPct": 33.76
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (12.5x P/E)",
+        "multiple": 12.5,
+        "targetPrice": 161.63,
+        "deltaFromCurrentPct": 11.47
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (8x P/E)",
+        "multiple": 8,
+        "targetPrice": 103.44,
+        "deltaFromCurrentPct": -28.66
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 11.47,
+      "downsideToPanicPct": -28.66,
+      "upsideToBullPct": 33.76,
+      "marketPricedInMultiple": 11.21,
+      "riskRewardRatio": 1.18
+    },
+    "driverShocksApplied": {
+      "hyperscaler-ai-capex": 0,
+      "hbm-advanced-packaging-yield": 0,
+      "edge-device-ai-dram": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "ticker": "GOOGL",
+  "company": "Alphabet (谷歌公司)",
+  "quarter": "2026年第二季度 (Q2 2026)",
+  "reportDate": "2026-07-23",
+  "revenueBillions": 108.55,
+  "revenueGrowthPct": 12.6,
+  "revenueEstimateBillions": 106.80,
+  "operatingIncomeBillions": 35.82,
+  "operatingMarginPct": 33.0,
+  "operatingIncomeGrowthPct": 14.4,
+  "epsReported": 2.50,
+  "epsConsensus": 2.14,
+  "epsOperating": 2.20,
+  "segments": [
+    {
+      "name": "谷歌搜索及其他业务 (Google Search & other)",
+      "revenueBillions": 58.20,
+      "growthPct": 10.0,
+      "operatingIncomeBillions": 22.75,
+      "operatingMarginPct": 39.1
+    },
+    {
+      "name": "YouTube 广告业务 (YouTube ads)",
+      "revenueBillions": 10.45,
+      "growthPct": 11.8,
+      "operatingIncomeBillions": 3.85,
+      "operatingMarginPct": 36.8
+    },
+    {
+      "name": "订阅、平台与硬件设备 (Subscriptions, platforms & devices)",
+      "revenueBillions": 24.00,
+      "growthPct": 11.2,
+      "operatingIncomeBillions": 8.15,
+      "operatingMarginPct": 34.0
+    },
+    {
+      "name": "谷歌云业务 (Google Cloud - GCP与Workspace)",
+      "revenueBillions": 15.52,
+      "growthPct": 29.3,
+      "operatingIncomeBillions": 2.33,
+      "operatingMarginPct": 15.0
+    },
+    {
+      "name": "前沿创新赌注 (Other Bets)",
+      "revenueBillions": 0.38,
+      "growthPct": 2.7,
+      "operatingIncomeBillions": -1.26,
+      "operatingMarginPct": -331.6
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "非上市股权及科技风投证券在 ASU 2016-01 准则下的未实现公允价值重估浮盈",
+      "amountBillions": 4.50,
+      "isOperating": false,
+      "note": "GAAP 名义净利润中包含了 45.0 亿美元税前（税后约 37.6 亿美元，折合稀释每股收益 $0.30）的未实现公允价值波动收益，主要源于非上市 AI 初创公司及战略风投持股账面重估。剔除该项非经营性一次性公允价值扰动后，真实核心经营每股收益 (epsOperating) 为 $2.20。"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 34.00,
+  "guidanceOperatingIncomeHighBillions": 37.50,
+  "guidanceRevenueLowBillions": 109.00,
+  "guidanceRevenueHighBillions": 113.00,
+  "currentPrice": 182.50,
+  "marketCapBillions": 2253.88,
+  "trailingEps": 8.15,
+  "forwardEpsConsensus": 9.80,
+  "sources": [
+    {
+      "url": "https://abc.xyz/investor/earnings/2026/q2/",
+      "title": "Alphabet 发布 2026 年第二季度财务业绩报告",
+      "date": "2026-07-23"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001652044",
+      "title": "美国证券交易委员会 10-Q 季度报告 - Alphabet Inc. (截至2026年6月30日)",
+      "date": "2026-07-24"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}
