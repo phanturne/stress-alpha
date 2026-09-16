@@ -15,6 +15,8 @@ import {
   AlertCircle,
   Loader2,
   ShieldCheck,
+  Keyboard,
+  X,
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
@@ -41,10 +43,11 @@ export default function HomePage() {
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
-  const [activeTab, setActiveTab] = useState<string>("catalysts");
+  const [activeTab, setActiveTab] = useState<string>("scenarios");
   const [locale, setLocale] = useState<Locale>("zh");
   const [reportDocLang, setReportDocLang] = useState<Locale>("zh");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const t = getTranslations(locale);
@@ -281,6 +284,70 @@ export default function HomePage() {
   const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
   const displayMoat = (isZh && reportData?.moatZh) ? reportData.moatZh : reportData?.moat;
 
+  // Logically ordered tabs: Valuation -> Moat -> Sensitivity -> Segments -> Catalysts -> Tone -> Filing -> Reactions -> Raw Notes
+  const tabItems = useMemo(() => [
+    { id: "scenarios", shortcut: "1", label: t.tabs.scenarios, icon: TrendingUp, count: displayScenarios?.scenarios.length },
+    { id: "moat", shortcut: "2", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
+    { id: "sensitivity", shortcut: "3", label: t.tabs.sensitivity, icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData?.valuation?.sensitivity)?.length },
+    { id: "segments", shortcut: "4", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
+    { id: "catalysts", shortcut: "5", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+    { id: "tone", shortcut: "6", label: t.tabs.tone, icon: Mic },
+    { id: "filing", shortcut: "7", label: t.tabs.filing, icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
+    { id: "reactions", shortcut: "8", label: t.tabs.reactions, icon: History, count: displayReactions?.events?.length },
+    { id: "report", shortcut: "9", label: t.tabs.report, icon: FileText },
+  ], [t, displayScenarios, displayMoat, dynamicValuation, reportData, displayFacts, displayCatalysts, displayFiling, displayReactions]);
+
+  // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= tabItems.length) {
+        e.preventDefault();
+        setActiveTab(tabItems[num - 1].id);
+        return;
+      }
+
+      if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        handleResetDefaults();
+        return;
+      }
+
+      if (e.key === "m" || e.key === "M") {
+        e.preventDefault();
+        setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit"));
+        return;
+      }
+
+      if (e.key === "l" || e.key === "L") {
+        e.preventDefault();
+        handleToggleLocale(locale === "zh" ? "en" : "zh");
+        return;
+      }
+
+      if (e.key === "?" || (e.shiftKey && e.key === "/")) {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === "Escape") {
+        if (isShortcutsOpen) {
+          e.preventDefault();
+          setIsShortcutsOpen(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [tabItems, locale, isShortcutsOpen, handleResetDefaults, handleToggleLocale]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-slate-100">
       {/* Top Navigation */}
@@ -292,6 +359,7 @@ export default function HomePage() {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onOpenUploadModal={() => setIsUploadModalOpen(true)}
+        onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
         onShare={handleShare}
         locale={locale}
         onToggleLocale={handleToggleLocale}
@@ -344,6 +412,7 @@ export default function HomePage() {
             stressResult={stressResult}
             onBackToCockpit={() => setViewMode("cockpit")}
             locale={locale}
+            onLocaleChange={setLocale}
           />
         ) : (
           <div className="flex flex-col lg:flex-row gap-5 xl:gap-6 items-start">
@@ -364,17 +433,7 @@ export default function HomePage() {
             <div className="min-w-0 flex-1 w-full flex flex-col gap-4">
               {/* Tab Navigation Ribbon */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 border-b border-white/[0.08] no-scrollbar scroll-smooth">
-                {[
-                  { id: "catalysts", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
-                  { id: "moat", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
-                  { id: "scenarios", label: t.tabs.scenarios, icon: TrendingUp, count: displayScenarios?.scenarios.length },
-                  { id: "segments", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
-                  { id: "tone", label: t.tabs.tone, icon: Mic },
-                  { id: "filing", label: t.tabs.filing, icon: FileSearch, count: displayFiling?.newRiskFactors?.length },
-                  { id: "reactions", label: t.tabs.reactions, icon: History, count: displayReactions?.events?.length },
-                  { id: "sensitivity", label: t.tabs.sensitivity, icon: Grid, count: (dynamicValuation?.sensitivity ?? reportData.valuation?.sensitivity)?.length },
-                  { id: "report", label: t.tabs.report, icon: FileText },
-                ].map((tab) => {
+                {tabItems.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
                   return (
@@ -382,13 +441,13 @@ export default function HomePage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                      className={`group flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                         isActive
                           ? "bg-accent/15 text-accent border border-accent/40 shadow-glow/30 font-bold"
                           : "text-slate-400 hover:text-slate-200 hover:bg-surface-1 border border-transparent"
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5" />
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
                       <span>{tab.label}</span>
                       {tab.count !== undefined && (
                         <span
@@ -401,6 +460,15 @@ export default function HomePage() {
                           {tab.count}
                         </span>
                       )}
+                      <span
+                        className={`text-[10px] font-mono transition-opacity hidden sm:inline ${
+                          isActive
+                            ? "text-accent/70 font-bold"
+                            : "text-slate-600 group-hover:text-slate-400"
+                        }`}
+                      >
+                        [{tab.shortcut}]
+                      </span>
                     </button>
                   );
                 })}
@@ -564,6 +632,87 @@ export default function HomePage() {
           onClose={() => setIsUploadModalOpen(false)}
           locale={locale}
         />
+      )}
+
+      {/* Keyboard Shortcuts Modal */}
+      {isShortcutsOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsShortcutsOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-surface-1/95 border border-white/[0.12] rounded-2xl shadow-2xl p-6 relative flex flex-col gap-5 glass-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent">
+                  <Keyboard className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-white tracking-wide">
+                  {t.shortcuts.title}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsShortcutsOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-2 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2.5">
+              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
+                <span className="text-xs text-slate-300">{t.shortcuts.tabSwitch}</span>
+                <div className="flex items-center gap-1">
+                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                    1
+                  </kbd>
+                  <span className="text-slate-500 text-[10px]">–</span>
+                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                    9
+                  </kbd>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
+                <span className="text-xs text-slate-300">{t.shortcuts.resetModel}</span>
+                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  R
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
+                <span className="text-xs text-slate-300">{t.shortcuts.toggleMemo}</span>
+                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  M
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
+                <span className="text-xs text-slate-300">{t.shortcuts.toggleLang}</span>
+                <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                  L
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-0/60 border border-white/[0.04]">
+                <span className="text-xs text-slate-300">{t.shortcuts.close}</span>
+                <div className="flex items-center gap-1.5">
+                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
+                    ?
+                  </kbd>
+                  <span className="text-slate-500 text-[10px]">/</span>
+                  <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-slate-300 shadow-sm">
+                    Esc
+                  </kbd>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Toast Notification */}

@@ -11,6 +11,7 @@ interface MemoViewProps {
   stressResult: StressResult;
   onBackToCockpit: () => void;
   locale?: Locale;
+  onLocaleChange?: (locale: Locale) => void;
 }
 
 export const MemoView: React.FC<MemoViewProps> = ({
@@ -18,8 +19,19 @@ export const MemoView: React.FC<MemoViewProps> = ({
   stressResult,
   onBackToCockpit,
   locale = "zh",
+  onLocaleChange,
 }) => {
   const [memoLang, setMemoLang] = useState<Locale>(locale);
+
+  React.useEffect(() => {
+    setMemoLang(locale);
+  }, [locale]);
+
+  const handleLangChange = (lang: Locale) => {
+    setMemoLang(lang);
+    onLocaleChange?.(lang);
+  };
+
   const isZh = memoLang === "zh";
   const t = getTranslations(memoLang).memo;
   const facts = (isZh && reportData.factsZh) ? reportData.factsZh : reportData.facts;
@@ -47,7 +59,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div className="flex items-center glass-panel p-1 rounded-xl border border-border/80 text-xs shadow-sm">
             <button
               type="button"
-              onClick={() => setMemoLang("en")}
+              onClick={() => handleLangChange("en")}
               className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 memoLang === "en"
                   ? "bg-accent/20 text-accent font-bold shadow-sm"
@@ -58,7 +70,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setMemoLang("zh")}
+              onClick={() => handleLangChange("zh")}
               className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 memoLang === "zh"
                   ? "bg-accent/20 text-accent font-bold shadow-sm"

@@ -322,19 +322,6 @@ export const MoatTab: React.FC<MoatTabProps> = ({
           </div>
         </div>
       )}
-
-      {/* Strategic Competitive Dynamics Callout */}
-      {moatData.competitiveDynamicsSummary && (
-        <div className="p-5 rounded-xl glass-panel border border-border/80 flex flex-col gap-2.5 shadow-md">
-          <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider font-mono">
-            <Building2 className="w-4 h-4" />
-            {t.dynamicsTitle}
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            {moatData.competitiveDynamicsSummary}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

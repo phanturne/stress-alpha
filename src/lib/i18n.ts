@@ -61,7 +61,29 @@ export interface Translations {
       operatingCleanEps: string;
       operating: string;
       nonOperating: string;
+      toggleShow: string;
+      toggleHide: string;
+      itemsCount: (count: number) => string;
     };
+    presets: {
+      title: string;
+      baseline: string;
+      mild: string;
+      severe: string;
+    };
+    sliderTabs: {
+      volume: string;
+      margins: string;
+      all: string;
+    };
+  };
+  shortcuts: {
+    title: string;
+    tabSwitch: string;
+    resetModel: string;
+    toggleMemo: string;
+    toggleLang: string;
+    close: string;
   };
   priceMeter: {
     title: string;
@@ -319,7 +341,29 @@ export const translations: Record<Locale, Translations> = {
         operatingCleanEps: "Operating Clean EPS:",
         operating: "operating",
         nonOperating: "non-operating",
+        toggleShow: "Show breakdown",
+        toggleHide: "Hide breakdown",
+        itemsCount: (count: number) => `${count} non-operating items adjusted`,
       },
+      presets: {
+        title: "Macro Presets",
+        baseline: "Baseline (0%)",
+        mild: "Mild Strain (-10%)",
+        severe: "Severe Panic (-25%)",
+      },
+      sliderTabs: {
+        volume: "Volume Drivers",
+        margins: "Cost & Margins",
+        all: "All Controls",
+      },
+    },
+    shortcuts: {
+      title: "Keyboard Shortcuts",
+      tabSwitch: "Switch Tabs (1–9)",
+      resetModel: "Reset Model (R)",
+      toggleMemo: "Toggle Cockpit / Memo (M)",
+      toggleLang: "Toggle Language (L)",
+      close: "Close Dialog (Esc / ?)",
     },
     priceMeter: {
       title: "Valuation Meter",
@@ -337,7 +381,7 @@ export const translations: Record<Locale, Translations> = {
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
       sensitivity: "Sensitivity Heatmap",
-      report: "Full Report",
+      report: "Raw Filings & Notes",
     },
     moatTab: {
       title: "Economic Moat & Competitor Benchmarking",
@@ -575,7 +619,29 @@ export const translations: Record<Locale, Translations> = {
         operatingCleanEps: "核心经营清洁 EPS:",
         operating: "经营性",
         nonOperating: "非经营性",
+        toggleShow: "展开损益明细",
+        toggleHide: "收起明细",
+        itemsCount: (count: number) => `已调整 ${count} 项非经常性损益`,
       },
+      presets: {
+        title: "宏观情景预设",
+        baseline: "基准情景 (0%)",
+        mild: "温和承压 (-10%)",
+        severe: "极度恐慌 (-25%)",
+      },
+      sliderTabs: {
+        volume: "业务量驱动",
+        margins: "成本与利润率",
+        all: "全部控制项",
+      },
+    },
+    shortcuts: {
+      title: "快捷键指南",
+      tabSwitch: "快速切换标签页 (1–9)",
+      resetModel: "重置压力模型 (R)",
+      toggleMemo: "切换驾驶舱 / 备忘录 (M)",
+      toggleLang: "切换中英文 (L)",
+      close: "关闭窗口 (Esc / ?)",
     },
     priceMeter: {
       title: "估值区间标尺",
@@ -593,7 +659,7 @@ export const translations: Record<Locale, Translations> = {
       filing: "10-Q 风险",
       reactions: "历史股价反应",
       sensitivity: "敏感性热力图",
-      report: "深度研报全文",
+      report: "原始底稿与披露",
     },
     moatTab: {
       title: "经济护城河与核心竞品对标矩阵",

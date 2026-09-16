@@ -8,6 +8,8 @@ import {
   Upload,
   Zap,
   Globe,
+  Radio,
+  HelpCircle,
 } from "lucide-react";
 import { ReportSelector } from "./ReportSelector";
 import { formatCurrency, formatPercent } from "@/lib/utils";
@@ -17,12 +19,13 @@ import type { Facts, Valuation } from "@/lib/schemas";
 interface HeaderProps {
   facts?: Facts;
   valuation?: Valuation;
-  currentSlug: string | null;
+  currentSlug?: string | null;
   onSelectReport: (slug: string) => void;
   viewMode: "cockpit" | "memo";
   onViewModeChange: (mode: "cockpit" | "memo") => void;
   onOpenUploadModal?: () => void;
-  onShare: () => void;
+  onOpenShortcutsModal?: () => void;
+  onShare?: () => void;
   locale?: Locale;
   onToggleLocale?: (l: Locale) => void;
 }
@@ -35,6 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
   viewMode,
   onViewModeChange,
   onOpenUploadModal,
+  onOpenShortcutsModal,
   onShare,
   locale = "zh",
   onToggleLocale = () => {},
@@ -45,15 +49,13 @@ export const Header: React.FC<HeaderProps> = ({
   const upsidePct = valuation?.upsidePct ?? 0;
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-surface-0/85 backdrop-blur-xl border-b border-white/[0.08] px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 shadow-md">
-      {/* Left: Brand & Report Selector */}
-      <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] glass-panel px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-4 transition-all duration-200">
+      {/* Left: Brand Identity & Active Workspace */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-accent via-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-accent/25 ring-1 ring-white/20">
-            <Zap className="w-4 h-4 text-slate-950 font-extrabold fill-slate-950" />
-            <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent/20 to-sky-500/20 border border-accent/40 flex items-center justify-center text-accent shadow-glow/30">
+            <span className="font-mono font-extrabold text-sm tracking-tighter">
+              S<span className="text-white">α</span>
             </span>
           </div>
           <div className="hidden xs:block">
@@ -72,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Direct Report Selection from reports/ folder */}
         <ReportSelector
-          currentSlug={currentSlug}
+          currentSlug={currentSlug ?? null}
           onSelectReport={onSelectReport}
           locale={locale}
         />
@@ -220,6 +222,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Upload className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t.upload}</span>
+          </button>
+        )}
+
+        {/* Shortcuts Helper Button */}
+        {onOpenShortcutsModal && (
+          <button
+            type="button"
+            onClick={onOpenShortcutsModal}
+            className="p-2 rounded-lg bg-surface-1/90 hover:bg-surface-2 border border-white/[0.08] hover:border-accent/40 text-xs text-slate-400 hover:text-accent transition-all"
+            title="Keyboard Shortcuts (?)"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
