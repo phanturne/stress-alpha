@@ -17,9 +17,11 @@ import {
   FinancialModelBaselineSchema,
   ValuationSchema,
   MoatCompetitorsSchema,
+  AnalystEstimatesSchema,
   type Reactions,
   type FinancialModelBaseline,
   type MoatCompetitors,
+  type AnalystEstimates,
 } from "../src/lib/schemas.js";
 import { computeValuation, deriveEffectiveBaseline } from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
@@ -75,6 +77,20 @@ function main() {
     console.log("  ✅ moat-competitors_zh.json validated");
   }
 
+  let estimates: AnalystEstimates | undefined;
+  const estimatesPath = path.join(absRunDir, "analyst-estimates.json");
+  if (fs.existsSync(estimatesPath)) {
+    estimates = loadAndValidate(absRunDir, "analyst-estimates.json", AnalystEstimatesSchema);
+    console.log("  ✅ analyst-estimates.json validated");
+  }
+
+  let estimatesZh: AnalystEstimates | undefined;
+  const estimatesZhPath = path.join(absRunDir, "analyst-estimates_zh.json");
+  if (fs.existsSync(estimatesZhPath)) {
+    estimatesZh = loadAndValidate(absRunDir, "analyst-estimates_zh.json", AnalystEstimatesSchema);
+    console.log("  ✅ analyst-estimates_zh.json validated");
+  }
+
   let baseline: FinancialModelBaseline | undefined = scenarios.baseline;
   const baselinePath = path.join(absRunDir, "stress-baseline.json");
   if (fs.existsSync(baselinePath)) {
@@ -100,6 +116,7 @@ function main() {
       valuation: validatedValuation,
       reactions,
       moat,
+      estimates,
     },
     { language: "en" }
   );
@@ -114,6 +131,7 @@ function main() {
       valuation: validatedValuation,
       reactions,
       moat: moatZh ?? moat,
+      estimates: estimatesZh ?? estimates,
     },
     { language: "zh" }
   );
@@ -128,6 +146,9 @@ function main() {
   console.log(`  Weighted Fair Value:  $${validatedValuation.weightedFairValue} (${validatedValuation.upsidePct > 0 ? "+" : ""}${validatedValuation.upsidePct}%)`);
   if (moat) {
     console.log(`  Economic Moat:        ${moat.overallMoatRating} Moat (Trend: ${moat.moatTrend})`);
+  }
+  if (estimates) {
+    console.log(`  Analyst Consensus:    ${estimates.consensus.consensus} (${estimates.consensus.totalAnalysts} analysts, Target: $${estimates.priceTargets.average})`);
   }
   console.log(`  Clean Operating EPS:  $${facts.epsOperating}`);
   console.log(`  Consensus PT:         $${validatedValuation.consensusTarget}`);

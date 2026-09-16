@@ -1,0 +1,319 @@
+{
+  "ticker": "NVDA",
+  "asOfDate": "2026-08-28",
+  "consensus": {
+    "consensus": "Strong Buy",
+    "totalAnalysts": 26,
+    "bullishCount": 26,
+    "bullishPct": 100.0,
+    "neutralCount": 0,
+    "neutralPct": 0.0,
+    "bearishCount": 0,
+    "bearishPct": 0.0
+  },
+  "priceTargets": {
+    "currentPrice": 212.17,
+    "low": 275.00,
+    "average": 347.81,
+    "median": 320.00,
+    "high": 515.00,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "Following NVIDIA's Q2 FY2027 earnings print, all 26 major covering Wall Street institutions maintain a unanimous Strong Buy consensus. Target revisions reflect accelerating Blackwell/Rubin ramp velocity, sovereign AI demand expansions across the Middle East and East Asia, and hyperscaler CAPEX revisions from Microsoft, Alphabet, Meta, and Amazon as primary upside catalysts. Price targets cluster predominantly between $300 and $400, anchored by an average target of $347.81 (+63.9% upside vs. $212.17), with Street High reaching $515 (Raymond James) and Street Low at $275 (TD Cowen). Top-tier bulls model sustained datacenter gross margins exceeding 75% into FY2028.",
+  "estimates": [
+    {
+      "firm": "Rosenblatt Securities",
+      "analyst": "Kevin Cassidy",
+      "rating": "Buy",
+      "priceTarget": 390.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 83.8,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Highlights Blackwell ramp velocity and multi-year networking architecture advantages."
+    },
+    {
+      "firm": "Bernstein",
+      "analyst": "Stacy Rasgon",
+      "rating": "Outperform",
+      "priceTarget": 400.00,
+      "priorPriceTarget": 320.00,
+      "upsidePct": 88.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Sees EPS power trajectory exceeding $7.00+ supported by Rubin roadmap."
+    },
+    {
+      "firm": "Needham",
+      "analyst": "Quinn Bolton",
+      "rating": "Buy",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 240.00,
+      "upsidePct": 41.4,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Expects continuous datacenter compute demand outstripping supply into CY2027."
+    },
+    {
+      "firm": "Citigroup",
+      "analyst": "Atif Malik",
+      "rating": "Buy",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 48.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Bullish on enterprise inferencing adoption alongside CSP training clusters."
+    },
+    {
+      "firm": "Mizuho",
+      "analyst": "Vijay Rakesh",
+      "rating": "Outperform",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 48.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Cites NVLink rack-scale networking lock-in as a massive gross margin moat."
+    },
+    {
+      "firm": "JPMorgan",
+      "analyst": "Harlan Sur",
+      "rating": "Overweight",
+      "priceTarget": 320.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 50.8,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Expects strong customer commitments extending Blackwell order backlog into 2027."
+    },
+    {
+      "firm": "RBC Capital",
+      "analyst": "Srini Pajjuri",
+      "rating": "Outperform",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 55.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Highlights sovereign AI investments and enterprise AI software monetization."
+    },
+    {
+      "firm": "UBS",
+      "analyst": "Timothy Arcuri",
+      "rating": "Buy",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 260.00,
+      "upsidePct": 41.4,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Expects supply constraints to ease smoothly while preserving premium pricing power."
+    },
+    {
+      "firm": "Oppenheimer",
+      "analyst": "Rick Schafer",
+      "rating": "Outperform",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 275.00,
+      "upsidePct": 48.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Full-stack AI hardware and CUDA software synergy remains virtually unassailable."
+    },
+    {
+      "firm": "Bank of America",
+      "analyst": "Vivek Arya",
+      "rating": "Buy",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 65.0,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Reiterates top sector pick; enterprise AI Capex generation broadening beyond mega-caps."
+    },
+    {
+      "firm": "Morgan Stanley",
+      "analyst": "Joseph Moore",
+      "rating": "Overweight",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 288.00,
+      "upsidePct": 41.4,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Expects Blackwell volume deployments to drive sequential revenue step-ups into 2027."
+    },
+    {
+      "firm": "Goldman Sachs",
+      "analyst": "Toshiya Hari",
+      "rating": "Buy",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 285.00,
+      "upsidePct": 41.4,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Accelerated computing architectural barrier widens as inferencing complexity compounds."
+    },
+    {
+      "firm": "Cantor Fitzgerald",
+      "analyst": "C.J. Muse",
+      "rating": "Overweight",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 65.0,
+      "date": "Aug 27, 2026",
+      "action": "Reiterated",
+      "notes": "Compute valuation remains favorable relative to multi-year free cash flow generation."
+    },
+    {
+      "firm": "Truist Securities",
+      "analyst": "William Stein",
+      "rating": "Buy",
+      "priceTarget": 346.00,
+      "priorPriceTarget": 307.00,
+      "upsidePct": 63.1,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Channel checks indicate insatiable enterprise compute demand extending backlog."
+    },
+    {
+      "firm": "KeyBanc Capital",
+      "analyst": "John Vinh",
+      "rating": "Overweight",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 55.5,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "CoWoS packaging supply unlocks accelerating volume shipments for GB200 systems."
+    },
+    {
+      "firm": "TD Cowen",
+      "analyst": "Matthew Ramsay",
+      "rating": "Buy",
+      "priceTarget": 275.00,
+      "priorPriceTarget": 240.00,
+      "upsidePct": 29.6,
+      "date": "Aug 27, 2026",
+      "action": "Reiterated",
+      "notes": "Anchors Street conservative baseline; models steady datacenter execution and disciplined Capex."
+    },
+    {
+      "firm": "Baird",
+      "analyst": "Tristan Gerra",
+      "rating": "Outperform",
+      "priceTarget": 475.00,
+      "priorPriceTarget": 350.00,
+      "upsidePct": 123.9,
+      "date": "Sep 01, 2026",
+      "action": "Raised",
+      "notes": "Models multi-generation Rubin architectural leap and sustained datacenter pricing supremacy."
+    },
+    {
+      "firm": "Raymond James",
+      "analyst": "Srini Pajjuri",
+      "rating": "Strong Buy",
+      "priceTarget": 515.00,
+      "priorPriceTarget": 375.00,
+      "upsidePct": 142.7,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Street High; sees sovereign AI and hyperscaler inferencing clusters driving multi-year supercycle."
+    },
+    {
+      "firm": "Wells Fargo",
+      "analyst": "Aaron Rakers",
+      "rating": "Overweight",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 55.5,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Hardware rack density and Spectrum-X Ethernet networking attach rate expanding TAM."
+    },
+    {
+      "firm": "Barclays",
+      "analyst": "Tom O'Malley",
+      "rating": "Overweight",
+      "priceTarget": 325.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 53.2,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "AI server market share remains above 85% despite custom silicon ASIC developments."
+    },
+    {
+      "firm": "Jefferies",
+      "analyst": "Blayne Curtis",
+      "rating": "Buy",
+      "priceTarget": 360.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 69.7,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Enterprise software monetization and NIM microservices expanding margin profile."
+    },
+    {
+      "firm": "Stifel",
+      "analyst": "Ruben Roy",
+      "rating": "Buy",
+      "priceTarget": 320.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 50.8,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Datacenter revenue runway reinforced by tier-2 cloud service providers and neo-clouds."
+    },
+    {
+      "firm": "Evercore ISI",
+      "analyst": "Mark Lipacis",
+      "rating": "Outperform",
+      "priceTarget": 375.00,
+      "priorPriceTarget": 310.00,
+      "upsidePct": 76.7,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Parallel computing ecosystem dominance enables capture of 80%+ of total AI hardware value."
+    },
+    {
+      "firm": "Piper Sandler",
+      "analyst": "Harsh Kumar",
+      "rating": "Overweight",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 65.0,
+      "date": "Aug 27, 2026",
+      "action": "Raised",
+      "notes": "Supply chain visibility extends through calendar 2027 with resilient pricing power."
+    },
+    {
+      "firm": "Wolfe Research",
+      "analyst": "Chris Caso",
+      "rating": "Outperform",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 55.5,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Highlights software stickiness and recurring CUDA developer lock-in."
+    },
+    {
+      "firm": "HSBC",
+      "analyst": "Frank Lee",
+      "rating": "Buy",
+      "priceTarget": 352.06,
+      "priorPriceTarget": 310.00,
+      "upsidePct": 65.9,
+      "date": "Aug 28, 2026",
+      "action": "Raised",
+      "notes": "Pricing strength on complete server rack systems offsets minor component cost inflation."
+    }
+  ],
+  "sources": [
+    {
+      "title": "NVIDIA Q2 FY2027 Wall Street Sell-Side Research Consensus Directory",
+      "publisher": "Perplexity Finance / TipRanks / Bloomberg Consensus",
+      "url": "https://www.perplexity.ai/finance/NVDA",
+      "date": "2026-08-28"
+    }
+  ]
+}

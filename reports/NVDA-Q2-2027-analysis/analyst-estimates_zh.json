@@ -1,0 +1,319 @@
+{
+  "ticker": "NVDA",
+  "asOfDate": "2026-08-28",
+  "consensus": {
+    "consensus": "强烈推荐买入 (Strong Buy)",
+    "totalAnalysts": 26,
+    "bullishCount": 26,
+    "bullishPct": 100.0,
+    "neutralCount": 0,
+    "neutralPct": 0.0,
+    "bearishCount": 0,
+    "bearishPct": 0.0
+  },
+  "priceTargets": {
+    "currentPrice": 212.17,
+    "low": 275.00,
+    "average": 347.81,
+    "median": 320.00,
+    "high": 515.00,
+    "currency": "USD"
+  },
+  "synthesisNarrative": "英伟达发布 2027 财年 Q2 财报后，华尔街 26 家受追踪的主流卖方券商达成 100% 一致的『强烈买入 (Strong Buy)』共识。目标价调整反映了 Blackwell/Rubin 架构放量提速、中东与东亚主权 AI 算力采购扩容、以及微软、Alphabet、Meta、亚马逊等头部云巨头追加 Capex 资本开支的强劲驱动。华尔街目标价密集分布于 $300 至 $400 区间，全市场均价达 $347.81（较 $212.17 现价平均空间 +63.9%），其中最乐观预期达 $515（Raymond James），最保守底线为 $275（TD Cowen）。核心看多机构测算其数据中心毛利率至 2028 财年仍将维持在 75% 以上高位。",
+  "estimates": [
+    {
+      "firm": "Rosenblatt Securities (罗森布拉特)",
+      "analyst": "Kevin Cassidy",
+      "rating": "买入 (Buy)",
+      "priceTarget": 390.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 83.8,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "看好 Blackwell 量产爬坡斜率及跨年度网络架构（NVLink/Spectrum-X）优势。"
+    },
+    {
+      "firm": "Bernstein (伯恩斯坦)",
+      "analyst": "Stacy Rasgon",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 400.00,
+      "priorPriceTarget": 320.00,
+      "upsidePct": 88.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "Rubin 路线图支撑 EPS 盈利中枢具备突破 $7.00+ 的向上弹性。"
+    },
+    {
+      "firm": "Needham (尼达姆)",
+      "analyst": "Quinn Bolton",
+      "rating": "买入 (Buy)",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 240.00,
+      "upsidePct": 41.4,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "预计数据中心算力强劲需求将持续超越供给至 2027 日历年。"
+    },
+    {
+      "firm": "Citigroup (花旗银行)",
+      "analyst": "Atif Malik",
+      "rating": "买入 (Buy)",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 48.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "企业端推理算力普及与云服务商超大规模训练集群共振。"
+    },
+    {
+      "firm": "Mizuho (瑞穗证券)",
+      "analyst": "Vijay Rakesh",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 48.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "NVLink 机柜级互联绑定构筑极高的毛利率与生态壁垒。"
+    },
+    {
+      "firm": "JPMorgan (摩根大通)",
+      "analyst": "Harlan Sur",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 320.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 50.8,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "大客户采购意向锁定订单能见度，Blackwell 积压排产延展至 2027 年。"
+    },
+    {
+      "firm": "RBC Capital (加拿大皇家银行)",
+      "analyst": "Srini Pajjuri",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 270.00,
+      "upsidePct": 55.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "主权 AI 投资与企业级 AI 软件栈货币化双轮驱动。"
+    },
+    {
+      "firm": "UBS (瑞银)",
+      "analyst": "Timothy Arcuri",
+      "rating": "买入 (Buy)",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 260.00,
+      "upsidePct": 41.4,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "供应链瓶颈稳步缓解，同时保持强劲的溢价定价权。"
+    },
+    {
+      "firm": "Oppenheimer (奥本海默)",
+      "analyst": "Rick Schafer",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 315.00,
+      "priorPriceTarget": 275.00,
+      "upsidePct": 48.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "全栈 AI 硬件与 CUDA 软件协同优势在业内难以撼动。"
+    },
+    {
+      "firm": "Bank of America (美银证券)",
+      "analyst": "Vivek Arya",
+      "rating": "买入 (Buy)",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 65.0,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "重申半导体板块首选；企业级 AI 资本支出持续外溢至非超大型云客户。"
+    },
+    {
+      "firm": "Morgan Stanley (摩根士丹利)",
+      "analyst": "Joseph Moore",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 288.00,
+      "upsidePct": 41.4,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "看好 Blackwell 规模出货推动 2027 年营收环比台阶式跨越。"
+    },
+    {
+      "firm": "Goldman Sachs (高盛)",
+      "analyst": "Toshiya Hari",
+      "rating": "买入 (Buy)",
+      "priceTarget": 300.00,
+      "priorPriceTarget": 285.00,
+      "upsidePct": 41.4,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "随模型推理复杂度非线性跃升，加速计算生态壁垒越发稳固。"
+    },
+    {
+      "firm": "Cantor Fitzgerald (康托·菲茨杰拉德)",
+      "analyst": "C.J. Muse",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 65.0,
+      "date": "2026-08-27",
+      "action": "重申 (Reiterated)",
+      "notes": "相对多年自由现金流生成能力而言，当前算力估值倍数依然具备性价比。"
+    },
+    {
+      "firm": "Truist Securities (德鲁伊斯特)",
+      "analyst": "William Stein",
+      "rating": "买入 (Buy)",
+      "priceTarget": 346.00,
+      "priorPriceTarget": 307.00,
+      "upsidePct": 63.1,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "渠道调研证实企业级算力需求饥渴，订单排产周期持续拉长。"
+    },
+    {
+      "firm": "KeyBanc Capital (凯班资本)",
+      "analyst": "John Vinh",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 55.5,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "CoWoS 先进封装产能释放显著改善 GB200 整机柜系统交付效率。"
+    },
+    {
+      "firm": "TD Cowen (道明考恩)",
+      "analyst": "Matthew Ramsay",
+      "rating": "买入 (Buy)",
+      "priceTarget": 275.00,
+      "priorPriceTarget": 240.00,
+      "upsidePct": 29.6,
+      "date": "2026-08-27",
+      "action": "重申 (Reiterated)",
+      "notes": "华尔街最保守基准目标；模型基于数据中心稳定兑现与严苛资本折旧。"
+    },
+    {
+      "firm": "Baird (贝尔德)",
+      "analyst": "Tristan Gerra",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 475.00,
+      "priorPriceTarget": 350.00,
+      "upsidePct": 123.9,
+      "date": "2026-09-01",
+      "action": "上调 (Raised)",
+      "notes": "测算 Rubin 跨代架构飞跃将捍卫数据中心极端溢价定价权。"
+    },
+    {
+      "firm": "Raymond James (雷蒙德·詹姆斯)",
+      "analyst": "Srini Pajjuri",
+      "rating": "强力买入 (Strong Buy)",
+      "priceTarget": 515.00,
+      "priorPriceTarget": 375.00,
+      "upsidePct": 142.7,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "华尔街最高目标；主权 AI 与超大推理集群开启数年超级资本周期。"
+    },
+    {
+      "firm": "Wells Fargo (富国银行)",
+      "analyst": "Aaron Rakers",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 55.5,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "机柜功率密度与 Spectrum-X 以太网互联配比持续拓宽可触达市场 (TAM)。"
+    },
+    {
+      "firm": "Barclays (巴克莱)",
+      "analyst": "Tom O'Malley",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 325.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 53.2,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "即便自研 ASIC 芯片发展，英伟达在 AI 服务器份额仍将坚守 85% 以上。"
+    },
+    {
+      "firm": "Jefferies (杰富瑞)",
+      "analyst": "Blayne Curtis",
+      "rating": "买入 (Buy)",
+      "priceTarget": 360.00,
+      "priorPriceTarget": 300.00,
+      "upsidePct": 69.7,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "企业级软件货币化与 NIM 微服务生态正实质性推高长期净利率。"
+    },
+    {
+      "firm": "Stifel (斯蒂费尔)",
+      "analyst": "Ruben Roy",
+      "rating": "买入 (Buy)",
+      "priceTarget": 320.00,
+      "priorPriceTarget": 280.00,
+      "upsidePct": 50.8,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "二级云服务商及专精算力云客户的强劲追加进一步加固营收跑道。"
+    },
+    {
+      "firm": "Evercore ISI (常青岛)",
+      "analyst": "Mark Lipacis",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 375.00,
+      "priorPriceTarget": 310.00,
+      "upsidePct": 76.7,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "并行计算生态霸权确保英伟达独揽全球 AI 硬件产业链 80%+ 的利润总额。"
+    },
+    {
+      "firm": "Piper Sandler (派珀·桑德勒)",
+      "analyst": "Harsh Kumar",
+      "rating": "超配 (Overweight)",
+      "priceTarget": 350.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 65.0,
+      "date": "2026-08-27",
+      "action": "上调 (Raised)",
+      "notes": "供应链高能见度贯穿 2027 日历年，高端定价权未见松动迹象。"
+    },
+    {
+      "firm": "Wolfe Research (沃尔夫研究)",
+      "analyst": "Chris Caso",
+      "rating": "跑赢大盘 (Outperform)",
+      "priceTarget": 330.00,
+      "priorPriceTarget": 290.00,
+      "upsidePct": 55.5,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "软件生态黏性与全球数百万 CUDA 开发者锁定效应牢不可破。"
+    },
+    {
+      "firm": "HSBC (汇丰银行)",
+      "analyst": "Frank Lee",
+      "rating": "买入 (Buy)",
+      "priceTarget": 352.06,
+      "priorPriceTarget": 310.00,
+      "upsidePct": 65.9,
+      "date": "2026-08-28",
+      "action": "上调 (Raised)",
+      "notes": "完整机柜整机定价优势完全对冲并转嫁了上游原材料的温和通胀。"
+    }
+  ],
+  "sources": [
+    {
+      "title": "英伟达 Q2 FY2027 华尔街卖方机构研报目标价全景汇编",
+      "publisher": "Perplexity Finance / TipRanks / Bloomberg Consensus",
+      "url": "https://www.perplexity.ai/finance/NVDA",
+      "date": "2026-08-28"
+    }
+  ]
+}

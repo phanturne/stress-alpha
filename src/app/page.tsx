@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Loader2,
   ShieldCheck,
+  Target,
   Keyboard,
   X,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
 import { MemoView } from "@/components/MemoView";
 import { FileUploader } from "@/components/FileUploader";
+import { EstimatesTab } from "@/components/tabs/EstimatesTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
 import { MoatTab } from "@/components/tabs/MoatTab";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
@@ -298,16 +300,18 @@ export default function HomePage() {
   const displayFiling = (isZh && reportData?.filingZh) ? reportData.filingZh : reportData?.filing;
   const displayReactions = (isZh && reportData?.reactionsZh) ? reportData.reactionsZh : reportData?.reactions;
   const displayMoat = (isZh && reportData?.moatZh) ? reportData.moatZh : reportData?.moat;
+  const displayEstimates = (isZh && reportData?.estimatesZh) ? reportData.estimatesZh : reportData?.estimates;
 
-  // 6 Focused Institutional Intelligence Workspaces
+  // 7 Focused Institutional Intelligence Workspaces
   const tabItems = useMemo(() => [
     { id: "valuation", shortcut: "1", label: t.tabs.valuation, icon: TrendingUp, count: displayScenarios?.scenarios.length },
-    { id: "moat", shortcut: "2", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
-    { id: "segments", shortcut: "3", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
-    { id: "catalysts", shortcut: "4", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
-    { id: "audit", shortcut: "5", label: t.tabs.audit, icon: FileSearch, count: (displayFiling?.newRiskFactors?.length ?? 0) + (displayReactions?.events?.length ?? 0) },
-    { id: "report", shortcut: "6", label: t.tabs.report, icon: FileText },
-  ], [t, displayScenarios, displayMoat, displayFacts, displayCatalysts, displayFiling, displayReactions]);
+    { id: "estimates", shortcut: "2", label: t.tabs.estimates || "Estimates", icon: Target, count: displayEstimates?.estimates?.length },
+    { id: "moat", shortcut: "3", label: t.tabs.moat, icon: ShieldCheck, count: displayMoat?.competitors?.length },
+    { id: "segments", shortcut: "4", label: t.tabs.segments, icon: Layers, count: displayFacts?.segments.length },
+    { id: "catalysts", shortcut: "5", label: t.tabs.catalysts, icon: Sparkles, count: displayCatalysts?.catalysts?.length },
+    { id: "audit", shortcut: "6", label: t.tabs.audit, icon: FileSearch, count: (displayFiling?.newRiskFactors?.length ?? 0) + (displayReactions?.events?.length ?? 0) },
+    { id: "report", shortcut: "7", label: t.tabs.report, icon: FileText },
+  ], [t, displayScenarios, displayEstimates, displayMoat, displayFacts, displayCatalysts, displayFiling, displayReactions]);
 
   // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
   useEffect(() => {
@@ -500,6 +504,14 @@ export default function HomePage() {
                   />
                 )}
 
+                {activeTab === "estimates" && (
+                  <EstimatesTab
+                    estimatesData={displayEstimates}
+                    currentPrice={displayFacts?.currentPrice}
+                    locale={locale}
+                  />
+                )}
+
                 {activeTab === "moat" && (
                   <MoatTab
                     moatData={displayMoat}
@@ -667,7 +679,7 @@ export default function HomePage() {
                   </kbd>
                   <span className="text-slate-500 text-[10px]">–</span>
                   <kbd className="px-2 py-0.5 rounded bg-surface-2 border border-white/[0.12] font-mono text-[11px] font-bold text-accent shadow-sm">
-                    6
+                    7
                   </kbd>
                 </div>
               </div>

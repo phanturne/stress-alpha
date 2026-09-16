@@ -5,6 +5,7 @@ export const SourceSchema = z.object({
   url: z.string().optional(),
   title: z.string().optional(),
   date: z.string().describe("ISO date or YYYY-MM-DD").optional(),
+  publisher: z.string().optional(),
 });
 export type Source = z.infer<typeof SourceSchema>;
 
@@ -338,6 +339,64 @@ export const ValuationSchema = z.object({
 });
 export type Valuation = z.infer<typeof ValuationSchema>;
 
+// --- Stage 1c: Wall Street Analyst Estimates & Consensus (Perplexity Finance style) ---
+export const AnalystEstimateEntrySchema = z.object({
+  firm: z.string().describe("Brokerage / Investment bank name e.g. Rosenblatt, JP Morgan"),
+  analyst: z.string().optional().nullable().describe("Lead analyst name e.g. Kevin Cassidy, Harlan Sur"),
+  rating: z.enum([
+    "Strong Buy",
+    "Buy",
+    "Outperform",
+    "Overweight",
+    "Hold",
+    "Neutral",
+    "Equal-weight",
+    "Underperform",
+    "Underweight",
+    "Sell",
+  ]).or(z.string()),
+  priceTarget: z.number().positive(),
+  priorPriceTarget: z.number().positive().optional().nullable(),
+  upsidePct: z.number(),
+  date: z.string().describe("Rating date YYYY-MM-DD or MM/DD/YYYY"),
+  action: z.enum(["Reiterated", "Raised", "Lowered", "Initiated", "Downgraded", "Upgraded"]).or(z.string()).optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+export type AnalystEstimateEntry = z.infer<typeof AnalystEstimateEntrySchema>;
+
+export const AnalystConsensusBreakdownSchema = z.object({
+  consensus: z.string().describe("e.g. Strong Buy, Moderate Buy, Hold"),
+  totalAnalysts: z.number().nonnegative(),
+  bullishCount: z.number().nonnegative(),
+  bullishPct: z.number().min(0).max(100),
+  neutralCount: z.number().nonnegative(),
+  neutralPct: z.number().min(0).max(100),
+  bearishCount: z.number().nonnegative(),
+  bearishPct: z.number().min(0).max(100),
+});
+export type AnalystConsensusBreakdown = z.infer<typeof AnalystConsensusBreakdownSchema>;
+
+export const AnalystPriceTargetsRangeSchema = z.object({
+  currentPrice: z.number().positive(),
+  low: z.number().positive(),
+  average: z.number().positive(),
+  median: z.number().positive().optional(),
+  high: z.number().positive(),
+  currency: z.string().default("USD"),
+});
+export type AnalystPriceTargetsRange = z.infer<typeof AnalystPriceTargetsRangeSchema>;
+
+export const AnalystEstimatesSchema = z.object({
+  ticker: z.string(),
+  asOfDate: z.string().optional(),
+  consensus: AnalystConsensusBreakdownSchema,
+  priceTargets: AnalystPriceTargetsRangeSchema,
+  synthesisNarrative: z.string().describe("Comprehensive synthesis of Wall Street sentiment, target dispersion, and post-earnings revision wave"),
+  estimates: z.array(AnalystEstimateEntrySchema).default([]),
+  sources: z.array(SourceSchema).optional().default([]),
+});
+export type AnalystEstimates = z.infer<typeof AnalystEstimatesSchema>;
+
 // --- Full Dataset Loaded in UI ---
 export interface ReportData {
   folderSlug: string;
@@ -352,6 +411,8 @@ export interface ReportData {
   baseline?: FinancialModelBaseline;
   moat?: MoatCompetitors;
   moatZh?: MoatCompetitors;
+  estimates?: AnalystEstimates;
+  estimatesZh?: AnalystEstimates;
   factsZh?: Facts;
   catalystsZh?: Catalysts;
   scenariosZh?: Scenarios;

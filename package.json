@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "analyze": "ts-node --esm scripts/cli.ts"
+    "analyze": "npx tsx scripts/analyze.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -1,4 +1,4 @@
-import type { Facts, Catalysts, Valuation, Reactions, MoatCompetitors } from "./schemas";
+import type { Facts, Catalysts, Valuation, Reactions, MoatCompetitors, AnalystEstimates } from "./schemas";
 
 export interface ReportInput {
   facts: Facts;
@@ -6,6 +6,7 @@ export interface ReportInput {
   valuation: Valuation;
   reactions?: Reactions;
   moat?: MoatCompetitors;
+  estimates?: AnalystEstimates;
 }
 
 export interface RenderOptions {
@@ -127,7 +128,32 @@ function renderReportEnglish(input: ReportInput): string {
     }
   }
 
-  // StressAlpha Valuation Bands & Accounting Flow-Through
+  // Wall Street Analyst Estimates & Consensus
+  if (input.estimates) {
+    const est = input.estimates;
+    lines.push("## 🎯 Wall Street Analyst Consensus & Estimates");
+    lines.push("");
+    lines.push(`- **Consensus Rating:** **${est.consensus.consensus}** (${est.consensus.totalAnalysts} analysts: ${est.consensus.bullishCount} Bullish [${est.consensus.bullishPct}%], ${est.consensus.neutralCount} Neutral [${est.consensus.neutralPct}%], ${est.consensus.bearishCount} Bearish [${est.consensus.bearishPct}%])`);
+    lines.push(`- **Price Targets:** Low $${est.priceTargets.low} | Avg **$${est.priceTargets.average}** | Median $${est.priceTargets.median ?? est.priceTargets.average} | High $${est.priceTargets.high}`);
+    lines.push("");
+    if (est.synthesisNarrative) {
+      lines.push("### Analyst Sentiment Synthesis");
+      lines.push("");
+      lines.push(`> ${est.synthesisNarrative}`);
+      lines.push("");
+    }
+    if (est.estimates && est.estimates.length > 0) {
+      lines.push("### Wall Street Price Targets Breakdown");
+      lines.push("");
+      lines.push("| Firm | Analyst | Rating | 52W Target | Upside | Date | Action | Notes |");
+      lines.push("|------|---------|--------|------------|--------|------|--------|-------|");
+      for (const e of est.estimates) {
+        const up = e.upsidePct > 0 ? `+${e.upsidePct}%` : `${e.upsidePct}%`;
+        lines.push(`| **${e.firm}** | ${e.analyst || "—"} | ${e.rating} | $${e.priceTarget} | ${up} | ${e.date} | ${e.action || "—"} | ${e.notes || "—"} |`);
+      }
+      lines.push("");
+    }
+  }
   if (valuation.stressTest && valuation.baseline) {
     const st = valuation.stressTest;
     lines.push("## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through");
@@ -296,6 +322,33 @@ function renderReportChinese(input: ReportInput): string {
       lines.push("### 竞争格局与护城河综述");
       lines.push("");
       lines.push(`> ${m.competitiveDynamicsSummary}`);
+      lines.push("");
+    }
+  }
+
+  // 华尔街分析师共识与目标价
+  if (input.estimates) {
+    const est = input.estimates;
+    lines.push("## 五(附)、 🎯 华尔街分析师共识与目标价 (Wall Street Consensus & Estimates)");
+    lines.push("");
+    lines.push(`- **综合共识评级:** **${est.consensus.consensus}** (覆盖分析师: ${est.consensus.totalAnalysts} 位，看多 ${est.consensus.bullishCount} [${est.consensus.bullishPct}%]，中性 ${est.consensus.neutralCount} [${est.consensus.neutralPct}%]，看空 ${est.consensus.bearishCount} [${est.consensus.bearishPct}%])`);
+    lines.push(`- **52周目标价区间:** 最低 $${est.priceTargets.low} | 平均 **$${est.priceTargets.average}** | 中位数 $${est.priceTargets.median ?? est.priceTargets.average} | 最高 $${est.priceTargets.high}`);
+    lines.push("");
+    if (est.synthesisNarrative) {
+      lines.push("### 华尔街观点综合述评");
+      lines.push("");
+      lines.push(`> ${est.synthesisNarrative}`);
+      lines.push("");
+    }
+    if (est.estimates && est.estimates.length > 0) {
+      lines.push("### 各券商目标价及评级明细");
+      lines.push("");
+      lines.push("| 券商机构 | 分析师 | 评级 | 52周目标价 | 预期空间 | 调整日期 | 动作 | 核心观点 |");
+      lines.push("|----------|--------|------|------------|----------|----------|------|----------|");
+      for (const e of est.estimates) {
+        const up = e.upsidePct > 0 ? `+${e.upsidePct}%` : `${e.upsidePct}%`;
+        lines.push(`| **${e.firm}** | ${e.analyst || "—"} | ${e.rating} | $${e.priceTarget} | ${up} | ${e.date} | ${e.action || "—"} | ${e.notes || "—"} |`);
+      }
       lines.push("");
     }
   }

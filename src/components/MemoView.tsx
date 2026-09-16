@@ -39,6 +39,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   const filing = (isZh && reportData.filingZh) ? reportData.filingZh : reportData.filing;
   const scenarios = (isZh && reportData.scenariosZh) ? reportData.scenariosZh : reportData.scenarios;
   const moat = (isZh && reportData.moatZh) ? reportData.moatZh : reportData.moat;
+  const estimates = (isZh && reportData.estimatesZh) ? reportData.estimatesZh : reportData.estimates;
   const currentPrice = facts.currentPrice;
 
   return (
@@ -438,6 +439,79 @@ export const MemoView: React.FC<MemoViewProps> = ({
                         <td className="p-2.5 text-slate-300 text-[10px] max-w-[240px] truncate" title={`${peer.productComparison} — ${peer.keyAdvantageOrVulnerability}`}>
                           {peer.keyAdvantageOrVulnerability}
                         </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Analyst Estimates & Consensus */}
+        {estimates && (
+          <div className="flex flex-col gap-3">
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">
+              {t.secEstimatesTitle ?? (isZh ? "五(附)、 华尔街分析师共识与目标价 (Analyst Estimates)" : "5b. Wall Street Analyst Consensus & Estimates")}
+            </h2>
+
+            <div className="p-4 rounded-xl bg-surface-0/80 border border-border/80 flex flex-col gap-2.5 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-fintech-greenGlow/20 text-fintech-green border border-fintech-green/30 font-mono shadow-sm">
+                    {estimates.consensus.consensus}
+                  </span>
+                  <span className="text-[11px] text-slate-300 font-mono">
+                    {estimates.consensus.totalAnalysts} {isZh ? "位分析师覆盖" : "Analysts"} ({estimates.consensus.bullishCount} {isZh ? "看多" : "Bullish"}, {estimates.consensus.neutralCount} {isZh ? "中性" : "Neutral"}, {estimates.consensus.bearishCount} {isZh ? "看空" : "Bearish"})
+                  </span>
+                </div>
+                <div className="text-xs font-mono text-slate-300">
+                  {isZh ? "目标价区间: " : "52W Range: "}
+                  <span className="text-white font-bold">${estimates.priceTargets.low} – ${estimates.priceTargets.high}</span>
+                  <span className="text-fintech-green font-bold ml-1.5">(Avg ${estimates.priceTargets.average})</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {estimates.synthesisNarrative}
+              </p>
+            </div>
+
+            {estimates.estimates && estimates.estimates.length > 0 && (
+              <div className="overflow-x-auto custom-scrollbar rounded-xl border border-border/80">
+                <table className="w-full text-left text-[11px] border-collapse">
+                  <thead>
+                    <tr className="bg-surface-0/90 text-slate-400 font-mono border-b border-border text-[10px] uppercase tracking-wider">
+                      <th className="p-2.5 font-semibold">{isZh ? "券商机构" : "Firm"}</th>
+                      <th className="p-2.5 font-semibold">{isZh ? "分析师" : "Analyst"}</th>
+                      <th className="p-2.5 font-semibold">{isZh ? "评级" : "Rating"}</th>
+                      <th className="p-2.5 text-right font-semibold">{isZh ? "52周目标价" : "Price Target"}</th>
+                      <th className="p-2.5 text-right font-semibold">{isZh ? "预期空间" : "Upside"}</th>
+                      <th className="p-2.5 text-right font-semibold">{isZh ? "日期" : "Date"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {estimates.estimates.slice(0, 10).map((e, i) => (
+                      <tr key={i} className="hover:bg-surface-0/50 transition-colors">
+                        <td className="p-2.5 font-medium text-white whitespace-nowrap">{e.firm}</td>
+                        <td className="p-2.5 text-slate-400 whitespace-nowrap">{e.analyst || "—"}</td>
+                        <td className="p-2.5 whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-surface-2 text-fintech-green border border-fintech-green/30">
+                            {e.rating}
+                          </span>
+                        </td>
+                        <td className="p-2.5 text-right font-mono font-bold text-white tabular-nums whitespace-nowrap">
+                          ${e.priceTarget.toFixed(2)}
+                          {e.priorPriceTarget && (
+                            <span className="text-[10px] text-slate-500 font-normal ml-1">
+                              ({isZh ? "前值" : "from"} ${e.priorPriceTarget.toFixed(0)})
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-2.5 text-right font-mono font-semibold text-fintech-green tabular-nums whitespace-nowrap">
+                          {e.upsidePct >= 0 ? "+" : ""}{e.upsidePct.toFixed(1)}%
+                        </td>
+                        <td className="p-2.5 text-right font-mono text-slate-400 text-[10px] whitespace-nowrap">{e.date}</td>
                       </tr>
                     ))}
                   </tbody>

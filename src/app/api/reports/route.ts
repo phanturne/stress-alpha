@@ -18,6 +18,7 @@ export interface ReportSummary {
   hasFiling: boolean;
   hasCatalysts: boolean;
   hasReactions: boolean;
+  hasEstimates: boolean;
 }
 
 export async function GET() {
@@ -80,6 +81,7 @@ export async function GET() {
         hasFiling: fs.existsSync(filingPath),
         hasCatalysts: fs.existsSync(catalystsPath),
         hasReactions: fs.existsSync(reactionsPath),
+        hasEstimates: fs.existsSync(path.join(folderPath, "analyst-estimates.json")),
       });
     }
 

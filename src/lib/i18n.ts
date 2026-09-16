@@ -96,6 +96,7 @@ export interface Translations {
   };
   tabs: {
     valuation: string;
+    estimates?: string;
     moat: string;
     segments: string;
     catalysts: string;
@@ -106,6 +107,38 @@ export interface Translations {
     tone?: string;
     filing?: string;
     reactions?: string;
+  };
+  estimatesTab: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    consensusTitle: string;
+    totalAnalysts: string;
+    ratingLabel: string;
+    bullish: string;
+    neutral: string;
+    bearish: string;
+    priceTargetsTitle: string;
+    currentPrice: string;
+    targetRange: string;
+    low: string;
+    average: string;
+    median: string;
+    high: string;
+    avgUpside: string;
+    tableTitle: string;
+    colFirm: string;
+    colAnalyst: string;
+    colRating: string;
+    colTarget: string;
+    colPriorTarget: string;
+    colUpside: string;
+    colDate: string;
+    colAction: string;
+    colNotes: string;
+    synthesisTitle: string;
+    sourcesTitle: string;
+    fromPrior: string;
   };
   auditTab: {
     title: string;
@@ -260,6 +293,7 @@ export interface Translations {
     sec3Title: string;
     sec4Title: string;
     secMoatTitle: string;
+    secEstimatesTitle?: string;
     sec5Title: string;
     colRegime: string;
     colMultiple: string;
@@ -397,6 +431,7 @@ export const translations: Record<Locale, Translations> = {
     },
     tabs: {
       valuation: "Valuation & Scenarios",
+      estimates: "Analyst Estimates",
       moat: "Moat & Peers",
       segments: "Segments & Financials",
       catalysts: "Catalysts & Risks",
@@ -407,6 +442,38 @@ export const translations: Record<Locale, Translations> = {
       tone: "Management Tone",
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
+    },
+    estimatesTab: {
+      title: "Wall Street Analyst Consensus & Estimates",
+      subtitle: "Sell-side price targets, ratings distribution, revision dynamics, and consensus synthesis.",
+      empty: "No analyst estimates data available for this report.",
+      consensusTitle: "Analyst Consensus",
+      totalAnalysts: "Total Analysts",
+      ratingLabel: "Consensus Rating",
+      bullish: "Bullish",
+      neutral: "Neutral",
+      bearish: "Bearish",
+      priceTargetsTitle: "Analyst 52W Price Targets",
+      currentPrice: "Current Price",
+      targetRange: "Target Range",
+      low: "Low",
+      average: "Average",
+      median: "Median",
+      high: "High",
+      avgUpside: "Avg Upside",
+      tableTitle: "Wall Street Analyst Estimates",
+      colFirm: "Firm",
+      colAnalyst: "Analyst",
+      colRating: "Rating",
+      colTarget: "52W Price Target",
+      colPriorTarget: "Prior Target",
+      colUpside: "Upside",
+      colDate: "Date",
+      colAction: "Action",
+      colNotes: "Notes / Focus",
+      synthesisTitle: "Analyst Ratings Synthesis",
+      sourcesTitle: "Open Web Research Reports & Sources",
+      fromPrior: "from",
     },
     auditTab: {
       title: "Earnings Print & Filing Audit",
@@ -561,6 +628,7 @@ export const translations: Record<Locale, Translations> = {
       sec3Title: "3. Income Quality Audit",
       sec4Title: "4. Key Audited Catalysts & Probability Anchors",
       secMoatTitle: "5. Economic Moat & Competitor Benchmarking",
+      secEstimatesTitle: "5b. Wall Street Analyst Consensus & Estimates",
       sec5Title: "6. SEC Regulatory Risk Escalations",
       colRegime: "Regime",
       colMultiple: "Multiple",
@@ -696,6 +764,7 @@ export const translations: Record<Locale, Translations> = {
     },
     tabs: {
       valuation: "估值与情景",
+      estimates: "分析师共识",
       moat: "护城河与竞品",
       segments: "分部业务与财务",
       catalysts: "催化剂与风险",
@@ -706,6 +775,38 @@ export const translations: Record<Locale, Translations> = {
       tone: "电话会情绪",
       filing: "10-Q 风险",
       reactions: "历史股价反应",
+    },
+    estimatesTab: {
+      title: "华尔街分析师共识与目标价",
+      subtitle: "卖方评级分布、52周目标价区间、最新评级调整与观点综合述评。",
+      empty: "当前研报暂无分析师预期数据。",
+      consensusTitle: "分析师共识",
+      totalAnalysts: "覆盖分析师总数",
+      ratingLabel: "综合评级",
+      bullish: "看多 (Bullish)",
+      neutral: "中性 (Neutral)",
+      bearish: "看空 (Bearish)",
+      priceTargetsTitle: "52周目标价区间",
+      currentPrice: "当前股价",
+      targetRange: "目标价区间",
+      low: "最低",
+      average: "均价",
+      median: "中位数",
+      high: "最高",
+      avgUpside: "预期平均空间",
+      tableTitle: "各券商目标价及评级明细",
+      colFirm: "券商机构",
+      colAnalyst: "分析师",
+      colRating: "评级",
+      colTarget: "52周目标价",
+      colPriorTarget: "前次目标",
+      colUpside: "预期空间",
+      colDate: "调整日期",
+      colAction: "调整动作",
+      colNotes: "核心观点 / 研报焦点",
+      synthesisTitle: "华尔街观点综合述评",
+      sourcesTitle: "研报引用与数据来源",
+      fromPrior: "前值",
     },
     auditTab: {
       title: "业绩发布与财报披露审计",
@@ -860,6 +961,7 @@ export const translations: Record<Locale, Translations> = {
       sec3Title: "三、 收益质量与核心经营利润审计 (Income Quality)",
       sec4Title: "四、 核心基本面催化剂与概率锚定 (Catalysts)",
       secMoatTitle: "五、 经济护城河与核心竞品对标 (Moat & Peers)",
+      secEstimatesTitle: "五(附)、 华尔街分析师共识与目标价 (Analyst Estimates)",
       sec5Title: "六、 SEC 10-Q 监管与合规风险升级 (Filing Risks)",
       colRegime: "估值区间",
       colMultiple: "市盈率倍数",
