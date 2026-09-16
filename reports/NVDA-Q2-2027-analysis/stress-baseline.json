@@ -1,0 +1,41 @@
+{
+  "baseRevenueBillions": 420.0,
+  "baseGrossMarginPct": 75.0,
+  "fixedOpexBillions": 28.0,
+  "taxRatePct": 14.5,
+  "dilutedSharesBillions": 24.55,
+  "multipleRegimes": {
+    "bull": 32.0,
+    "base": 26.0,
+    "panic": 17.0
+  },
+  "upstreamDrivers": [
+    {
+      "id": "hyperscaler-capex",
+      "name": "Big-4 Cloud Hyperscaler AI Infrastructure CapEx",
+      "exposureShare": 0.58,
+      "elasticity": 1.15,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "tsmc-cowos-supply",
+      "name": "TSMC Advanced Packaging & CoWoS-L Foundry Capacity",
+      "exposureShare": 0.22,
+      "elasticity": 0.85,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    },
+    {
+      "id": "enterprise-sovereign-ai",
+      "name": "Global Sovereign AI & Enterprise Agentic Adoption",
+      "exposureShare": 0.20,
+      "elasticity": 0.90,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    }
+  ]
+}

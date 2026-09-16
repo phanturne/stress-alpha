@@ -1,0 +1,74 @@
+{
+  "ticker": "NVDA",
+  "company": "英伟达 (NVIDIA Corporation)",
+  "quarter": "Q2 2027",
+  "reportDate": "2026-08-26",
+  "revenueBillions": 96.22,
+  "revenueGrowthPct": 106.0,
+  "revenueEstimateBillions": 92.07,
+  "operatingIncomeBillions": 62.54,
+  "operatingMarginPct": 65.0,
+  "operatingIncomeGrowthPct": 122.0,
+  "epsReported": 2.46,
+  "epsConsensus": 2.09,
+  "epsOperating": 2.22,
+  "segments": [
+    {
+      "name": "数据中心 (Data Center)",
+      "revenueBillions": 89.02,
+      "growthPct": 117.0,
+      "operatingIncomeBillions": 64.10,
+      "operatingMarginPct": 72.0
+    },
+    {
+      "name": "游戏与边缘AI (Gaming & Edge AI)",
+      "revenueBillions": 5.20,
+      "growthPct": 18.0,
+      "operatingIncomeBillions": 1.77,
+      "operatingMarginPct": 34.0
+    },
+    {
+      "name": "专业可视化 (Pro Visualization)",
+      "revenueBillions": 1.20,
+      "growthPct": 38.0,
+      "operatingIncomeBillions": 0.46,
+      "operatingMarginPct": 38.0
+    },
+    {
+      "name": "汽车与机器人 (Automotive & Robotics)",
+      "revenueBillions": 0.80,
+      "growthPct": 45.0,
+      "operatingIncomeBillions": 0.18,
+      "operatingMarginPct": 22.0
+    }
+  ],
+  "oneTimeItems": [
+    {
+      "description": "非关联AI技术股权投资按市值计价未实现收益与离散税收调整",
+      "amountBillions": 5.89,
+      "isOperating": false,
+      "note": "GAAP每股收益包含ASU 2016-01准则下未上市AI生态投资非经营性账面估值浮盈，使名义GAAP EPS由2.22美元推高至2.46美元。"
+    }
+  ],
+  "guidanceOperatingIncomeLowBillions": 68.80,
+  "guidanceOperatingIncomeHighBillions": 71.60,
+  "guidanceRevenueLowBillions": 105.84,
+  "guidanceRevenueHighBillions": 110.16,
+  "currentPrice": 212.50,
+  "marketCapBillions": 5215.0,
+  "trailingEps": 7.85,
+  "forwardEpsConsensus": 10.80,
+  "sources": [
+    {
+      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+      "title": "英伟达公布2027财年第二季度财务业绩",
+      "date": "2026-08-26"
+    },
+    {
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0001045810",
+      "title": "SEC 10-Q季度申报表 - 英伟达公司",
+      "date": "2026-08-27"
+    }
+  ],
+  "analysisDate": "2026-09-15"
+}

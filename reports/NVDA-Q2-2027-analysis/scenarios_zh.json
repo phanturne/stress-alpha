@@ -1,0 +1,55 @@
+{
+  "ticker": "NVDA",
+  "basisYear": "FY2028",
+  "currentPrice": 212.50,
+  "consensusTarget": 325.0,
+  "scenarios": [
+    {
+      "name": "牛市情景 (Bull)",
+      "probability": 0.3,
+      "forwardEps": 13.5,
+      "multiple": 35.0,
+      "assumptions": [
+        "头部超大规模云厂商将2027年AI资本开支上调35%以上，全面顶格采购Blackwell与新一代Vera Rubin机架系统。",
+        "全球主权AI投资狂潮叠加各行业企业级智能体（Agent）落地，驱动非传统云厂商数据中心营收占比升至35%以上。",
+        "全栈机架式系统（集成NVLink交换机与液冷计算托盘）维系极高定价权，毛利率维持在76.5%的高峰。"
+      ],
+      "keyDrivers": [
+        "blackwell-rubin-transition",
+        "nvlink-rack-scale-attach",
+        "sovereign-ai-pipeline"
+      ]
+    },
+    {
+      "name": "基准情景 (Base)",
+      "probability": 0.5,
+      "forwardEps": 11.0,
+      "multiple": 30.0,
+      "assumptions": [
+        "第三财季指引中枢1080亿美元平稳兑现，2027整财年总营收稳步突破4250亿美元关口。",
+        "Blackwell Ultra平稳向量产初期的Rubin代际切换，台积电CoWoS高级封装与HBM供应链产能瓶颈逐步解除。",
+        "云厂商自研ASIC仅切入15-20%的低门槛推理负载，并未撼动英伟达在前沿基础大模型预训练与复杂推理中的统治地位。"
+      ],
+      "keyDrivers": [
+        "blackwell-rubin-transition",
+        "datacenter-power-interconnect-bottlenecks"
+      ]
+    },
+    {
+      "name": "熊市情景 (Bear)",
+      "probability": 0.2,
+      "forwardEps": 8.2,
+      "multiple": 22.0,
+      "assumptions": [
+        "下游终端AI应用商业化变现投资回报周期被证伪或拉长，主要云厂商放缓新增算力机房招标节奏。",
+        "谷歌TPU、Meta MTIA及亚马逊Trainium在成熟大模型推理侧快速抢占市场份额，分流通用GPU需求。",
+        "下一代HBM4堆叠封装成本骤升叠加二手芯片流通，导致营业利润率回落至55%中枢并引发估值倍数下移。"
+      ],
+      "keyDrivers": [
+        "custom-asic-inference-shift",
+        "us-china-export-controls-escalation",
+        "datacenter-power-interconnect-bottlenecks"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "ticker": "NVDA",
+  "analysisDate": "2026-09-15",
+  "currentPrice": 212.5,
+  "weightedFairValue": 342.83,
+  "upsidePct": 61.33,
+  "scenarioResults": [
+    {
+      "name": "Bull",
+      "probability": 0.3,
+      "fairValue": 472.5,
+      "upsideFromCurrent": 122.35
+    },
+    {
+      "name": "Base",
+      "probability": 0.5,
+      "fairValue": 330,
+      "upsideFromCurrent": 55.29
+    },
+    {
+      "name": "Bear",
+      "probability": 0.2,
+      "fairValue": 180.4,
+      "upsideFromCurrent": -15.11
+    }
+  ],
+  "sensitivity": [
+    {
+      "scenario": "Bull",
+      "parameter": "EPS +10%",
+      "baseValue": 13.5,
+      "altValue": 14.85,
+      "fairValueDelta": 47.25
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "EPS -10%",
+      "baseValue": 13.5,
+      "altValue": 12.15,
+      "fairValueDelta": -47.25
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple +2",
+      "baseValue": 35,
+      "altValue": 37,
+      "fairValueDelta": 27
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 35,
+      "altValue": 33,
+      "fairValueDelta": -27
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS +10%",
+      "baseValue": 11,
+      "altValue": 12.1,
+      "fairValueDelta": 33
+    },
+    {
+      "scenario": "Base",
+      "parameter": "EPS -10%",
+      "baseValue": 11,
+      "altValue": 9.9,
+      "fairValueDelta": -33
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple +2",
+      "baseValue": 30,
+      "altValue": 32,
+      "fairValueDelta": 22
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple -2",
+      "baseValue": 30,
+      "altValue": 28,
+      "fairValueDelta": -22
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS +10%",
+      "baseValue": 8.2,
+      "altValue": 9.02,
+      "fairValueDelta": 18.04
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS -10%",
+      "baseValue": 8.2,
+      "altValue": 7.38,
+      "fairValueDelta": -18.04
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple +2",
+      "baseValue": 22,
+      "altValue": 24,
+      "fairValueDelta": 16.4
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple -2",
+      "baseValue": 22,
+      "altValue": 20,
+      "fairValueDelta": -16.4
+    }
+  ],
+  "consensusTarget": 325,
+  "verdictVsConsensus": "Above consensus ($325) by 5.49% — more bullish",
+  "baseline": {
+    "baseRevenueBillions": 420,
+    "baseGrossMarginPct": 75,
+    "fixedOpexBillions": 28,
+    "taxRatePct": 14.5,
+    "dilutedSharesBillions": 24.55,
+    "multipleRegimes": {
+      "bull": 32,
+      "base": 26,
+      "panic": 17
+    },
+    "upstreamDrivers": [
+      {
+        "id": "hyperscaler-capex",
+        "name": "Big-4 Cloud Hyperscaler AI Infrastructure CapEx",
+        "exposureShare": 0.58,
+        "elasticity": 1.15,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "tsmc-cowos-supply",
+        "name": "TSMC Advanced Packaging & CoWoS-L Foundry Capacity",
+        "exposureShare": 0.22,
+        "elasticity": 0.85,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      },
+      {
+        "id": "enterprise-sovereign-ai",
+        "name": "Global Sovereign AI & Enterprise Agentic Adoption",
+        "exposureShare": 0.2,
+        "elasticity": 0.9,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      }
+    ]
+  },
+  "stressTest": {
+    "stressRevenueBillions": 420,
+    "stressGrossProfitBillions": 315,
+    "stressOperatingIncomeBillions": 287,
+    "stressNetIncomeBillions": 245.39,
+    "stressEps": 10,
+    "valuationBands": {
+      "bull": {
+        "regime": "bull",
+        "label": "Bull Regime (32x P/E)",
+        "multiple": 32,
+        "targetPrice": 320,
+        "deltaFromCurrentPct": 50.59
+      },
+      "base": {
+        "regime": "base",
+        "label": "Base Regime (26x P/E)",
+        "multiple": 26,
+        "targetPrice": 260,
+        "deltaFromCurrentPct": 22.35
+      },
+      "panic": {
+        "regime": "panic",
+        "label": "Panic Regime (17x P/E)",
+        "multiple": 17,
+        "targetPrice": 170,
+        "deltaFromCurrentPct": -20
+      }
+    },
+    "asymmetry": {
+      "downsideToBasePct": 22.35,
+      "downsideToPanicPct": -20,
+      "upsideToBullPct": 50.59,
+      "marketPricedInMultiple": 21.25,
+      "riskRewardRatio": 2.53
+    },
+    "driverShocksApplied": {
+      "hyperscaler-capex": 0,
+      "tsmc-cowos-supply": 0,
+      "enterprise-sovereign-ai": 0
+    },
+    "grossMarginBpsDeltaApplied": 0,
+    "fixedOpexShiftPctApplied": 0
+  }
+}

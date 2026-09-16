@@ -1,0 +1,50 @@
+{
+  "managementToneScore": 9.2,
+  "confidenceBreakdown": {
+    "specificity": 9.4,
+    "forwardGuidanceConfidence": 9.6,
+    "capexJustification": 9.2,
+    "competitiveMoatDefensiveness": 9.5,
+    "macroRiskAcknowledgment": 7.8
+  },
+  "analystQnATopics": [
+    {
+      "topic": "Blackwell vs Vera Rubin Production Cadence",
+      "frequency": 8,
+      "sentiment": "bullish",
+      "managementAnswerSummary": "CEO Jensen Huang emphasized that Blackwell and Vera Rubin are complementary generational steps; Rubin is already in volume production, and Blackwell demand exceeds supply across every cloud tier."
+    },
+    {
+      "topic": "Power Constraints & Datacenter Commissioning Lead Times",
+      "frequency": 6,
+      "sentiment": "neutral",
+      "managementAnswerSummary": "CFO Colette Kress noted that liquid cooling innovations and high-density NVL72 architectures deliver 30x more compute per megawatt than previous Hopper generation, easing customer power constraints."
+    },
+    {
+      "topic": "Hyperscaler Custom Silicon & ASIC Competitive Coexistence",
+      "frequency": 5,
+      "sentiment": "bullish",
+      "managementAnswerSummary": "Management reiterated that general-purpose programmability and rapid architectural evolution favor CUDA; custom silicon solves narrow, static workloads while frontier models require dynamic NVIDIA GPU clusters."
+    },
+    {
+      "topic": "Sovereign AI Pipeline Durability",
+      "frequency": 4,
+      "sentiment": "bullish",
+      "managementAnswerSummary": "Sovereign AI is on track to represent over $10B+ in annual business as countries construct domestic compute infrastructure for national language and cultural models."
+    }
+  ],
+  "keyExecutiveQuotes": [
+    {
+      "speaker": "Jensen Huang",
+      "title": "Founder & CEO",
+      "quote": "The era of productive, profitable AI tokens has arrived. The world's computing infrastructure is transitioning to accelerated computing, and physical AI and humanoid robotics will drive the next multi-trillion-dollar industrial revolution.",
+      "context": "Opening commentary on Q2 FY2027 earnings call regarding long-term compute demand."
+    },
+    {
+      "speaker": "Colette Kress",
+      "title": "Executive VP & CFO",
+      "quote": "Data Center demand remains broad-based and relentless. For Q3 fiscal 2027, we expect revenue of $108.0 billion, plus or minus 2%, with gross margins maintaining industry-leading 75% levels.",
+      "context": "Financial outlook delivery during earnings conference call."
+    }
+  ]
+}
