@@ -5,13 +5,14 @@ import {
   RotateCcw,
   Sliders,
   ShieldAlert,
+  AlertOctagon,
   Zap,
   Wand2,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import type { FinancialModelBaseline, Facts, StressResult } from "@/lib/schemas";
-import type { StressTestParams } from "@/lib/valuation";
+import type { FinancialModelBaseline, Facts, StressResult, Valuation } from "@/lib/schemas";
+import { type StressTestParams, round2 } from "@/lib/valuation";
 import { PriceMeter } from "./PriceMeter";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -21,6 +22,7 @@ interface CockpitProps {
   facts: Facts;
   stressParams: StressTestParams;
   stressResult: StressResult;
+  valuation?: Valuation;
   onDriverShockChange: (driverId: string, shockPct: number) => void;
   onGrossMarginDeltaChange: (bps: number) => void;
   onFixedOpexShiftChange: (shiftPct: number) => void;
@@ -33,6 +35,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   facts,
   stressParams,
   stressResult,
+  valuation,
   onDriverShockChange,
   onGrossMarginDeltaChange,
   onFixedOpexShiftChange,
@@ -177,108 +180,140 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
       </div>
 
-      {/* 2. Valuation Regimes (Bull, Base, Panic) */}
-      <div className="glass-panel rounded-2xl p-4 sm:p-4.5 border border-white/[0.08] flex flex-col gap-3.5 shadow-xl">
-        <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">
-          <span>{t.valuationRegimes}</span>
-          <span className="font-mono text-[11px] text-slate-400 tabular-nums">
-            {t.current}: {formatCurrency(currentPrice)}
-          </span>
-        </div>
+      {/* 2. Harmonized Dynamic Scenario Targets (Bull, Base, Bear) + Panic Floor */}
+      {(() => {
+        const bullScenario = valuation?.scenarioResults?.find((s) =>
+          s.name.toLowerCase().includes("bull") || s.name.includes("牛")
+        );
+        const baseScenario = valuation?.scenarioResults?.find((s) =>
+          s.name.toLowerCase().includes("base") || s.name.includes("基准")
+        );
+        const bearScenario = valuation?.scenarioResults?.find((s) =>
+          s.name.toLowerCase().includes("bear") || s.name.includes("熊")
+        );
 
-        <div className="grid grid-cols-3 gap-2">
-          {/* Bull */}
-          <div className="p-3 rounded-xl bg-gradient-to-b from-fintech-greenGlow/15 to-surface-0/60 border border-fintech-green/30 hover:border-fintech-green/60 transition-all flex flex-col shadow-sm">
-            <div className="flex items-center justify-between text-[11px] font-bold text-fintech-green font-mono">
-              <span className="truncate">{t.regimes.bull}</span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {valuationBands.bull.multiple}x
+        const targetBull = bullScenario?.fairValue ?? valuationBands.bull.targetPrice;
+        const deltaBull = bullScenario?.upsideFromCurrent ?? valuationBands.bull.deltaFromCurrentPct;
+
+        const targetBase = baseScenario?.fairValue ?? valuationBands.base.targetPrice;
+        const deltaBase = baseScenario?.upsideFromCurrent ?? valuationBands.base.deltaFromCurrentPct;
+
+        const targetBear = bearScenario?.fairValue ?? round2(currentPrice * 0.7);
+        const deltaBear = bearScenario?.upsideFromCurrent ?? -30;
+
+        const panicTarget = valuationBands.panic.targetPrice;
+        const panicDelta = valuationBands.panic.deltaFromCurrentPct;
+
+        const riskReward = panicDelta < 0 ? round2(Math.abs(deltaBull / panicDelta)) : deltaBull;
+
+        return (
+          <div className="glass-panel rounded-2xl p-4 sm:p-4.5 border border-white/[0.08] flex flex-col gap-3.5 shadow-xl">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">
+              <span>{t.valuationRegimes}</span>
+              <span className="font-mono text-[11px] text-slate-400 tabular-nums">
+                {t.current}: {formatCurrency(currentPrice)}
               </span>
             </div>
-            <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
-              {formatCurrency(valuationBands.bull.targetPrice)}
-            </div>
-            <div className="text-[11px] font-mono font-bold text-fintech-green mt-0.5 tabular-nums">
-              {formatPercent(valuationBands.bull.deltaFromCurrentPct)}
-            </div>
-          </div>
 
-          {/* Base */}
-          <div className="p-3 rounded-xl bg-surface-0/80 border border-white/[0.09] hover:border-accent/40 transition-all flex flex-col shadow-sm">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-200 font-mono">
-              <span className="truncate">{t.regimes.base}</span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {valuationBands.base.multiple}x
-              </span>
-            </div>
-            <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
-              {formatCurrency(valuationBands.base.targetPrice)}
-            </div>
-            <div
-              className={`text-[11px] font-mono font-bold mt-0.5 tabular-nums ${
-                valuationBands.base.deltaFromCurrentPct >= 0
-                  ? "text-fintech-green"
-                  : "text-fintech-red"
-              }`}
-            >
-              {formatPercent(valuationBands.base.deltaFromCurrentPct)}
-            </div>
-          </div>
+            {/* 3 Core Scenario Cards: Bull, Base, Bear */}
+            <div className="grid grid-cols-3 gap-2">
+              {/* Bull */}
+              <div className="p-3 rounded-xl bg-gradient-to-b from-fintech-greenGlow/15 to-surface-0/60 border border-fintech-green/30 hover:border-fintech-green/60 transition-all flex flex-col shadow-sm">
+                <div className="flex items-center justify-between text-[11px] font-bold text-fintech-green font-mono">
+                  <span className="truncate">{t.regimes.bull}</span>
+                </div>
+                <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
+                  {formatCurrency(targetBull)}
+                </div>
+                <div className="text-[11px] font-mono font-bold text-fintech-green mt-0.5 tabular-nums">
+                  {formatPercent(deltaBull)}
+                </div>
+              </div>
 
-          {/* Panic */}
-          <div className="p-3 rounded-xl bg-gradient-to-b from-fintech-redGlow/15 to-surface-0/60 border border-fintech-red/30 hover:border-fintech-red/60 transition-all flex flex-col shadow-sm">
-            <div className="flex items-center justify-between text-[11px] font-bold text-fintech-red font-mono">
-              <span className="truncate">{t.regimes.panic}</span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {valuationBands.panic.multiple}x
-              </span>
-            </div>
-            <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
-              {formatCurrency(valuationBands.panic.targetPrice)}
-            </div>
-            <div className="text-[11px] font-mono font-bold text-fintech-red mt-0.5 tabular-nums">
-              {formatPercent(valuationBands.panic.deltaFromCurrentPct)}
-            </div>
-          </div>
-        </div>
+              {/* Base */}
+              <div className="p-3 rounded-xl bg-surface-0/80 border border-white/[0.09] hover:border-accent/40 transition-all flex flex-col shadow-sm">
+                <div className="flex items-center justify-between text-[11px] font-bold text-slate-200 font-mono">
+                  <span className="truncate">{t.regimes.base}</span>
+                </div>
+                <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
+                  {formatCurrency(targetBase)}
+                </div>
+                <div
+                  className={`text-[11px] font-mono font-bold mt-0.5 tabular-nums ${
+                    deltaBase >= 0
+                      ? "text-fintech-green"
+                      : "text-fintech-red"
+                  }`}
+                >
+                  {formatPercent(deltaBase)}
+                </div>
+              </div>
 
-        {/* Visual Price Meter */}
-        <PriceMeter
-          currentPrice={currentPrice}
-          panicTarget={valuationBands.panic.targetPrice}
-          baseTarget={valuationBands.base.targetPrice}
-          bullTarget={valuationBands.bull.targetPrice}
-          locale={locale}
-        />
+              {/* Bear */}
+              <div className="p-3 rounded-xl bg-gradient-to-b from-fintech-redGlow/15 to-surface-0/60 border border-fintech-red/30 hover:border-fintech-red/60 transition-all flex flex-col shadow-sm">
+                <div className="flex items-center justify-between text-[11px] font-bold text-fintech-red font-mono">
+                  <span className="truncate">{t.regimes.bear}</span>
+                </div>
+                <div className="text-base font-extrabold font-mono text-white mt-1 tabular-nums">
+                  {formatCurrency(targetBear)}
+                </div>
+                <div className="text-[11px] font-mono font-bold text-fintech-red mt-0.5 tabular-nums">
+                  {formatPercent(deltaBear)}
+                </div>
+              </div>
+            </div>
 
-        {/* 2x2 Risk Asymmetry Matrix */}
-        <div className="grid grid-cols-2 gap-2 pt-0.5">
-          <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-            <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.upsideToBull}</div>
-            <div className="text-sm font-bold font-mono text-fintech-green mt-0.5 tabular-nums">
-              {formatPercent(asymmetry.upsideToBullPct)}
+            {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-fintech-redGlow/10 border border-fintech-red/25 text-xs font-mono">
+              <div className="flex items-center gap-1.5 text-fintech-red font-semibold text-[11px]">
+                <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{t.regimes.panicFloorLabel} ({baseline.multipleRegimes.panic}x P/E)</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="font-extrabold text-white text-xs tabular-nums">{formatCurrency(panicTarget)}</span>
+                <span className="text-[11px] font-bold text-fintech-red font-mono tabular-nums">{formatPercent(panicDelta)}</span>
+              </div>
+            </div>
+
+            {/* Visual Price Meter */}
+            <PriceMeter
+              currentPrice={currentPrice}
+              panicTarget={panicTarget}
+              baseTarget={targetBase}
+              bullTarget={targetBull}
+              locale={locale}
+            />
+
+            {/* 2x2 Risk Asymmetry Matrix */}
+            <div className="grid grid-cols-2 gap-2 pt-0.5">
+              <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.upsideToBull}</div>
+                <div className="text-sm font-bold font-mono text-fintech-green mt-0.5 tabular-nums">
+                  {formatPercent(deltaBull)}
+                </div>
+              </div>
+              <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.downsideToPanic}</div>
+                <div className="text-sm font-bold font-mono text-fintech-red mt-0.5 tabular-nums">
+                  {formatPercent(panicDelta)}
+                </div>
+              </div>
+              <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.pricedInMultiple}</div>
+                <div className="text-sm font-bold font-mono text-slate-200 mt-0.5 tabular-nums">
+                  {asymmetry.marketPricedInMultiple.toFixed(1)}x
+                </div>
+              </div>
+              <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.asymmetrySkew}</div>
+                <div className="text-sm font-bold font-mono text-accent mt-0.5 tabular-nums">
+                  {riskReward.toFixed(2)}x
+                </div>
+              </div>
             </div>
           </div>
-          <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-            <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.downsideToPanic}</div>
-            <div className="text-sm font-bold font-mono text-fintech-red mt-0.5 tabular-nums">
-              {formatPercent(asymmetry.downsideToPanicPct)}
-            </div>
-          </div>
-          <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-            <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.pricedInMultiple}</div>
-            <div className="text-sm font-bold font-mono text-slate-200 mt-0.5 tabular-nums">
-              {asymmetry.marketPricedInMultiple.toFixed(1)}x
-            </div>
-          </div>
-          <div className="p-2.5 rounded-xl bg-surface-0/70 border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-            <div className="text-[10px] font-medium text-slate-400 truncate">{t.asymmetry.asymmetrySkew}</div>
-            <div className="text-sm font-bold font-mono text-accent mt-0.5 tabular-nums">
-              {asymmetry.riskRewardRatio.toFixed(2)}x
-            </div>
-          </div>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* 3. Shock Sliders with Tabbed View (Eliminates Vertical Scroll Fatigue) */}
       <div className="glass-panel rounded-2xl p-4 sm:p-4.5 border border-white/[0.08] flex flex-col gap-3.5 shadow-xl">

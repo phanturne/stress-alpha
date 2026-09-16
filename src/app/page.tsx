@@ -416,6 +416,7 @@ export default function HomePage() {
               facts={displayFacts!}
               stressParams={stressParams}
               stressResult={stressResult}
+              valuation={dynamicValuation ?? reportData.valuation}
               onDriverShockChange={handleDriverShockChange}
               onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
               onFixedOpexShiftChange={handleFixedOpexShiftChange}

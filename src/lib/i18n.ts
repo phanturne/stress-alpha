@@ -36,7 +36,9 @@ export interface Translations {
     regimes: {
       bull: string;
       base: string;
+      bear: string;
       panic: string;
+      panicFloorLabel: string;
     };
     asymmetry: {
       upsideToBull: string;
@@ -330,12 +332,14 @@ export const translations: Record<Locale, Translations> = {
       grossProfit: "Gross Profit",
       operatingIncome: "Op. Income",
       netIncome: "Net Income",
-      valuationRegimes: "Valuation Regimes",
+      valuationRegimes: "Dynamic Scenario Targets",
       current: "Current",
       regimes: {
         bull: "🐂 Bull",
         base: "⚖️ Base",
+        bear: "🐻 Bear",
         panic: "🚨 Panic",
+        panicFloorLabel: "Panic Multiple Floor",
       },
       asymmetry: {
         upsideToBull: "Upside to Bull",
@@ -627,12 +631,14 @@ export const translations: Record<Locale, Translations> = {
       grossProfit: "毛利润",
       operatingIncome: "营业利润",
       netIncome: "净利润",
-      valuationRegimes: "估值情景区间",
-      current: "当前价格",
+      valuationRegimes: "动态情景估值目标",
+      current: "现价",
       regimes: {
-        bull: "🐂 牛市",
-        base: "⚖️ 基准",
+        bull: "🐂 牛市情景",
+        base: "⚖️ 基准情景",
+        bear: "🐻 熊市情景",
         panic: "🚨 恐慌底价",
+        panicFloorLabel: "恐慌极值估值底",
       },
       asymmetry: {
         upsideToBull: "牛市上行空间",
