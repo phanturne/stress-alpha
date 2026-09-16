@@ -22,6 +22,10 @@ mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-a
 Follow the institutional prompt templates in `/Users/krding/Projects/stress-alpha/prompts/` to generate:
 - `facts.json`: Headline financials, segment unit economics, management forward guidance, and income quality clean operating EPS.
 - `moat-competitors.json`: Morningstar 5-pillar moat evaluation, sector-velocity calibrated durability, and direct competitor benchmarking.
+- `analyst-estimates.json` / `analyst-estimates_zh.json`: Wall Street analyst consensus breakdown, 52W price target range (low/mean/high), sell-side estimates roster with prior targets, and synthesis narrative. Run automated tool:
+  ```bash
+  python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
+  ```
 - `scenarios.json`: Discrete Bull, Base, Panic regimes with forward EPS and multiples.
 - `stress-baseline.json`: Baseline revenue, operating cost leverage, and upstream driver elasticities.
 - `catalysts.json` / `earnings-sentiment.json` / `filing-extracts.json` / `reactions.json`: Qualitative audit logs.

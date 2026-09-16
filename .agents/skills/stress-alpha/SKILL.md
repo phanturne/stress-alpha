@@ -35,15 +35,25 @@ Generate the following structured JSON artifacts inside the report folder using 
    - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
    - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
    - **Durability Calibration:** Durability years assessed per pillar, calibrated for sector velocity (e.g., 4-8 years for high-velocity AI/hardware cycles vs. 10-15 years for patent-protected biopharma or physical infrastructure).
-4. `stress-baseline.json` (Recommended):
+4. `analyst-estimates.json` & `analyst-estimates_zh.json` (Recommended):
+   - **Automated Extraction via Yahoo Finance API (Preferred):**
+     Execute the automated extractor script to pull real-time consensus distributions, 52W price targets (Low, Mean, Median, High), and covering sell-side firm revisions directly:
+     ```bash
+     python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
+     ```
+     *(Note: If `--price` is omitted, the script automatically fetches the latest market price from Yahoo Finance).*
+     This directly generates schema-valid `analyst-estimates.json` and `analyst-estimates_zh.json` in ~1.5s with zero external API keys required.
+   - **Perplexity Finance Style Structure:** Wall Street analyst consensus rating (e.g. Strong Buy), total covering analysts, bullish/neutral/bearish breakdown, 52-week price target track (Low, Mean, Median, High), sell-side brokerages roster (with prior target diffs and revision badges), and executive ratings synthesis.
+   - For manual web research or custom prompt fallback, refer to [prompts/stage1c-estimates.md](/Users/krding/Projects/stress-alpha/prompts/stage1c-estimates.md).
+5. `stress-baseline.json` (Recommended):
    - Define base revenue, gross margin %, fixed OpEx, shares outstanding, and upstream drivers (with exposure shares and elasticities).
-5. `catalysts.json` (Optional):
+6. `catalysts.json` (Optional):
    - Catalysts with probability anchors, horizons, and documented evidence.
-6. `earnings-sentiment.json` (Optional):
+7. `earnings-sentiment.json` (Optional):
    - Management tone scorecard across 5 dimensions, analyst Q&A topics, and key executive quotes.
-7. `filing-extracts.json` (Optional):
+8. `filing-extracts.json` (Optional):
    - 10-Q Item 1A risk disclosure diffs and novel findings.
-8. `reactions.json` (Optional):
+9. `reactions.json` (Optional):
    - Historical post-earnings day-1 moves and conditional reaction framing.
 
 ### Step 3: Run the Deterministic Valuation Engine
@@ -80,3 +90,4 @@ The web application:
 - Flow Runner Script: [scripts/run_flow.sh](/Users/krding/Projects/stress-alpha/scripts/run_flow.sh)
 - Browser Opener Script: [scripts/open_report.sh](/Users/krding/Projects/stress-alpha/scripts/open_report.sh)
 - CLI Valuation Engine: [scripts/analyze.ts](/Users/krding/Projects/stress-alpha/scripts/analyze.ts)
+- Analyst Estimates Extractor: [scripts/fetch_analyst_estimates.py](/Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py)

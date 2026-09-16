@@ -28,6 +28,18 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * **Multi-Metric Peer Matrix:** Benchmark 3–5 direct peers across Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power (`Superior` | `Parity` | `Inferior`), Product Comparison, and Advantage/Vulnerability.
 * Output: `moat-competitors.json` and `moat-competitors_zh.json`
 
+## Stage 1c: Wall Street Analyst Consensus & Price Targets (`prompts/stage1c-estimates.md`)
+* **Perplexity Finance Style:** Fetches and synthesizes sell-side Wall Street analyst consensus, price target distributions, and revision momentum.
+* **Automated Extraction Command:**
+  ```bash
+  python3 scripts/fetch_analyst_estimates.py <TICKER> reports/<folder> --price <CURRENT_PRICE>
+  ```
+* **Consensus Distribution:** Consensus Rating (`Strong Buy`, `Buy`, `Hold`, `Sell`), total covering analysts, bullish/neutral/bearish counts & percentages.
+* **52-Week Target Slider:** Reference trading price, Street low, Street consensus average/mean, median, and Street high targets.
+* **Individual Bank Notes Table:** Lists covering investment banks/brokerages with named analyst, rating, 52W target price (with prior target diffs), upside %, note date, revision action (`Raised`, `Lowered`, `Reiterated`), and focus notes.
+* **Consensus Synthesis:** 1–2 paragraph institutional brief on post-earnings revision waves, multiple expansion expectations, and bull vs. bear target dispersion.
+* Output: `analyst-estimates.json` and `analyst-estimates_zh.json`
+
 ## Stage 2: Catalysts & Probability Anchors (`prompts/stage2-catalysts.md`)
 * Defines distinct directional growth and risk drivers with quantified probability anchors and time horizons.
 * Output: `catalysts.json`
