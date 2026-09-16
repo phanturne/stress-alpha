@@ -1,13 +1,13 @@
 # Earnings Analysis: GEV — Q2 2026
 
-*Analysis date: 2026-09-15 | Report date: 2026-07-22 | Price: $881.21*
+*Analysis date: 2026-09-15 | Report date: 2026-07-22 | Price: $885.51*
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
 | Weighted Fair Value | **$1056.85** |
-| Upside from Current | +19.93% |
+| Upside from Current | +19.35% |
 | Consensus PT | $1155.28 |
 | Verdict | Below consensus ($1155.28) by 8.52% — more cautious |
 
@@ -83,22 +83,22 @@ Operating EPS (adjusted): **$3.45**
 - **Stressed Gross Profit:** $14.96B
 - **Stressed Operating Income:** $8.26B
 - **Stressed Net Income:** $6.77B
-- **Downside to Panic Floor:** -37.16%
-- **Market Priced-In Multiple:** 35.01x
+- **Downside to Panic Floor:** -37.47%
+- **Market Priced-In Multiple:** 35.18x
 
 | Regime | Multiple | Target Price | Delta vs Current |
 |--------|----------|--------------|------------------|
-| 🐂 Bull | 48x | $1208.16 | +37.1% |
-| ⚖️ Base | 40x | $1006.8 | +14.25% |
-| 🚨 Panic | 22x | $553.74 | -37.16% |
+| 🐂 Bull | 48x | $1208.16 | +36.44% |
+| ⚖️ Base | 40x | $1006.8 | +13.7% |
+| 🚨 Panic | 22x | $553.74 | -37.47% |
 
 ## Scenario Analysis
 
 | Scenario | Prob. | Fair Value | Upside |
 |----------|-------|------------|--------|
-| Bull | 35% | $1334 | +51.38% |
-| Base | 45% | $1071 | +21.54% |
-| Bear | 20% | $540 | -38.72% |
+| Bull | 35% | $1334 | +50.65% |
+| Base | 45% | $1071 | +20.95% |
+| Bear | 20% | $540 | -39.02% |
 
 ## Sensitivity Analysis
 

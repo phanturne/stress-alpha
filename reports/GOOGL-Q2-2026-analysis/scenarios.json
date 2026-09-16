@@ -1,19 +1,18 @@
 {
   "ticker": "GOOGL",
   "basisYear": "FY2027",
-  "currentPrice": 182.50,
-  "consensusTarget": 215.00,
+  "currentPrice": 344.98,
+  "consensusTarget": 425.0,
   "scenarios": [
     {
       "name": "Bull",
       "probability": 0.25,
-      "forwardEps": 11.20,
-      "multiple": 24.0,
+      "forwardEps": 17.50,
+      "multiple": 28.0,
       "assumptions": [
-        "Google Cloud (GCP) accelerates to 35%+ annual growth driven by enterprise Gemini 1.5/2.0 API calls and Vertex AI adoption, with cloud operating margin scaling toward 20%.",
-        "AI Overviews fully protects core Search query volume while ad load and conversational commercial intent clicks expand blended ad pricing (CPC +6%).",
-        "Custom TPU v6 Trillium internal deployment reaches 60%+ of compute workloads, reducing compute TCO by 35% relative to merchant GPU fleets.",
-        "DOJ antitrust remedies avoid structural divestitures of Chrome or Android, resulting in manageable choice screens that preserve 85%+ organic search default share."
+        "Google Cloud external run-rate exceeds $100B annualized with segment operating margin expanding to 24% driven by Vertex AI enterprise monetization.",
+        "AI Overviews click-through rates and high-intent commercial ad query monetization inflect positively, maintaining Search query volume dominance above 90%.",
+        "TPU v6 Trillium internal deployment suppresses unit inference serving costs by 45% compared to merchant accelerator clusters."
       ],
       "keyDrivers": [
         "cloud-vertex-ai-ramp",
@@ -24,35 +23,32 @@
     {
       "name": "Base",
       "probability": 0.55,
-      "forwardEps": 9.90,
-      "multiple": 21.0,
+      "forwardEps": 15.20,
+      "multiple": 25.0,
       "assumptions": [
-        "Google Services revenue grows steadily at 9-10% YoY, with YouTube CTV and Shorts premium pricing offsetting traditional display advertising headwinds.",
-        "Google Cloud sustains 25-28% annual growth with operating margins scaling toward 16-18%.",
-        "CapEx run-rate of $52-55B expands annual depreciation expense by ~$2.5B in FY2027, moderately dampening operating leverage.",
-        "DOJ antitrust trial results in behavioral remedies (choice screens in browser defaults and revenue-share cap adjustments) without forced breakups."
+        "Search revenue compounds at 10-12% while YouTube CTV and Shorts monetization continues robust double-digit expansion.",
+        "Google Cloud maintains 35-40% growth with stable 18-20% operating margins.",
+        "DOJ antitrust remedies remain limited to behavioral and contract-choice frameworks without structural asset divestitures."
       ],
       "keyDrivers": [
         "ai-overviews-monetization",
         "youtube-ctv-shorts-pricing",
-        "capex-depreciation-drag",
         "doj-antitrust-remedies"
       ]
     },
     {
       "name": "Bear",
       "probability": 0.20,
-      "forwardEps": 8.40,
-      "multiple": 16.5,
+      "forwardEps": 12.00,
+      "multiple": 18.0,
       "assumptions": [
-        "Aggressive DOJ remedies prohibit exclusive default distribution agreements (terminating $20B+ annual Apple Safari revenue sharing), causing 10-12% query volume leakage to alternative search engines and AI assistants.",
-        "AI Overviews query compute costs create gross margin compression, while commercial ad conversion click-through rates decline as users consume synthesized answers without clicking sponsor links.",
-        "Massive AI infrastructure CapEx creates an elevated depreciation burden without commensurate enterprise cloud software payback, compressing operating margins to 28%."
+        "Judicial antitrust remedies mandate the unbundling of default search distribution on Apple iOS and Android OEM agreements.",
+        "Generative AI conversational search alternatives modestly fragment top-of-funnel informational queries.",
+        "Aggressive technical infrastructure CapEx drives elevated depreciation schedules, compressing corporate operating margins to 28%."
       ],
       "keyDrivers": [
         "doj-antitrust-remedies",
-        "capex-depreciation-drag",
-        "ai-overviews-monetization"
+        "capex-depreciation-drag"
       ]
     }
   ]

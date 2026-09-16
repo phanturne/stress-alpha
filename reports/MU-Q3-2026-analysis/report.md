@@ -1,42 +1,41 @@
 # Earnings Analysis: MU — Q3 2026
 
-*Analysis date: 2026-09-15 | Report date: 2026-06-25 | Price: $145*
+*Analysis date: 2026-09-15 | Report date: 2026-06-24 | Price: $923.75*
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Weighted Fair Value | **$155.75** |
-| Upside from Current | +7.41% |
-| Consensus PT | $175 |
-| Verdict | Below consensus ($175) by 11% — more cautious |
+| Weighted Fair Value | **$1072.8** |
+| Upside from Current | +16.14% |
+| Consensus PT | $1250 |
+| Verdict | Below consensus ($1250) by 14.18% — more cautious |
 
 ## ⚠️ Income Quality Adjustment
 
-Headline EPS $3.32 includes one-time items:
+Headline EPS $24.67 includes one-time items:
 
-- **CHIPS and Science Act Title IV direct capital grant milestone recognition**: $0.38B (non-operating) — Direct federal and Idaho state capital expenditure grant milestone recognition for Boise and Syracuse megafabs; non-operating capital subsidy inflating GAAP net income.
+- **CHIPS and Science Act Title IV direct capital grant milestone recognition**: $0.38B (non-operating) — Direct federal and state capital expenditure grant milestone recognition for Boise and Syracuse megafabs; non-operating capital subsidy inflating GAAP net income.
 - **Discrete foreign tax valuation allowance release**: $0.18B (non-operating) — Discrete tax reserve release under deferred tax asset reassessment and international restructuring under ASC 740, inflating GAAP net income.
-- **Reversal of lower-of-cost-or-market (LCM) inventory valuation reserve**: $0.12B (operating) — Operating gross margin benefited by $120M (~105 bps) from the recovery and commercial sale of previously written-down legacy 3D NAND wafer inventory.
 
-Operating EPS (adjusted): **$3.03**
+Operating EPS (adjusted): **$25.11**
 
 ## Earnings Breakdown
 
 | Metric | Actual | Estimate | Beat/Miss |
 |--------|--------|----------|-----------|
-| Revenue | $11.45B | $10.95B | ✅ Beat |
-| Op. Income | $4.12B | — | +188% YoY |
-| EPS (operating) | $3.03 | $2.85 | ✅ Beat |
+| Revenue | $41.46B | $38.5B | ✅ Beat |
+| Op. Income | $14.8B | — | +210% YoY |
+| EPS (operating) | $25.11 | $24.1 | ✅ Beat |
 
 ### Segments
 
 | Segment | Revenue | Growth | Op. Margin |
 |---------|---------|--------|------------|
-| Compute and Networking (CNBU) | $5.45B | +85% | 47% |
-| Mobile (MBU) | $2.15B | +42% | 27% |
-| Embedded (EBU) | $1.45B | +26% | 25% |
-| Storage (SBU) | $2.4B | +82% | 26% |
+| Compute and Networking (CNBU) | $21.5B | +185% | 48% |
+| Storage (SBU) | $8.6B | +95% | 34% |
+| Mobile (MBU) | $6.8B | +55% | 29% |
+| Embedded (EBU) | $4.56B | +38% | 26% |
 
 ## Catalysts
 
@@ -79,44 +78,44 @@ Operating EPS (adjusted): **$3.03**
 
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
-- **Stressed Diluted EPS:** $12.93
-- **Stressed Revenue:** $52.5B
-- **Stressed Gross Profit:** $22.84B
-- **Stressed Operating Income:** $17.24B
-- **Stressed Net Income:** $14.74B
-- **Downside to Panic Floor:** -28.66%
-- **Market Priced-In Multiple:** 11.21x
+- **Stressed Diluted EPS:** $63.03
+- **Stressed Revenue:** $185B
+- **Stressed Gross Profit:** $104.53B
+- **Stressed Operating Income:** $84.03B
+- **Stressed Net Income:** $71.85B
+- **Downside to Panic Floor:** -38.59%
+- **Market Priced-In Multiple:** 14.66x
 
 | Regime | Multiple | Target Price | Delta vs Current |
 |--------|----------|--------------|------------------|
-| 🐂 Bull | 15x | $193.95 | +33.76% |
-| ⚖️ Base | 12.5x | $161.63 | +11.47% |
-| 🚨 Panic | 8x | $103.44 | -28.66% |
+| 🐂 Bull | 18x | $1134.54 | +22.82% |
+| ⚖️ Base | 14x | $882.42 | -4.47% |
+| 🚨 Panic | 9x | $567.27 | -38.59% |
 
 ## Scenario Analysis
 
 | Scenario | Prob. | Fair Value | Upside |
 |----------|-------|------------|--------|
-| Bull: AI Memory Supercycle & Structural HBM Moat | 25% | $217 | +49.66% |
-| Base: Controlled Disciplined Oligopoly Expansion | 55% | $160 | +10.34% |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | 20% | $67.5 | -53.45% |
+| Bull | 30% | $1470 | +59.13% |
+| Base | 50% | $1066 | +15.4% |
+| Bear | 20% | $494 | -46.52% |
 
 ## Sensitivity Analysis
 
 | Scenario | Parameter | Base → Alt | FV Delta |
 |----------|-----------|------------|----------|
-| Bull: AI Memory Supercycle & Structural HBM Moat | EPS +10% | 15.5 → 17.05 | +$21.7 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | EPS -10% | 15.5 → 13.95 | $-21.7 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | Multiple +2 | 14 → 16 | +$31 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | Multiple -2 | 14 → 12 | $-31 |
-| Base: Controlled Disciplined Oligopoly Expansion | EPS +10% | 12.8 → 14.08 | +$16 |
-| Base: Controlled Disciplined Oligopoly Expansion | EPS -10% | 12.8 → 11.52 | $-16 |
-| Base: Controlled Disciplined Oligopoly Expansion | Multiple +2 | 12.5 → 14.5 | +$25.6 |
-| Base: Controlled Disciplined Oligopoly Expansion | Multiple -2 | 12.5 → 10.5 | $-25.6 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | EPS +10% | 7.5 → 8.25 | +$6.75 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | EPS -10% | 7.5 → 6.75 | $-6.75 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | Multiple +2 | 9 → 11 | +$15 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | Multiple -2 | 9 → 7 | $-15 |
+| Bull | EPS +10% | 98 → 107.8 | +$147 |
+| Bull | EPS -10% | 98 → 88.2 | $-147 |
+| Bull | Multiple +2 | 15 → 17 | +$196 |
+| Bull | Multiple -2 | 15 → 13 | $-196 |
+| Base | EPS +10% | 82 → 90.2 | +$106.6 |
+| Base | EPS -10% | 82 → 73.8 | $-106.6 |
+| Base | Multiple +2 | 13 → 15 | +$164 |
+| Base | Multiple -2 | 13 → 11 | $-164 |
+| Bear | EPS +10% | 52 → 57.2 | +$49.4 |
+| Bear | EPS -10% | 52 → 46.8 | $-49.4 |
+| Bear | Multiple +2 | 9.5 → 11.5 | +$104 |
+| Bear | Multiple -2 | 9.5 → 7.5 | $-104 |
 
 ## Historical Reactions
 

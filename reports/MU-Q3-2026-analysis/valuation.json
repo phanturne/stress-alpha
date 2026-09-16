@@ -1,198 +1,198 @@
 {
   "ticker": "MU",
   "analysisDate": "2026-09-15",
-  "currentPrice": 145,
-  "weightedFairValue": 155.75,
-  "upsidePct": 7.41,
+  "currentPrice": 923.75,
+  "weightedFairValue": 1072.8,
+  "upsidePct": 16.14,
   "scenarioResults": [
     {
-      "name": "Bull: AI Memory Supercycle & Structural HBM Moat",
-      "probability": 0.25,
-      "fairValue": 217,
-      "upsideFromCurrent": 49.66
+      "name": "Bull",
+      "probability": 0.3,
+      "fairValue": 1470,
+      "upsideFromCurrent": 59.13
     },
     {
-      "name": "Base: Controlled Disciplined Oligopoly Expansion",
-      "probability": 0.55,
-      "fairValue": 160,
-      "upsideFromCurrent": 10.34
+      "name": "Base",
+      "probability": 0.5,
+      "fairValue": 1066,
+      "upsideFromCurrent": 15.4
     },
     {
-      "name": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "name": "Bear",
       "probability": 0.2,
-      "fairValue": 67.5,
-      "upsideFromCurrent": -53.45
+      "fairValue": 494,
+      "upsideFromCurrent": -46.52
     }
   ],
   "sensitivity": [
     {
-      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "scenario": "Bull",
       "parameter": "EPS +10%",
-      "baseValue": 15.5,
-      "altValue": 17.05,
-      "fairValueDelta": 21.7
+      "baseValue": 98,
+      "altValue": 107.8,
+      "fairValueDelta": 147
     },
     {
-      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "scenario": "Bull",
       "parameter": "EPS -10%",
-      "baseValue": 15.5,
-      "altValue": 13.95,
-      "fairValueDelta": -21.7
+      "baseValue": 98,
+      "altValue": 88.2,
+      "fairValueDelta": -147
     },
     {
-      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "scenario": "Bull",
       "parameter": "Multiple +2",
-      "baseValue": 14,
-      "altValue": 16,
-      "fairValueDelta": 31
+      "baseValue": 15,
+      "altValue": 17,
+      "fairValueDelta": 196
     },
     {
-      "scenario": "Bull: AI Memory Supercycle & Structural HBM Moat",
+      "scenario": "Bull",
       "parameter": "Multiple -2",
-      "baseValue": 14,
-      "altValue": 12,
-      "fairValueDelta": -31
+      "baseValue": 15,
+      "altValue": 13,
+      "fairValueDelta": -196
     },
     {
-      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "scenario": "Base",
       "parameter": "EPS +10%",
-      "baseValue": 12.8,
-      "altValue": 14.08,
-      "fairValueDelta": 16
+      "baseValue": 82,
+      "altValue": 90.2,
+      "fairValueDelta": 106.6
     },
     {
-      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "scenario": "Base",
       "parameter": "EPS -10%",
-      "baseValue": 12.8,
-      "altValue": 11.52,
-      "fairValueDelta": -16
+      "baseValue": 82,
+      "altValue": 73.8,
+      "fairValueDelta": -106.6
     },
     {
-      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "scenario": "Base",
       "parameter": "Multiple +2",
-      "baseValue": 12.5,
-      "altValue": 14.5,
-      "fairValueDelta": 25.6
+      "baseValue": 13,
+      "altValue": 15,
+      "fairValueDelta": 164
     },
     {
-      "scenario": "Base: Controlled Disciplined Oligopoly Expansion",
+      "scenario": "Base",
       "parameter": "Multiple -2",
-      "baseValue": 12.5,
-      "altValue": 10.5,
-      "fairValueDelta": -25.6
-    },
-    {
-      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
-      "parameter": "EPS +10%",
-      "baseValue": 7.5,
-      "altValue": 8.25,
-      "fairValueDelta": 6.75
-    },
-    {
-      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
-      "parameter": "EPS -10%",
-      "baseValue": 7.5,
-      "altValue": 6.75,
-      "fairValueDelta": -6.75
-    },
-    {
-      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
-      "parameter": "Multiple +2",
-      "baseValue": 9,
+      "baseValue": 13,
       "altValue": 11,
-      "fairValueDelta": 15
+      "fairValueDelta": -164
     },
     {
-      "scenario": "Bear: Cyclical Capex Digestion & Pricing Pressure",
+      "scenario": "Bear",
+      "parameter": "EPS +10%",
+      "baseValue": 52,
+      "altValue": 57.2,
+      "fairValueDelta": 49.4
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "EPS -10%",
+      "baseValue": 52,
+      "altValue": 46.8,
+      "fairValueDelta": -49.4
+    },
+    {
+      "scenario": "Bear",
+      "parameter": "Multiple +2",
+      "baseValue": 9.5,
+      "altValue": 11.5,
+      "fairValueDelta": 104
+    },
+    {
+      "scenario": "Bear",
       "parameter": "Multiple -2",
-      "baseValue": 9,
-      "altValue": 7,
-      "fairValueDelta": -15
+      "baseValue": 9.5,
+      "altValue": 7.5,
+      "fairValueDelta": -104
     }
   ],
-  "consensusTarget": 175,
-  "verdictVsConsensus": "Below consensus ($175) by 11% — more cautious",
+  "consensusTarget": 1250,
+  "verdictVsConsensus": "Below consensus ($1250) by 14.18% — more cautious",
   "baseline": {
-    "baseRevenueBillions": 52.5,
-    "baseGrossMarginPct": 43.5,
-    "fixedOpexBillions": 5.6,
+    "baseRevenueBillions": 185,
+    "baseGrossMarginPct": 56.5,
+    "fixedOpexBillions": 20.5,
     "taxRatePct": 14.5,
     "dilutedSharesBillions": 1.14,
     "multipleRegimes": {
-      "bull": 15,
-      "base": 12.5,
-      "panic": 8
+      "bull": 18,
+      "base": 14,
+      "panic": 9
     },
     "upstreamDrivers": [
       {
-        "id": "hyperscaler-ai-capex",
-        "name": "Cloud Hyperscaler AI Infrastructure & Server CapEx",
+        "id": "hyperscaler-hbm-demand",
+        "name": "Hyperscaler AI Accelerator HBM3e/HBM4 Allocation",
         "exposureShare": 0.48,
-        "elasticity": 1.25,
-        "defaultShockPct": 0,
-        "minShockPct": -50,
-        "maxShockPct": 50
-      },
-      {
-        "id": "hbm-advanced-packaging-yield",
-        "name": "Advanced HBM3e/HBM4 Packaging & TSV Wafer Yields",
-        "exposureShare": 0.28,
-        "elasticity": 0.95,
+        "elasticity": 1.1,
         "defaultShockPct": 0,
         "minShockPct": -40,
         "maxShockPct": 40
       },
       {
-        "id": "edge-device-ai-dram",
-        "name": "On-Device AI Smartphone & PC Memory Upgrades",
-        "exposureShare": 0.24,
-        "elasticity": 0.75,
+        "id": "pc-mobile-on-device-ai",
+        "name": "Edge AI Smartphone & PC DRAM Density (16-32GB)",
+        "exposureShare": 0.32,
+        "elasticity": 0.8,
         "defaultShockPct": 0,
-        "minShockPct": -35,
-        "maxShockPct": 35
+        "minShockPct": -30,
+        "maxShockPct": 30
+      },
+      {
+        "id": "enterprise-qlc-ssd",
+        "name": "Enterprise D5/QLC SSD Hyperscaler Storage Migration",
+        "exposureShare": 0.2,
+        "elasticity": 0.9,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
       }
     ]
   },
   "stressTest": {
-    "stressRevenueBillions": 52.5,
-    "stressGrossProfitBillions": 22.84,
-    "stressOperatingIncomeBillions": 17.24,
-    "stressNetIncomeBillions": 14.74,
-    "stressEps": 12.93,
+    "stressRevenueBillions": 185,
+    "stressGrossProfitBillions": 104.53,
+    "stressOperatingIncomeBillions": 84.03,
+    "stressNetIncomeBillions": 71.85,
+    "stressEps": 63.03,
     "valuationBands": {
       "bull": {
         "regime": "bull",
-        "label": "Bull Regime (15x P/E)",
-        "multiple": 15,
-        "targetPrice": 193.95,
-        "deltaFromCurrentPct": 33.76
+        "label": "Bull Regime (18x P/E)",
+        "multiple": 18,
+        "targetPrice": 1134.54,
+        "deltaFromCurrentPct": 22.82
       },
       "base": {
         "regime": "base",
-        "label": "Base Regime (12.5x P/E)",
-        "multiple": 12.5,
-        "targetPrice": 161.63,
-        "deltaFromCurrentPct": 11.47
+        "label": "Base Regime (14x P/E)",
+        "multiple": 14,
+        "targetPrice": 882.42,
+        "deltaFromCurrentPct": -4.47
       },
       "panic": {
         "regime": "panic",
-        "label": "Panic Regime (8x P/E)",
-        "multiple": 8,
-        "targetPrice": 103.44,
-        "deltaFromCurrentPct": -28.66
+        "label": "Panic Regime (9x P/E)",
+        "multiple": 9,
+        "targetPrice": 567.27,
+        "deltaFromCurrentPct": -38.59
       }
     },
     "asymmetry": {
-      "downsideToBasePct": 11.47,
-      "downsideToPanicPct": -28.66,
-      "upsideToBullPct": 33.76,
-      "marketPricedInMultiple": 11.21,
-      "riskRewardRatio": 1.18
+      "downsideToBasePct": -4.47,
+      "downsideToPanicPct": -38.59,
+      "upsideToBullPct": 22.82,
+      "marketPricedInMultiple": 14.66,
+      "riskRewardRatio": 0.59
     },
     "driverShocksApplied": {
-      "hyperscaler-ai-capex": 0,
-      "hbm-advanced-packaging-yield": 0,
-      "edge-device-ai-dram": 0
+      "hyperscaler-hbm-demand": 0,
+      "pc-mobile-on-device-ai": 0,
+      "enterprise-qlc-ssd": 0
     },
     "grossMarginBpsDeltaApplied": 0,
     "fixedOpexShiftPctApplied": 0

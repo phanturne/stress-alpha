@@ -1,55 +1,53 @@
 {
   "ticker": "MU",
   "basisYear": "FY2027",
-  "currentPrice": 145.00,
-  "consensusTarget": 175.00,
+  "currentPrice": 923.75,
+  "consensusTarget": 1250.0,
   "scenarios": [
     {
-      "name": "牛市情景：AI 内存超级周期与 HBM 结构性护城河",
-      "probability": 0.25,
-      "forwardEps": 15.50,
-      "multiple": 14.0,
+      "name": "牛市情景 (Bull)",
+      "probability": 0.30,
+      "forwardEps": 98.00,
+      "multiple": 15.0,
       "assumptions": [
-        "12层堆叠 HBM3e 及早期 HBM4 在英伟达 Blackwell Ultra 与 AMD MI350 平台上斩获超 25% 的全球市场份额，相关产品毛利率突破 52%。",
-        "PC 及智能手机端侧 AI 内存容量爆发，基线标准跃升至 16GB-32GB DRAM，全行业晶圆产生严重缺口并带动常规 DDR5 均价出现中双位数大涨。",
-        "企业级 SSD 营收同比翻倍增长，60TB+ 超大容量高密度 QLC 固态硬盘自机械硬盘手中抢占海量云厂商 AI 数据湖存储份额。"
+        "12层堆叠HBM3e及早期HBM4在大规模出货中占据下一代Rubin及MI400算力插槽核心份额，产品线毛利率跨越52%。",
+        "端侧AI手机与AI PC普及迫使基础显存门槛抬升至24GB-32GB，造成全球晶圆产能极度紧缺，推动DDR5综合平均售价上涨30%。",
+        "企业级高密度QLC大容量SSD在云厂商数据中心全面加速淘汰传统机械硬盘，驱动存储业务部年营收突破350亿美元关口。"
       ],
       "keyDrivers": [
-        "hbm-sold-out-allocation",
-        "enterprise-ssd-ai-inferencing",
-        "dram-asp-expansion"
+        "hbm-capacity-allocation",
+        "on-device-ai-dram-density",
+        "enterprise-ssd-ai-inferencing"
       ]
     },
     {
-      "name": "基准情景：三寡头纪律约束下的稳健扩张",
-      "probability": 0.55,
-      "forwardEps": 12.80,
-      "multiple": 12.5,
+      "name": "基准情景 (Base)",
+      "probability": 0.50,
+      "forwardEps": 82.00,
+      "multiple": 13.0,
       "assumptions": [
-        "2027 财年全年营收突破 525 亿美元，全公司综合毛利率稳定在 43.5% 的高位健康中枢。",
-        "2026/2027 自然年全系 HBM 产能在具有法律约束力的订单下 100% 锁定；1-gamma 节点 EUV 制程切换进度顺利达标。",
-        "三星以相对克制的节奏向一线供应链小规模出货 12 层 HBM3e，行业供需维持紧平衡而未引发恶性价格内卷。"
+        "2027完整财年营收顺利突破1750亿美元关口，三大寡头供需自律维系综合毛利率稳守在46.5%健康区间。",
+        "2026至2027自然年所有HBM产能已通过排他性长协协议100%售罄，先进制程1-gamma EUV顺利平稳导入量产。",
+        "三星与SK海力士新产能有序释放，并未触发恶性降价价格战，全球存储景气周期延续。"
       ],
       "keyDrivers": [
-        "hbm-sold-out-allocation",
-        "on-device-ai-dram-content",
-        "samsung-skhynix-hbm-competition"
+        "hbm-capacity-allocation",
+        "dram-blended-asp-expansion"
       ]
     },
     {
-      "name": "熊市情景：周期性资本开支消化与价格承压",
+      "name": "熊市情景 (Bear)",
       "probability": 0.20,
-      "forwardEps": 7.50,
-      "multiple": 9.0,
+      "forwardEps": 52.00,
+      "multiple": 9.5,
       "assumptions": [
-        "超大规模云服务商在 2027 财年下半年进入 AI 硬件投资消化阶段，阶段性放缓服务器通用及高阶内存采购节拍。",
-        "三星平泽 P4 工厂大幅扩产 1b 纳米 DRAM 晶圆产出，导致标准 DDR5 综合合约价回落 20%。",
-        "向 16 层堆叠 HBM4 架构过渡初期的先进封装散热及良率损失，拖累全公司综合毛利率下滑至 31%。"
+        "超大规模云厂商在2027下半年出现间歇性算力资本开支消化期，高密度服务器DRAM采购节奏边际放缓。",
+        "三星激进提升1c工艺DRAM晶圆产出，导致通用标准型DDR5现货与合约价格承压下行25%。",
+        "在向16层堆叠HBM4先进制程封装代际演进中遭遇良率爬坡瓶颈，综合毛利率回落至36%水平。"
       ],
       "keyDrivers": [
-        "memory-capex-overbuilding",
-        "samsung-skhynix-hbm-competition",
-        "dram-asp-expansion"
+        "memory-cycle-capex-risk",
+        "competitor-hbm-execution"
       ]
     }
   ]

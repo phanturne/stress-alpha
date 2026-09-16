@@ -1,38 +1,38 @@
 {
-  "baseRevenueBillions": 435.0,
-  "baseGrossMarginPct": 57.5,
-  "fixedOpexBillions": 107.60,
+  "baseRevenueBillions": 510.0,
+  "baseGrossMarginPct": 58.0,
+  "fixedOpexBillions": 120.0,
   "taxRatePct": 16.5,
   "dilutedSharesBillions": 12.35,
   "multipleRegimes": {
-    "bull": 25.0,
-    "base": 20.5,
-    "panic": 14.5
+    "bull": 28.0,
+    "base": 24.0,
+    "panic": 17.0
   },
   "upstreamDrivers": [
     {
-      "id": "search-ad-demand",
-      "name": "Global Digital Advertising & Search Query Demand",
-      "exposureShare": 0.70,
+      "id": "global-digital-ad-spending",
+      "name": "Global Digital Advertising Budgets & Search CPMs",
+      "exposureShare": 0.65,
+      "elasticity": 0.95,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
+    },
+    {
+      "id": "cloud-ai-enterprise-capex",
+      "name": "Enterprise Generative AI & Vertex AI Platform Infrastructure Spend",
+      "exposureShare": 0.22,
+      "elasticity": 1.25,
+      "defaultShockPct": 0,
+      "minShockPct": -40,
+      "maxShockPct": 40
+    },
+    {
+      "id": "ai-inference-compute-tco",
+      "name": "Custom Silicon TPU v6 Trillium Efficiency vs Merchant GPU Serving Costs",
+      "exposureShare": 0.13,
       "elasticity": 0.85,
-      "defaultShockPct": 0,
-      "minShockPct": -40,
-      "maxShockPct": 40
-    },
-    {
-      "id": "enterprise-cloud-ai-spend",
-      "name": "Enterprise Cloud AI Adoption & Infrastructure CapEx Spend",
-      "exposureShare": 0.18,
-      "elasticity": 1.10,
-      "defaultShockPct": 0,
-      "minShockPct": -40,
-      "maxShockPct": 40
-    },
-    {
-      "id": "consumer-subscriptions-hardware",
-      "name": "YouTube & Google One Consumer Subscriptions and Hardware",
-      "exposureShare": 0.12,
-      "elasticity": 0.70,
       "defaultShockPct": 0,
       "minShockPct": -30,
       "maxShockPct": 30

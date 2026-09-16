@@ -1,44 +1,44 @@
 # Earnings Analysis: BABA — Q1 FY2027
 
-*Analysis date: 2026-09-15 | Report date: 2026-08-14 | Price: $88.5*
+*Analysis date: 2026-09-15 | Report date: 2026-08-20 | Price: $109.34*
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Weighted Fair Value | **$111.53** |
-| Upside from Current | +26.02% |
-| Consensus PT | $110 |
-| Verdict | In line with consensus ($110) — delta +1.39% |
+| Weighted Fair Value | **$145.11** |
+| Upside from Current | +32.71% |
+| Consensus PT | $186 |
+| Verdict | Below consensus ($186) by 21.98% — more cautious |
 
 ## ⚠️ Income Quality Adjustment
 
-Headline EPS $1.88 includes one-time items:
+Headline EPS $0.64 includes one-time items:
 
 - **ASU 2016-01 mark-to-market net loss on listed and private equity investments**: $-0.85B (non-operating) — GAAP results include non-operating mark-to-market valuation losses on publicly traded equity securities and private portfolio holdings under ASU 2016-01, artificially depressing headline GAAP EPS.
 - **Share of results and dividend distributions of equity method investees (Ant Group)**: $0.52B (non-operating) — Ant Group profit contribution and dividend flow reflecting finalized fintech restructuring, recorded as non-operating investment income.
 - **Share-based compensation (SBC) expense and acquired intangible asset amortization**: $-0.97B (non-operating) — Non-cash stock-based compensation ($0.68B) and acquisition amortization ($0.29B) deducted from GAAP operating income to isolate core cash operating performance.
 
-Operating EPS (adjusted): **$2.24**
+Operating EPS (adjusted): **$1.26**
 
 ## Earnings Breakdown
 
 | Metric | Actual | Estimate | Beat/Miss |
 |--------|--------|----------|-----------|
-| Revenue | $37.03B | $36.45B | ✅ Beat |
-| Op. Income | $5.28B | — | +8.5% YoY |
-| EPS (operating) | $2.24 | $2.16 | ✅ Beat |
+| Revenue | $39.64B | $39.2B | ✅ Beat |
+| Op. Income | $5.48B | — | +11.2% YoY |
+| EPS (operating) | $1.26 | $1.49 | ❌ Miss |
 
 ### Segments
 
 | Segment | Revenue | Growth | Op. Margin |
 |---------|---------|--------|------------|
-| Taobao and Tmall Group (TTG) | $16.25B | +2.8% | 42.15% |
-| Cloud Intelligence Group | $4.35B | +18.5% | 11.03% |
-| Alibaba International Digital Commerce (AIDC) | $5.15B | +24.2% | -7.38% |
-| Cainiao Smart Logistics Network | $4.28B | +14.5% | 3.74% |
-| Local Services Group (Amap / Ele.me) | $2.55B | +12% | -1.57% |
-| All Others (DingTalk, Entertainment & New Retail) | $4.45B | +4.5% | -3.37% |
+| Taobao and Tmall Group (TTG) | $17.15B | +3.5% | 40.35% |
+| Cloud Intelligence Group | $4.95B | +45% | 11.72% |
+| Alibaba International Digital Commerce (AIDC) | $5.42B | +26.5% | -5.9% |
+| Cainiao Smart Logistics Network | $4.45B | +15% | 4.04% |
+| Local Services Group (Amap / Ele.me) | $2.72B | +13.2% | -0.74% |
+| All Others (DingTalk, Entertainment & New Retail) | $4.95B | +5.1% | -2.42% |
 
 ## Catalysts
 
@@ -82,44 +82,44 @@ Operating EPS (adjusted): **$2.24**
 
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
-- **Stressed Diluted EPS:** $8.43
-- **Stressed Revenue:** $152B
-- **Stressed Gross Profit:** $58.52B
-- **Stressed Operating Income:** $24.32B
-- **Stressed Net Income:** $20.06B
-- **Downside to Panic Floor:** -28.56%
-- **Market Priced-In Multiple:** 10.5x
+- **Stressed Diluted EPS:** $10.46
+- **Stressed Revenue:** $165B
+- **Stressed Gross Profit:** $65.18B
+- **Stressed Operating Income:** $30.18B
+- **Stressed Net Income:** $24.9B
+- **Downside to Panic Floor:** -18.68%
+- **Market Priced-In Multiple:** 10.45x
 
 | Regime | Multiple | Target Price | Delta vs Current |
 |--------|----------|--------------|------------------|
-| 🐂 Bull | 15.5x | $130.67 | +47.65% |
-| ⚖️ Base | 11.5x | $96.95 | +9.55% |
-| 🚨 Panic | 7.5x | $63.22 | -28.56% |
+| 🐂 Bull | 16.5x | $172.59 | +57.85% |
+| ⚖️ Base | 13x | $135.98 | +24.36% |
+| 🚨 Panic | 8.5x | $88.91 | -18.68% |
 
 ## Scenario Analysis
 
 | Scenario | Prob. | Fair Value | Upside |
 |----------|-------|------------|--------|
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | 25% | $156.6 | +76.95% |
-| Base: Steady Core Stabilization & Disciplined Capital Return | 55% | $108.1 | +22.15% |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | 20% | $64.6 | -27.01% |
+| Bull | 25% | $209.25 | +91.38% |
+| Base | 55% | $140.4 | +28.41% |
+| Bear | 20% | $77.9 | -28.75% |
 
 ## Sensitivity Analysis
 
 | Scenario | Parameter | Base → Alt | FV Delta |
 |----------|-----------|------------|----------|
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | EPS +10% | 10.8 → 11.88 | +$15.66 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | EPS -10% | 10.8 → 9.72 | $-15.66 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | Multiple +2 | 14.5 → 16.5 | +$21.6 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | Multiple -2 | 14.5 → 12.5 | $-21.6 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | EPS +10% | 9.4 → 10.34 | +$10.81 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | EPS -10% | 9.4 → 8.46 | $-10.81 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | Multiple +2 | 11.5 → 13.5 | +$18.8 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | Multiple -2 | 11.5 → 9.5 | $-18.8 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | EPS +10% | 7.6 → 8.36 | +$6.46 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | EPS -10% | 7.6 → 6.84 | $-6.46 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | Multiple +2 | 8.5 → 10.5 | +$15.2 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | Multiple -2 | 8.5 → 6.5 | $-15.2 |
+| Bull | EPS +10% | 13.5 → 14.85 | +$20.93 |
+| Bull | EPS -10% | 13.5 → 12.15 | $-20.92 |
+| Bull | Multiple +2 | 15.5 → 17.5 | +$27 |
+| Bull | Multiple -2 | 15.5 → 13.5 | $-27 |
+| Base | EPS +10% | 10.8 → 11.88 | +$14.04 |
+| Base | EPS -10% | 10.8 → 9.72 | $-14.04 |
+| Base | Multiple +2 | 13 → 15 | +$21.6 |
+| Base | Multiple -2 | 13 → 11 | $-21.6 |
+| Bear | EPS +10% | 8.2 → 9.02 | +$7.79 |
+| Bear | EPS -10% | 8.2 → 7.38 | $-7.79 |
+| Bear | Multiple +2 | 9.5 → 11.5 | +$16.4 |
+| Bear | Multiple -2 | 9.5 → 7.5 | $-16.4 |
 
 ## Historical Reactions
 

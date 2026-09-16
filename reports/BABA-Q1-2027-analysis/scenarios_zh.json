@@ -1,59 +1,53 @@
 {
   "ticker": "BABA",
   "basisYear": "FY2028",
-  "currentPrice": 88.50,
-  "consensusTarget": 110.00,
+  "currentPrice": 109.34,
+  "consensusTarget": 186.0,
   "scenarios": [
     {
-      "name": "乐观情景 (Bull)：AI云商业化爆发与国内货币化率全面修复",
+      "name": "牛市情景 (Bull)",
       "probability": 0.25,
-      "forwardEps": 10.80,
-      "multiple": 14.5,
+      "forwardEps": 13.50,
+      "multiple": 15.5,
       "assumptions": [
-        "阿里云AI相关产品收入保持三位数复合高增，通义千问企业级订阅与Token调用放量，驱动云分部调整后EBITA利润率向15%攀升。",
-        "淘天0.6%基础软件服务费与全站推算法广告全面落地，客户管理收入 (CMR) 增速反超GMV增速，驱动国内电商利润率强劲反弹。",
-        "阿里国际数字商业 (AIDC) 随着速卖通 Choice 履约单均成本大幅压降，实现分部调整后EBITA历史性盈亏平衡。",
-        "年化超120亿美元的高强度注销式回购每年减少约5%的流通股数，为每股经营收益提供强大的机械性复利增厚。"
+        "阿里云外部营收在通义千问（Qwen）大模型生态渗透下维系45%以上高增，公共云利润率升至15%。",
+        "淘天集团通过全站推广工具普及使综合货币化率（Take Rate）回升30个基点，核心客户管理收入（CMR）加速恢复。",
+        "阿里国际数字商业（AIDC）全面跨过经调整EBITA盈亏平衡点；年均超120亿美元股票回购注销逾5%总股本。"
       ],
       "keyDrivers": [
-        "cloud-ai-acceleration",
-        "cmr-monetization-stabilization",
-        "aidc-profitability-inflection",
-        "share-buyback-accretion"
+        "cloud-qwen-ai-acceleration",
+        "cmr-software-fee-take-rate",
+        "aidc-profitability-inflection"
       ]
     },
     {
-      "name": "基准情景 (Base)：核心电商稳健防守与高确定性资本回报",
+      "name": "基准情景 (Base)",
       "probability": 0.55,
-      "forwardEps": 9.40,
-      "multiple": 11.5,
+      "forwardEps": 10.80,
+      "multiple": 13.0,
       "assumptions": [
-        "淘天GMV维持低个位数正增长 (3-4%)，在服饰、美妆及消费品核心优势品类中有效抵御拼多多与抖音的存量竞争。",
-        "阿里云实现中双位数收入增长 (14-16%)，公有云调整后EBITA利润率稳定在10-12%健康区间。",
-        "AIDC国际零售业务年度亏损稳步收窄至10亿美元以内，速卖通 Choice 与 Trendyol 在高留存区域持续扩大高客单价用户群。",
-        "年化自由现金流保持在160亿美元以上高位，支持每年执行120亿美元股票回购并派发约2.2%年化股息。"
+        "国内核心电商GMV维持3-4%平稳增长，市场份额在与抖音、拼多多的博弈中逐步企稳。",
+        "阿里云保持25-30%健康内生增长，AI基础设施高资本开支顺利转化为高黏性企业级签约现金流。",
+        "年均自由现金流超过160亿美元，充足保障持续股份回购与2.5%以上年度股息派发。"
       ],
       "keyDrivers": [
-        "cmr-monetization-stabilization",
-        "china-macro-consumption",
+        "cloud-qwen-ai-acceleration",
         "share-buyback-accretion"
       ]
     },
     {
-      "name": "悲观情景 (Bear)：宏观消费防御内卷与欧美跨境关税壁垒",
+      "name": "熊市情景 (Bear)",
       "probability": 0.20,
-      "forwardEps": 7.60,
-      "multiple": 8.5,
+      "forwardEps": 8.20,
+      "multiple": 9.5,
       "assumptions": [
-        "国内宏观消费防御情绪加剧，淘天被迫持续对低价供给加大补贴以维持价格力心智，拖累CMR货币化率提升空间。",
-        "美欧立法取消或收紧跨境电商包裹免税额度 (De Minimis)，速卖通跨境出海履约成本骤增，推迟AIDC盈亏平衡时间表。",
-        "美国先进AI半导体出口管制进一步收紧算力云服务，制约阿里云大规模算力集群扩张与大模型训练需求承接。",
-        "国内政企云市场价格战加剧，运营商与腾讯云低价竞标压低公有云毛利率至8%以下。"
+        "国内宏观消费复苏斜率趋缓，平台需维系高额百亿补贴与商户激励政策以防份额流失。",
+        "欧美收紧小额跨境包裹（de minimis）免税条款，速卖通Choice全托管模式增速受到压制。",
+        "海外算力芯片出口管制再度加码，制约阿里云大规模智算中心扩容与高毛利AI推理服务承接。"
       ],
       "keyDrivers": [
-        "cross-border-tariffs-risk",
-        "china-macro-consumption",
-        "cloud-ai-acceleration"
+        "china-macro-consumption-thrift",
+        "cross-border-ecommerce-tariffs"
       ]
     }
   ]

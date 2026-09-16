@@ -1,152 +1,152 @@
 {
   "ticker": "GOOGL",
   "analysisDate": "2026-09-15",
-  "currentPrice": 182.5,
-  "weightedFairValue": 209.27,
-  "upsidePct": 14.67,
+  "currentPrice": 344.98,
+  "weightedFairValue": 374.7,
+  "upsidePct": 8.61,
   "scenarioResults": [
     {
       "name": "Bull",
       "probability": 0.25,
-      "fairValue": 268.8,
-      "upsideFromCurrent": 47.29
+      "fairValue": 490,
+      "upsideFromCurrent": 42.04
     },
     {
       "name": "Base",
       "probability": 0.55,
-      "fairValue": 207.9,
-      "upsideFromCurrent": 13.92
+      "fairValue": 380,
+      "upsideFromCurrent": 10.15
     },
     {
       "name": "Bear",
       "probability": 0.2,
-      "fairValue": 138.6,
-      "upsideFromCurrent": -24.05
+      "fairValue": 216,
+      "upsideFromCurrent": -37.39
     }
   ],
   "sensitivity": [
     {
       "scenario": "Bull",
       "parameter": "EPS +10%",
-      "baseValue": 11.2,
-      "altValue": 12.32,
-      "fairValueDelta": 26.88
+      "baseValue": 17.5,
+      "altValue": 19.25,
+      "fairValueDelta": 49
     },
     {
       "scenario": "Bull",
       "parameter": "EPS -10%",
-      "baseValue": 11.2,
-      "altValue": 10.08,
-      "fairValueDelta": -26.88
+      "baseValue": 17.5,
+      "altValue": 15.75,
+      "fairValueDelta": -49
     },
     {
       "scenario": "Bull",
       "parameter": "Multiple +2",
-      "baseValue": 24,
+      "baseValue": 28,
+      "altValue": 30,
+      "fairValueDelta": 35
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 28,
       "altValue": 26,
-      "fairValueDelta": 22.4
-    },
-    {
-      "scenario": "Bull",
-      "parameter": "Multiple -2",
-      "baseValue": 24,
-      "altValue": 22,
-      "fairValueDelta": -22.4
+      "fairValueDelta": -35
     },
     {
       "scenario": "Base",
       "parameter": "EPS +10%",
-      "baseValue": 9.9,
-      "altValue": 10.89,
-      "fairValueDelta": 20.79
+      "baseValue": 15.2,
+      "altValue": 16.72,
+      "fairValueDelta": 38
     },
     {
       "scenario": "Base",
       "parameter": "EPS -10%",
-      "baseValue": 9.9,
-      "altValue": 8.91,
-      "fairValueDelta": -20.79
+      "baseValue": 15.2,
+      "altValue": 13.68,
+      "fairValueDelta": -38
     },
     {
       "scenario": "Base",
       "parameter": "Multiple +2",
-      "baseValue": 21,
+      "baseValue": 25,
+      "altValue": 27,
+      "fairValueDelta": 30.4
+    },
+    {
+      "scenario": "Base",
+      "parameter": "Multiple -2",
+      "baseValue": 25,
       "altValue": 23,
-      "fairValueDelta": 19.8
-    },
-    {
-      "scenario": "Base",
-      "parameter": "Multiple -2",
-      "baseValue": 21,
-      "altValue": 19,
-      "fairValueDelta": -19.8
+      "fairValueDelta": -30.4
     },
     {
       "scenario": "Bear",
       "parameter": "EPS +10%",
-      "baseValue": 8.4,
-      "altValue": 9.24,
-      "fairValueDelta": 13.86
+      "baseValue": 12,
+      "altValue": 13.2,
+      "fairValueDelta": 21.6
     },
     {
       "scenario": "Bear",
       "parameter": "EPS -10%",
-      "baseValue": 8.4,
-      "altValue": 7.56,
-      "fairValueDelta": -13.86
+      "baseValue": 12,
+      "altValue": 10.8,
+      "fairValueDelta": -21.6
     },
     {
       "scenario": "Bear",
       "parameter": "Multiple +2",
-      "baseValue": 16.5,
-      "altValue": 18.5,
-      "fairValueDelta": 16.8
+      "baseValue": 18,
+      "altValue": 20,
+      "fairValueDelta": 24
     },
     {
       "scenario": "Bear",
       "parameter": "Multiple -2",
-      "baseValue": 16.5,
-      "altValue": 14.5,
-      "fairValueDelta": -16.8
+      "baseValue": 18,
+      "altValue": 16,
+      "fairValueDelta": -24
     }
   ],
-  "consensusTarget": 215,
-  "verdictVsConsensus": "In line with consensus ($215) — delta -2.67%",
+  "consensusTarget": 425,
+  "verdictVsConsensus": "Below consensus ($425) by 11.84% — more cautious",
   "baseline": {
-    "baseRevenueBillions": 435,
-    "baseGrossMarginPct": 57.5,
-    "fixedOpexBillions": 107.6,
+    "baseRevenueBillions": 510,
+    "baseGrossMarginPct": 58,
+    "fixedOpexBillions": 120,
     "taxRatePct": 16.5,
     "dilutedSharesBillions": 12.35,
     "multipleRegimes": {
-      "bull": 25,
-      "base": 20.5,
-      "panic": 14.5
+      "bull": 28,
+      "base": 24,
+      "panic": 17
     },
     "upstreamDrivers": [
       {
-        "id": "search-ad-demand",
-        "name": "Global Digital Advertising & Search Query Demand",
-        "exposureShare": 0.7,
+        "id": "global-digital-ad-spending",
+        "name": "Global Digital Advertising Budgets & Search CPMs",
+        "exposureShare": 0.65,
+        "elasticity": 0.95,
+        "defaultShockPct": 0,
+        "minShockPct": -30,
+        "maxShockPct": 30
+      },
+      {
+        "id": "cloud-ai-enterprise-capex",
+        "name": "Enterprise Generative AI & Vertex AI Platform Infrastructure Spend",
+        "exposureShare": 0.22,
+        "elasticity": 1.25,
+        "defaultShockPct": 0,
+        "minShockPct": -40,
+        "maxShockPct": 40
+      },
+      {
+        "id": "ai-inference-compute-tco",
+        "name": "Custom Silicon TPU v6 Trillium Efficiency vs Merchant GPU Serving Costs",
+        "exposureShare": 0.13,
         "elasticity": 0.85,
-        "defaultShockPct": 0,
-        "minShockPct": -40,
-        "maxShockPct": 40
-      },
-      {
-        "id": "enterprise-cloud-ai-spend",
-        "name": "Enterprise Cloud AI Adoption & Infrastructure CapEx Spend",
-        "exposureShare": 0.18,
-        "elasticity": 1.1,
-        "defaultShockPct": 0,
-        "minShockPct": -40,
-        "maxShockPct": 40
-      },
-      {
-        "id": "consumer-subscriptions-hardware",
-        "name": "YouTube & Google One Consumer Subscriptions and Hardware",
-        "exposureShare": 0.12,
-        "elasticity": 0.7,
         "defaultShockPct": 0,
         "minShockPct": -30,
         "maxShockPct": 30
@@ -154,45 +154,45 @@
     ]
   },
   "stressTest": {
-    "stressRevenueBillions": 435,
-    "stressGrossProfitBillions": 250.12,
-    "stressOperatingIncomeBillions": 142.52,
-    "stressNetIncomeBillions": 119,
-    "stressEps": 9.64,
+    "stressRevenueBillions": 510,
+    "stressGrossProfitBillions": 295.8,
+    "stressOperatingIncomeBillions": 175.8,
+    "stressNetIncomeBillions": 146.79,
+    "stressEps": 11.89,
     "valuationBands": {
       "bull": {
         "regime": "bull",
-        "label": "Bull Regime (25x P/E)",
-        "multiple": 25,
-        "targetPrice": 241,
-        "deltaFromCurrentPct": 32.05
+        "label": "Bull Regime (28x P/E)",
+        "multiple": 28,
+        "targetPrice": 332.92,
+        "deltaFromCurrentPct": -3.5
       },
       "base": {
         "regime": "base",
-        "label": "Base Regime (20.5x P/E)",
-        "multiple": 20.5,
-        "targetPrice": 197.62,
-        "deltaFromCurrentPct": 8.28
+        "label": "Base Regime (24x P/E)",
+        "multiple": 24,
+        "targetPrice": 285.36,
+        "deltaFromCurrentPct": -17.28
       },
       "panic": {
         "regime": "panic",
-        "label": "Panic Regime (14.5x P/E)",
-        "multiple": 14.5,
-        "targetPrice": 139.78,
-        "deltaFromCurrentPct": -23.41
+        "label": "Panic Regime (17x P/E)",
+        "multiple": 17,
+        "targetPrice": 202.13,
+        "deltaFromCurrentPct": -41.41
       }
     },
     "asymmetry": {
-      "downsideToBasePct": 8.28,
-      "downsideToPanicPct": -23.41,
-      "upsideToBullPct": 32.05,
-      "marketPricedInMultiple": 18.93,
-      "riskRewardRatio": 1.37
+      "downsideToBasePct": -17.28,
+      "downsideToPanicPct": -41.41,
+      "upsideToBullPct": -3.5,
+      "marketPricedInMultiple": 29.01,
+      "riskRewardRatio": 0.08
     },
     "driverShocksApplied": {
-      "search-ad-demand": 0,
-      "enterprise-cloud-ai-spend": 0,
-      "consumer-subscriptions-hardware": 0
+      "global-digital-ad-spending": 0,
+      "cloud-ai-enterprise-capex": 0,
+      "ai-inference-compute-tco": 0
     },
     "grossMarginBpsDeltaApplied": 0,
     "fixedOpexShiftPctApplied": 0

@@ -1,41 +1,41 @@
 # 财报深度分析与压力测试研报：GOOGL (Alphabet Inc.) — Q2 2026
 
-*分析日期：2026-09-15 | 财报披露日：2026-07-23 | 当前基准股价：$182.5*
+*分析日期：2026-09-15 | 财报披露日：2026-07-22 | 当前基准股价：$344.98*
 
 ## 一、 核心估值结论与投资摘要 (Summary)
 
 | 估值与收益指标 | 测算结果 | 说明与对比 |
 |----------------|----------|------------|
-| 概率加权公允价值 (WFV) | **$209.27** | 综合各情景概率测算 |
-| 相对当前股价预期涨跌幅 | **+14.67%** | 隐含安全边际 |
-| 华尔街一致预期目标价 | $215 | 买方/卖方基准 |
-| 一致预期偏离评价 | 基本符合华尔街一致预期 (In Line) | 决策倾向 |
+| 概率加权公允价值 (WFV) | **$374.7** | 综合各情景概率测算 |
+| 相对当前股价预期涨跌幅 | **+8.61%** | 隐含安全边际 |
+| 华尔街一致预期目标价 | $425 | 买方/卖方基准 |
+| 一致预期偏离评价 | 低于华尔街一致预期，持相对谨慎审慎态度 (Cautious) | 决策倾向 |
 
 ## 二、 ⚠️ 收益质量与核心经营利润审计 (Income Quality Audit)
 
-GAAP 名义每股收益 **$2.5** 包含以下一次性或非经营性账面调整：
+GAAP 名义每股收益 **$9.11** 包含以下一次性或非经营性账面调整：
 
-- **Unrealized mark-to-market gain on non-marketable equity and private venture securities under ASU 2016-01**: $4.5B (非经营性/公允价值波动) — GAAP net income includes a $4.50B pre-tax ($3.76B post-tax, or $0.30 per diluted share) non-operating unrealized fair-value mark-to-market gain on private AI and technology equity holdings under ASU 2016-01. Excluding this non-operating item normalizes GAAP headline EPS from $2.50 down to clean operating EPS of $2.20.
+- **Unrealized mark-to-market gain on equity securities under ASU 2016-01**: $99B (非经营性/公允价值波动) — GAAP net income includes a $99.0B pre-tax (~$77.3B post-tax, or $6.26 per diluted share) non-operating mark-to-market unrealized valuation surge on equity securities under ASU 2016-01. Excluding this massive accounting gain normalizes GAAP headline EPS from $9.11 down to clean operating EPS of $2.85.
 
-调整后真实核心经营 EPS (Operating EPS)：**$2.2**（剥离账面公允价值扰动）
+调整后真实核心经营 EPS (Operating EPS)：**$2.85**（剥离账面公允价值扰动）
 
 ## 三、 季度业绩与一致预期对比 (Earnings Breakdown)
 
 | 财务指标 | 实际公布值 | 彭博/彭博预期值 | 超/低预期评价 |
 |----------|------------|-----------------|----------------|
-| 营业收入 | $108.55B | $106.8B | ✅ 超预期 (Beat) |
-| 营业利润 | $35.82B | — | 同比 +14.4% |
-| 核心经营 EPS | $2.2 | $2.14 | ✅ 超预期 (Beat) |
+| 营业收入 | $119.8B | $115.5B | ✅ 超预期 (Beat) |
+| 营业利润 | $42.5B | — | 同比 +28.5% |
+| 核心经营 EPS | $2.85 | $2.72 | ✅ 超预期 (Beat) |
 
 ### 业务单元与分部数据 (Segment Breakdown)
 
 | 业务分部名称 | 营业收入 | 同比增速 (YoY) | 营业利润率 (Op. Margin) |
 |--------------|----------|----------------|-------------------------|
-| Google Search & other (Google Services) | $58.2B | +10% | 39.1% |
-| YouTube advertising (Google Services) | $10.45B | +11.8% | 36.8% |
-| Subscriptions, platforms, and devices (Google Services) | $24B | +11.2% | 34% |
-| Google Cloud (GCP & Google Workspace) | $15.52B | +29.3% | 15% |
-| Other Bets | $0.38B | +2.7% | -331.6% |
+| Google Search & other (Google Services) | $63.2B | +13.5% | 41% |
+| Google Cloud (GCP & Google Workspace) | $24.8B | +82% | 21% |
+| Subscriptions, platforms, and devices (Google Services) | $18.5B | +14% | 34% |
+| YouTube advertising (Google Services) | $12.85B | +15.2% | 38% |
+| Other Bets | $0.45B | +18.4% | -260% |
 
 ## 四、 核心基本面催化剂与概率锚定 (Catalysts & Anchors)
 
@@ -79,44 +79,44 @@ GAAP 名义每股收益 **$2.5** 包含以下一次性或非经营性账面调�
 
 ## 六、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)
 
-- **压力测试预测 EPS:** $9.64
-- **测算压力营业收入:** $435B
-- **测算压力毛利润:** $250.12B
-- **测算压力营业利润:** $142.52B
-- **测算压力净利润:** $119B
-- **恐慌底最大回撤空间:** -23.41%
-- **当前现价对应隐含 PE:** 18.93x
+- **压力测试预测 EPS:** $11.89
+- **测算压力营业收入:** $510B
+- **测算压力毛利润:** $295.8B
+- **测算压力营业利润:** $175.8B
+- **测算压力净利润:** $146.79B
+- **恐慌底最大回撤空间:** -41.41%
+- **当前现价对应隐含 PE:** 29.01x
 
 | 市场情景区间 | 估值倍数 (P/E) | 目标价格 | 相对现价预期涨跌 | 情景逻辑定义 |
 |--------------|----------------|----------|------------------|--------------|
-| 🐂 牛市情景 (Bull) | 25x | $241 | +32.05% | 需求超预期，估值倍数戴维斯双击扩张 |
-| ⚖️ 基准情景 (Base) | 20.5x | $197.62 | +8.28% | 指引中枢平稳兑现，倍数维持历史中位数 |
-| 🚨 恐慌底价 (Panic) | 14.5x | $139.78 | -23.41% | 宏观严重衰退叠加供应链资本开支削减 |
+| 🐂 牛市情景 (Bull) | 28x | $332.92 | -3.5% | 需求超预期，估值倍数戴维斯双击扩张 |
+| ⚖️ 基准情景 (Base) | 24x | $285.36 | -17.28% | 指引中枢平稳兑现，倍数维持历史中位数 |
+| 🚨 恐慌底价 (Panic) | 17x | $202.13 | -41.41% | 宏观严重衰退叠加供应链资本开支削减 |
 
 ## 六、 离散情景估值树 (Scenario Tree)
 
 | 情景名称 | 赋予概率 | 目标公允价 | 较现价涨跌幅 |
 |----------|----------|------------|--------------|
-| Bull | 25% | $268.8 | +47.29% |
-| Base | 55% | $207.9 | +13.92% |
-| Bear | 20% | $138.6 | -24.05% |
+| Bull | 25% | $490 | +42.04% |
+| Base | 55% | $380 | +10.15% |
+| Bear | 20% | $216 | -37.39% |
 
 ## 七、 敏感性分析矩阵 (Sensitivity Analysis)
 
 | 情景 | 敏感性参数 | 基准值 → 扰动值 | 目标公允价绝对变化 |
 |------|------------|-----------------|--------------------|
-| Bull | EPS +10% | 11.2 → 12.32 | +$26.88 |
-| Bull | EPS -10% | 11.2 → 10.08 | $-26.88 |
-| Bull | Multiple +2 | 24 → 26 | +$22.4 |
-| Bull | Multiple -2 | 24 → 22 | $-22.4 |
-| Base | EPS +10% | 9.9 → 10.89 | +$20.79 |
-| Base | EPS -10% | 9.9 → 8.91 | $-20.79 |
-| Base | Multiple +2 | 21 → 23 | +$19.8 |
-| Base | Multiple -2 | 21 → 19 | $-19.8 |
-| Bear | EPS +10% | 8.4 → 9.24 | +$13.86 |
-| Bear | EPS -10% | 8.4 → 7.56 | $-13.86 |
-| Bear | Multiple +2 | 16.5 → 18.5 | +$16.8 |
-| Bear | Multiple -2 | 16.5 → 14.5 | $-16.8 |
+| Bull | EPS +10% | 17.5 → 19.25 | +$49 |
+| Bull | EPS -10% | 17.5 → 15.75 | $-49 |
+| Bull | Multiple +2 | 28 → 30 | +$35 |
+| Bull | Multiple -2 | 28 → 26 | $-35 |
+| Base | EPS +10% | 15.2 → 16.72 | +$38 |
+| Base | EPS -10% | 15.2 → 13.68 | $-38 |
+| Base | Multiple +2 | 25 → 27 | +$30.4 |
+| Base | Multiple -2 | 25 → 23 | $-30.4 |
+| Bear | EPS +10% | 12 → 13.2 | +$21.6 |
+| Bear | EPS -10% | 12 → 10.8 | $-21.6 |
+| Bear | Multiple +2 | 18 → 20 | +$24 |
+| Bear | Multiple -2 | 18 → 16 | $-24 |
 
 ## 八、 历史财报市场反应复盘 (Historical Reactions)
 

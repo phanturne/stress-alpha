@@ -1,85 +1,79 @@
 {
   "ticker": "MU",
-  "company": "美光科技公司 (Micron Technology, Inc.)",
+  "company": "美光科技 (Micron Technology, Inc.)",
   "quarter": "2026财年第三季度 (Q3 2026)",
-  "reportDate": "2026-06-25",
-  "revenueBillions": 11.45,
-  "revenueGrowthPct": 68.1,
-  "revenueEstimateBillions": 10.95,
-  "operatingIncomeBillions": 4.12,
-  "operatingMarginPct": 36.0,
-  "operatingIncomeGrowthPct": 188.0,
-  "epsReported": 3.32,
-  "epsConsensus": 2.85,
-  "epsOperating": 3.03,
+  "reportDate": "2026-06-24",
+  "revenueBillions": 41.46,
+  "revenueGrowthPct": 120.0,
+  "revenueEstimateBillions": 38.50,
+  "operatingIncomeBillions": 14.80,
+  "operatingMarginPct": 35.7,
+  "operatingIncomeGrowthPct": 210.0,
+  "epsReported": 24.67,
+  "epsConsensus": 24.10,
+  "epsOperating": 25.11,
   "segments": [
     {
-      "name": "计算与网络业务部 (CNBU)",
-      "revenueBillions": 5.45,
-      "growthPct": 85.0,
-      "operatingIncomeBillions": 2.56,
-      "operatingMarginPct": 47.0
-    },
-    {
-      "name": "移动业务部 (MBU)",
-      "revenueBillions": 2.15,
-      "growthPct": 42.0,
-      "operatingIncomeBillions": 0.58,
-      "operatingMarginPct": 27.0
-    },
-    {
-      "name": "嵌入式业务部 (EBU)",
-      "revenueBillions": 1.45,
-      "growthPct": 26.0,
-      "operatingIncomeBillions": 0.36,
-      "operatingMarginPct": 25.0
+      "name": "计算与网络事业部 (CNBU)",
+      "revenueBillions": 21.50,
+      "growthPct": 185.0,
+      "operatingIncomeBillions": 10.32,
+      "operatingMarginPct": 48.0
     },
     {
       "name": "存储业务部 (SBU)",
-      "revenueBillions": 2.40,
-      "growthPct": 82.0,
-      "operatingIncomeBillions": 0.62,
+      "revenueBillions": 8.60,
+      "growthPct": 95.0,
+      "operatingIncomeBillions": 2.92,
+      "operatingMarginPct": 34.0
+    },
+    {
+      "name": "移动事业部 (MBU)",
+      "revenueBillions": 6.80,
+      "growthPct": 55.0,
+      "operatingIncomeBillions": 1.97,
+      "operatingMarginPct": 29.0
+    },
+    {
+      "name": "嵌入式事业部 (EBU)",
+      "revenueBillions": 4.56,
+      "growthPct": 38.0,
+      "operatingIncomeBillions": 1.19,
       "operatingMarginPct": 26.0
     }
   ],
   "oneTimeItems": [
     {
-      "description": "《芯片与科学法案》第四篇直接资本补贴里程碑确认",
+      "description": "美国《芯片法案》第四条款直接资本补贴里程碑确认",
       "amountBillions": 0.38,
       "isOperating": false,
-      "note": "博伊西 (Boise) 和雪城 (Syracuse) 超级晶圆厂建设里程碑达成的直接联邦及爱达荷州资本支出补贴确认；非经常性资本补贴推高了GAAP净利润。"
+      "note": "博伊西与锡拉丘兹超级晶圆厂联邦及州资本开支补贴按完工进度确认，属于非经营性补贴扰动，虚增GAAP净利润。"
     },
     {
-      "description": "离散型海外税务估值拨备释放收益",
+      "description": "海外递延所得税资产评估减值准备转回",
       "amountBillions": 0.18,
       "isOperating": false,
-      "note": "根据ASC 740准则评估递延所得税资产及国际架构重组带来的离散型非经常性税收抵免，推高了GAAP净利润。"
-    },
-    {
-      "description": "前期成本与市价孰低法 (LCM) 存货跌价准备转回",
-      "amountBillions": 0.12,
-      "isOperating": true,
-      "note": "此前计提跌价准备的传统3D NAND晶圆存货恢复价值并对外销售，为本季度经营性毛利率带来约1.2亿美元（约105个基点）的提振。"
+      "note": "根据ASC 740在跨国税务重组下的递延所得税准备转回，属于非经营性税收减免。"
     }
   ],
-  "guidanceOperatingIncomeLowBillions": 4.50,
-  "guidanceOperatingIncomeHighBillions": 4.90,
-  "guidanceRevenueLowBillions": 12.20,
-  "guidanceRevenueHighBillions": 12.80,
-  "currentPrice": 145.00,
-  "marketCapBillions": 165.30,
-  "trailingEps": 7.95,
-  "forwardEpsConsensus": 12.00,
+  "guidanceOperatingIncomeLowBillions": 15.50,
+  "guidanceOperatingIncomeHighBillions": 17.00,
+  "guidanceRevenueLowBillions": 43.00,
+  "guidanceRevenueHighBillions": 46.00,
+  "currentPrice": 923.75,
+  "marketCapBillions": 1053.08,
+  "trailingEps": 58.50,
+  "forwardEpsConsensus": 75.00,
   "sources": [
     {
       "url": "https://investors.micron.com/news-releases/news-release-details/micron-technology-inc-reports-results-third-quarter-fiscal-2026",
-      "title": "美光科技公布2026财年第三季度财务业绩",
-      "date": "2026-06-25"
+      "title": "美光科技发布2026财年第三季度财报",
+      "date": "2026-06-24"
     },
     {
       "url": "https://www.sec.gov/edgar/browse/?CIK=0000723125",
-      "title": "美国SEC Form 10-Q 季度报告 - 美光科技 2026财年第三季度",
-      "date": "2026-06-26"
+      "title": "美国证监会 Form 10-Q 季报 - 美光科技",
+      "date": "2026-06-25"
     }
   ],
   "analysisDate": "2026-09-15"

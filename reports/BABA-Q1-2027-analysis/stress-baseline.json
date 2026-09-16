@@ -1,13 +1,13 @@
 {
-  "baseRevenueBillions": 152.0,
-  "baseGrossMarginPct": 38.5,
-  "fixedOpexBillions": 34.2,
+  "baseRevenueBillions": 165.0,
+  "baseGrossMarginPct": 39.5,
+  "fixedOpexBillions": 35.0,
   "taxRatePct": 17.5,
   "dilutedSharesBillions": 2.38,
   "multipleRegimes": {
-    "bull": 15.5,
-    "base": 11.5,
-    "panic": 7.5
+    "bull": 16.5,
+    "base": 13.0,
+    "panic": 8.5
   },
   "upstreamDrivers": [
     {

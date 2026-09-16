@@ -1,127 +1,127 @@
 {
   "ticker": "BABA",
   "analysisDate": "2026-09-15",
-  "currentPrice": 88.5,
-  "weightedFairValue": 111.53,
-  "upsidePct": 26.02,
+  "currentPrice": 109.34,
+  "weightedFairValue": 145.11,
+  "upsidePct": 32.71,
   "scenarioResults": [
     {
-      "name": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "name": "Bull",
       "probability": 0.25,
-      "fairValue": 156.6,
-      "upsideFromCurrent": 76.95
+      "fairValue": 209.25,
+      "upsideFromCurrent": 91.38
     },
     {
-      "name": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "name": "Base",
       "probability": 0.55,
-      "fairValue": 108.1,
-      "upsideFromCurrent": 22.15
+      "fairValue": 140.4,
+      "upsideFromCurrent": 28.41
     },
     {
-      "name": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
+      "name": "Bear",
       "probability": 0.2,
-      "fairValue": 64.6,
-      "upsideFromCurrent": -27.01
+      "fairValue": 77.9,
+      "upsideFromCurrent": -28.75
     }
   ],
   "sensitivity": [
     {
-      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "scenario": "Bull",
+      "parameter": "EPS +10%",
+      "baseValue": 13.5,
+      "altValue": 14.85,
+      "fairValueDelta": 20.93
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "EPS -10%",
+      "baseValue": 13.5,
+      "altValue": 12.15,
+      "fairValueDelta": -20.92
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple +2",
+      "baseValue": 15.5,
+      "altValue": 17.5,
+      "fairValueDelta": 27
+    },
+    {
+      "scenario": "Bull",
+      "parameter": "Multiple -2",
+      "baseValue": 15.5,
+      "altValue": 13.5,
+      "fairValueDelta": -27
+    },
+    {
+      "scenario": "Base",
       "parameter": "EPS +10%",
       "baseValue": 10.8,
       "altValue": 11.88,
-      "fairValueDelta": 15.66
+      "fairValueDelta": 14.04
     },
     {
-      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "scenario": "Base",
       "parameter": "EPS -10%",
       "baseValue": 10.8,
       "altValue": 9.72,
-      "fairValueDelta": -15.66
+      "fairValueDelta": -14.04
     },
     {
-      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "scenario": "Base",
       "parameter": "Multiple +2",
-      "baseValue": 14.5,
-      "altValue": 16.5,
+      "baseValue": 13,
+      "altValue": 15,
       "fairValueDelta": 21.6
     },
     {
-      "scenario": "Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound",
+      "scenario": "Base",
       "parameter": "Multiple -2",
-      "baseValue": 14.5,
-      "altValue": 12.5,
+      "baseValue": 13,
+      "altValue": 11,
       "fairValueDelta": -21.6
     },
     {
-      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "scenario": "Bear",
       "parameter": "EPS +10%",
-      "baseValue": 9.4,
-      "altValue": 10.34,
-      "fairValueDelta": 10.81
+      "baseValue": 8.2,
+      "altValue": 9.02,
+      "fairValueDelta": 7.79
     },
     {
-      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "scenario": "Bear",
       "parameter": "EPS -10%",
-      "baseValue": 9.4,
-      "altValue": 8.46,
-      "fairValueDelta": -10.81
+      "baseValue": 8.2,
+      "altValue": 7.38,
+      "fairValueDelta": -7.79
     },
     {
-      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "scenario": "Bear",
       "parameter": "Multiple +2",
-      "baseValue": 11.5,
-      "altValue": 13.5,
-      "fairValueDelta": 18.8
+      "baseValue": 9.5,
+      "altValue": 11.5,
+      "fairValueDelta": 16.4
     },
     {
-      "scenario": "Base: Steady Core Stabilization & Disciplined Capital Return",
+      "scenario": "Bear",
       "parameter": "Multiple -2",
-      "baseValue": 11.5,
-      "altValue": 9.5,
-      "fairValueDelta": -18.8
-    },
-    {
-      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
-      "parameter": "EPS +10%",
-      "baseValue": 7.6,
-      "altValue": 8.36,
-      "fairValueDelta": 6.46
-    },
-    {
-      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
-      "parameter": "EPS -10%",
-      "baseValue": 7.6,
-      "altValue": 6.84,
-      "fairValueDelta": -6.46
-    },
-    {
-      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
-      "parameter": "Multiple +2",
-      "baseValue": 8.5,
-      "altValue": 10.5,
-      "fairValueDelta": 15.2
-    },
-    {
-      "scenario": "Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag",
-      "parameter": "Multiple -2",
-      "baseValue": 8.5,
-      "altValue": 6.5,
-      "fairValueDelta": -15.2
+      "baseValue": 9.5,
+      "altValue": 7.5,
+      "fairValueDelta": -16.4
     }
   ],
-  "consensusTarget": 110,
-  "verdictVsConsensus": "In line with consensus ($110) — delta +1.39%",
+  "consensusTarget": 186,
+  "verdictVsConsensus": "Below consensus ($186) by 21.98% — more cautious",
   "baseline": {
-    "baseRevenueBillions": 152,
-    "baseGrossMarginPct": 38.5,
-    "fixedOpexBillions": 34.2,
+    "baseRevenueBillions": 165,
+    "baseGrossMarginPct": 39.5,
+    "fixedOpexBillions": 35,
     "taxRatePct": 17.5,
     "dilutedSharesBillions": 2.38,
     "multipleRegimes": {
-      "bull": 15.5,
-      "base": 11.5,
-      "panic": 7.5
+      "bull": 16.5,
+      "base": 13,
+      "panic": 8.5
     },
     "upstreamDrivers": [
       {
@@ -163,40 +163,40 @@
     ]
   },
   "stressTest": {
-    "stressRevenueBillions": 152,
-    "stressGrossProfitBillions": 58.52,
-    "stressOperatingIncomeBillions": 24.32,
-    "stressNetIncomeBillions": 20.06,
-    "stressEps": 8.43,
+    "stressRevenueBillions": 165,
+    "stressGrossProfitBillions": 65.18,
+    "stressOperatingIncomeBillions": 30.18,
+    "stressNetIncomeBillions": 24.9,
+    "stressEps": 10.46,
     "valuationBands": {
       "bull": {
         "regime": "bull",
-        "label": "Bull Regime (15.5x P/E)",
-        "multiple": 15.5,
-        "targetPrice": 130.67,
-        "deltaFromCurrentPct": 47.65
+        "label": "Bull Regime (16.5x P/E)",
+        "multiple": 16.5,
+        "targetPrice": 172.59,
+        "deltaFromCurrentPct": 57.85
       },
       "base": {
         "regime": "base",
-        "label": "Base Regime (11.5x P/E)",
-        "multiple": 11.5,
-        "targetPrice": 96.95,
-        "deltaFromCurrentPct": 9.55
+        "label": "Base Regime (13x P/E)",
+        "multiple": 13,
+        "targetPrice": 135.98,
+        "deltaFromCurrentPct": 24.36
       },
       "panic": {
         "regime": "panic",
-        "label": "Panic Regime (7.5x P/E)",
-        "multiple": 7.5,
-        "targetPrice": 63.22,
-        "deltaFromCurrentPct": -28.56
+        "label": "Panic Regime (8.5x P/E)",
+        "multiple": 8.5,
+        "targetPrice": 88.91,
+        "deltaFromCurrentPct": -18.68
       }
     },
     "asymmetry": {
-      "downsideToBasePct": 9.55,
-      "downsideToPanicPct": -28.56,
-      "upsideToBullPct": 47.65,
-      "marketPricedInMultiple": 10.5,
-      "riskRewardRatio": 1.67
+      "downsideToBasePct": 24.36,
+      "downsideToPanicPct": -18.68,
+      "upsideToBullPct": 57.85,
+      "marketPricedInMultiple": 10.45,
+      "riskRewardRatio": 3.1
     },
     "driverShocksApplied": {
       "china-retail-macro-consumption": 0,

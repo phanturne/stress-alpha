@@ -1,41 +1,41 @@
 {
-  "baseRevenueBillions": 52.5,
-  "baseGrossMarginPct": 43.5,
-  "fixedOpexBillions": 5.6,
+  "baseRevenueBillions": 185.0,
+  "baseGrossMarginPct": 56.5,
+  "fixedOpexBillions": 20.5,
   "taxRatePct": 14.5,
   "dilutedSharesBillions": 1.14,
   "multipleRegimes": {
-    "bull": 15.0,
-    "base": 12.5,
-    "panic": 8.0
+    "bull": 18.0,
+    "base": 14.0,
+    "panic": 9.0
   },
   "upstreamDrivers": [
     {
-      "id": "hyperscaler-ai-capex",
-      "name": "Cloud Hyperscaler AI Infrastructure & Server CapEx",
+      "id": "hyperscaler-hbm-demand",
+      "name": "Hyperscaler AI Accelerator HBM3e/HBM4 Allocation",
       "exposureShare": 0.48,
-      "elasticity": 1.25,
-      "defaultShockPct": 0,
-      "minShockPct": -50,
-      "maxShockPct": 50
-    },
-    {
-      "id": "hbm-advanced-packaging-yield",
-      "name": "Advanced HBM3e/HBM4 Packaging & TSV Wafer Yields",
-      "exposureShare": 0.28,
-      "elasticity": 0.95,
+      "elasticity": 1.10,
       "defaultShockPct": 0,
       "minShockPct": -40,
       "maxShockPct": 40
     },
     {
-      "id": "edge-device-ai-dram",
-      "name": "On-Device AI Smartphone & PC Memory Upgrades",
-      "exposureShare": 0.24,
-      "elasticity": 0.75,
+      "id": "pc-mobile-on-device-ai",
+      "name": "Edge AI Smartphone & PC DRAM Density (16-32GB)",
+      "exposureShare": 0.32,
+      "elasticity": 0.80,
       "defaultShockPct": 0,
-      "minShockPct": -35,
-      "maxShockPct": 35
+      "minShockPct": -30,
+      "maxShockPct": 30
+    },
+    {
+      "id": "enterprise-qlc-ssd",
+      "name": "Enterprise D5/QLC SSD Hyperscaler Storage Migration",
+      "exposureShare": 0.20,
+      "elasticity": 0.90,
+      "defaultShockPct": 0,
+      "minShockPct": -30,
+      "maxShockPct": 30
     }
   ]
 }

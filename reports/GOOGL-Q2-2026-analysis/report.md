@@ -1,41 +1,41 @@
 # Earnings Analysis: GOOGL — Q2 2026
 
-*Analysis date: 2026-09-15 | Report date: 2026-07-23 | Price: $182.5*
+*Analysis date: 2026-09-15 | Report date: 2026-07-22 | Price: $344.98*
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Weighted Fair Value | **$209.27** |
-| Upside from Current | +14.67% |
-| Consensus PT | $215 |
-| Verdict | In line with consensus ($215) — delta -2.67% |
+| Weighted Fair Value | **$374.7** |
+| Upside from Current | +8.61% |
+| Consensus PT | $425 |
+| Verdict | Below consensus ($425) by 11.84% — more cautious |
 
 ## ⚠️ Income Quality Adjustment
 
-Headline EPS $2.5 includes one-time items:
+Headline EPS $9.11 includes one-time items:
 
-- **Unrealized mark-to-market gain on non-marketable equity and private venture securities under ASU 2016-01**: $4.5B (non-operating) — GAAP net income includes a $4.50B pre-tax ($3.76B post-tax, or $0.30 per diluted share) non-operating unrealized fair-value mark-to-market gain on private AI and technology equity holdings under ASU 2016-01. Excluding this non-operating item normalizes GAAP headline EPS from $2.50 down to clean operating EPS of $2.20.
+- **Unrealized mark-to-market gain on equity securities under ASU 2016-01**: $99B (non-operating) — GAAP net income includes a $99.0B pre-tax (~$77.3B post-tax, or $6.26 per diluted share) non-operating mark-to-market unrealized valuation surge on equity securities under ASU 2016-01. Excluding this massive accounting gain normalizes GAAP headline EPS from $9.11 down to clean operating EPS of $2.85.
 
-Operating EPS (adjusted): **$2.2**
+Operating EPS (adjusted): **$2.85**
 
 ## Earnings Breakdown
 
 | Metric | Actual | Estimate | Beat/Miss |
 |--------|--------|----------|-----------|
-| Revenue | $108.55B | $106.8B | ✅ Beat |
-| Op. Income | $35.82B | — | +14.4% YoY |
-| EPS (operating) | $2.2 | $2.14 | ✅ Beat |
+| Revenue | $119.8B | $115.5B | ✅ Beat |
+| Op. Income | $42.5B | — | +28.5% YoY |
+| EPS (operating) | $2.85 | $2.72 | ✅ Beat |
 
 ### Segments
 
 | Segment | Revenue | Growth | Op. Margin |
 |---------|---------|--------|------------|
-| Google Search & other (Google Services) | $58.2B | +10% | 39.1% |
-| YouTube advertising (Google Services) | $10.45B | +11.8% | 36.8% |
-| Subscriptions, platforms, and devices (Google Services) | $24B | +11.2% | 34% |
-| Google Cloud (GCP & Google Workspace) | $15.52B | +29.3% | 15% |
-| Other Bets | $0.38B | +2.7% | -331.6% |
+| Google Search & other (Google Services) | $63.2B | +13.5% | 41% |
+| Google Cloud (GCP & Google Workspace) | $24.8B | +82% | 21% |
+| Subscriptions, platforms, and devices (Google Services) | $18.5B | +14% | 34% |
+| YouTube advertising (Google Services) | $12.85B | +15.2% | 38% |
+| Other Bets | $0.45B | +18.4% | -260% |
 
 ## Catalysts
 
@@ -79,44 +79,44 @@ Operating EPS (adjusted): **$2.2**
 
 ## ⚡ StressAlpha Dynamic Valuation Bands & Flow-Through
 
-- **Stressed Diluted EPS:** $9.64
-- **Stressed Revenue:** $435B
-- **Stressed Gross Profit:** $250.12B
-- **Stressed Operating Income:** $142.52B
-- **Stressed Net Income:** $119B
-- **Downside to Panic Floor:** -23.41%
-- **Market Priced-In Multiple:** 18.93x
+- **Stressed Diluted EPS:** $11.89
+- **Stressed Revenue:** $510B
+- **Stressed Gross Profit:** $295.8B
+- **Stressed Operating Income:** $175.8B
+- **Stressed Net Income:** $146.79B
+- **Downside to Panic Floor:** -41.41%
+- **Market Priced-In Multiple:** 29.01x
 
 | Regime | Multiple | Target Price | Delta vs Current |
 |--------|----------|--------------|------------------|
-| 🐂 Bull | 25x | $241 | +32.05% |
-| ⚖️ Base | 20.5x | $197.62 | +8.28% |
-| 🚨 Panic | 14.5x | $139.78 | -23.41% |
+| 🐂 Bull | 28x | $332.92 | -3.5% |
+| ⚖️ Base | 24x | $285.36 | -17.28% |
+| 🚨 Panic | 17x | $202.13 | -41.41% |
 
 ## Scenario Analysis
 
 | Scenario | Prob. | Fair Value | Upside |
 |----------|-------|------------|--------|
-| Bull | 25% | $268.8 | +47.29% |
-| Base | 55% | $207.9 | +13.92% |
-| Bear | 20% | $138.6 | -24.05% |
+| Bull | 25% | $490 | +42.04% |
+| Base | 55% | $380 | +10.15% |
+| Bear | 20% | $216 | -37.39% |
 
 ## Sensitivity Analysis
 
 | Scenario | Parameter | Base → Alt | FV Delta |
 |----------|-----------|------------|----------|
-| Bull | EPS +10% | 11.2 → 12.32 | +$26.88 |
-| Bull | EPS -10% | 11.2 → 10.08 | $-26.88 |
-| Bull | Multiple +2 | 24 → 26 | +$22.4 |
-| Bull | Multiple -2 | 24 → 22 | $-22.4 |
-| Base | EPS +10% | 9.9 → 10.89 | +$20.79 |
-| Base | EPS -10% | 9.9 → 8.91 | $-20.79 |
-| Base | Multiple +2 | 21 → 23 | +$19.8 |
-| Base | Multiple -2 | 21 → 19 | $-19.8 |
-| Bear | EPS +10% | 8.4 → 9.24 | +$13.86 |
-| Bear | EPS -10% | 8.4 → 7.56 | $-13.86 |
-| Bear | Multiple +2 | 16.5 → 18.5 | +$16.8 |
-| Bear | Multiple -2 | 16.5 → 14.5 | $-16.8 |
+| Bull | EPS +10% | 17.5 → 19.25 | +$49 |
+| Bull | EPS -10% | 17.5 → 15.75 | $-49 |
+| Bull | Multiple +2 | 28 → 30 | +$35 |
+| Bull | Multiple -2 | 28 → 26 | $-35 |
+| Base | EPS +10% | 15.2 → 16.72 | +$38 |
+| Base | EPS -10% | 15.2 → 13.68 | $-38 |
+| Base | Multiple +2 | 25 → 27 | +$30.4 |
+| Base | Multiple -2 | 25 → 23 | $-30.4 |
+| Bear | EPS +10% | 12 → 13.2 | +$21.6 |
+| Bear | EPS -10% | 12 → 10.8 | $-21.6 |
+| Bear | Multiple +2 | 18 → 20 | +$24 |
+| Bear | Multiple -2 | 18 → 16 | $-24 |
 
 ## Historical Reactions
 

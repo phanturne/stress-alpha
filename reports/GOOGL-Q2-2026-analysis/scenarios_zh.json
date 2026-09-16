@@ -1,19 +1,18 @@
 {
   "ticker": "GOOGL",
   "basisYear": "FY2027",
-  "currentPrice": 182.50,
-  "consensusTarget": 215.00,
+  "currentPrice": 344.98,
+  "consensusTarget": 425.0,
   "scenarios": [
     {
       "name": "牛市情景 (Bull)",
       "probability": 0.25,
-      "forwardEps": 11.20,
-      "multiple": 24.0,
+      "forwardEps": 17.50,
+      "multiple": 28.0,
       "assumptions": [
-        "谷歌云（GCP）在企业级 Gemini 1.5/2.0 API 调用爆发与 Vertex AI 规模化扩张带动下，年化营收增速提速至 35% 以上，云业务营业利润率向 20% 逼近。",
-        "AI Overviews 搜索概览全面捍卫核心搜索总查询量，生成式多模态广告与对话式商业意图点击拉动混合广告单价提升（CPC 同比 +6%）。",
-        "自研 TPU v6 Trillium 内部算力部署占比突破 60%，推动内部综合计算与网络 TCO 较外采 GPU 方案大幅节约 35%。",
-        "美国司法部反垄断救济裁决避免了对 Chrome 或 Android 的强制性业务拆分，仅推行良性的浏览器选择弹窗，谷歌搜索在默认渠道的实际保留率保持在 85% 以上。"
+        "谷歌云年化营收规模突破1000亿美元大关，Vertex AI平台在财富500强企业深度渗透，分部营业利润率升至24%。",
+        "AI Overviews商业点击率与高商业意图广告变现大幅超预期，核心搜索市场份额稳守90%以上绝对霸主地位。",
+        "自研TPU v6 Trillium芯片全面替代第三方GPU承担内部核心推理，单Token推理边际服务成本降低45%。"
       ],
       "keyDrivers": [
         "cloud-vertex-ai-ramp",
@@ -24,35 +23,32 @@
     {
       "name": "基准情景 (Base)",
       "probability": 0.55,
-      "forwardEps": 9.90,
-      "multiple": 21.0,
+      "forwardEps": 15.20,
+      "multiple": 25.0,
       "assumptions": [
-        "谷歌服务（Google Services）营收维持 9-10% 的稳健增长，YouTube 联网电视与 Shorts 短视频广告单价回升有效对冲传统展示广告放缓。",
-        "谷歌云年化复合增速维持在 25-28% 区间，营业利润率稳步向 16-18% 释放规模效益。",
-        "全年 520-550 亿美元高资本开支使 2027 财年新增约 25 亿美元固定折旧成本，对整体经营杠杆释放带来温和压制。",
-        "司法部反垄断诉讼最终落地为行为性救济（移动与浏览器默认选项选择弹窗及渠道分成比例上限规范），未发生强制性业务剥离。"
+        "核心搜索广告收入平稳保持10-12%内生复合增长，YouTube联网电视（CTV）与Shorts短视频变现率持续双位数抬升。",
+        "谷歌云营收维系35-40%稳健增长，经营利润率平稳维持在18-20%区间。",
+        "美国司法部反垄断诉讼最终裁决限定于行为合规与默认分发选择机制，避免触发强制分拆核心资产的结构性补救措施。"
       ],
       "keyDrivers": [
         "ai-overviews-monetization",
         "youtube-ctv-shorts-pricing",
-        "capex-depreciation-drag",
         "doj-antitrust-remedies"
       ]
     },
     {
       "name": "熊市情景 (Bear)",
       "probability": 0.20,
-      "forwardEps": 8.40,
-      "multiple": 16.5,
+      "forwardEps": 12.00,
+      "multiple": 18.0,
       "assumptions": [
-        "司法部救济裁决激进禁止排他性默认搜索引擎分发协议（终止每年向苹果 Safari 支付的 200 亿+美元分成），导致 10-12% 的搜索流量被竞争对手或原生系统 AI 助手分流。",
-        "AI Overviews 生成式查询的高额算力成本侵蚀整体毛利率，且部分用户满足于直接 AI 概览答案而不点击商业广告赞助链接，导致广告转化率与点击率承压。",
-        "海量 AI 算力资产投入带来沉重的前置折旧负担，而企业级云软件变现不及预期，导致公司整体营业利润率受压回落至 28%。"
+        "反垄断司法判决强制剥离或终止苹果iOS及主流安卓厂商的默认搜索引擎预装排他协议。",
+        "生成式AI对话机器人逐步分流部分高净值漏斗顶端信息类搜索请求。",
+        "算力基础设施数百亿美元巨额资本开支进入折旧高峰期，拖累整体营业利润率回落至28%中枢。"
       ],
       "keyDrivers": [
         "doj-antitrust-remedies",
-        "capex-depreciation-drag",
-        "ai-overviews-monetization"
+        "capex-depreciation-drag"
       ]
     }
   ]

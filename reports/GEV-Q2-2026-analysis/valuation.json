@@ -1,27 +1,27 @@
 {
   "ticker": "GEV",
   "analysisDate": "2026-09-15",
-  "currentPrice": 881.21,
+  "currentPrice": 885.51,
   "weightedFairValue": 1056.85,
-  "upsidePct": 19.93,
+  "upsidePct": 19.35,
   "scenarioResults": [
     {
       "name": "Bull",
       "probability": 0.35,
       "fairValue": 1334,
-      "upsideFromCurrent": 51.38
+      "upsideFromCurrent": 50.65
     },
     {
       "name": "Base",
       "probability": 0.45,
       "fairValue": 1071,
-      "upsideFromCurrent": 21.54
+      "upsideFromCurrent": 20.95
     },
     {
       "name": "Bear",
       "probability": 0.2,
       "fairValue": 540,
-      "upsideFromCurrent": -38.72
+      "upsideFromCurrent": -39.02
     }
   ],
   "sensitivity": [
@@ -165,29 +165,29 @@
         "label": "Bull Regime (48x P/E)",
         "multiple": 48,
         "targetPrice": 1208.16,
-        "deltaFromCurrentPct": 37.1
+        "deltaFromCurrentPct": 36.44
       },
       "base": {
         "regime": "base",
         "label": "Base Regime (40x P/E)",
         "multiple": 40,
         "targetPrice": 1006.8,
-        "deltaFromCurrentPct": 14.25
+        "deltaFromCurrentPct": 13.7
       },
       "panic": {
         "regime": "panic",
         "label": "Panic Regime (22x P/E)",
         "multiple": 22,
         "targetPrice": 553.74,
-        "deltaFromCurrentPct": -37.16
+        "deltaFromCurrentPct": -37.47
       }
     },
     "asymmetry": {
-      "downsideToBasePct": 14.25,
-      "downsideToPanicPct": -37.16,
-      "upsideToBullPct": 37.1,
-      "marketPricedInMultiple": 35.01,
-      "riskRewardRatio": 1
+      "downsideToBasePct": 13.7,
+      "downsideToPanicPct": -37.47,
+      "upsideToBullPct": 36.44,
+      "marketPricedInMultiple": 35.18,
+      "riskRewardRatio": 0.97
     },
     "driverShocksApplied": {
       "hyperscaler-power-interconnection-capex": 0,

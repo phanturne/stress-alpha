@@ -1,44 +1,44 @@
 # 财报深度分析与压力测试研报：BABA (Alibaba Group Holding Limited) — Q1 FY2027
 
-*分析日期：2026-09-15 | 财报披露日：2026-08-14 | 当前基准股价：$88.5*
+*分析日期：2026-09-15 | 财报披露日：2026-08-20 | 当前基准股价：$109.34*
 
 ## 一、 核心估值结论与投资摘要 (Summary)
 
 | 估值与收益指标 | 测算结果 | 说明与对比 |
 |----------------|----------|------------|
-| 概率加权公允价值 (WFV) | **$111.53** | 综合各情景概率测算 |
-| 相对当前股价预期涨跌幅 | **+26.02%** | 隐含安全边际 |
-| 华尔街一致预期目标价 | $110 | 买方/卖方基准 |
-| 一致预期偏离评价 | 基本符合华尔街一致预期 (In Line) | 决策倾向 |
+| 概率加权公允价值 (WFV) | **$145.11** | 综合各情景概率测算 |
+| 相对当前股价预期涨跌幅 | **+32.71%** | 隐含安全边际 |
+| 华尔街一致预期目标价 | $186 | 买方/卖方基准 |
+| 一致预期偏离评价 | 低于华尔街一致预期，持相对谨慎审慎态度 (Cautious) | 决策倾向 |
 
 ## 二、 ⚠️ 收益质量与核心经营利润审计 (Income Quality Audit)
 
-GAAP 名义每股收益 **$1.88** 包含以下一次性或非经营性账面调整：
+GAAP 名义每股收益 **$0.64** 包含以下一次性或非经营性账面调整：
 
 - **ASU 2016-01 mark-to-market net loss on listed and private equity investments**: $-0.85B (非经营性/公允价值波动) — GAAP results include non-operating mark-to-market valuation losses on publicly traded equity securities and private portfolio holdings under ASU 2016-01, artificially depressing headline GAAP EPS.
 - **Share of results and dividend distributions of equity method investees (Ant Group)**: $0.52B (非经营性/公允价值波动) — Ant Group profit contribution and dividend flow reflecting finalized fintech restructuring, recorded as non-operating investment income.
 - **Share-based compensation (SBC) expense and acquired intangible asset amortization**: $-0.97B (非经营性/公允价值波动) — Non-cash stock-based compensation ($0.68B) and acquisition amortization ($0.29B) deducted from GAAP operating income to isolate core cash operating performance.
 
-调整后真实核心经营 EPS (Operating EPS)：**$2.24**（剥离账面公允价值扰动）
+调整后真实核心经营 EPS (Operating EPS)：**$1.26**（剥离账面公允价值扰动）
 
 ## 三、 季度业绩与一致预期对比 (Earnings Breakdown)
 
 | 财务指标 | 实际公布值 | 彭博/彭博预期值 | 超/低预期评价 |
 |----------|------------|-----------------|----------------|
-| 营业收入 | $37.03B | $36.45B | ✅ 超预期 (Beat) |
-| 营业利润 | $5.28B | — | 同比 +8.5% |
-| 核心经营 EPS | $2.24 | $2.16 | ✅ 超预期 (Beat) |
+| 营业收入 | $39.64B | $39.2B | ✅ 超预期 (Beat) |
+| 营业利润 | $5.48B | — | 同比 +11.2% |
+| 核心经营 EPS | $1.26 | $1.49 | ❌ 低于预期 (Miss) |
 
 ### 业务单元与分部数据 (Segment Breakdown)
 
 | 业务分部名称 | 营业收入 | 同比增速 (YoY) | 营业利润率 (Op. Margin) |
 |--------------|----------|----------------|-------------------------|
-| Taobao and Tmall Group (TTG) | $16.25B | +2.8% | 42.15% |
-| Cloud Intelligence Group | $4.35B | +18.5% | 11.03% |
-| Alibaba International Digital Commerce (AIDC) | $5.15B | +24.2% | -7.38% |
-| Cainiao Smart Logistics Network | $4.28B | +14.5% | 3.74% |
-| Local Services Group (Amap / Ele.me) | $2.55B | +12% | -1.57% |
-| All Others (DingTalk, Entertainment & New Retail) | $4.45B | +4.5% | -3.37% |
+| Taobao and Tmall Group (TTG) | $17.15B | +3.5% | 40.35% |
+| Cloud Intelligence Group | $4.95B | +45% | 11.72% |
+| Alibaba International Digital Commerce (AIDC) | $5.42B | +26.5% | -5.9% |
+| Cainiao Smart Logistics Network | $4.45B | +15% | 4.04% |
+| Local Services Group (Amap / Ele.me) | $2.72B | +13.2% | -0.74% |
+| All Others (DingTalk, Entertainment & New Retail) | $4.95B | +5.1% | -2.42% |
 
 ## 四、 核心基本面催化剂与概率锚定 (Catalysts & Anchors)
 
@@ -82,44 +82,44 @@ GAAP 名义每股收益 **$1.88** 包含以下一次性或非经营性账面调�
 
 ## 六、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)
 
-- **压力测试预测 EPS:** $8.43
-- **测算压力营业收入:** $152B
-- **测算压力毛利润:** $58.52B
-- **测算压力营业利润:** $24.32B
-- **测算压力净利润:** $20.06B
-- **恐慌底最大回撤空间:** -28.56%
-- **当前现价对应隐含 PE:** 10.5x
+- **压力测试预测 EPS:** $10.46
+- **测算压力营业收入:** $165B
+- **测算压力毛利润:** $65.18B
+- **测算压力营业利润:** $30.18B
+- **测算压力净利润:** $24.9B
+- **恐慌底最大回撤空间:** -18.68%
+- **当前现价对应隐含 PE:** 10.45x
 
 | 市场情景区间 | 估值倍数 (P/E) | 目标价格 | 相对现价预期涨跌 | 情景逻辑定义 |
 |--------------|----------------|----------|------------------|--------------|
-| 🐂 牛市情景 (Bull) | 15.5x | $130.67 | +47.65% | 需求超预期，估值倍数戴维斯双击扩张 |
-| ⚖️ 基准情景 (Base) | 11.5x | $96.95 | +9.55% | 指引中枢平稳兑现，倍数维持历史中位数 |
-| 🚨 恐慌底价 (Panic) | 7.5x | $63.22 | -28.56% | 宏观严重衰退叠加供应链资本开支削减 |
+| 🐂 牛市情景 (Bull) | 16.5x | $172.59 | +57.85% | 需求超预期，估值倍数戴维斯双击扩张 |
+| ⚖️ 基准情景 (Base) | 13x | $135.98 | +24.36% | 指引中枢平稳兑现，倍数维持历史中位数 |
+| 🚨 恐慌底价 (Panic) | 8.5x | $88.91 | -18.68% | 宏观严重衰退叠加供应链资本开支削减 |
 
 ## 六、 离散情景估值树 (Scenario Tree)
 
 | 情景名称 | 赋予概率 | 目标公允价 | 较现价涨跌幅 |
 |----------|----------|------------|--------------|
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | 25% | $156.6 | +76.95% |
-| Base: Steady Core Stabilization & Disciplined Capital Return | 55% | $108.1 | +22.15% |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | 20% | $64.6 | -27.01% |
+| Bull | 25% | $209.25 | +91.38% |
+| Base | 55% | $140.4 | +28.41% |
+| Bear | 20% | $77.9 | -28.75% |
 
 ## 七、 敏感性分析矩阵 (Sensitivity Analysis)
 
 | 情景 | 敏感性参数 | 基准值 → 扰动值 | 目标公允价绝对变化 |
 |------|------------|-----------------|--------------------|
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | EPS +10% | 10.8 → 11.88 | +$15.66 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | EPS -10% | 10.8 → 9.72 | $-15.66 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | Multiple +2 | 14.5 → 16.5 | +$21.6 |
-| Bull: AI Cloud Acceleration & Domestic Take-Rate Rebound | Multiple -2 | 14.5 → 12.5 | $-21.6 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | EPS +10% | 9.4 → 10.34 | +$10.81 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | EPS -10% | 9.4 → 8.46 | $-10.81 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | Multiple +2 | 11.5 → 13.5 | +$18.8 |
-| Base: Steady Core Stabilization & Disciplined Capital Return | Multiple -2 | 11.5 → 9.5 | $-18.8 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | EPS +10% | 7.6 → 8.36 | +$6.46 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | EPS -10% | 7.6 → 6.84 | $-6.46 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | Multiple +2 | 8.5 → 10.5 | +$15.2 |
-| Bear: Macro Thrift & Cross-Border De Minimis Tariff Drag | Multiple -2 | 8.5 → 6.5 | $-15.2 |
+| Bull | EPS +10% | 13.5 → 14.85 | +$20.93 |
+| Bull | EPS -10% | 13.5 → 12.15 | $-20.92 |
+| Bull | Multiple +2 | 15.5 → 17.5 | +$27 |
+| Bull | Multiple -2 | 15.5 → 13.5 | $-27 |
+| Base | EPS +10% | 10.8 → 11.88 | +$14.04 |
+| Base | EPS -10% | 10.8 → 9.72 | $-14.04 |
+| Base | Multiple +2 | 13 → 15 | +$21.6 |
+| Base | Multiple -2 | 13 → 11 | $-21.6 |
+| Bear | EPS +10% | 8.2 → 9.02 | +$7.79 |
+| Bear | EPS -10% | 8.2 → 7.38 | $-7.79 |
+| Bear | Multiple +2 | 9.5 → 11.5 | +$16.4 |
+| Bear | Multiple -2 | 9.5 → 7.5 | $-16.4 |
 
 ## 八、 历史财报市场反应复盘 (Historical Reactions)
 

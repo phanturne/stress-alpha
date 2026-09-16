@@ -1,42 +1,41 @@
 # 财报深度分析与压力测试研报：MU (Micron Technology, Inc.) — Q3 2026
 
-*分析日期：2026-09-15 | 财报披露日：2026-06-25 | 当前基准股价：$145*
+*分析日期：2026-09-15 | 财报披露日：2026-06-24 | 当前基准股价：$923.75*
 
 ## 一、 核心估值结论与投资摘要 (Summary)
 
 | 估值与收益指标 | 测算结果 | 说明与对比 |
 |----------------|----------|------------|
-| 概率加权公允价值 (WFV) | **$155.75** | 综合各情景概率测算 |
-| 相对当前股价预期涨跌幅 | **+7.41%** | 隐含安全边际 |
-| 华尔街一致预期目标价 | $175 | 买方/卖方基准 |
+| 概率加权公允价值 (WFV) | **$1072.8** | 综合各情景概率测算 |
+| 相对当前股价预期涨跌幅 | **+16.14%** | 隐含安全边际 |
+| 华尔街一致预期目标价 | $1250 | 买方/卖方基准 |
 | 一致预期偏离评价 | 低于华尔街一致预期，持相对谨慎审慎态度 (Cautious) | 决策倾向 |
 
 ## 二、 ⚠️ 收益质量与核心经营利润审计 (Income Quality Audit)
 
-GAAP 名义每股收益 **$3.32** 包含以下一次性或非经营性账面调整：
+GAAP 名义每股收益 **$24.67** 包含以下一次性或非经营性账面调整：
 
-- **CHIPS and Science Act Title IV direct capital grant milestone recognition**: $0.38B (非经营性/公允价值波动) — Direct federal and Idaho state capital expenditure grant milestone recognition for Boise and Syracuse megafabs; non-operating capital subsidy inflating GAAP net income.
+- **CHIPS and Science Act Title IV direct capital grant milestone recognition**: $0.38B (非经营性/公允价值波动) — Direct federal and state capital expenditure grant milestone recognition for Boise and Syracuse megafabs; non-operating capital subsidy inflating GAAP net income.
 - **Discrete foreign tax valuation allowance release**: $0.18B (非经营性/公允价值波动) — Discrete tax reserve release under deferred tax asset reassessment and international restructuring under ASC 740, inflating GAAP net income.
-- **Reversal of lower-of-cost-or-market (LCM) inventory valuation reserve**: $0.12B (经营性) — Operating gross margin benefited by $120M (~105 bps) from the recovery and commercial sale of previously written-down legacy 3D NAND wafer inventory.
 
-调整后真实核心经营 EPS (Operating EPS)：**$3.03**（剥离账面公允价值扰动）
+调整后真实核心经营 EPS (Operating EPS)：**$25.11**（剥离账面公允价值扰动）
 
 ## 三、 季度业绩与一致预期对比 (Earnings Breakdown)
 
 | 财务指标 | 实际公布值 | 彭博/彭博预期值 | 超/低预期评价 |
 |----------|------------|-----------------|----------------|
-| 营业收入 | $11.45B | $10.95B | ✅ 超预期 (Beat) |
-| 营业利润 | $4.12B | — | 同比 +188% |
-| 核心经营 EPS | $3.03 | $2.85 | ✅ 超预期 (Beat) |
+| 营业收入 | $41.46B | $38.5B | ✅ 超预期 (Beat) |
+| 营业利润 | $14.8B | — | 同比 +210% |
+| 核心经营 EPS | $25.11 | $24.1 | ✅ 超预期 (Beat) |
 
 ### 业务单元与分部数据 (Segment Breakdown)
 
 | 业务分部名称 | 营业收入 | 同比增速 (YoY) | 营业利润率 (Op. Margin) |
 |--------------|----------|----------------|-------------------------|
-| Compute and Networking (CNBU) | $5.45B | +85% | 47% |
-| Mobile (MBU) | $2.15B | +42% | 27% |
-| Embedded (EBU) | $1.45B | +26% | 25% |
-| Storage (SBU) | $2.4B | +82% | 26% |
+| Compute and Networking (CNBU) | $21.5B | +185% | 48% |
+| Storage (SBU) | $8.6B | +95% | 34% |
+| Mobile (MBU) | $6.8B | +55% | 29% |
+| Embedded (EBU) | $4.56B | +38% | 26% |
 
 ## 四、 核心基本面催化剂与概率锚定 (Catalysts & Anchors)
 
@@ -79,44 +78,44 @@ GAAP 名义每股收益 **$3.32** 包含以下一次性或非经营性账面调�
 
 ## 六、 ⚡ StressAlpha 动态估值区间与利润穿透 (Valuation Regimes)
 
-- **压力测试预测 EPS:** $12.93
-- **测算压力营业收入:** $52.5B
-- **测算压力毛利润:** $22.84B
-- **测算压力营业利润:** $17.24B
-- **测算压力净利润:** $14.74B
-- **恐慌底最大回撤空间:** -28.66%
-- **当前现价对应隐含 PE:** 11.21x
+- **压力测试预测 EPS:** $63.03
+- **测算压力营业收入:** $185B
+- **测算压力毛利润:** $104.53B
+- **测算压力营业利润:** $84.03B
+- **测算压力净利润:** $71.85B
+- **恐慌底最大回撤空间:** -38.59%
+- **当前现价对应隐含 PE:** 14.66x
 
 | 市场情景区间 | 估值倍数 (P/E) | 目标价格 | 相对现价预期涨跌 | 情景逻辑定义 |
 |--------------|----------------|----------|------------------|--------------|
-| 🐂 牛市情景 (Bull) | 15x | $193.95 | +33.76% | 需求超预期，估值倍数戴维斯双击扩张 |
-| ⚖️ 基准情景 (Base) | 12.5x | $161.63 | +11.47% | 指引中枢平稳兑现，倍数维持历史中位数 |
-| 🚨 恐慌底价 (Panic) | 8x | $103.44 | -28.66% | 宏观严重衰退叠加供应链资本开支削减 |
+| 🐂 牛市情景 (Bull) | 18x | $1134.54 | +22.82% | 需求超预期，估值倍数戴维斯双击扩张 |
+| ⚖️ 基准情景 (Base) | 14x | $882.42 | -4.47% | 指引中枢平稳兑现，倍数维持历史中位数 |
+| 🚨 恐慌底价 (Panic) | 9x | $567.27 | -38.59% | 宏观严重衰退叠加供应链资本开支削减 |
 
 ## 六、 离散情景估值树 (Scenario Tree)
 
 | 情景名称 | 赋予概率 | 目标公允价 | 较现价涨跌幅 |
 |----------|----------|------------|--------------|
-| Bull: AI Memory Supercycle & Structural HBM Moat | 25% | $217 | +49.66% |
-| Base: Controlled Disciplined Oligopoly Expansion | 55% | $160 | +10.34% |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | 20% | $67.5 | -53.45% |
+| Bull | 30% | $1470 | +59.13% |
+| Base | 50% | $1066 | +15.4% |
+| Bear | 20% | $494 | -46.52% |
 
 ## 七、 敏感性分析矩阵 (Sensitivity Analysis)
 
 | 情景 | 敏感性参数 | 基准值 → 扰动值 | 目标公允价绝对变化 |
 |------|------------|-----------------|--------------------|
-| Bull: AI Memory Supercycle & Structural HBM Moat | EPS +10% | 15.5 → 17.05 | +$21.7 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | EPS -10% | 15.5 → 13.95 | $-21.7 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | Multiple +2 | 14 → 16 | +$31 |
-| Bull: AI Memory Supercycle & Structural HBM Moat | Multiple -2 | 14 → 12 | $-31 |
-| Base: Controlled Disciplined Oligopoly Expansion | EPS +10% | 12.8 → 14.08 | +$16 |
-| Base: Controlled Disciplined Oligopoly Expansion | EPS -10% | 12.8 → 11.52 | $-16 |
-| Base: Controlled Disciplined Oligopoly Expansion | Multiple +2 | 12.5 → 14.5 | +$25.6 |
-| Base: Controlled Disciplined Oligopoly Expansion | Multiple -2 | 12.5 → 10.5 | $-25.6 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | EPS +10% | 7.5 → 8.25 | +$6.75 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | EPS -10% | 7.5 → 6.75 | $-6.75 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | Multiple +2 | 9 → 11 | +$15 |
-| Bear: Cyclical Capex Digestion & Pricing Pressure | Multiple -2 | 9 → 7 | $-15 |
+| Bull | EPS +10% | 98 → 107.8 | +$147 |
+| Bull | EPS -10% | 98 → 88.2 | $-147 |
+| Bull | Multiple +2 | 15 → 17 | +$196 |
+| Bull | Multiple -2 | 15 → 13 | $-196 |
+| Base | EPS +10% | 82 → 90.2 | +$106.6 |
+| Base | EPS -10% | 82 → 73.8 | $-106.6 |
+| Base | Multiple +2 | 13 → 15 | +$164 |
+| Base | Multiple -2 | 13 → 11 | $-164 |
+| Bear | EPS +10% | 52 → 57.2 | +$49.4 |
+| Bear | EPS -10% | 52 → 46.8 | $-49.4 |
+| Bear | Multiple +2 | 9.5 → 11.5 | +$104 |
+| Bear | Multiple -2 | 9.5 → 7.5 | $-104 |
 
 ## 八、 历史财报市场反应复盘 (Historical Reactions)
 
