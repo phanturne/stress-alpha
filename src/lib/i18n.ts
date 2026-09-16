@@ -901,6 +901,6 @@ export const translations: Record<Locale, Translations> = {
   },
 };
 
-export function getTranslations(locale: Locale = "zh"): Translations {
-  return translations[locale] || translations.zh;
+export function getTranslations(locale: Locale = "en"): Translations {
+  return translations[locale] || translations.en;
 }

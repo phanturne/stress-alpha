@@ -30,7 +30,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   valuation,
   sensitivityData,
   onScenarioChange,
-  locale = "zh",
+  locale = "en",
 }) => {
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const t = getTranslations(locale).scenariosTab;
@@ -482,55 +482,83 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pt-1">
-            {Object.entries(groupedSensitivity).map(([scenarioName, items]) => (
-              <div
-                key={scenarioName}
-                className="p-4.5 rounded-xl bg-surface-0/60 border border-white/[0.06] flex flex-col gap-3 hover:border-accent/30 transition-all shadow-sm"
-              >
-                <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
-                  <span className="text-xs font-bold text-white tracking-tight">
-                    {scenarioName}
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                    Δ Fair Value
-                  </span>
-                </div>
+          {/* 3 Horizontal Columns for Bull / Base / Bear Sensitivity */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-5 items-stretch pt-1">
+            {scenarios.map((scenario, sIdx) => {
+              const items = groupedSensitivity[scenario.name] || [];
+              if (items.length === 0) return null;
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {items.map((it, idx) => {
-                    const isPositive = it.fairValueDelta >= 0;
-                    return (
-                      <div
-                        key={idx}
-                        className={`p-2.5 rounded-lg border flex flex-col justify-between gap-1 transition-all ${
-                          isPositive
-                            ? "bg-fintech-greenGlow/10 border-fintech-green/30 shadow-[0_0_10px_rgba(16,185,129,0.05)]"
-                            : "bg-fintech-redGlow/10 border-fintech-red/30 shadow-[0_0_10px_rgba(244,63,94,0.05)]"
-                        }`}
-                      >
-                        <span className="text-[11px] font-semibold text-slate-300">
-                          {it.parameter}
-                        </span>
-                        <div className="flex items-baseline justify-between mt-0.5 pt-1 border-t border-white/5">
-                          <span className="text-[10px] font-mono text-slate-400">
-                            {it.baseValue} → {it.altValue}
-                          </span>
+              const nameLower = scenario.name.toLowerCase();
+              const isBull = nameLower.includes("bull") || nameLower.includes("牛");
+              const isBear = nameLower.includes("bear") || nameLower.includes("熊");
+
+              const colBorderCls = isBull
+                ? "border-emerald-500/30 hover:border-emerald-500/50 bg-gradient-to-b from-emerald-950/20 via-surface-0/70 to-surface-0/60 shadow-emerald-950/10"
+                : isBear
+                ? "border-rose-500/30 hover:border-rose-500/50 bg-gradient-to-b from-rose-950/20 via-surface-0/70 to-surface-0/60 shadow-rose-950/10"
+                : "border-sky-500/30 hover:border-sky-500/50 bg-gradient-to-b from-sky-950/20 via-surface-0/70 to-surface-0/60 shadow-sky-950/10";
+
+              const badgeCls = isBull
+                ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+                : isBear
+                ? "bg-rose-500/15 border-rose-500/30 text-rose-400"
+                : "bg-sky-500/15 border-sky-500/30 text-sky-400";
+
+              const Icon = isBull ? TrendingUp : isBear ? TrendingDown : Scale;
+
+              return (
+                <div
+                  key={scenario.name || sIdx}
+                  className={`p-4 sm:p-4.5 rounded-2xl border flex flex-col justify-between gap-3.5 shadow-lg transition-all ${colBorderCls}`}
+                >
+                  <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1 rounded-md border flex items-center justify-center ${badgeCls}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-extrabold text-xs text-white tracking-wide">
+                        {scenario.name}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+                      Δ Fair Value
+                    </span>
+                  </div>
+
+                  {/* Clean List of Parameter Sensitivities (Replaces Cluttered Cards) */}
+                  <div className="flex flex-col divide-y divide-white/[0.06] bg-surface-0/70 rounded-xl border border-white/[0.06] overflow-hidden">
+                    {items.map((it, idx) => {
+                      const isPositive = it.fairValueDelta >= 0;
+                      return (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between px-3.5 py-2.5 text-xs hover:bg-white/[0.02] transition-colors"
+                        >
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-semibold text-slate-200 text-xs">
+                              {it.parameter}
+                            </span>
+                            <span className="text-[10px] font-mono text-slate-400">
+                              {it.baseValue} → {it.altValue}
+                            </span>
+                          </div>
                           <span
-                            className={`text-xs font-bold font-mono tabular-nums ${
-                              isPositive ? "text-fintech-green" : "text-fintech-red"
+                            className={`font-mono font-bold text-xs tabular-nums px-2 py-0.5 rounded border ${
+                              isPositive
+                                ? "text-fintech-green bg-fintech-greenGlow/10 border-fintech-green/30"
+                                : "text-fintech-red bg-fintech-redGlow/10 border-fintech-red/30"
                             }`}
                           >
                             {isPositive ? "+" : ""}
                             {formatCurrency(it.fairValueDelta, 0)}
                           </span>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

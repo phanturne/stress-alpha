@@ -41,17 +41,35 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
   const [activeTab, setActiveTab] = useState<string>("valuation");
-  const [locale, setLocale] = useState<Locale>("zh");
-  const [reportDocLang, setReportDocLang] = useState<Locale>("zh");
+  const [locale, setLocale] = useState<Locale>("en");
+  const [reportDocLang, setReportDocLang] = useState<Locale>("en");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Restore saved language preference from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedLocale = localStorage.getItem("stress_alpha_locale") as Locale | null;
+      if (savedLocale === "en" || savedLocale === "zh") {
+        setLocale(savedLocale);
+        setReportDocLang(savedLocale);
+      }
+    } catch (e) {
+      console.warn("Could not load locale preference:", e);
+    }
+  }, []);
 
   const t = getTranslations(locale);
 
   const handleToggleLocale = (newLocale: Locale) => {
     setLocale(newLocale);
     setReportDocLang(newLocale);
+    try {
+      localStorage.setItem("stress_alpha_locale", newLocale);
+    } catch (e) {
+      console.warn("Could not save locale preference:", e);
+    }
   };
 
   const [stressParams, setStressParams] = useState<StressTestParams>({
@@ -406,7 +424,7 @@ export default function HomePage() {
             stressResult={stressResult}
             onBackToCockpit={() => setViewMode("cockpit")}
             locale={locale}
-            onLocaleChange={setLocale}
+            onLocaleChange={handleToggleLocale}
           />
         ) : (
           <div className="flex flex-col lg:flex-row gap-5 xl:gap-6 items-start">
