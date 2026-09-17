@@ -32,6 +32,10 @@ import {
   type StressTestParams,
 } from "@/lib/valuation";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import {
+  parseScenarioUrlState,
+  serializeScenarioUrlState,
+} from "@/lib/url-state";
 
 export default function HomePage() {
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
@@ -85,61 +89,70 @@ export default function HomePage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Load report from API
-  const loadReport = useCallback(async (slug: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch report ${slug}`);
-      }
-      const data: ReportData = await res.json();
-      setReportData(data);
-      setCurrentSlug(slug);
-
-      // Initialize default driver shocks from baseline
-      const initialShocks: Record<string, number> = {};
-      if (data.baseline?.upstreamDrivers) {
-        for (const d of data.baseline.upstreamDrivers) {
-          initialShocks[d.id] = d.defaultShockPct ?? 0;
+  // Load report from API with optional initial shock overrides
+  const loadReport = useCallback(
+    async (slug: string, initialOverrides?: StressTestParams) => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch report ${slug}`);
         }
+        const data: ReportData = await res.json();
+        setReportData(data);
+        setCurrentSlug(slug);
+
+        // Initialize driver shocks from baseline, allowing initial overrides from URL
+        const initialShocks: Record<string, number> = {};
+        if (data.baseline?.upstreamDrivers) {
+          for (const d of data.baseline.upstreamDrivers) {
+            initialShocks[d.id] =
+              initialOverrides?.driverShocks?.[d.id] ?? d.defaultShockPct ?? 0;
+          }
+        }
+
+        setStressParams({
+          driverShocks: initialShocks,
+          grossMarginBpsDelta: initialOverrides?.grossMarginBpsDelta ?? 0,
+          fixedOpexShiftPct: initialOverrides?.fixedOpexShiftPct ?? 0,
+        });
+      } catch (err) {
+        console.error(err);
+        showToast(`Failed to load report: ${(err as Error).message}`);
+      } finally {
+        setIsLoading(false);
       }
+    },
+    []
+  );
 
-      setStressParams({
-        driverShocks: initialShocks,
-        grossMarginBpsDelta: 0,
-        fixedOpexShiftPct: 0,
-      });
-
-      // Update URL query param without full reload
-      if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        url.searchParams.set("report", slug);
-        window.history.replaceState({}, "", url.toString());
-      }
-    } catch (err) {
-      console.error(err);
-      showToast(`Failed to load report: ${(err as Error).message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Initial load: check query param or pick first available report
+  // Initial load: parse URL search or hash to restore exact scenario, report, tab, and mode
   useEffect(() => {
     const init = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const queryReport = params.get("report");
+      const urlState = parseScenarioUrlState(
+        window.location.search || window.location.hash
+      );
 
-      if (queryReport) {
-        await loadReport(queryReport);
+      if (urlState.tab) {
+        setActiveTab(urlState.tab);
+      }
+      if (urlState.mode) {
+        setViewMode(urlState.mode);
+      }
+      if (urlState.lang) {
+        setLocale(urlState.lang);
+        setReportDocLang(urlState.lang);
+      }
+
+      if (urlState.report) {
+        await loadReport(urlState.report, urlState.stressParams);
       } else {
         try {
           const res = await fetch("/api/reports");
           if (res.ok) {
             const data = await res.json();
             if (data.reports && data.reports.length > 0) {
-              await loadReport(data.reports[0].slug);
+              await loadReport(data.reports[0].slug, urlState.stressParams);
             } else {
               setIsLoading(false);
             }
@@ -152,37 +165,29 @@ export default function HomePage() {
     init();
   }, [loadReport]);
 
-  // Handle URL hash state synchronization
-  const syncStateToHash = useCallback(() => {
-    if (typeof window === "undefined") return;
-    const parts: string[] = [];
-    parts.push(`tab=${activeTab}`);
-    if (viewMode !== "cockpit") parts.push(`mode=${viewMode}`);
+  // Handle URL search parameter synchronization for shareable deep linking
+  const syncStateToUrl = useCallback(() => {
+    if (typeof window === "undefined" || !currentSlug || isLoading) return;
 
-    if (stressParams.driverShocks) {
-      for (const [k, v] of Object.entries(stressParams.driverShocks)) {
-        if (v !== 0) parts.push(`d_${encodeURIComponent(k)}=${v}`);
-      }
-    }
-    if (stressParams.grossMarginBpsDelta !== 0) {
-      parts.push(`gm=${stressParams.grossMarginBpsDelta}`);
-    }
-    if (stressParams.fixedOpexShiftPct !== 0) {
-      parts.push(`opex=${stressParams.fixedOpexShiftPct}`);
-    }
+    const queryString = serializeScenarioUrlState({
+      report: currentSlug,
+      tab: activeTab,
+      mode: viewMode,
+      lang: locale,
+      stressParams,
+    });
 
-    const hash = "#" + parts.join("&");
-    const newUrl = window.location.pathname + window.location.search + hash;
+    const newUrl = window.location.pathname + queryString;
     window.history.replaceState(null, "", newUrl);
-  }, [activeTab, viewMode, stressParams]);
+  }, [currentSlug, activeTab, viewMode, locale, stressParams, isLoading]);
 
   useEffect(() => {
-    syncStateToHash();
-  }, [syncStateToHash]);
+    syncStateToUrl();
+  }, [syncStateToUrl]);
 
   // Share scenario link
   const handleShare = () => {
-    syncStateToHash();
+    syncStateToUrl();
     if (typeof window !== "undefined") {
       navigator.clipboard
         .writeText(window.location.href)

@@ -31,7 +31,20 @@ const eslintConfig = defineConfig([
       "tailwindcss/no-custom-classname": "warn",
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  {
+    files: ["tests/**"],
+    rules: {
+      "tailwindcss/no-contradicting-classname": "off",
+      "tailwindcss/no-custom-classname": "off",
+    },
+  },
+  globalIgnores([
+    "coverage/**",
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
 ]);
 
 export default eslintConfig;
