@@ -277,7 +277,7 @@ export function computeValuation(input: ValuationInput): Valuation {
 export function deriveEffectiveBaseline(facts: Facts): FinancialModelBaseline {
   const shares =
     facts.currentPrice > 0
-      ? (facts.marketCapBillions * 1000) / facts.currentPrice
+      ? facts.marketCapBillions / facts.currentPrice
       : 10.83;
   const opIncome = facts.operatingIncomeBillions || 25;
   const estGrossMargin = 48.0;
