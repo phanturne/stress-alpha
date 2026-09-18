@@ -14,6 +14,8 @@ export interface Translations {
     github: string;
     share: string;
     shareTooltip: string;
+    exportCard: string;
+    exportCardTooltip: string;
     linkCopied: string;
     settings: string;
     language: string;
@@ -89,6 +91,7 @@ export interface Translations {
     resetModel: string;
     toggleMemo: string;
     toggleLang: string;
+    exportCard: string;
     close: string;
   };
   priceMeter: {
@@ -373,6 +376,55 @@ export interface Translations {
     sortPrompt: string;
     loading: string;
   };
+  socialCard: {
+    modalTitle: string;
+    modalSubtitle: string;
+    templates: {
+      valuation: string;
+      valuationDesc: string;
+      earnings: string;
+      earningsDesc: string;
+      thesis: string;
+      thesisDesc: string;
+      summary: string;
+      summaryDesc: string;
+    };
+    aspectRatios: {
+      landscape: string;
+      square: string;
+      portrait: string;
+    };
+    themes: {
+      cyber: string;
+      navy: string;
+      emerald: string;
+      crimson: string;
+    };
+    controls: {
+      templateLabel: string;
+      formatLabel: string;
+      themeLabel: string;
+      scenarioLinkLabel: string;
+      includeStress: string;
+      includeWatermark: string;
+      customNote: string;
+      customNotePlaceholder: string;
+      cardLanguage: string;
+    };
+    actions: {
+      downloadPng: string;
+      copyImage: string;
+      copyText: string;
+      copyLink: string;
+      copiedToast: string;
+      textCopiedToast: string;
+      linkCopiedToast: string;
+      downloadSuccessToast: string;
+      generating: string;
+      copying: string;
+      close: string;
+    };
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -389,7 +441,9 @@ export const translations: Record<Locale, Translations> = {
       methodology: "Methodology",
       github: "GitHub",
       share: "Share",
-      shareTooltip: "Share current scenario",
+      shareTooltip: "Share analysis & export visual cards (E)",
+      exportCard: "Card",
+      exportCardTooltip: "Export as polished social media card (E)",
       linkCopied: "Scenario link copied to clipboard!",
       settings: "Settings & Resources",
       language: "Language",
@@ -466,6 +520,7 @@ export const translations: Record<Locale, Translations> = {
       resetModel: "Reset Model (R)",
       toggleMemo: "Toggle Cockpit / Memo (M)",
       toggleLang: "Toggle Language (L)",
+      exportCard: "Export Social Media Card (E)",
       close: "Close Dialog (Esc / ?)",
     },
     priceMeter: {
@@ -766,6 +821,60 @@ export const translations: Record<Locale, Translations> = {
       sortPrompt: "Sort By",
       loading: "Loading universe reports...",
     },
+    socialCard: {
+      modalTitle: "Share Analysis & Export Cards",
+      modalSubtitle:
+        "Copy interactive scenario link or generate high-resolution visual cards for Twitter/X, LinkedIn, and Instagram.",
+      templates: {
+        valuation: "Valuation & Stress",
+        valuationDesc:
+          "Fair value upside, 4-tier regimes, and stress test drivers",
+        earnings: "Earnings Scorecard",
+        earningsDesc:
+          "Revenue growth, operating margins, EPS beat/miss, and segments",
+        thesis: "Thesis & Catalysts",
+        thesisDesc: "Economic moat rating, upside catalysts, and key risks",
+        summary: "Executive Teaser",
+        summaryDesc: "All-in-one high-density institutional snapshot",
+      },
+      aspectRatios: {
+        landscape: "Landscape 16:9 (X / LinkedIn)",
+        square: "Square 1:1 (Instagram / Feed)",
+        portrait: "Portrait 4:5 (Stories / Mobile)",
+      },
+      themes: {
+        cyber: "Cyber Obsidian",
+        navy: "Wall Street Midnight",
+        emerald: "Emerald Alpha",
+        crimson: "Crimson Stress Alert",
+      },
+      controls: {
+        templateLabel: "Card Template",
+        formatLabel: "Card Ratio",
+        themeLabel: "Color Theme",
+        scenarioLinkLabel: "Interactive Scenario Link",
+        includeStress: "Include Live Stress Adjustments",
+        includeWatermark: "Show StressAlpha Branding",
+        customNote: "Custom Analyst Takeaway (Optional)",
+        customNotePlaceholder:
+          "Add a punchy 1-2 sentence investment takeaway or catalyst highlight...",
+        cardLanguage: "Card Language",
+      },
+      actions: {
+        downloadPng: "Download PNG",
+        copyImage: "Copy Image",
+        copyText: "Copy Post Text",
+        copyLink: "Copy Link",
+        copiedToast:
+          "Image copied to clipboard! Ready to paste into X, Slack, or LinkedIn.",
+        textCopiedToast: "Social post text copied to clipboard!",
+        linkCopiedToast: "Scenario link copied to clipboard!",
+        downloadSuccessToast: "Card image downloaded successfully!",
+        generating: "Rendering...",
+        copying: "Copying...",
+        close: "Close",
+      },
+    },
   },
   zh: {
     header: {
@@ -780,7 +889,9 @@ export const translations: Record<Locale, Translations> = {
       methodology: "计算原理",
       github: "GitHub",
       share: "分享",
-      shareTooltip: "复制当前情景链接",
+      shareTooltip: "分享研报与导出社媒卡片 (E)",
+      exportCard: "卡片",
+      exportCardTooltip: "导出精美社媒卡片 (E)",
       linkCopied: "情景分析链接已复制到剪贴板！",
       settings: "偏好与设置",
       language: "界面语言",
@@ -856,6 +967,7 @@ export const translations: Record<Locale, Translations> = {
       resetModel: "重置压力模型 (R)",
       toggleMemo: "切换驾驶舱 / 备忘录 (M)",
       toggleLang: "切换中英文 (L)",
+      exportCard: "导出社媒卡片 (E)",
       close: "关闭窗口 (Esc / ?)",
     },
     priceMeter: {
@@ -1151,6 +1263,58 @@ export const translations: Record<Locale, Translations> = {
       currentPriceLabel: "现价",
       sortPrompt: "排序依据",
       loading: "正在加载研报筛选池...",
+    },
+    socialCard: {
+      modalTitle: "分享研报与导出社媒卡片",
+      modalSubtitle:
+        "一键复制带自定义参数的交互式推演链接，或生成用于社媒分享的高清机构级图表卡片。",
+      templates: {
+        valuation: "估值与压力测试",
+        valuationDesc: "公允价值空间、四档估值谱系及业务承压因子",
+        earnings: "财报业绩快报",
+        earningsDesc: "营收增速、营业利润率、超预期幅度与业务分部",
+        thesis: "投资逻辑与催化剂",
+        thesisDesc: "经济护城河评级、核心成长催化与主要风险",
+        summary: "高管全景速览",
+        summaryDesc: "一站式全景速览与核心结论总结",
+      },
+      aspectRatios: {
+        landscape: "横版 16:9 (X / LinkedIn)",
+        square: "正方形 1:1 (Instagram / 朋友圈)",
+        portrait: "竖版 4:5 (小红书 / 移动端)",
+      },
+      themes: {
+        cyber: "黑曜赛博 (经典)",
+        navy: "华尔街午夜蓝",
+        emerald: "翡翠超额 Alpha",
+        crimson: "绯红极端压力",
+      },
+      controls: {
+        templateLabel: "卡片模版",
+        formatLabel: "画幅尺寸",
+        themeLabel: "视觉主题",
+        scenarioLinkLabel: "交互式情景推演链接",
+        includeStress: "包含当前微调的极端承压参数",
+        includeWatermark: "显示 StressAlpha 机构水印与版权",
+        customNote: "分析师核心观点 (可选备注)",
+        customNotePlaceholder:
+          "输入 1-2 句精炼的投资逻辑、风险提示或催化亮点...",
+        cardLanguage: "卡片呈现语言",
+      },
+      actions: {
+        downloadPng: "下载高清图片",
+        copyImage: "复制图片到剪贴板",
+        copyText: "复制社媒文案",
+        copyLink: "复制链接",
+        copiedToast:
+          "卡片图片已复制到剪贴板！可直接粘贴至微信、Slack 或 Twitter。",
+        textCopiedToast: "社媒文案已复制到剪贴板！",
+        linkCopiedToast: "情景分析链接已复制到剪贴板！",
+        downloadSuccessToast: "高清卡片图片已成功下载！",
+        generating: "正在渲染...",
+        copying: "正在复制...",
+        close: "关闭",
+      },
     },
   },
 };

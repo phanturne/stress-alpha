@@ -14,6 +14,7 @@ import {
   Settings,
   Keyboard,
   ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
@@ -240,14 +241,14 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Share Button */}
+        {/* Unified Share & Export Button */}
         <button
           type="button"
           onClick={onShare}
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent sm:px-3"
+          className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
           title={t.shareTooltip}
         >
-          <Share2 className="size-3.5" />
+          <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
           <span className="hidden sm:inline">{t.share}</span>
         </button>
 

@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Printer, ArrowLeft, ShieldCheck, Zap, Globe } from "lucide-react";
+import {
+  Printer,
+  ArrowLeft,
+  ShieldCheck,
+  Zap,
+  Globe,
+  Sparkles,
+  Share2,
+} from "lucide-react";
 import type { ReportData, StressResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -10,6 +18,7 @@ interface MemoViewProps {
   reportData: ReportData;
   stressResult: StressResult;
   onBackToCockpit: () => void;
+  onOpenSocialCard?: () => void;
   locale?: Locale;
   onLocaleChange?: (locale: Locale) => void;
 }
@@ -18,6 +27,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   reportData,
   stressResult,
   onBackToCockpit,
+  onOpenSocialCard,
   locale = "zh",
   onLocaleChange,
 }) => {
@@ -89,6 +99,18 @@ export const MemoView: React.FC<MemoViewProps> = ({
               {t.zhMemoBtn}
             </button>
           </div>
+
+          {onOpenSocialCard && (
+            <button
+              type="button"
+              onClick={onOpenSocialCard}
+              className="flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/15 px-3.5 py-2 text-xs font-bold text-accent shadow-md transition-all hover:bg-accent/25 hover:text-white"
+              title={isZh ? "分享研报与导出卡片 (E)" : "Share & Export (E)"}
+            >
+              <Share2 className="size-4 text-accent" />
+              <span>{isZh ? "分享与导出" : "Share & Export"}</span>
+            </button>
+          )}
 
           <button
             type="button"

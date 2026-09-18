@@ -10,6 +10,8 @@ import {
   Wand2,
   ChevronDown,
   ChevronUp,
+  Sparkles,
+  Share2,
 } from "lucide-react";
 import type {
   FinancialModelBaseline,
@@ -32,6 +34,7 @@ interface CockpitProps {
   onGrossMarginDeltaChange: (bps: number) => void;
   onFixedOpexShiftChange: (shiftPct: number) => void;
   onResetDefaults: () => void;
+  onOpenSocialCard?: () => void;
   locale?: Locale;
 }
 
@@ -45,6 +48,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   onGrossMarginDeltaChange,
   onFixedOpexShiftChange,
   onResetDefaults,
+  onOpenSocialCard,
   locale = "zh",
 }) => {
   const t = getTranslations(locale).cockpit;
@@ -95,15 +99,28 @@ export const Cockpit: React.FC<CockpitProps> = ({
               {t.title}
             </h2>
           </div>
-          <button
-            type="button"
-            onClick={onResetDefaults}
-            className="group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
-            title={t.resetTooltip}
-          >
-            <RotateCcw className="size-3 text-accent transition-transform duration-200 group-hover:-rotate-45" />
-            <span>{t.reset}</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            {onOpenSocialCard && (
+              <button
+                type="button"
+                onClick={onOpenSocialCard}
+                className="group flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white"
+                title={isZh ? "分享研报与导出卡片 (E)" : "Share & Export (E)"}
+              >
+                <Share2 className="size-3 text-accent transition-transform group-hover:scale-110" />
+                <span>{isZh ? "分享" : "Share"}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onResetDefaults}
+              className="group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
+              title={t.resetTooltip}
+            >
+              <RotateCcw className="size-3 text-accent transition-transform duration-200 group-hover:-rotate-45" />
+              <span>{t.reset}</span>
+            </button>
+          </div>
         </div>
 
         {/* 1-Click Macro Presets Bar */}

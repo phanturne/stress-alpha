@@ -25,6 +25,7 @@ import { ScenariosTab } from "@/components/tabs/ScenariosTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
 import { ScreenerView } from "@/components/ScreenerView";
+import { SocialCardModal } from "@/components/social-card/SocialCardModal";
 import type { ReportData, Scenario } from "@/lib/schemas";
 import type { ReportSummary } from "@/app/api/reports/route";
 import {
@@ -51,6 +52,7 @@ export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Restore saved language preference from localStorage on mount
@@ -264,15 +266,10 @@ export default function HomePage() {
     [loadReport, activeTab, locale, stressParams]
   );
 
-  // Share scenario link
+  // Unified Share & Export action
   const handleShare = () => {
     syncStateToUrl();
-    if (typeof window !== "undefined") {
-      navigator.clipboard
-        .writeText(window.location.href)
-        .then(() => showToast(t.page.linkCopiedToast))
-        .catch(() => prompt("Copy link:", window.location.href));
-    }
+    setIsSocialCardOpen(true);
   };
 
   // Slider handlers
@@ -534,6 +531,12 @@ export default function HomePage() {
         return;
       }
 
+      if (e.key === "e" || e.key === "E") {
+        e.preventDefault();
+        setIsSocialCardOpen((prev) => !prev);
+        return;
+      }
+
       if (e.key === "?" || (e.shiftKey && e.key === "/")) {
         e.preventDefault();
         setIsShortcutsOpen((prev) => !prev);
@@ -541,9 +544,15 @@ export default function HomePage() {
       }
 
       if (e.key === "Escape") {
+        if (isSocialCardOpen) {
+          e.preventDefault();
+          setIsSocialCardOpen(false);
+          return;
+        }
         if (isShortcutsOpen) {
           e.preventDefault();
           setIsShortcutsOpen(false);
+          return;
         }
       }
     };
@@ -554,6 +563,7 @@ export default function HomePage() {
     tabItems,
     locale,
     isShortcutsOpen,
+    isSocialCardOpen,
     handleResetDefaults,
     handleToggleLocale,
   ]);
@@ -619,6 +629,7 @@ export default function HomePage() {
             }}
             stressResult={stressResult}
             onBackToCockpit={() => handleViewModeChange("cockpit")}
+            onOpenSocialCard={() => setIsSocialCardOpen(true)}
             locale={locale}
             onLocaleChange={handleToggleLocale}
           />
@@ -635,6 +646,7 @@ export default function HomePage() {
               onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
               onFixedOpexShiftChange={handleFixedOpexShiftChange}
               onResetDefaults={handleResetDefaults}
+              onOpenSocialCard={() => setIsSocialCardOpen(true)}
               locale={locale}
             />
 
@@ -908,6 +920,15 @@ export default function HomePage() {
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
                 <span className="text-xs text-slate-300">
+                  {t.shortcuts.exportCard}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                  E
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
                   {t.shortcuts.close}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -924,6 +945,19 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Social Media Card Export Modal */}
+      <SocialCardModal
+        isOpen={isSocialCardOpen}
+        onClose={() => setIsSocialCardOpen(false)}
+        facts={displayFacts ?? undefined}
+        valuation={dynamicValuation ?? reportData?.valuation}
+        stressResult={stressResult ?? undefined}
+        reportData={reportData ?? undefined}
+        stressParams={stressParams}
+        locale={locale}
+        onShowToast={showToast}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (
