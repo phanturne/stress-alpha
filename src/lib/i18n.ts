@@ -10,6 +10,8 @@ export interface Translations {
     cockpit: string;
     memo: string;
     screener: string;
+    methodology: string;
+    github: string;
     share: string;
     upload: string;
     shareTooltip: string;
@@ -381,6 +383,8 @@ export const translations: Record<Locale, Translations> = {
       cockpit: "Cockpit",
       memo: "Memo",
       screener: "Screener",
+      methodology: "Methodology",
+      github: "GitHub",
       share: "Share",
       upload: "Upload",
       shareTooltip: "Share current scenario",
@@ -767,6 +771,8 @@ export const translations: Record<Locale, Translations> = {
       cockpit: "驾驶舱",
       memo: "备忘录",
       screener: "全景筛选",
+      methodology: "计算原理",
+      github: "GitHub",
       share: "分享",
       upload: "上传",
       shareTooltip: "复制当前情景链接",

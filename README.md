@@ -56,6 +56,15 @@ A forward-looking financial decision and scenario-simulation platform for fundam
   <img src="./docs/images/memo-preview.png" alt="Investment Committee Memorandum Preview" width="100%" />
 </p>
 
+### 6. Deterministic Valuation Methodology & Formula Guide (`/methodology`)
+- Comprehensive interactive documentation page explaining all mathematical algorithms and accounting guardrails powering the platform.
+- Full mathematical breakdowns, parameter definitions, and worked real-world examples (e.g. NVDA CapEx elasticity, AMZN ASU 2016-01 mark-to-market normalization).
+- Accessible anytime from the top navigation bar or via direct route `/methodology`, complete with instant bilingual EN/中文 switching and GitHub links.
+
+<p align="center">
+  <img src="./docs/images/methodology-preview.png" alt="Valuation Methodology Preview" width="100%" />
+</p>
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)

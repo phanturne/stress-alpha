@@ -58,7 +58,7 @@ echo "2/3 Capturing Stress Flow-Through Cockpit..."
   --screenshot="docs/images/cockpit-preview.png" \
   "http://localhost:${PORT}/?report=NVDA-Q2-2027-analysis&mode=cockpit"
 
-echo "3/3 Capturing Investment Committee Memorandum..."
+echo "3/4 Capturing Investment Committee Memorandum..."
 "$CHROME_BIN" \
   --headless=new \
   --disable-gpu \
@@ -67,6 +67,16 @@ echo "3/3 Capturing Investment Committee Memorandum..."
   --virtual-time-budget=4000 \
   --screenshot="docs/images/memo-preview.png" \
   "http://localhost:${PORT}/?report=NVDA-Q2-2027-analysis&mode=memo"
+
+echo "4/4 Capturing Valuation Methodology & Calculations Page..."
+"$CHROME_BIN" \
+  --headless=new \
+  --disable-gpu \
+  --hide-scrollbars \
+  --window-size=1600,1050 \
+  --virtual-time-budget=4000 \
+  --screenshot="docs/images/methodology-preview.png" \
+  "http://localhost:${PORT}/methodology"
 
 echo "✅ All screenshots captured under docs/images/:"
 ls -lh docs/images/
