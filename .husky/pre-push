@@ -1,0 +1,44 @@
+#!/usr/bin/env sh
+
+# Determine if any ref being pushed is mainline (main)
+is_mainline=0
+
+while read local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] || [ "$local_ref" = "refs/heads/main" ]; then
+    is_mainline=1
+  fi
+done
+
+# If no stdin was piped (e.g. manual invocation), check current branch
+if [ -z "$local_ref" ]; then
+  current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  if [ "$current_branch" = "main" ]; then
+    is_mainline=1
+  fi
+fi
+
+if [ "$is_mainline" -eq 1 ]; then
+  echo "🛡️  [Husky pre-push] Gating mainline push to 'main'..."
+  echo "   1/5 Checking formatting (Prettier)..."
+  npm run format:check || { echo "❌ Prettier check failed. Run 'npm run format'."; exit 1; }
+
+  echo "   2/5 Running linter (ESLint)..."
+  npm run lint || { echo "❌ ESLint check failed. Run 'npm run lint:fix'."; exit 1; }
+
+  echo "   3/5 Verifying TypeScript types..."
+  npx tsc --noEmit || { echo "❌ TypeScript compilation failed."; exit 1; }
+
+  echo "   4/5 Executing test suite (Vitest)..."
+  npm test || { echo "❌ Unit tests failed."; exit 1; }
+
+  echo "   5/5 Verifying Next.js production build..."
+  npm run build || { echo "❌ Next.js build failed."; exit 1; }
+
+  echo "✅ [Husky pre-push] All mainline verification checks passed!"
+else
+  echo "🔍 [Husky pre-push] Non-mainline push. Running fast validation..."
+  npm run format:check && npm run lint && npx tsc --noEmit && npm test || exit 1
+  echo "✅ [Husky pre-push] Fast checks passed!"
+fi
+
+exit 0

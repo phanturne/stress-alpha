@@ -154,9 +154,36 @@ describe("Data Access Layer: Repository Pattern", () => {
       setReportRepository(null);
     });
 
-    it("provides FsReportRepository by default", () => {
-      const repo = getReportRepository();
-      expect(repo).toBeInstanceOf(FsReportRepository);
+    it("provides FsReportRepository by default when DATABASE_URL is unset", () => {
+      const originalUrl = process.env.DATABASE_URL;
+      delete process.env.DATABASE_URL;
+      try {
+        setReportRepository(null);
+        const repo = getReportRepository();
+        expect(repo).toBeInstanceOf(FsReportRepository);
+      } finally {
+        if (originalUrl) {
+          process.env.DATABASE_URL = originalUrl;
+        }
+      }
+    });
+
+    it("switches to DrizzleReportRepository when DATABASE_URL is present", async () => {
+      const originalUrl = process.env.DATABASE_URL;
+      process.env.DATABASE_URL = "postgresql://mock:mock@localhost:5432/mock";
+      try {
+        setReportRepository(null);
+        const { DrizzleReportRepository } = await import("@/lib/repository");
+        const repo = getReportRepository();
+        expect(repo).toBeInstanceOf(DrizzleReportRepository);
+      } finally {
+        if (originalUrl) {
+          process.env.DATABASE_URL = originalUrl;
+        } else {
+          delete process.env.DATABASE_URL;
+        }
+        setReportRepository(null);
+      }
     });
 
     it("allows swapping with an in-memory repository", () => {

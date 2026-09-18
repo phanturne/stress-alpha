@@ -1,0 +1,30 @@
+name: Nightly Market Price Sync
+
+on:
+  schedule:
+    # Runs Monday through Friday at 22:00 UTC (5:00 PM EST / 6:00 PM EDT)
+    - cron: "0 22 * * 1-5"
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  sync-prices:
+    name: Sync Closing Prices
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Price Sync Script
+        run: npx tsx scripts/sync_prices.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

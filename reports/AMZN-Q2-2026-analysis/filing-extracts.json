@@ -1,0 +1,68 @@
+{
+  "ticker": "AMZN",
+  "quarter": "Q2 2026",
+  "newRiskFactors": [
+    {
+      "risk": "Equity Investment Fair Value Accounting Volatility (ASU 2016-01) and Anthropic Private Mark Deflation: Under ASU 2016-01, the company is required to measure non-marketable equity investments at fair value, with changes in fair value recognized directly in non-operating income. In Q2 2026, the company recorded an unrealized non-operating pre-tax gain of $53.4 billion ($42.2 billion net of tax, or $3.88 per diluted share) following observable arm's-length financing transactions that revalued Anthropic to an implied $965 billion equity valuation, adjusting the carrying value of Amazon's cumulative $13.0 billion investment to $190.4 billion. Subsequent contractions in private AI valuation multiples, secondary liquidity discounts, or adverse operating performance at Anthropic could require substantial downward fair value adjustments or non-cash paper impairments, introducing extreme quarterly headline net income and GAAP EPS volatility that does not reflect underlying operating cash flows.",
+      "severity": "high",
+      "priorLanguage": "Prior 10-K and 10-Q filings acknowledged general valuation risks associated with non-marketable equity investments and observable price changes under ASU 2016-01, but did not anticipate individual equity holdings generating multi-ten-billion-dollar quarterly mark-to-market net income distortions or disclose sensitivity to private frontier AI foundation model market valuations exceeding $900 billion."
+    },
+    {
+      "risk": "AI Infrastructure Capital Expenditure Intensity, Custom Silicon Depreciation, and Margin Compression: The company has accelerated capital expenditures to an annualized run-rate exceeding $75 billion ($20.5 billion in Q2 2026, contributing to an expanded multi-year capex trajectory of ~$220 billion), primarily dedicated to expanding AWS generative AI infrastructure, proprietary Trainium2 and Inferentia2 silicon deployments, liquid cooling facilities, long-term power purchase agreements (PPAs), and high-bandwidth memory (HBM) modules. If enterprise AI monetizable demand or inference API pricing declines due to open-source model competition (e.g., Llama 4, DeepSeek V4), or if rapid generational turnover in custom accelerator silicon accelerates obsolescence schedules ahead of the standard multi-year server depreciation timeline, the company could experience significant operating margin compression, elevated depreciation expenses, or asset impairment charges.",
+      "severity": "high",
+      "priorLanguage": "Earlier disclosures characterized capital allocation largely in the context of logistics fulfillment center buildouts, regional delivery sortation infrastructure, and standard general-purpose AWS server cycles with 4-to-5-year useful lifespans, without addressing custom AI accelerator technological obsolescence or input-cost inflation in specialized server memory."
+    },
+    {
+      "risk": "Antitrust Litigation and Regulatory Remedies (FTC Trial and EU Digital Markets Act): In October 2026 (Q4 2026), the company is scheduled to face trial in the U.S. District Court for the Western District of Washington in the civil antitrust action brought by the Federal Trade Commission (FTC), which challenges marketplace algorithms governing Buy Box selection, third-party pricing parity restrictions, and the bundling of Prime eligibility with Fulfillment by Amazon (FBA). Concurrently, the European Commission is conducting formal non-compliance proceedings under the Digital Markets Act (DMA) regarding marketplace self-preferencing and merchant data segregation. Unfavorable judicial rulings or structural remedies could mandate the unbundling of Prime logistics, curtail algorithmic platform advantages, or alter third-party marketplace fee structures, which could adversely affect seller service revenue and retail segment operating margins.",
+      "severity": "medium",
+      "priorLanguage": "Prior disclosures treated federal antitrust scrutiny as preliminary regulatory inquiries and early-stage civil discovery motions with uncertain timing, without formally referencing the docketed Q4 2026 trial date or detailing prospective structural unbundling remedies targeting marketplace logistics and algorithmically determined Buy Box mechanics."
+    }
+  ],
+  "sections": [
+    {
+      "section": "Part I. Item 2. Management's Discussion and Analysis (MD&A) — Consolidated Financial Results & ASU 2016-01 Valuation Adjustments",
+      "keyFindings": [
+        {
+          "finding": "Consolidated net sales rose 20% YoY to $200.6 billion, and operating income increased 43% YoY to $27.5 billion (13.7% operating margin). Diluted GAAP EPS was reported at $5.75, which includes a $53.4 billion pre-tax unrealized gain on equity investments.",
+          "implication": "Excluding the non-cash Anthropic mark-to-market gain of $53.4B ($42.2B after-tax, or $3.88 per share), adjusted operating EPS was $1.87 (beating the $1.81 consensus). The reported headline GAAP EPS of $5.75 significantly masks underlying core operational run-rate earnings, creating an unprecedented $3.88/share income-quality divergence.",
+          "novelty": "First financial filing explicitly reflecting the revaluation of Amazon's cumulative $13.0 billion Anthropic investment to an ending carrying value of $190.4 billion under ASU 2016-01 observable transaction metrics."
+        },
+        {
+          "finding": "Advertising services revenue accelerated 26% YoY to $19.8 billion in Q2 2026, driven by sponsored merchant ads, expansion of Prime Video ad-supported tiers, and enhanced machine-learning ad ranking models.",
+          "implication": "Advertising operates at an annualized run-rate of $79.2 billion with estimated operating margins exceeding 50%, functioning as a high-margin cash generator alongside AWS that bolsters consolidated retail operating margins (North America at 7.9%, International at 4.0%).",
+          "novelty": "Discloses expanded programmatic ad insertion across third-party video networks and initial monetization figures from interactive shoppable ads deployed on Prime Video live streaming."
+        }
+      ]
+    },
+    {
+      "section": "Part I. Item 2. Management's Discussion and Analysis (MD&A) — AWS Cloud Infrastructure, Silicon & Capital Allocations",
+      "keyFindings": [
+        {
+          "finding": "AWS segment revenue expanded 36.7% YoY to $42.2 billion, with segment operating income rising to $16.6 billion (36.8% operating margin), supported by a commercial backlog that grew to $496 billion with an average remaining contract term of ~3 years.",
+          "implication": "AWS delivered 60.4% of total consolidated operating income; acceleration was fueled by generative AI workloads (approaching a $25 billion ARR run-rate) across Amazon Bedrock, with customer commitments providing multi-year visibility and operational scale leverage.",
+          "novelty": "Discloses that over 65% of net-new enterprise AI customer instances provisioned in Q2 adopted custom Trainium2 and Inferentia2 silicon clusters to optimize workload total cost of ownership (TCO)."
+        },
+        {
+          "finding": "Cash capital expenditures (including property and equipment acquired under finance leases) totaled $20.5 billion in Q2 2026 ($75B+ annualized run-rate), reflecting investments in data centers, custom silicon clusters, liquid cooling architectures, and dedicated nuclear/renewable power purchase agreements (PPAs).",
+          "implication": "TTM free cash flow remained negative at -$7.6 billion due to heightened AI infrastructure investments, and incremental annual depreciation is projected to increase by $3.0B to $4.5B through FY2027; management notes physical datacenter structures possess 30+ year useful lives across five to six server refresh cycles.",
+          "novelty": "Management specifically attributes the mid-year capex trajectory increase to input cost inflation in server memory modules and procurement of long-term utility-scale clean power contracts."
+        }
+      ]
+    },
+    {
+      "section": "Part II. Item 1A. Risk Factors & Item 1. Legal Proceedings — Antitrust Enforcement and Regulatory Scrutiny",
+      "keyFindings": [
+        {
+          "finding": "In FTC v. Amazon.com, Inc., pending in the U.S. District Court for the Western District of Washington, fact and expert discovery concluded, and the district court has calendared the trial to commence in Q4 2026 (October 2026).",
+          "implication": "The litigation challenges core marketplace practices including Buy Box algorithmic preference, seller anti-discounting pricing agreements, and FBA fulfillment requirements for Prime badge eligibility. While an adverse verdict would be subject to protracted appeals, potential structural or behavioral injunctive remedies could compress 3P seller take-rates.",
+          "novelty": "First formal confirmation in SEC filings establishing the definitive Q4 2026 trial calendar and setting pre-trial evidentiary cutoffs."
+        },
+        {
+          "finding": "The European Commission's Directorate-General for Competition has initiated formal compliance verification hearings under Regulation (EU) 2022/1925 (Digital Markets Act) regarding Amazon Marketplace gatekeeper obligations.",
+          "implication": "The inquiry evaluates whether Amazon maintains adequate technical firewalls preventing 1P retail algorithms from utilizing competitively sensitive 3P merchant transaction data. Ongoing compliance incurs software engineering overhead in the EEA but poses minimal disruption to consolidated global operations.",
+          "novelty": "Includes detailed disclosure of commitments submitted to European regulators regarding algorithmic neutrality in European Buy Box displays and third-party data portability APIs."
+        }
+      ]
+    }
+  ]
+}

@@ -20,12 +20,14 @@ A forward-looking financial decision and scenario-simulation platform for fundam
   <img src="./docs/images/screener-preview.png" alt="Universe Screener Preview" width="100%" />
 </p>
 
-### 2. Direct Report Selector from `reports/`
-- Automatically discovers and lists all earnings analysis report directories under the project's [`reports/`](./reports) folder.
-- Allows switching seamlessly between tickers and quarters directly from the dashboard header dropdown or welcome screen without needing to upload files or select directories manually.
+### 2. Live Database & Direct Report Selector
+- **Neon Serverless Postgres + Drizzle ORM:** Enterprise-grade database backend with typed JSONB columns bound to Zod validation schemas.
+- **Nightly Market Price Sync:** Automated GitHub Actions cron updates live closing prices across the coverage universe every trading day at 5:00 PM EST.
+- **Dynamic Valuation Recalculation:** The Screener and Cockpit dynamically calculate fresh fair value upside percentages and asymmetry skews against the live market close without needing to regenerate earnings reports.
+- **Dual-Mode Repository:** Seamlessly serves from Neon Postgres when `DATABASE_URL` is set, or falls back to local [`reports/`](./reports) files for offline development and local test runners.
 - Live API endpoints:
-  - `GET /api/reports`: Scans and returns summaries + valuation metrics for all folders in [`reports/`](./reports).
-  - `GET /api/reports/[slug]`: Ingests and serves the full set of artifacts for a selected report (async route params).
+  - `GET /api/reports`: Queries summaries, live stock prices, and dynamic valuation metrics.
+  - `GET /api/reports/[slug]`: Ingests and serves the full set of artifacts for a selected report.
 - URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=screener`.
 
 ### 3. Sticky Flow-Through Cockpit
@@ -81,20 +83,8 @@ StressAlpha includes a dedicated AI Skill installed at:
 
 ### CLI Analysis Engine:
 ```bash
-# Compute deterministic valuation and report markdown
+# Compute deterministic valuation, render markdown & persist to Neon DB
 npx tsx scripts/analyze.ts reports/LITE-Q4-2026-analysis
-```
-
-### Quick Browser Opener:
-```bash
-# Launch web app directly to a chosen report
-/Users/krding/Projects/stress-alpha/scripts/open_report.sh LITE-Q4-2026-analysis
-```
-
-### Capture Headless UI Screenshots:
-```bash
-# Automatically boots background server and snaps 1600px screenshots
-./scripts/capture_screenshots.sh
 ```
 
 ---
@@ -106,17 +96,25 @@ stress-alpha/
 ├── package.json                      # Next.js 16 + React 19 dependencies
 ├── tsconfig.json                     # TypeScript configuration (react-jsx)
 ├── tailwind.config.ts                # Styling configuration with font variables
+├── drizzle.config.ts                 # Drizzle ORM configuration for Neon Postgres
 ├── next.config.mjs                   # Next.js configuration
 ├── eslint.config.mjs                 # Flat ESLint configuration (core-web-vitals)
-├── .github/workflows/ci.yml          # GitHub Actions CI workflow (lint, test, build)
-├── docs/images/                      # High-res UI preview screenshots
-├── reports/                          # Institutional earnings datasets
-│   ├── NVDA-Q2-2027-analysis/        # NVIDIA Q2 2027 dataset
-│   ├── AMZN-Q2-2026-analysis/        # Amazon Q2 2026 dataset
-│   └── LITE-Q4-2026-analysis/        # Lumentum Q4 2026 dataset
+├── .github/workflows/
+│   ├── ci.yml                        # GitHub Actions CI workflow (lint, test, build)
+│   └── nightly-price-sync.yml        # Nightly 5:00 PM EST market price sync
+├── docs/
+│   ├── architecture.md               # Canonical system architecture documentation
+│   ├── spec-neon-drizzle.md          # Neon Postgres + Drizzle ORM technical spec
+│   └── images/                       # High-res UI preview screenshots
+├── reports/                          # Institutional earnings datasets (8 covered tickers)
+│   ├── NVDA-Q2-2027-analysis/
+│   ├── AMZN-Q2-2026-analysis/
+│   └── ...
 ├── prompts/                          # LLM audit & extraction prompt templates
 ├── scripts/
-│   ├── analyze.ts                    # CLI valuation & report engine
+│   ├── analyze.ts                    # CLI valuation & DB persistence engine
+│   ├── sync_prices.ts                # Standalone Yahoo Finance market price sync
+│   ├── migrate_to_neon.ts            # Seeder importing reports/ into Neon DB
 │   ├── fetch_analyst_estimates.py    # Yahoo Finance consensus extractor
 │   ├── capture_screenshots.sh        # Headless Chrome snapshot capture script
 │   ├── run_flow.sh                   # Flow runner
@@ -126,27 +124,34 @@ stress-alpha/
 │   │   ├── layout.tsx                # App layout (next/font/google)
 │   │   ├── page.tsx                  # Main dashboard (Cockpit + Intelligence Workspaces)
 │   │   ├── globals.css               # Theme & styles
-│   │   └── api/
-│   │       └── reports/              # API to list and load reports from reports/
+│   │   ├── methodology/page.tsx      # Formula documentation page
+│   │   └── api/reports/              # API endpoints for summaries and reports
 │   ├── components/
 │   │   ├── Header.tsx                # Navigation & live metrics
 │   │   ├── Cockpit.tsx               # Sticky left flow-through simulator
-│   │   ├── ScreenerView.tsx          # Multi-ticker universe screener & comparison table
+│   │   ├── ScreenerView.tsx          # Multi-ticker universe screener with live prices
 │   │   ├── ReportSelector.tsx        # Dropdown report browser
 │   │   ├── PriceMeter.tsx            # Visual price range meter
 │   │   ├── MemoView.tsx              # Committee memorandum mode
-│   │   ├── FileUploader.tsx          # Upload modal fallback
-│   │   └── tabs/                     # Focused intelligence workspaces
+│   │   └── tabs/                     # 7 Focused intelligence workspaces
+│   ├── db/
+│   │   ├── schema.ts                 # Drizzle PostgreSQL schema (tickers, reports)
+│   │   └── index.ts                  # Neon serverless client & connection pooling
 │   └── lib/
 │       ├── schemas.ts                # Zod schemas & types
 │       ├── valuation.ts              # Deterministic arithmetic engine
 │       ├── url-state.ts              # URL search param state sync & serializer
 │       ├── report.ts                 # Bilingual markdown report generator
 │       ├── i18n.ts                   # Internationalization dictionary
-│       └── utils.ts                  # Helpers
-└── tests/                            # Vitest unit test suite (52 tests)
+│       └── repository/               # Data Access Layer (DAL)
+│           ├── types.ts              # IReportRepository interface
+│           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices
+│           ├── fs-report-repository.ts # Filesystem fallback implementation
+│           └── index.ts              # Dual-mode repository factory
+└── tests/                            # Vitest unit test suite (62 tests)
     ├── valuation.test.ts
     ├── schemas.test.ts
+    ├── repository.test.ts
     ├── screener.test.ts
     ├── url-state.test.ts
     ├── report.test.ts
@@ -162,19 +167,37 @@ stress-alpha/
    npm install
    ```
 
-2. **Run test suite & verify build:**
+2. **Configure Database (Neon PostgreSQL):**
+   Copy `.env.example` to `.env.local` and add your Neon connection string:
+   ```bash
+   cp .env.example .env.local
+   # Set DATABASE_URL in .env.local
+   ```
+
+3. **Push database schema & seed initial reports:**
+   ```bash
+   npm run db:push
+   npm run migrate:neon
+   ```
+
+4. **Run nightly price sync manually (optional):**
+   ```bash
+   npm run sync:prices
+   ```
+
+5. **Run test suite & verify build:**
    ```bash
    npm test
    npm run test:coverage
    npm run build
    ```
 
-3. **Run development server:**
+6. **Run development server:**
    ```bash
    npm run dev
    ```
 
-4. **Open browser:**
+7. **Open browser:**
    ```
    http://localhost:3000
    ```

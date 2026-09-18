@@ -7,3 +7,8 @@ coverage
 .DS_Store
 *.log
 *.tsbuildinfo
+
+# Environment variables
+.env*.local
+.env
+!.env.example

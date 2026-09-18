@@ -9,6 +9,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import * as dotenv from "dotenv";
 import {
   FactsSchema,
   CatalystsSchema,
@@ -18,10 +19,14 @@ import {
   ValuationSchema,
   MoatCompetitorsSchema,
   AnalystEstimatesSchema,
+  EarningsSentimentSchema,
+  FilingExtractsSchema,
   type Reactions,
   type FinancialModelBaseline,
   type MoatCompetitors,
   type AnalystEstimates,
+  type EarningsSentiment,
+  type FilingExtracts,
 } from "../src/lib/schemas.js";
 import {
   computeValuation,
@@ -29,7 +34,19 @@ import {
 } from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
 
-function main() {
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
+
+function parseYear(quarterStr: string, slug: string): number {
+  const match =
+    quarterStr.match(/\b(20\d{2})\b/) ?? slug.match(/\b(20\d{2})\b/);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  return new Date().getFullYear();
+}
+
+async function main() {
   const targetArg = process.argv[2];
 
   if (!targetArg) {
@@ -109,6 +126,82 @@ function main() {
       absRunDir,
       "analyst-estimates_zh.json",
       AnalystEstimatesSchema
+    );
+  }
+
+  let sentiment: EarningsSentiment | undefined;
+  const sentimentPath = path.join(absRunDir, "earnings-sentiment.json");
+  if (fs.existsSync(sentimentPath)) {
+    sentiment = loadAndValidate(
+      absRunDir,
+      "earnings-sentiment.json",
+      EarningsSentimentSchema
+    );
+  }
+
+  let filing: FilingExtracts | undefined;
+  const filingPath = path.join(absRunDir, "filing-extracts.json");
+  if (fs.existsSync(filingPath)) {
+    filing = loadAndValidate(
+      absRunDir,
+      "filing-extracts.json",
+      FilingExtractsSchema
+    );
+  }
+
+  let factsZh: any;
+  const factsZhPath = path.join(absRunDir, "facts_zh.json");
+  if (fs.existsSync(factsZhPath)) {
+    factsZh = loadAndValidate(absRunDir, "facts_zh.json", FactsSchema);
+  }
+
+  let scenariosZh: any;
+  const scenariosZhPath = path.join(absRunDir, "scenarios_zh.json");
+  if (fs.existsSync(scenariosZhPath)) {
+    scenariosZh = loadAndValidate(
+      absRunDir,
+      "scenarios_zh.json",
+      ScenariosSchema
+    );
+  }
+
+  let catalystsZh: any;
+  const catalystsZhPath = path.join(absRunDir, "catalysts_zh.json");
+  if (fs.existsSync(catalystsZhPath)) {
+    catalystsZh = loadAndValidate(
+      absRunDir,
+      "catalysts_zh.json",
+      CatalystsSchema
+    );
+  }
+
+  let sentimentZh: EarningsSentiment | undefined;
+  const sentimentZhPath = path.join(absRunDir, "earnings-sentiment_zh.json");
+  if (fs.existsSync(sentimentZhPath)) {
+    sentimentZh = loadAndValidate(
+      absRunDir,
+      "earnings-sentiment_zh.json",
+      EarningsSentimentSchema
+    );
+  }
+
+  let filingZh: FilingExtracts | undefined;
+  const filingZhPath = path.join(absRunDir, "filing-extracts_zh.json");
+  if (fs.existsSync(filingZhPath)) {
+    filingZh = loadAndValidate(
+      absRunDir,
+      "filing-extracts_zh.json",
+      FilingExtractsSchema
+    );
+  }
+
+  let reactionsZh: Reactions | undefined;
+  const reactionsZhPath = path.join(absRunDir, "reactions_zh.json");
+  if (fs.existsSync(reactionsZhPath)) {
+    reactionsZh = loadAndValidate(
+      absRunDir,
+      "reactions_zh.json",
+      ReactionsSchema
     );
   }
 
@@ -207,6 +300,176 @@ function main() {
   }
 
   const slug = path.basename(absRunDir);
+
+  // Database Persistence: Save directly to Neon if configured
+  if (process.env.DATABASE_URL) {
+    try {
+      const { getDb } = await import("../src/db/index.js");
+      const { tickersTable, reportsTable } =
+        await import("../src/db/schema.js");
+      const db = getDb();
+
+      console.log(
+        "\n💾 [Neon Database] Persisting report and ticker to database..."
+      );
+
+      // 1. Ensure ticker exists in tickersTable
+      await db
+        .insert(tickersTable)
+        .values({
+          ticker: facts.ticker,
+          company: facts.company,
+          currentPrice: String(validatedValuation.currentPrice),
+          marketCap: facts.marketCapBillions
+            ? String(facts.marketCapBillions)
+            : null,
+          currency: "USD",
+          priceUpdatedAt: new Date(),
+          active: true,
+        })
+        .onConflictDoUpdate({
+          target: tickersTable.ticker,
+          set: {
+            company: facts.company,
+            marketCap: facts.marketCapBillions
+              ? String(facts.marketCapBillions)
+              : null,
+          },
+        });
+
+      // 2. Extract base/bull/bear fair values
+      let baseFairValue = validatedValuation.weightedFairValue;
+      let bullFairValue = validatedValuation.weightedFairValue;
+      let bearFairValue = validatedValuation.weightedFairValue;
+
+      if (validatedValuation.scenarioResults) {
+        const baseScen = validatedValuation.scenarioResults.find(
+          (s) =>
+            s.name.toLowerCase() === "base" ||
+            s.name.toLowerCase() === "base case"
+        );
+        const bullScen = validatedValuation.scenarioResults.find(
+          (s) =>
+            s.name.toLowerCase() === "bull" ||
+            s.name.toLowerCase() === "bull case"
+        );
+        const bearScen = validatedValuation.scenarioResults.find(
+          (s) =>
+            s.name.toLowerCase() === "bear" ||
+            s.name.toLowerCase() === "bear case"
+        );
+        if (baseScen) baseFairValue = baseScen.fairValue;
+        if (bullScen) bullFairValue = bullScen.fairValue;
+        if (bearScen) bearFairValue = bearScen.fairValue;
+      }
+
+      const panicFairValue =
+        validatedValuation.stressTest?.valuationBands?.panic?.targetPrice;
+      const year = parseYear(facts.quarter, slug);
+
+      await db
+        .insert(reportsTable)
+        .values({
+          slug,
+          ticker: facts.ticker,
+          quarter: facts.quarter,
+          year,
+          reportDate: facts.reportDate,
+          status: "published",
+          reportPrice: String(validatedValuation.currentPrice),
+          weightedFairValue: String(validatedValuation.weightedFairValue),
+          baseFairValue: String(baseFairValue),
+          bullFairValue: String(bullFairValue),
+          bearFairValue: String(bearFairValue),
+          panicFairValue: panicFairValue ? String(panicFairValue) : null,
+          moatRating: moat?.overallMoatRating ?? null,
+          moatTrend: moat?.moatTrend ?? null,
+          operatingMarginPct:
+            facts.operatingMarginPct != null
+              ? String(facts.operatingMarginPct)
+              : null,
+          revenueGrowthPct:
+            facts.revenueGrowthPct != null
+              ? String(facts.revenueGrowthPct)
+              : null,
+          facts,
+          scenarios,
+          valuation: validatedValuation,
+          baseline,
+          moat,
+          moatZh,
+          estimates,
+          estimatesZh,
+          catalysts,
+          sentiment,
+          filing,
+          reactions,
+          factsZh,
+          scenariosZh,
+          catalystsZh,
+          sentimentZh,
+          filingZh,
+          reactionsZh,
+          reportMd,
+          reportMdZh: reportZhMd,
+          publishedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: reportsTable.slug,
+          set: {
+            reportPrice: String(validatedValuation.currentPrice),
+            weightedFairValue: String(validatedValuation.weightedFairValue),
+            baseFairValue: String(baseFairValue),
+            bullFairValue: String(bullFairValue),
+            bearFairValue: String(bearFairValue),
+            panicFairValue: panicFairValue ? String(panicFairValue) : null,
+            moatRating: moat?.overallMoatRating ?? null,
+            moatTrend: moat?.moatTrend ?? null,
+            operatingMarginPct:
+              facts.operatingMarginPct != null
+                ? String(facts.operatingMarginPct)
+                : null,
+            revenueGrowthPct:
+              facts.revenueGrowthPct != null
+                ? String(facts.revenueGrowthPct)
+                : null,
+            facts,
+            scenarios,
+            valuation: validatedValuation,
+            baseline,
+            moat,
+            moatZh,
+            estimates,
+            estimatesZh,
+            catalysts,
+            sentiment,
+            filing,
+            reactions,
+            factsZh,
+            scenariosZh,
+            catalystsZh,
+            sentimentZh,
+            filingZh,
+            reactionsZh,
+            reportMd,
+            reportMdZh: reportZhMd,
+            updatedAt: new Date(),
+          },
+        });
+
+      console.log(`  ✅ Successfully persisted ${slug} to Neon PostgreSQL!`);
+    } catch (dbErr) {
+      console.warn(
+        "  ⚠️ Failed to save to database (local files intact):",
+        dbErr
+      );
+    }
+  } else {
+    console.log(
+      "  ℹ️  DATABASE_URL not set — skipped database persistence (local files written)."
+    );
+  }
+
   console.log("\n" + "═".repeat(64));
   console.log(`  🌐 View in StressAlpha Web Application:`);
   console.log(`     http://localhost:3000/?report=${encodeURIComponent(slug)}`);
@@ -229,4 +492,7 @@ function loadAndValidate<T>(
   return validated;
 }
 
-main();
+main().catch((err) => {
+  console.error("❌ Fatal execution error:", err);
+  process.exit(1);
+});

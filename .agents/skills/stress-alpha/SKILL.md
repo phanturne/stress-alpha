@@ -56,7 +56,7 @@ Generate the following structured JSON artifacts inside the report folder using 
 9. `reactions.json` (Optional):
    - Historical post-earnings day-1 moves and conditional reaction framing.
 
-### Step 3: Run the Deterministic Valuation Engine
+### Step 3: Run the Deterministic Valuation Engine & Save to Database
 Execute the deterministic valuation engine:
 ```bash
 cd /Users/krding/Projects/stress-alpha
@@ -66,6 +66,7 @@ This automatically validates all schemas and generates:
 - `valuation.json`: Exact mathematical fair values, valuation bands (Bull, Base, Panic), and risk asymmetry metrics.
 - `report.md`: Complete human-readable English markdown report.
 - `report_zh.md`: Complete human-readable Chinese markdown report with institutional financial terminology (概率加权公允价值, 收益质量防线, 压力预测EPS, 估值区间).
+- **Neon Database Persistence:** If `DATABASE_URL` is set, the script automatically persists the ticker and full report record into Neon PostgreSQL (`tickers` and `reports` tables), making it immediately available in the cloud web application with live nightly price sync support.
 
 ### Step 4: Display Output on the Web Application
 Launch the report directly in the browser:
