@@ -12,3 +12,6 @@ coverage
 .env*.local
 .env
 !.env.example
+
+# Local report staging artifacts (reports are stored directly in Neon Database)
+/reports/

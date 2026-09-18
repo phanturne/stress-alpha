@@ -9,7 +9,6 @@ import {
   FileSearch,
   FileText,
   Check,
-  Loader2,
   ShieldCheck,
   Target,
   Keyboard,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
+import { CockpitSkeleton } from "@/components/CockpitSkeleton";
 import { MemoView } from "@/components/MemoView";
 import { EstimatesTab } from "@/components/tabs/EstimatesTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
@@ -42,6 +42,7 @@ export default function HomePage() {
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [reports, setReports] = useState<ReportSummary[]>([]);
+  const [isReportsLoading, setIsReportsLoading] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"cockpit" | "memo" | "screener">(
     "cockpit"
@@ -129,6 +130,7 @@ export default function HomePage() {
   );
 
   const fetchReportsList = useCallback(async () => {
+    setIsReportsLoading(true);
     try {
       const res = await fetch("/api/reports");
       if (res.ok) {
@@ -139,6 +141,8 @@ export default function HomePage() {
       }
     } catch (err) {
       console.error("Failed to fetch reports list:", err);
+    } finally {
+      setIsReportsLoading(false);
     }
     return [];
   }, []);
@@ -577,17 +581,10 @@ export default function HomePage() {
             reports={reports}
             onSelectReport={handleSelectReport}
             locale={locale}
+            isLoading={isReportsLoading}
           />
         ) : isLoading ? (
-          <div className="flex h-[70vh] flex-col items-center justify-center gap-3">
-            <div className="relative">
-              <Loader2 className="size-9 animate-spin text-accent" />
-              <div className="absolute inset-0 animate-pulse rounded-full bg-accent/20 blur-md" />
-            </div>
-            <span className="font-mono text-xs tracking-wider text-slate-400">
-              {t.page.loading}
-            </span>
-          </div>
+          <CockpitSkeleton />
         ) : !reportData || !stressResult ? (
           <div className="glass-panel relative mx-auto my-16 flex max-w-xl flex-col items-center gap-5 overflow-hidden rounded-3xl border border-white/[0.08] p-8 text-center shadow-2xl sm:p-10">
             <div className="pointer-events-none absolute -left-24 -top-24 size-48 rounded-full bg-accent/10 blur-3xl" />

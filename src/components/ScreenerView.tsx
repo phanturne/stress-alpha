@@ -17,6 +17,7 @@ import {
   Percent,
   ExternalLink,
 } from "lucide-react";
+import { Skeleton } from "./ui/Skeleton";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -25,6 +26,7 @@ interface ScreenerViewProps {
   reports: ReportSummary[];
   onSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
   locale?: Locale;
+  isLoading?: boolean;
 }
 
 type MoatFilter = "all" | "wide" | "narrow";
@@ -39,10 +41,94 @@ type SortField =
   | "ticker";
 type SortDirection = "asc" | "desc";
 
+const SKELETON_ROWS = [
+  {
+    tickerW: "w-14",
+    nameW: "w-32",
+    moatW: "w-16",
+    targetW: "w-14",
+    baseW: "w-14",
+    wfvW: "w-16",
+    marginW: "w-12",
+    growthW: "w-12",
+  },
+  {
+    tickerW: "w-12",
+    nameW: "w-40",
+    moatW: "w-14",
+    targetW: "w-16",
+    baseW: "w-16",
+    wfvW: "w-14",
+    marginW: "w-10",
+    growthW: "w-14",
+  },
+  {
+    tickerW: "w-16",
+    nameW: "w-28",
+    moatW: "w-16",
+    targetW: "w-12",
+    baseW: "w-14",
+    wfvW: "w-16",
+    marginW: "w-14",
+    growthW: "w-12",
+  },
+  {
+    tickerW: "w-14",
+    nameW: "w-36",
+    moatW: "w-14",
+    targetW: "w-14",
+    baseW: "w-12",
+    wfvW: "w-14",
+    marginW: "w-12",
+    growthW: "w-10",
+  },
+  {
+    tickerW: "w-12",
+    nameW: "w-24",
+    moatW: "w-16",
+    targetW: "w-16",
+    baseW: "w-16",
+    wfvW: "w-16",
+    marginW: "w-10",
+    growthW: "w-14",
+  },
+  {
+    tickerW: "w-16",
+    nameW: "w-32",
+    moatW: "w-16",
+    targetW: "w-14",
+    baseW: "w-14",
+    wfvW: "w-14",
+    marginW: "w-12",
+    growthW: "w-12",
+  },
+  {
+    tickerW: "w-14",
+    nameW: "w-36",
+    moatW: "w-14",
+    targetW: "w-12",
+    baseW: "w-12",
+    wfvW: "w-16",
+    marginW: "w-14",
+    growthW: "w-10",
+  },
+  {
+    tickerW: "w-12",
+    nameW: "w-28",
+    moatW: "w-16",
+    targetW: "w-16",
+    baseW: "w-14",
+    wfvW: "w-14",
+    marginW: "w-10",
+    growthW: "w-12",
+  },
+];
+
 export const ScreenerView: React.FC<ScreenerViewProps> = ({
   reports,
   onSelectReport,
   locale = "en",
+  isLoading = false,
 }) => {
   const t = getTranslations(locale);
   const ts = t.screener;
@@ -205,9 +291,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-            {stats.count} {ts.statsCoverage}
-          </span>
+          {isLoading ? (
+            <Skeleton className="h-6 w-24 rounded-md" />
+          ) : (
+            <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
+              {stats.count} {ts.statsCoverage}
+            </span>
+          )}
         </div>
       </div>
 
@@ -221,12 +311,21 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </span>
             <CheckCircle2 className="size-4 text-accent" />
           </div>
-          <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
-            {stats.count}
-          </div>
-          <p className="mt-1 text-[11px] text-slate-400">
-            {stats.wideMoatCount} {ts.wideMoat}
-          </p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mt-3 h-8 w-16" />
+              <Skeleton className="mt-2 h-3.5 w-24" />
+            </>
+          ) : (
+            <>
+              <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                {stats.count}
+              </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {`${stats.wideMoatCount} ${ts.wideMoat}`}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Avg Upside */}
@@ -237,31 +336,42 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </span>
             <TrendingUp className="size-4 text-green-400" />
           </div>
-          <div
-            className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
-              stats.avgUpside >= 0 ? "text-green-400" : "text-rose-400"
-            }`}
-          >
-            {stats.avgUpside >= 0 ? "+" : ""}
-            {stats.avgUpside.toFixed(1)}%
-          </div>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Weighted probability model
-          </p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mt-3 h-8 w-24" />
+              <Skeleton className="mt-2 h-3.5 w-32" />
+            </>
+          ) : (
+            <>
+              <div
+                className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
+                  stats.avgUpside >= 0 ? "text-green-400" : "text-rose-400"
+                }`}
+              >
+                {stats.avgUpside >= 0 ? "+" : ""}
+                {stats.avgUpside.toFixed(1)}%
+              </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Weighted probability model
+              </p>
+            </>
+          )}
         </div>
 
         {/* Highest Upside Pick */}
         <div
           className={`glass-panel rounded-xl p-3.5 sm:p-4 ${
-            stats.topPick
+            stats.topPick && !isLoading
               ? "cursor-pointer transition-all hover:border-accent/40 hover:bg-surface-2/40"
               : ""
           }`}
           onClick={() =>
-            stats.topPick && onSelectReport(stats.topPick.slug, "cockpit")
+            !isLoading &&
+            stats.topPick &&
+            onSelectReport(stats.topPick.slug, "cockpit")
           }
           title={
-            stats.topPick
+            stats.topPick && !isLoading
               ? locale === "zh"
                 ? `点击进入 ${stats.topPick.ticker} 操盘驾驶舱`
                 : `Open ${stats.topPick.ticker} Cockpit`
@@ -274,19 +384,28 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </span>
             <Sparkles className="size-4 text-amber-400" />
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black text-white sm:text-3xl">
-              {stats.topPick?.ticker || "—"}
-            </span>
-            {stats.topPick?.upsidePct && (
-              <span className="font-mono text-sm font-bold text-green-400">
-                +{stats.topPick.upsidePct.toFixed(1)}%
-              </span>
-            )}
-          </div>
-          <p className="mt-1 truncate text-[11px] text-slate-400">
-            {stats.topPick?.company || "—"}
-          </p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mt-3 h-8 w-28" />
+              <Skeleton className="mt-2 h-3.5 w-24" />
+            </>
+          ) : (
+            <>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-mono text-2xl font-black text-white sm:text-3xl">
+                  {stats.topPick?.ticker || "—"}
+                </span>
+                {stats.topPick?.upsidePct && (
+                  <span className="font-mono text-sm font-bold text-green-400">
+                    +{stats.topPick.upsidePct.toFixed(1)}%
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 truncate text-[11px] text-slate-400">
+                {stats.topPick?.company || "—"}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Wide Moat Share */}
@@ -297,14 +416,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </span>
             <Shield className="size-4 text-purple-400" />
           </div>
-          <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
-            {stats.count > 0
-              ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
-              : "0%"}
-          </div>
-          <p className="mt-1 text-[11px] text-slate-400">
-            {stats.wideMoatCount} of {stats.count} wide moats
-          </p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mt-3 h-8 w-16" />
+              <Skeleton className="mt-2 h-3.5 w-28" />
+            </>
+          ) : (
+            <>
+              <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                {stats.count > 0
+                  ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
+                  : "0%"}
+              </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {`${stats.wideMoatCount} of ${stats.count} wide moats`}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -545,7 +673,84 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </thead>
 
             <tbody className="divide-y divide-white/[0.05]">
-              {filteredReports.length === 0 ? (
+              {isLoading ? (
+                <>
+                  {SKELETON_ROWS.map((row, idx) => (
+                    <tr
+                      key={`skeleton-${idx}`}
+                      className="border-b border-white/[0.03]"
+                    >
+                      {/* Ticker & Company */}
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <Skeleton className="size-8 shrink-0 rounded-lg" />
+                          <div className="space-y-1.5">
+                            <Skeleton className={`h-3.5 ${row.tickerW}`} />
+                            <Skeleton className={`h-2.5 ${row.nameW}`} />
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Moat */}
+                      <td className="px-3 py-3.5">
+                        <Skeleton className={`h-5 ${row.moatW} rounded-full`} />
+                      </td>
+
+                      {/* Price */}
+                      <td className="px-3 py-3.5 text-right">
+                        <Skeleton className="ml-auto h-4 w-16" />
+                      </td>
+
+                      {/* Analyst Target */}
+                      <td className="px-3 py-3.5 text-right">
+                        <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
+                      </td>
+
+                      {/* Base Fair Value */}
+                      <td className="px-3 py-3.5 text-right">
+                        <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
+                      </td>
+
+                      {/* Weighted Fair Value & Upside */}
+                      <td className="px-4 py-3.5 text-right">
+                        <div className="ml-auto space-y-1">
+                          <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
+                          <Skeleton className="ml-auto h-3 w-12 rounded-full" />
+                        </div>
+                      </td>
+
+                      {/* Valuation Spectrum */}
+                      <td className="hidden min-w-[200px] px-4 py-3.5 lg:table-cell">
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between">
+                            <Skeleton className="h-2 w-8" />
+                            <Skeleton className="h-2 w-8" />
+                          </div>
+                          <Skeleton className="h-2 w-full rounded-full" />
+                        </div>
+                      </td>
+
+                      {/* Operating Margin */}
+                      <td className="hidden px-3 py-3.5 text-right xl:table-cell">
+                        <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
+                      </td>
+
+                      {/* Revenue Growth */}
+                      <td className="hidden px-3 py-3.5 text-right xl:table-cell">
+                        <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
+                      </td>
+
+                      {/* Action */}
+                      <td className="px-4 py-3.5 text-right">
+                        <div className="ml-auto flex items-center justify-end gap-1.5">
+                          <Skeleton className="h-7 w-16 rounded-md" />
+                          <Skeleton className="h-7 w-14 rounded-md" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : filteredReports.length === 0 ? (
                 <tr>
                   <td
                     colSpan={10}

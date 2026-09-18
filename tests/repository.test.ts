@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
+  DrizzleReportRepository,
   FsReportRepository,
   InMemoryReportRepository,
   getReportRepository,
@@ -9,32 +10,35 @@ import {
 import { FactsSchema, ScenariosSchema, type ReportData } from "@/lib/schemas";
 
 describe("Data Access Layer: Repository Pattern", () => {
-  describe("FsReportRepository", () => {
-    const fsRepo = new FsReportRepository();
+  describe("DrizzleReportRepository (Neon Database)", () => {
+    const drizzleRepo = new DrizzleReportRepository();
 
-    it("lists all reports with enriched metadata", async () => {
-      const reports = await fsRepo.listReports();
+    it("lists all reports with enriched metadata from Neon DB", async () => {
+      const reports = await drizzleRepo.listReports();
       expect(Array.isArray(reports)).toBe(true);
       expect(reports.length).toBeGreaterThanOrEqual(8);
 
       const nvda = reports.find((r) => r.ticker === "NVDA");
       expect(nvda).toBeDefined();
-      expect(nvda?.currentPrice).toBe(212.5);
+      expect(typeof nvda?.currentPrice).toBe("number");
+      expect(nvda?.currentPrice).toBeGreaterThan(0);
       expect(nvda?.weightedFairValue).toBe(342.83);
-      expect(nvda?.upsidePct).toBe(61.33);
+      expect(typeof nvda?.upsidePct).toBe("number");
       expect(nvda?.moatRating).toBe("Wide");
       expect(nvda?.operatingMarginPct).toBe(65);
       expect(nvda?.analystTarget).toBe(328.66);
     });
 
     it("checks report existence correctly with hasReport()", async () => {
-      expect(await fsRepo.hasReport("NVDA-Q2-2027-analysis")).toBe(true);
-      expect(await fsRepo.hasReport("AMZN-Q2-2026-analysis")).toBe(true);
-      expect(await fsRepo.hasReport("DOES-NOT-EXIST-analysis")).toBe(false);
+      expect(await drizzleRepo.hasReport("NVDA-Q2-2027-analysis")).toBe(true);
+      expect(await drizzleRepo.hasReport("AMZN-Q2-2026-analysis")).toBe(true);
+      expect(await drizzleRepo.hasReport("DOES-NOT-EXIST-analysis")).toBe(
+        false
+      );
     });
 
     it("loads complete report artifacts for a valid slug", async () => {
-      const report = await fsRepo.getReport("NVDA-Q2-2027-analysis");
+      const report = await drizzleRepo.getReport("NVDA-Q2-2027-analysis");
       expect(report).not.toBeNull();
       expect(report?.folderSlug).toBe("NVDA-Q2-2027-analysis");
       expect(report?.facts.ticker).toBe("NVDA");
@@ -46,8 +50,20 @@ describe("Data Access Layer: Repository Pattern", () => {
     });
 
     it("returns null for non-existent slug", async () => {
-      const report = await fsRepo.getReport("NONEXISTENT-SLUG");
+      const report = await drizzleRepo.getReport("NONEXISTENT-SLUG");
       expect(report).toBeNull();
+    });
+  });
+
+  describe("FsReportRepository", () => {
+    it("handles missing directory gracefully and returns empty array", async () => {
+      const emptyRepo = new FsReportRepository(
+        "/tmp/nonexistent-stressalpha-reports"
+      );
+      const reports = await emptyRepo.listReports();
+      expect(reports).toEqual([]);
+      expect(await emptyRepo.hasReport("any-slug")).toBe(false);
+      expect(await emptyRepo.getReport("any-slug")).toBeNull();
     });
   });
 

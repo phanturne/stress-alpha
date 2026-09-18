@@ -1,30 +1,31 @@
 ---
 name: stress-alpha
 description: >-
-  Run the StressAlpha equity earnings analysis pipeline, execute multi-stage audit extractions (facts, catalysts, scenarios, stress baselines), compute deterministic valuations, and display the interactive cockpit and memorandum on the StressAlpha Next.js web application.
+  Run the StressAlpha equity earnings analysis pipeline, execute multi-stage audit extractions (facts, catalysts, scenarios, stress baselines), compute deterministic valuations, and persist institutional reports directly into Neon PostgreSQL for interactive simulation in the Next.js web cockpit.
 ---
 
 # StressAlpha: Earnings Analysis & Scenario Stress Skill
 
-This skill teaches the agent how to run the end-to-end StressAlpha earnings analysis pipeline for any public equity, audit earnings quality, compute deterministic valuation bands, and display the live simulation dashboard in the modern Next.js web application.
+This skill teaches the agent how to run the end-to-end StressAlpha earnings analysis pipeline for any public equity, audit earnings quality, compute deterministic valuation bands, and persist reports directly into **Neon PostgreSQL** to power the live simulation dashboard and memorandum in the Next.js web application.
 
 ## Architectural Philosophy
 > **LLMs extract and audit qualitative context; pure deterministic TypeScript handles 100% of the arithmetic.**
 > The LLM must never invent or guess weighted fair values, upside percentages, or multiple deltas.
+> **Database-First Data Store:** Neon PostgreSQL (`tickers` and `reports` tables) is the central database serving the web application and receiving automated nightly market price updates. Local report directories act as transient staging areas during analysis and are gitignored.
 
 ---
 
 ## Complete Workflow Steps
 
-### Step 1: Create the Report Folder
-All reports are organized under `/Users/krding/Projects/stress-alpha/reports/`:
+### Step 1: Create the Staging Directory
+Create a temporary staging folder for assembling the report artifacts:
 ```bash
 mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
 Example: `/Users/krding/Projects/stress-alpha/reports/NVDA-Q2-2027-analysis`
 
 ### Step 2: Extract & Ingest Artifacts
-Generate the following structured JSON artifacts inside the report folder using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
+Generate the following structured JSON artifacts inside the staging folder using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 
 1. `facts.json` (Required):
    - Ingest headline earnings, segments, and guidance.
@@ -51,44 +52,47 @@ Generate the following structured JSON artifacts inside the report folder using 
    - Catalysts with probability anchors, horizons, and documented evidence.
 7. `earnings-sentiment.json` (Optional):
    - Management tone scorecard across 5 dimensions, analyst Q&A topics, and key executive quotes.
-8. `filing-extracts.json` (Optional):
-   - 10-Q Item 1A risk disclosure diffs and novel findings.
+8. `filing-extracts.json` & `filing-extracts_zh.json` (Optional):
+   - 10-Q Item 1A risk disclosure diffs and novel findings in English and institutional Chinese.
 9. `reactions.json` (Optional):
    - Historical post-earnings day-1 moves and conditional reaction framing.
 
-### Step 3: Run the Deterministic Valuation Engine & Save to Database
+### Step 3: Run the Deterministic Valuation Engine & Save to Neon Database
 Execute the deterministic valuation engine:
 ```bash
 cd /Users/krding/Projects/stress-alpha
 npx tsx scripts/analyze.ts reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
-This automatically validates all schemas and generates:
-- `valuation.json`: Exact mathematical fair values, valuation bands (Bull, Base, Panic), and risk asymmetry metrics.
-- `report.md`: Complete human-readable English markdown report.
-- `report_zh.md`: Complete human-readable Chinese markdown report with institutional financial terminology (概率加权公允价值, 收益质量防线, 压力预测EPS, 估值区间).
-- **Neon Database Persistence:** If `DATABASE_URL` is set, the script automatically persists the ticker and full report record into Neon PostgreSQL (`tickers` and `reports` tables), making it immediately available in the cloud web application with live nightly price sync support.
+This automatically:
+- Validates all schemas via Zod.
+- Computes exact mathematical fair values, valuation bands (Bull, Base, Panic), and risk asymmetry metrics (`valuation.json`).
+- Generates bilingual human-readable reports (`report.md` and `report_zh.md`).
+- **Persists directly into Neon PostgreSQL (`tickers` and `reports` tables):** Upserts all structured JSONB artifacts, valuation bands, and rendered markdown into the database.
+
+Verify the saved database record:
+```bash
+npm run db:query -- --report <TICKER>-<QUARTER>-<YEAR>-analysis
+```
 
 ### Step 4: Display Output on the Web Application
 Launch the report directly in the browser:
 ```bash
 /Users/krding/Projects/stress-alpha/scripts/open_report.sh <TICKER>-<QUARTER>-<YEAR>-analysis
 ```
-Or run the all-in-one helper script:
-```bash
-/Users/krding/Projects/stress-alpha/scripts/run_flow.sh <TICKER>-<QUARTER>-<YEAR>-analysis
-```
 
 The web application:
-- Automatically detects and lists all folders under `reports/` in the top report selector.
+- Queries Neon PostgreSQL via `DrizzleReportRepository` for instant report listing, dynamic upside % calculations, and full artifact bundles.
 - Provides sub-millisecond client-side sensitivity sliders (<1ms) for testing upstream shocks.
-- Allows viewing both English (`report.md`) and Chinese (`report_zh.md`) reports under the **Full Report** tab.
+- Allows viewing both English and Chinese reports under the **Full Report** tab.
 - Supports switching between the interactive **Cockpit View** and the publication-ready **Committee Memo View** (with 1-click English and Chinese memo options).
+- Automatically updates market pricing nightly through GitHub Actions.
 
 ---
 
 ## Useful References & Scripts
 - [Pipeline Stages Reference](./references/pipeline-stages.md)
-- Flow Runner Script: [scripts/run_flow.sh](/Users/krding/Projects/stress-alpha/scripts/run_flow.sh)
+- Database Query Tool: [scripts/db_query.ts](/Users/krding/Projects/stress-alpha/scripts/db_query.ts)
+- Market Price Sync: [scripts/sync_prices.ts](/Users/krding/Projects/stress-alpha/scripts/sync_prices.ts)
 - Browser Opener Script: [scripts/open_report.sh](/Users/krding/Projects/stress-alpha/scripts/open_report.sh)
 - CLI Valuation Engine: [scripts/analyze.ts](/Users/krding/Projects/stress-alpha/scripts/analyze.ts)
 - Analyst Estimates Extractor: [scripts/fetch_analyst_estimates.py](/Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py)

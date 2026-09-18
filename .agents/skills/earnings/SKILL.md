@@ -1,7 +1,7 @@
 ---
 name: earnings
 description: >-
-  Execute the end-to-end equity earnings analysis pipeline, audit quarterly financial results and 10-Q filings, evaluate economic moats and competitors, construct scenario stress valuation trees, and launch the interactive StressAlpha analysis cockpit.
+  Execute the end-to-end equity earnings analysis pipeline, audit quarterly financial results and 10-Q filings, evaluate economic moats and competitors, construct scenario stress valuation trees, and persist reports into Neon PostgreSQL to launch the interactive StressAlpha analysis cockpit.
 ---
 
 # Earnings Analysis & Stress Valuation Skill
@@ -13,7 +13,7 @@ Full workflow instructions:
 
 ## Complete Workflow Steps
 
-### Step 1: Create the Report Directory
+### Step 1: Create the Staging Directory
 ```bash
 mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
@@ -28,14 +28,16 @@ Follow the institutional prompt templates in `/Users/krding/Projects/stress-alph
   ```
 - `scenarios.json`: Discrete Bull, Base, Panic regimes with forward EPS and multiples.
 - `stress-baseline.json`: Baseline revenue, operating cost leverage, and upstream driver elasticities.
-- `catalysts.json` / `earnings-sentiment.json` / `filing-extracts.json` / `reactions.json`: Qualitative audit logs.
+- `catalysts.json` / `earnings-sentiment.json` / `filing-extracts.json` / `filing-extracts_zh.json` / `reactions.json`: Qualitative audit logs.
 
-### Step 3: Run the Deterministic Engine
+### Step 3: Run the Deterministic Engine & Save to Neon Database
 ```bash
 npx tsx /Users/krding/Projects/stress-alpha/scripts/analyze.ts /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
+This computes the deterministic valuation math, validates all schemas, renders bilingual reports, and persists the record directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
 
 ### Step 4: Open in the Web Cockpit
 ```bash
 /Users/krding/Projects/stress-alpha/scripts/open_report.sh <TICKER>-<QUARTER>-<YEAR>-analysis
 ```
+The web application queries Neon PostgreSQL directly via `DrizzleReportRepository` with nightly live price updates.

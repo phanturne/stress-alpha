@@ -371,6 +371,7 @@ export interface Translations {
     bullLabel: string;
     currentPriceLabel: string;
     sortPrompt: string;
+    loading: string;
   };
 }
 
@@ -763,6 +764,7 @@ export const translations: Record<Locale, Translations> = {
       bullLabel: "Bull",
       currentPriceLabel: "Current",
       sortPrompt: "Sort By",
+      loading: "Loading universe reports...",
     },
   },
   zh: {
@@ -1148,6 +1150,7 @@ export const translations: Record<Locale, Translations> = {
       bullLabel: "乐观",
       currentPriceLabel: "现价",
       sortPrompt: "排序依据",
+      loading: "正在加载研报筛选池...",
     },
   },
 };
