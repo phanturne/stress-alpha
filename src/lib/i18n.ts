@@ -350,6 +350,7 @@ export interface Translations {
     colCompany: string;
     colMoat: string;
     colPrice: string;
+    colAnalystTarget: string;
     colBaseFairValue: string;
     colWeightedFairValue: string;
     colUpside: string;
@@ -741,6 +742,7 @@ export const translations: Record<Locale, Translations> = {
       colCompany: "Company",
       colMoat: "Economic Moat",
       colPrice: "Current Price",
+      colAnalystTarget: "Analyst Target",
       colBaseFairValue: "Base Fair Value",
       colWeightedFairValue: "Weighted Fair Value",
       colUpside: "Implied Upside",
@@ -1125,6 +1127,7 @@ export const translations: Record<Locale, Translations> = {
       colCompany: "公司名称",
       colMoat: "经济护城河",
       colPrice: "当前股价",
+      colAnalystTarget: "华尔街目标价",
       colBaseFairValue: "基准公允价",
       colWeightedFairValue: "加权公允价",
       colUpside: "估值空间",

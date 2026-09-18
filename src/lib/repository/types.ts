@@ -18,6 +18,10 @@ export interface ReportSummary {
   moatTrend?: string;
   operatingMarginPct?: number;
   revenueGrowthPct?: number;
+  analystTarget?: number;
+  analystUpsidePct?: number;
+  analystRating?: string;
+  analystCount?: number;
   hasFacts: boolean;
   hasScenarios: boolean;
   hasValuation: boolean;

@@ -31,6 +31,10 @@ describe("Screener & Reports API", () => {
     expect(nvda.hasFacts).toBe(true);
     expect(nvda.hasValuation).toBe(true);
     expect(nvda.hasScenarios).toBe(true);
+    expect(nvda.analystTarget).toBe(328.66);
+    expect(nvda.analystRating).toBe("Strong Buy");
+    expect(nvda.analystCount).toBe(61);
+    expect(nvda.analystUpsidePct).toBeCloseTo(54.66, 1);
   });
 
   it("verifies all covered reports contain valid pricing and valuation metrics", async () => {

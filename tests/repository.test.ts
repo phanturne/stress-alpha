@@ -24,6 +24,7 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(nvda?.upsidePct).toBe(61.33);
       expect(nvda?.moatRating).toBe("Wide");
       expect(nvda?.operatingMarginPct).toBe(65);
+      expect(nvda?.analystTarget).toBe(328.66);
     });
 
     it("checks report existence correctly with hasReport()", async () => {

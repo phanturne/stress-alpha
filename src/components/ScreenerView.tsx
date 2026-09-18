@@ -30,7 +30,13 @@ interface ScreenerViewProps {
 type MoatFilter = "all" | "wide" | "narrow";
 type UpsideFilter = "all" | "undervalued" | "high-upside";
 type SortField =
-  "upside" | "baseUpside" | "price" | "opMargin" | "revGrowth" | "ticker";
+  | "upside"
+  | "baseUpside"
+  | "analystTarget"
+  | "price"
+  | "opMargin"
+  | "revGrowth"
+  | "ticker";
 type SortDirection = "asc" | "desc";
 
 export const ScreenerView: React.FC<ScreenerViewProps> = ({
@@ -133,6 +139,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           case "price":
             valA = a.currentPrice ?? 0;
             valB = b.currentPrice ?? 0;
+            break;
+          case "analystTarget":
+            valA = a.analystTarget ?? -999;
+            valB = b.analystTarget ?? -999;
             break;
           case "opMargin":
             valA = a.operatingMarginPct ?? -999;
@@ -411,7 +421,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center gap-1.5">
                     <span>{ts.colTicker}</span>
-                    <ArrowUpDown className="size-3 text-slate-500" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "ticker"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -425,7 +441,28 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colPrice}</span>
-                    <ArrowUpDown className="size-3 text-slate-500" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "price" ? "text-accent" : "text-slate-500"
+                      }`}
+                    />
+                  </div>
+                </th>
+
+                {/* Analyst Consensus Target */}
+                <th
+                  onClick={() => handleSort("analystTarget")}
+                  className="cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>{ts.colAnalystTarget}</span>
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "analystTarget"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -436,7 +473,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colBaseFairValue}</span>
-                    <ArrowUpDown className="size-3 text-slate-500" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "baseUpside"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -447,7 +490,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colWeightedFairValue}</span>
-                    <ArrowUpDown className="size-3 text-accent" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "upside"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -463,7 +512,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colOperatingMargin}</span>
-                    <ArrowUpDown className="size-3 text-slate-500" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "opMargin"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -474,7 +529,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colRevenueGrowth}</span>
-                    <ArrowUpDown className="size-3 text-slate-500" />
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "revGrowth"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
                   </div>
                 </th>
 
@@ -487,7 +548,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               {filteredReports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-4 py-12 text-center text-slate-400"
                   >
                     <p className="text-sm font-medium">{ts.noResults}</p>
@@ -603,6 +664,52 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       {/* Current Stock Price */}
                       <td className="px-3 py-3.5 text-right font-mono font-medium text-white">
                         {price > 0 ? formatCurrency(price) : "—"}
+                      </td>
+
+                      {/* Analyst Consensus Target */}
+                      <td className="px-3 py-3.5 text-right font-mono">
+                        {report.analystTarget && report.analystTarget > 0 ? (
+                          <div
+                            title={
+                              report.analystCount
+                                ? `${report.analystCount} ${
+                                    locale === "zh"
+                                      ? "位分析师评级"
+                                      : "analysts"
+                                  }${
+                                    report.analystRating
+                                      ? ` · ${report.analystRating}`
+                                      : ""
+                                  }`
+                                : undefined
+                            }
+                          >
+                            <div className="font-medium text-slate-200">
+                              {formatCurrency(report.analystTarget)}
+                            </div>
+                            <div className="flex items-center justify-end gap-1 text-[11px]">
+                              {report.analystUpsidePct !== undefined && (
+                                <span
+                                  className={
+                                    report.analystUpsidePct >= 0
+                                      ? "text-emerald-400"
+                                      : "text-rose-400"
+                                  }
+                                >
+                                  {report.analystUpsidePct >= 0 ? "+" : ""}
+                                  {report.analystUpsidePct.toFixed(1)}%
+                                </span>
+                              )}
+                              {report.analystRating && (
+                                <span className="hidden text-[10px] text-slate-500 sm:inline">
+                                  • {report.analystRating}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-slate-600">—</span>
+                        )}
                       </td>
 
                       {/* Base Fair Value & Upside */}

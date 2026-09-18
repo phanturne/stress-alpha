@@ -135,6 +135,53 @@ export class FsReportRepository implements IReportRepository {
         }
       }
 
+      let analystTarget: number | undefined;
+      let analystUpsidePct: number | undefined;
+      let analystRating: string | undefined;
+      let analystCount: number | undefined;
+
+      if (fs.existsSync(estimatesPath)) {
+        try {
+          const eRaw = fs.readFileSync(estimatesPath, "utf-8");
+          const eParsed = JSON.parse(eRaw);
+          if (typeof eParsed.priceTargets?.average === "number") {
+            const avg = eParsed.priceTargets.average;
+            analystTarget = avg;
+            if (currentPrice && currentPrice > 0) {
+              analystUpsidePct = ((avg - currentPrice) / currentPrice) * 100;
+            }
+          }
+          if (eParsed.consensus?.consensus) {
+            analystRating = eParsed.consensus.consensus;
+          }
+          if (eParsed.consensus?.totalAnalysts !== undefined) {
+            analystCount = eParsed.consensus.totalAnalysts;
+          }
+        } catch {
+          // ignore parsing error
+        }
+      }
+
+      // Fallback: check scenarios.json consensusTarget if analyst-estimates.json target was absent
+      if (analystTarget === undefined && fs.existsSync(scenariosPath)) {
+        try {
+          const sRaw = fs.readFileSync(scenariosPath, "utf-8");
+          const sParsed = JSON.parse(sRaw);
+          if (
+            typeof sParsed.consensusTarget === "number" &&
+            sParsed.consensusTarget > 0
+          ) {
+            const cTarget = sParsed.consensusTarget;
+            analystTarget = cTarget;
+            if (currentPrice && currentPrice > 0) {
+              analystUpsidePct = ((cTarget - currentPrice) / currentPrice) * 100;
+            }
+          }
+        } catch {
+          // ignore parsing error
+        }
+      }
+
       reports.push({
         slug: folder.name,
         name: folder.name,
@@ -153,6 +200,10 @@ export class FsReportRepository implements IReportRepository {
         moatTrend,
         operatingMarginPct,
         revenueGrowthPct,
+        analystTarget,
+        analystUpsidePct,
+        analystRating,
+        analystCount,
         hasFacts: fs.existsSync(factsPath),
         hasScenarios: fs.existsSync(scenariosPath),
         hasValuation: fs.existsSync(valuationPath),
