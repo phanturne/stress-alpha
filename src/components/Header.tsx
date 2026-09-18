@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -11,6 +11,9 @@ import {
   BarChart3,
   BookOpen,
   ExternalLink,
+  Settings,
+  Keyboard,
+  ArrowUpRight,
 } from "lucide-react";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
@@ -63,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const currentPrice = facts?.currentPrice ?? 0;
   const weightedFairValue = valuation?.weightedFairValue ?? 0;
   const upsidePct = valuation?.upsidePct ?? 0;
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <header className="glass-panel sticky top-0 z-40 flex w-full flex-nowrap items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
@@ -104,20 +108,6 @@ export const Header: React.FC<HeaderProps> = ({
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
-
-        {/* Ticker Hyperlink to Yahoo Finance */}
-        {facts?.ticker && (
-          <a
-            href={`https://finance.yahoo.com/quote/${facts.ticker}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-1 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2 py-1.5 font-mono text-xs font-semibold text-slate-400 transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
-            title={`View ${facts.ticker} quote on Yahoo Finance`}
-          >
-            <span>{facts.ticker}</span>
-            <ExternalLink className="size-3" />
-          </a>
-        )}
       </div>
 
       {/* Middle: Live Market Data Bar - Absolutely Centered in Viewport */}
@@ -205,38 +195,9 @@ export const Header: React.FC<HeaderProps> = ({
         </>
       )}
 
-      {/* Right: Language Switcher, View Mode, Methodology, GitHub, Share, Shortcuts */}
+      {/* Right: View Modes, Share, GitHub Icon, and Settings & Resources Menu */}
       <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">
-        {/* Prominent Language Switcher (Clicking toggles EN <-> ZH) */}
-        <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 shadow-sm">
-          <Globe className="ml-1.5 mr-0.5 hidden size-3.5 text-accent sm:inline" />
-          <button
-            type="button"
-            onClick={() => onToggleLocale(locale === "en" ? "zh" : "en")}
-            className={`rounded-md px-2 py-1 text-xs font-bold transition-all sm:px-2.5 ${
-              locale === "en"
-                ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                : "text-slate-400 hover:text-white"
-            }`}
-            title="Click to toggle English / 中文"
-          >
-            <span>EN</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggleLocale(locale === "en" ? "zh" : "en")}
-            className={`rounded-md px-2 py-1 text-xs font-bold transition-all sm:px-2.5 ${
-              locale === "zh"
-                ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                : "text-slate-400 hover:text-white"
-            }`}
-            title="点击切换 中文 / English"
-          >
-            <span>中文</span>
-          </button>
-        </div>
-
-        {/* View Mode Toggle */}
+        {/* View Mode Segmented Control */}
         <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
           <button
             type="button"
@@ -246,6 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
                 : "text-slate-400 hover:text-white"
             }`}
+            title={t.cockpit}
           >
             <SlidersHorizontal className="size-3.5" />
             <span className="hidden md:inline">{t.cockpit}</span>
@@ -258,6 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
                 : "text-slate-400 hover:text-white"
             }`}
+            title={t.memo}
           >
             <FileText className="size-3.5" />
             <span className="hidden md:inline">{t.memo}</span>
@@ -270,33 +233,12 @@ export const Header: React.FC<HeaderProps> = ({
                 ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
                 : "text-slate-400 hover:text-white"
             }`}
+            title={t.screener}
           >
             <BarChart3 className="size-3.5" />
             <span className="hidden md:inline">{t.screener}</span>
           </button>
         </div>
-
-        {/* Methodology Documentation Link */}
-        <Link
-          href="/methodology"
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent sm:px-3"
-          title={t.methodology}
-        >
-          <BookOpen className="size-3.5" />
-          <span className="hidden lg:inline">{t.methodology}</span>
-        </Link>
-
-        {/* GitHub Repository Link */}
-        <a
-          href="https://github.com/phanturne/stress-alpha"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent sm:px-3"
-          title={t.github}
-        >
-          <GithubIcon className="size-3.5" />
-          <span className="hidden xl:inline">{t.github}</span>
-        </a>
 
         {/* Share Button */}
         <button
@@ -309,17 +251,130 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">{t.share}</span>
         </button>
 
-        {/* Shortcuts Helper Button */}
-        {onOpenShortcutsModal && (
+        {/* GitHub Repository Icon Button */}
+        <a
+          href="https://github.com/phanturne/stress-alpha"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+          title={t.github}
+          aria-label={t.github}
+        >
+          <GithubIcon className="size-3.5" />
+        </a>
+
+        {/* Settings & Resources Dropdown */}
+        <div className="relative">
           <button
             type="button"
-            onClick={onOpenShortcutsModal}
-            className="rounded-lg border border-white/[0.08] bg-surface-1/90 p-2 text-xs text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
-            title="Keyboard Shortcuts (?)"
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            className={`flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 ${
+              isSettingsOpen
+                ? "border-accent/40 bg-surface-2 text-accent ring-1 ring-accent/30"
+                : "text-slate-400 hover:text-white"
+            }`}
+            title={t.settings}
+            aria-label={t.settings}
           >
-            <HelpCircle className="size-3.5" />
+            <Settings
+              className={`size-3.5 transition-transform duration-200 ${
+                isSettingsOpen ? "rotate-45 text-accent" : ""
+              }`}
+            />
           </button>
-        )}
+
+          {isSettingsOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsSettingsOpen(false)}
+              />
+              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-64 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+                {/* Language Switcher Row */}
+                <div className="flex items-center justify-between px-2.5 py-2 text-xs">
+                  <div className="flex items-center gap-2 font-medium text-slate-300">
+                    <Globe className="size-3.5 text-accent" />
+                    <span>{t.language}</span>
+                  </div>
+                  <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => onToggleLocale("en")}
+                      className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                        locale === "en"
+                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      EN
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onToggleLocale("zh")}
+                      className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                        locale === "zh"
+                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      中文
+                    </button>
+                  </div>
+                </div>
+
+                {/* Navigation Links: Methodology & Hotkeys */}
+                <div className="py-1">
+                  <Link
+                    href="/methodology"
+                    onClick={() => setIsSettingsOpen(false)}
+                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="size-3.5 text-slate-400" />
+                      <span>{t.methodology}</span>
+                    </div>
+                    <ArrowUpRight className="size-3 text-slate-500" />
+                  </Link>
+
+                  {onOpenShortcutsModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSettingsOpen(false);
+                        onOpenShortcutsModal();
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Keyboard className="size-3.5 text-slate-400" />
+                        <span>{t.shortcuts}</span>
+                      </div>
+                      <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                        ?
+                      </kbd>
+                    </button>
+                  )}
+                </div>
+
+                {/* Secondary External GitHub Link */}
+                <div className="pt-1">
+                  <a
+                    href="https://github.com/phanturne/stress-alpha"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-surface-2 hover:text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <GithubIcon className="size-3.5 text-slate-400" />
+                      <span>{t.github}</span>
+                    </div>
+                    <ExternalLink className="size-3 text-slate-500" />
+                  </a>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

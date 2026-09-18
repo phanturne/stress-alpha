@@ -15,6 +15,9 @@ export interface Translations {
     share: string;
     shareTooltip: string;
     linkCopied: string;
+    settings: string;
+    language: string;
+    shortcuts: string;
   };
   selector: {
     selectReport: string;
@@ -386,6 +389,9 @@ export const translations: Record<Locale, Translations> = {
       share: "Share",
       shareTooltip: "Share current scenario",
       linkCopied: "Scenario link copied to clipboard!",
+      settings: "Settings & Resources",
+      language: "Language",
+      shortcuts: "Keyboard Shortcuts",
     },
     selector: {
       selectReport: "Select Report...",
@@ -772,6 +778,9 @@ export const translations: Record<Locale, Translations> = {
       share: "分享",
       shareTooltip: "复制当前情景链接",
       linkCopied: "情景分析链接已复制到剪贴板！",
+      settings: "偏好与设置",
+      language: "界面语言",
+      shortcuts: "键盘快捷键",
     },
     selector: {
       selectReport: "选择财报研报...",
