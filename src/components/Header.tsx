@@ -8,6 +8,7 @@ import {
   Upload,
   Globe,
   HelpCircle,
+  BarChart3,
 } from "lucide-react";
 import { ReportSelector } from "./ReportSelector";
 import { formatCurrency, formatPercent } from "@/lib/utils";
@@ -19,8 +20,8 @@ interface HeaderProps {
   valuation?: Valuation;
   currentSlug?: string | null;
   onSelectReport: (slug: string) => void;
-  viewMode: "cockpit" | "memo";
-  onViewModeChange: (mode: "cockpit" | "memo") => void;
+  viewMode: "cockpit" | "memo" | "screener";
+  onViewModeChange: (mode: "cockpit" | "memo" | "screener") => void;
   onOpenUploadModal?: () => void;
   onOpenShortcutsModal?: () => void;
   onShare?: () => void;
@@ -75,6 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
           currentSlug={currentSlug ?? null}
           onSelectReport={onSelectReport}
           locale={locale}
+          onOpenScreener={() => onViewModeChange("screener")}
         />
       </div>
 
@@ -213,6 +215,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <FileText className="size-3.5" />
             <span className="hidden md:inline">{t.memo}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onViewModeChange("screener")}
+            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
+              viewMode === "screener"
+                ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            <BarChart3 className="size-3.5" />
+            <span className="hidden md:inline">{t.screener}</span>
           </button>
         </div>
 

@@ -9,6 +9,7 @@ export interface Translations {
     fwdEstimate: string;
     cockpit: string;
     memo: string;
+    screener: string;
     share: string;
     upload: string;
     shareTooltip: string;
@@ -332,6 +333,41 @@ export interface Translations {
     minFilesError: string;
     schemaError: (msg: string) => string;
   };
+  screener: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    filterAll: string;
+    filterUndervalued: string;
+    filterHighUpside: string;
+    allMoats: string;
+    wideMoat: string;
+    narrowMoat: string;
+    colTicker: string;
+    colCompany: string;
+    colMoat: string;
+    colPrice: string;
+    colBaseFairValue: string;
+    colWeightedFairValue: string;
+    colUpside: string;
+    colOperatingMargin: string;
+    colRevenueGrowth: string;
+    colValuationRange: string;
+    colAction: string;
+    openCockpit: string;
+    openMemo: string;
+    statsCoverage: string;
+    statsAvgUpside: string;
+    statsTopPick: string;
+    statsWideMoat: string;
+    noResults: string;
+    resetFilters: string;
+    bearLabel: string;
+    baseLabel: string;
+    bullLabel: string;
+    currentPriceLabel: string;
+    sortPrompt: string;
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -344,6 +380,7 @@ export const translations: Record<Locale, Translations> = {
       fwdEstimate: "FWD EST",
       cockpit: "Cockpit",
       memo: "Memo",
+      screener: "Screener",
       share: "Share",
       upload: "Upload",
       shareTooltip: "Share current scenario",
@@ -683,6 +720,42 @@ export const translations: Record<Locale, Translations> = {
       minFilesError: "Minimum required files: facts.json and scenarios.json",
       schemaError: (msg: string) => `Schema validation failed: ${msg}`,
     },
+    screener: {
+      title: "Universe Screener & Valuation Comparison",
+      subtitle:
+        "Cross-ticker fundamental comparison, stress valuation upside, and economic moat quality across covered equities",
+      searchPlaceholder: "Search ticker or company name...",
+      filterAll: "All Tickers",
+      filterUndervalued: "Undervalued (>0% Upside)",
+      filterHighUpside: "High Upside (>20%)",
+      allMoats: "All Moats",
+      wideMoat: "Wide Moat",
+      narrowMoat: "Narrow Moat",
+      colTicker: "Ticker",
+      colCompany: "Company",
+      colMoat: "Economic Moat",
+      colPrice: "Current Price",
+      colBaseFairValue: "Base Fair Value",
+      colWeightedFairValue: "Weighted Fair Value",
+      colUpside: "Implied Upside",
+      colOperatingMargin: "Operating Margin",
+      colRevenueGrowth: "Rev Growth (YoY)",
+      colValuationRange: "Stress Range (Bear / Base / Bull)",
+      colAction: "Action",
+      openCockpit: "Cockpit",
+      openMemo: "Memo",
+      statsCoverage: "Coverage Universe",
+      statsAvgUpside: "Avg. Weighted Upside",
+      statsTopPick: "Highest Upside",
+      statsWideMoat: "Wide Moat Share",
+      noResults: "No companies match your filters.",
+      resetFilters: "Reset Filters",
+      bearLabel: "Bear",
+      baseLabel: "Base",
+      bullLabel: "Bull",
+      currentPriceLabel: "Current",
+      sortPrompt: "Sort By",
+    },
   },
   zh: {
     header: {
@@ -693,6 +766,7 @@ export const translations: Record<Locale, Translations> = {
       fwdEstimate: "远期一致预期",
       cockpit: "驾驶舱",
       memo: "备忘录",
+      screener: "全景筛选",
       share: "分享",
       upload: "上传",
       shareTooltip: "复制当前情景链接",
@@ -1026,6 +1100,42 @@ export const translations: Record<Locale, Translations> = {
       selectFiles: "选择文件",
       minFilesError: "至少需要包含: facts.json 与 scenarios.json",
       schemaError: (msg: string) => `数据校验失败: ${msg}`,
+    },
+    screener: {
+      title: "覆盖公司全景筛选与估值横向对比",
+      subtitle:
+        "跨股票基本面数据横向比对、压力测试估值空间排序与护城河竞争壁垒全景",
+      searchPlaceholder: "搜索股票代码或公司全称...",
+      filterAll: "全部标的",
+      filterUndervalued: "估值折价 (>0% 空间)",
+      filterHighUpside: "高弹性标的 (>20%)",
+      allMoats: "全部护城河",
+      wideMoat: "宽护城河",
+      narrowMoat: "窄护城河",
+      colTicker: "代码",
+      colCompany: "公司名称",
+      colMoat: "经济护城河",
+      colPrice: "当前股价",
+      colBaseFairValue: "基准公允价",
+      colWeightedFairValue: "加权公允价",
+      colUpside: "估值空间",
+      colOperatingMargin: "营业利润率",
+      colRevenueGrowth: "营收同比增速",
+      colValuationRange: "压力估值谱系 (悲观 / 基准 / 乐观)",
+      colAction: "操作",
+      openCockpit: "驾驶舱",
+      openMemo: "研报备忘",
+      statsCoverage: "覆盖标的池",
+      statsAvgUpside: "平均加权估值空间",
+      statsTopPick: "最高估值弹性",
+      statsWideMoat: "宽护城河占比",
+      noResults: "未找到符合当前筛选条件的公司。",
+      resetFilters: "重置筛选条件",
+      bearLabel: "悲观",
+      baseLabel: "基准",
+      bullLabel: "乐观",
+      currentPriceLabel: "现价",
+      sortPrompt: "排序依据",
     },
   },
 };

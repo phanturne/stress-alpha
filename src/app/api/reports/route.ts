@@ -10,6 +10,16 @@ export interface ReportSummary {
   quarter?: string;
   reportDate?: string;
   currentPrice?: number;
+  weightedFairValue?: number;
+  upsidePct?: number;
+  baseFairValue?: number;
+  baseUpsidePct?: number;
+  bullFairValue?: number;
+  bearFairValue?: number;
+  moatRating?: string;
+  moatTrend?: string;
+  operatingMarginPct?: number;
+  revenueGrowthPct?: number;
   hasFacts: boolean;
   hasScenarios: boolean;
   hasValuation: boolean;
@@ -44,12 +54,16 @@ export async function GET() {
       const filingPath = path.join(folderPath, "filing-extracts.json");
       const catalystsPath = path.join(folderPath, "catalysts.json");
       const reactionsPath = path.join(folderPath, "reactions.json");
+      const moatPath = path.join(folderPath, "moat-competitors.json");
+      const estimatesPath = path.join(folderPath, "analyst-estimates.json");
 
       let ticker: string | undefined;
       let company: string | undefined;
       let quarter: string | undefined;
       let reportDate: string | undefined;
       let currentPrice: number | undefined;
+      let operatingMarginPct: number | undefined;
+      let revenueGrowthPct: number | undefined;
 
       if (fs.existsSync(factsPath)) {
         try {
@@ -60,8 +74,66 @@ export async function GET() {
           quarter = parsed.quarter;
           reportDate = parsed.reportDate;
           currentPrice = parsed.currentPrice;
+          operatingMarginPct = parsed.operatingMarginPct;
+          revenueGrowthPct = parsed.revenueGrowthPct;
         } catch {
           // ignore parsing error for summary
+        }
+      }
+
+      let weightedFairValue: number | undefined;
+      let upsidePct: number | undefined;
+      let baseFairValue: number | undefined;
+      let baseUpsidePct: number | undefined;
+      let bullFairValue: number | undefined;
+      let bearFairValue: number | undefined;
+
+      if (fs.existsSync(valuationPath)) {
+        try {
+          const vRaw = fs.readFileSync(valuationPath, "utf-8");
+          const vParsed = JSON.parse(vRaw);
+          weightedFairValue = vParsed.weightedFairValue;
+          upsidePct = vParsed.upsidePct;
+          if (currentPrice === undefined && vParsed.currentPrice !== undefined) {
+            currentPrice = vParsed.currentPrice;
+          }
+          if (Array.isArray(vParsed.scenarioResults)) {
+            const baseScen = vParsed.scenarioResults.find(
+              (s: { name?: string }) => s.name?.toLowerCase() === "base"
+            );
+            if (baseScen) {
+              baseFairValue = baseScen.fairValue;
+              baseUpsidePct = baseScen.upsideFromCurrent;
+            }
+            const bullScen = vParsed.scenarioResults.find(
+              (s: { name?: string }) => s.name?.toLowerCase() === "bull"
+            );
+            if (bullScen) {
+              bullFairValue = bullScen.fairValue;
+            }
+            const bearScen = vParsed.scenarioResults.find(
+              (s: { name?: string }) => s.name?.toLowerCase() === "bear"
+            );
+            if (bearScen) {
+              bearFairValue = bearScen.fairValue;
+            }
+          }
+        } catch {
+          // ignore parsing error
+        }
+      }
+
+      let moatRating: string | undefined;
+      let moatTrend: string | undefined;
+
+      if (fs.existsSync(moatPath)) {
+        try {
+          const mRaw = fs.readFileSync(moatPath, "utf-8");
+          const mParsed = JSON.parse(mRaw);
+          moatRating = mParsed.overallMoatRating;
+          moatTrend = mParsed.moatTrend;
+        } catch {
+          // ignore parsing error
         }
       }
 
@@ -73,6 +145,16 @@ export async function GET() {
         quarter,
         reportDate,
         currentPrice,
+        weightedFairValue,
+        upsidePct,
+        baseFairValue,
+        baseUpsidePct,
+        bullFairValue,
+        bearFairValue,
+        moatRating,
+        moatTrend,
+        operatingMarginPct,
+        revenueGrowthPct,
         hasFacts: fs.existsSync(factsPath),
         hasScenarios: fs.existsSync(scenariosPath),
         hasValuation: fs.existsSync(valuationPath),
@@ -81,7 +163,7 @@ export async function GET() {
         hasFiling: fs.existsSync(filingPath),
         hasCatalysts: fs.existsSync(catalystsPath),
         hasReactions: fs.existsSync(reactionsPath),
-        hasEstimates: fs.existsSync(path.join(folderPath, "analyst-estimates.json")),
+        hasEstimates: fs.existsSync(estimatesPath),
       });
     }
 

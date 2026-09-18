@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Check,
   Sparkles,
+  BarChart3,
 } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -16,6 +17,7 @@ interface ReportSelectorProps {
   onSelectReport: (slug: string) => void;
   isLoading?: boolean;
   locale?: Locale;
+  onOpenScreener?: () => void;
 }
 
 export const ReportSelector: React.FC<ReportSelectorProps> = ({
@@ -23,6 +25,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   onSelectReport,
   isLoading = false,
   locale = "zh",
+  onOpenScreener,
 }) => {
   const t = getTranslations(locale).selector;
   const [reports, setReports] = useState<ReportSummary[]>([]);
@@ -166,6 +169,26 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 })
               )}
             </div>
+
+            {onOpenScreener && (
+              <div className="border-t border-white/[0.06] bg-surface-0/90 p-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenScreener();
+                    setIsOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
+                >
+                  <BarChart3 className="size-3.5" />
+                  <span>
+                    {locale === "zh"
+                      ? "打开全景估值筛选"
+                      : "Open Universe Screener"}
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}

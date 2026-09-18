@@ -66,6 +66,20 @@ describe("URL State Parser & Serializer", () => {
     expect(qs).not.toContain("mode=cockpit"); // default omitted for brevity
   });
 
+  it("handles screener mode parsing and serialization", () => {
+    const state: ScenarioUrlState = {
+      mode: "screener",
+      lang: "zh",
+    };
+    const serialized = serializeScenarioUrlState(state);
+    expect(serialized).toContain("mode=screener");
+    expect(serialized).toContain("lang=zh");
+
+    const parsed = parseScenarioUrlState(serialized);
+    expect(parsed.mode).toBe("screener");
+    expect(parsed.lang).toBe("zh");
+  });
+
   it("round-trips scenario state seamlessly", () => {
     const original: ScenarioUrlState = {
       report: "NVDA-Q2-2027-analysis",

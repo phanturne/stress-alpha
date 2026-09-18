@@ -25,7 +25,9 @@ import { MoatTab } from "@/components/tabs/MoatTab";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
+import { ScreenerView } from "@/components/ScreenerView";
 import type { ReportData, Scenario } from "@/lib/schemas";
+import type { ReportSummary } from "@/app/api/reports/route";
 import {
   computeStressedValuation,
   computeValuation,
@@ -40,8 +42,11 @@ import {
 export default function HomePage() {
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [reports, setReports] = useState<ReportSummary[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [viewMode, setViewMode] = useState<"cockpit" | "memo">("cockpit");
+  const [viewMode, setViewMode] = useState<"cockpit" | "memo" | "screener">(
+    "cockpit"
+  );
   const [activeTab, setActiveTab] = useState<string>("valuation");
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
@@ -126,6 +131,21 @@ export default function HomePage() {
     []
   );
 
+  const fetchReportsList = useCallback(async () => {
+    try {
+      const res = await fetch("/api/reports");
+      if (res.ok) {
+        const data = await res.json();
+        const list: ReportSummary[] = data.reports || [];
+        setReports(list);
+        return list;
+      }
+    } catch (err) {
+      console.error("Failed to fetch reports list:", err);
+    }
+    return [];
+  }, []);
+
   // Initial load: parse URL search or hash to restore exact scenario, report, tab, and mode
   useEffect(() => {
     const init = async () => {
@@ -144,33 +164,25 @@ export default function HomePage() {
         setReportDocLang(urlState.lang);
       }
 
+      const list = await fetchReportsList();
+
       if (urlState.report) {
         await loadReport(urlState.report, urlState.stressParams);
+      } else if (list.length > 0) {
+        await loadReport(list[0].slug, urlState.stressParams);
       } else {
-        try {
-          const res = await fetch("/api/reports");
-          if (res.ok) {
-            const data = await res.json();
-            if (data.reports && data.reports.length > 0) {
-              await loadReport(data.reports[0].slug, urlState.stressParams);
-            } else {
-              setIsLoading(false);
-            }
-          }
-        } catch {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
     init();
-  }, [loadReport]);
+  }, [fetchReportsList, loadReport]);
 
   // Handle URL search parameter synchronization for shareable deep linking
   const syncStateToUrl = useCallback(() => {
-    if (typeof window === "undefined" || !currentSlug || isLoading) return;
+    if (typeof window === "undefined" || isLoading) return;
 
     const queryString = serializeScenarioUrlState({
-      report: currentSlug,
+      report: currentSlug ?? undefined,
       tab: activeTab,
       mode: viewMode,
       lang: locale,
@@ -418,6 +430,12 @@ export default function HomePage() {
         return;
       }
 
+      if (e.key === "s" || e.key === "S") {
+        e.preventDefault();
+        setViewMode((prev) => (prev === "screener" ? "cockpit" : "screener"));
+        return;
+      }
+
       if (e.key === "l" || e.key === "L") {
         e.preventDefault();
         handleToggleLocale(locale === "zh" ? "en" : "zh");
@@ -467,7 +485,17 @@ export default function HomePage() {
 
       {/* Main Content Area */}
       <main className="mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6">
-        {isLoading ? (
+        {viewMode === "screener" ? (
+          <ScreenerView
+            reports={reports}
+            onSelectReport={(slug, mode) => {
+              if (mode) setViewMode(mode);
+              else setViewMode("cockpit");
+              loadReport(slug);
+            }}
+            locale={locale}
+          />
+        ) : isLoading ? (
           <div className="flex h-[70vh] flex-col items-center justify-center gap-3">
             <div className="relative">
               <Loader2 className="size-9 animate-spin text-accent" />
@@ -788,6 +816,17 @@ export default function HomePage() {
                 </span>
                 <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   M
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {locale === "zh"
+                    ? "切换全景筛选与对比"
+                    : "Toggle Universe Screener"}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                  S
                 </kbd>
               </div>
 
