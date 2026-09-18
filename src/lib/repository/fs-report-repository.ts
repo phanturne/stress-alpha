@@ -174,7 +174,8 @@ export class FsReportRepository implements IReportRepository {
             const cTarget = sParsed.consensusTarget;
             analystTarget = cTarget;
             if (currentPrice && currentPrice > 0) {
-              analystUpsidePct = ((cTarget - currentPrice) / currentPrice) * 100;
+              analystUpsidePct =
+                ((cTarget - currentPrice) / currentPrice) * 100;
             }
           }
         } catch {
