@@ -17,6 +17,7 @@ interface AuditTabProps {
   filingData?: FilingExtracts;
   reactionsData?: Reactions;
   locale?: Locale;
+  ticker?: string;
 }
 
 export const AuditTab: React.FC<AuditTabProps> = ({
@@ -24,6 +25,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
   filingData,
   reactionsData,
   locale = "zh",
+  ticker,
 }) => {
   const [subTab, setSubTab] = useState<"tone" | "filing" | "reactions">("tone");
   const t = getTranslations(locale).auditTab;
@@ -105,7 +107,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
           <ToneTab sentimentData={sentimentData} locale={locale} />
         )}
         {subTab === "filing" && (
-          <FilingTab filingData={filingData} locale={locale} />
+          <FilingTab filingData={filingData} locale={locale} ticker={ticker} />
         )}
         {subTab === "reactions" && (
           <ReactionsTab reactionsData={reactionsData} locale={locale} />

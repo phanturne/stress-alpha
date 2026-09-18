@@ -13,6 +13,7 @@ import {
   DollarSign,
   Scale,
   Share2,
+  ExternalLink,
 } from "lucide-react";
 import type { MoatCompetitors } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -278,7 +279,20 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                         className="transition-colors hover:bg-surface-2/50"
                       >
                         <td className="sticky left-0 z-10 bg-surface-1 p-3 font-mono font-bold text-accent">
-                          {peer.ticker}
+                          <a
+                            href={`https://finance.yahoo.com/quote/${peer.ticker}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 hover:text-accent hover:underline"
+                            title={
+                              isZh
+                                ? `在 Yahoo Finance 查看 ${peer.ticker}`
+                                : `View ${peer.ticker} on Yahoo Finance`
+                            }
+                          >
+                            <span>{peer.ticker}</span>
+                            <ExternalLink className="size-2.5 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />
+                          </a>
                         </td>
                         <td className="sticky left-[75px] z-10 whitespace-nowrap border-r border-border/70 bg-surface-1 p-3 font-medium text-white shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                           {peer.name}

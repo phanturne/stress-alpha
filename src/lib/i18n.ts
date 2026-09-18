@@ -13,9 +13,7 @@ export interface Translations {
     methodology: string;
     github: string;
     share: string;
-    upload: string;
     shareTooltip: string;
-    uploadTooltip: string;
     linkCopied: string;
   };
   selector: {
@@ -386,9 +384,7 @@ export const translations: Record<Locale, Translations> = {
       methodology: "Methodology",
       github: "GitHub",
       share: "Share",
-      upload: "Upload",
       shareTooltip: "Share current scenario",
-      uploadTooltip: "Upload custom folder",
       linkCopied: "Scenario link copied to clipboard!",
     },
     selector: {
@@ -399,8 +395,8 @@ export const translations: Record<Locale, Translations> = {
     },
     cockpit: {
       title: "Stress Flow-Through Cockpit",
-      reset: "Reset",
-      resetTooltip: "Reset all shock sliders to 0",
+      reset: "Reset All",
+      resetTooltip: "Reset all shock sliders to initial baseline values",
       stressedForwardEps: "Stressed Forward EPS (Annual)",
       cleanOperatingEps: "Clean Operating EPS",
       stressedRev: "Stressed Rev",
@@ -440,15 +436,15 @@ export const translations: Record<Locale, Translations> = {
         operatingCleanEps: "Operating Clean EPS:",
         operating: "operating",
         nonOperating: "non-operating",
-        toggleShow: "Show breakdown",
-        toggleHide: "Hide breakdown",
+        toggleShow: "Breakdown: Closed",
+        toggleHide: "Breakdown: Open",
         itemsCount: (count: number) => `${count} non-operating items adjusted`,
       },
       presets: {
         title: "Macro Presets",
-        baseline: "Baseline (0%)",
-        mild: "Mild Strain (-10%)",
-        severe: "Severe Panic (-25%)",
+        baseline: "0% Neutral",
+        mild: "-10% Strain",
+        severe: "-25% Panic",
       },
       sliderTabs: {
         volume: "Volume Drivers",
@@ -774,9 +770,7 @@ export const translations: Record<Locale, Translations> = {
       methodology: "计算原理",
       github: "GitHub",
       share: "分享",
-      upload: "上传",
       shareTooltip: "复制当前情景链接",
-      uploadTooltip: "上传自定义分析文件夹",
       linkCopied: "情景分析链接已复制到剪贴板！",
     },
     selector: {
@@ -787,7 +781,7 @@ export const translations: Record<Locale, Translations> = {
     },
     cockpit: {
       title: "实时情景压力驾驶舱",
-      reset: "重置",
+      reset: "重置全部",
       resetTooltip: "重置所有滑块至初始基准值",
       stressedForwardEps: "压力测试远期 EPS (年化)",
       cleanOperatingEps: "核心经营 EPS",
@@ -827,15 +821,15 @@ export const translations: Record<Locale, Translations> = {
         operatingCleanEps: "核心经营清洁 EPS:",
         operating: "经营性",
         nonOperating: "非经营性",
-        toggleShow: "展开损益明细",
-        toggleHide: "收起明细",
+        toggleShow: "损益明细: 已折叠",
+        toggleHide: "损益明细: 已展开",
         itemsCount: (count: number) => `已调整 ${count} 项非经常性损益`,
       },
       presets: {
         title: "宏观情景预设",
-        baseline: "基准情景 (0%)",
-        mild: "温和承压 (-10%)",
-        severe: "极度恐慌 (-25%)",
+        baseline: "0% 基准中性",
+        mild: "-10% 轻度承压",
+        severe: "-25% 极度恐慌",
       },
       sliderTabs: {
         volume: "业务量驱动",

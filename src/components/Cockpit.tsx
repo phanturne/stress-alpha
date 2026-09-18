@@ -48,6 +48,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   locale = "zh",
 }) => {
   const t = getTranslations(locale).cockpit;
+  const isZh = locale === "zh";
   const [activeSliderTab, setActiveSliderTab] = useState<
     "volume" | "margins" | "all"
   >("volume");
@@ -116,6 +117,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("baseline")}
               className="truncate rounded-lg bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
+              title={
+                isZh
+                  ? "预设方案：将所有业务因子设为 0% 基准状态"
+                  : "Preset: Apply 0% flat baseline across all volume drivers"
+              }
             >
               {t.presets.baseline}
             </button>
@@ -123,6 +129,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("mild")}
               className="truncate rounded-lg border border-fintech-amber/25 bg-fintech-amberGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-amber transition-colors hover:bg-fintech-amberGlow/20"
+              title={
+                isZh
+                  ? "预设方案：所有业务因子承受 -10% 轻度承压"
+                  : "Preset: Apply -10% moderate strain across all volume drivers"
+              }
             >
               {t.presets.mild}
             </button>
@@ -130,6 +141,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("severe")}
               className="truncate rounded-lg border border-fintech-red/25 bg-fintech-redGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-red transition-colors hover:bg-fintech-redGlow/20"
+              title={
+                isZh
+                  ? "预设方案：所有业务因子承受 -25% 极度恐慌冲击"
+                  : "Preset: Apply -25% severe macro contraction across all volume drivers"
+              }
             >
               {t.presets.severe}
             </button>
@@ -140,7 +156,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
         <div className="relative flex items-baseline justify-between overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 p-3.5 shadow-inner">
           <div className="pointer-events-none absolute right-0 top-0 size-32 rounded-full bg-accent/5 blur-2xl" />
           <div>
-            <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+            <div
+              className="flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
+              title={t.stressedForwardEps}
+            >
               <span className="size-1.5 animate-pulse rounded-full bg-accent" />
               {t.stressedForwardEps}
             </div>
@@ -149,7 +168,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </div>
           </div>
           <div className="text-right">
-            <div className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+            <div
+              className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
+              title={`${facts.quarter} ${t.cleanOperatingEps}`}
+            >
               {facts.quarter} {t.cleanOperatingEps}
             </div>
             <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-slate-200 sm:text-base">
@@ -160,32 +182,56 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
         {/* Live Stressed P&L Ribbon */}
         <div className="grid grid-cols-2 gap-2 pt-0.5 text-center sm:grid-cols-4">
-          <div className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2">
-            <div className="truncate font-mono text-[9px] font-medium uppercase text-slate-400">
+          <div
+            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            title={`${t.stressedRev}: ${formatBillions(stressRevenueBillions)}`}
+          >
+            <div
+              className="truncate font-mono text-[9px] font-medium uppercase text-slate-400"
+              title={t.stressedRev}
+            >
               {t.stressedRev}
             </div>
             <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
               {formatBillions(stressRevenueBillions)}
             </div>
           </div>
-          <div className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2">
-            <div className="truncate font-mono text-[9px] font-medium uppercase text-slate-400">
+          <div
+            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            title={`${t.grossProfit}: ${formatBillions(stressGrossProfitBillions)}`}
+          >
+            <div
+              className="truncate font-mono text-[9px] font-medium uppercase text-slate-400"
+              title={t.grossProfit}
+            >
               {t.grossProfit}
             </div>
             <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
               {formatBillions(stressGrossProfitBillions)}
             </div>
           </div>
-          <div className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2">
-            <div className="truncate font-mono text-[9px] font-medium uppercase text-slate-400">
+          <div
+            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            title={`${t.operatingIncome}: ${formatBillions(stressOperatingIncomeBillions)}`}
+          >
+            <div
+              className="truncate font-mono text-[9px] font-medium uppercase text-slate-400"
+              title={t.operatingIncome}
+            >
               {t.operatingIncome}
             </div>
             <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
               {formatBillions(stressOperatingIncomeBillions)}
             </div>
           </div>
-          <div className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2">
-            <div className="truncate font-mono text-[9px] font-medium uppercase text-slate-400">
+          <div
+            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            title={`${t.netIncome}: ${formatBillions(stressNetIncomeBillions)}`}
+          >
+            <div
+              className="truncate font-mono text-[9px] font-medium uppercase text-slate-400"
+              title={t.netIncome}
+            >
               {t.netIncome}
             </div>
             <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
@@ -242,9 +288,14 @@ export const Cockpit: React.FC<CockpitProps> = ({
             {/* 3 Core Scenario Cards: Bull, Base, Bear */}
             <div className="grid grid-cols-3 gap-2">
               {/* Bull */}
-              <div className="flex flex-col rounded-xl border border-fintech-green/30 bg-gradient-to-b from-fintech-greenGlow/15 to-surface-0/60 p-3 shadow-sm transition-all hover:border-fintech-green/60">
+              <div
+                className="flex flex-col rounded-xl border border-fintech-green/30 bg-gradient-to-b from-fintech-greenGlow/15 to-surface-0/60 p-3 shadow-sm"
+                title={`${t.regimes.bull}: Optimistic expansion regime with premium multiple`}
+              >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-green">
-                  <span className="truncate">{t.regimes.bull}</span>
+                  <span className="truncate" title={t.regimes.bull}>
+                    {t.regimes.bull}
+                  </span>
                 </div>
                 <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
                   {formatCurrency(targetBull)}
@@ -255,9 +306,14 @@ export const Cockpit: React.FC<CockpitProps> = ({
               </div>
 
               {/* Base */}
-              <div className="flex flex-col rounded-xl border border-white/[0.09] bg-surface-0/80 p-3 shadow-sm transition-all hover:border-accent/40">
+              <div
+                className="flex flex-col rounded-xl border border-white/[0.09] bg-surface-0/80 p-3 shadow-sm"
+                title={`${t.regimes.base}: Baseline execution matching management consensus guidance`}
+              >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-slate-200">
-                  <span className="truncate">{t.regimes.base}</span>
+                  <span className="truncate" title={t.regimes.base}>
+                    {t.regimes.base}
+                  </span>
                 </div>
                 <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
                   {formatCurrency(targetBase)}
@@ -272,9 +328,14 @@ export const Cockpit: React.FC<CockpitProps> = ({
               </div>
 
               {/* Bear */}
-              <div className="flex flex-col rounded-xl border border-fintech-red/30 bg-gradient-to-b from-fintech-redGlow/15 to-surface-0/60 p-3 shadow-sm transition-all hover:border-fintech-red/60">
+              <div
+                className="flex flex-col rounded-xl border border-fintech-red/30 bg-gradient-to-b from-fintech-redGlow/15 to-surface-0/60 p-3 shadow-sm"
+                title={`${t.regimes.bear}: Contraction regime with macroeconomic multiple de-rating`}
+              >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-red">
-                  <span className="truncate">{t.regimes.bear}</span>
+                  <span className="truncate" title={t.regimes.bear}>
+                    {t.regimes.bear}
+                  </span>
                 </div>
                 <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
                   {formatCurrency(targetBear)}
@@ -286,10 +347,16 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </div>
 
             {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
-            <div className="flex items-center justify-between rounded-xl border border-fintech-red/25 bg-fintech-redGlow/10 px-3 py-2 font-mono text-xs">
+            <div
+              className="flex items-center justify-between rounded-xl border border-fintech-red/25 bg-fintech-redGlow/10 px-3 py-2 font-mono text-xs"
+              title="Panic Floor: Cycle trough valuation limit during severe recession"
+            >
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-fintech-red">
                 <AlertOctagon className="size-3.5 shrink-0" />
-                <span className="truncate">
+                <span
+                  className="truncate"
+                  title={`${t.regimes.panicFloorLabel} (${baseline.multipleRegimes.panic}x P/E)`}
+                >
                   {t.regimes.panicFloorLabel} ({baseline.multipleRegimes.panic}x
                   P/E)
                 </span>
@@ -315,32 +382,56 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
             {/* 2x2 Risk Asymmetry Matrix */}
             <div className="grid grid-cols-2 gap-2 pt-0.5">
-              <div className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5 transition-colors hover:border-white/[0.12]">
-                <div className="truncate text-[10px] font-medium text-slate-400">
+              <div
+                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                title={`${t.asymmetry.upsideToBull}: Potential percentage gain if stock expands to Bull multiple`}
+              >
+                <div
+                  className="truncate text-[10px] font-medium text-slate-400"
+                  title={t.asymmetry.upsideToBull}
+                >
                   {t.asymmetry.upsideToBull}
                 </div>
                 <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-fintech-green">
                   {formatPercent(deltaBull)}
                 </div>
               </div>
-              <div className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5 transition-colors hover:border-white/[0.12]">
-                <div className="truncate text-[10px] font-medium text-slate-400">
+              <div
+                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                title={`${t.asymmetry.downsideToPanic}: Maximum downside drawdown to Panic Floor valuation`}
+              >
+                <div
+                  className="truncate text-[10px] font-medium text-slate-400"
+                  title={t.asymmetry.downsideToPanic}
+                >
                   {t.asymmetry.downsideToPanic}
                 </div>
                 <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-fintech-red">
                   {formatPercent(panicDelta)}
                 </div>
               </div>
-              <div className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5 transition-colors hover:border-white/[0.12]">
-                <div className="truncate text-[10px] font-medium text-slate-400">
+              <div
+                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                title={`${t.asymmetry.pricedInMultiple}: Implied P/E ratio currently priced in at market price`}
+              >
+                <div
+                  className="truncate text-[10px] font-medium text-slate-400"
+                  title={t.asymmetry.pricedInMultiple}
+                >
                   {t.asymmetry.pricedInMultiple}
                 </div>
                 <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-slate-200">
                   {asymmetry.marketPricedInMultiple.toFixed(1)}x
                 </div>
               </div>
-              <div className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5 transition-colors hover:border-white/[0.12]">
-                <div className="truncate text-[10px] font-medium text-slate-400">
+              <div
+                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                title={`${t.asymmetry.asymmetrySkew}: Ratio of upside to Bull vs downside to Panic Floor (>2.0x is attractive)`}
+              >
+                <div
+                  className="truncate text-[10px] font-medium text-slate-400"
+                  title={t.asymmetry.asymmetrySkew}
+                >
                   {t.asymmetry.asymmetrySkew}
                 </div>
                 <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-accent">
@@ -416,9 +507,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
                     : "text-slate-300 bg-surface-2 border-white/[0.08]";
 
               return (
-                <div key={driver.id} className="group flex flex-col gap-1.5">
+                <div key={driver.id} className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-200 transition-colors group-hover:text-accent">
+                    <span className="font-semibold text-slate-200">
                       {driver.name}
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -515,9 +606,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </div>
 
             {/* Gross Margin Slider */}
-            <div className="group flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-300 transition-colors group-hover:text-accent">
+                <span className="font-medium text-slate-300">
                   {t.grossMarginPerturbation}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -597,9 +688,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </div>
 
             {/* Fixed OpEx Shift Slider */}
-            <div className="group flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-300 transition-colors group-hover:text-accent">
+                <span className="font-medium text-slate-300">
                   {t.fixedOpexShift}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -705,7 +796,12 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => setIsGuardrailOpen(!isGuardrailOpen)}
-              className="flex items-center gap-1 rounded border border-white/[0.08] bg-surface-2/70 px-2 py-0.5 font-mono text-[11px] text-slate-300 transition-colors hover:text-white"
+              className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-300 shadow-sm transition-colors hover:border-accent/40 hover:text-white"
+              title={
+                isGuardrailOpen
+                  ? "Click to collapse non-operating items breakdown"
+                  : "Click to expand non-operating items breakdown"
+              }
             >
               <span>
                 {isGuardrailOpen
@@ -713,9 +809,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   : t.guardrail.toggleShow}
               </span>
               {isGuardrailOpen ? (
-                <ChevronUp className="size-3" />
+                <ChevronUp className="size-3 text-accent" />
               ) : (
-                <ChevronDown className="size-3" />
+                <ChevronDown className="size-3 text-slate-400" />
               )}
             </button>
           </div>

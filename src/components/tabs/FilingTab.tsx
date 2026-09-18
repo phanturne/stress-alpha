@@ -1,18 +1,20 @@
 "use client";
 
 import React from "react";
-import { AlertOctagon, FileSearch, Sparkles } from "lucide-react";
+import { AlertOctagon, FileSearch, Sparkles, ExternalLink } from "lucide-react";
 import type { FilingExtracts } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface FilingTabProps {
   filingData?: FilingExtracts;
   locale?: Locale;
+  ticker?: string;
 }
 
 export const FilingTab: React.FC<FilingTabProps> = ({
   filingData,
   locale = "zh",
+  ticker,
 }) => {
   const t = getTranslations(locale).filingTab;
   if (
@@ -30,11 +32,31 @@ export const FilingTab: React.FC<FilingTabProps> = ({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-          {t.title}
-        </h3>
-        <p className="mt-0.5 text-xs text-slate-400">{t.subtitle}</p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
+            {t.title}
+          </h3>
+          <p className="mt-0.5 text-xs text-slate-400">{t.subtitle}</p>
+        </div>
+        {ticker && (
+          <a
+            href={`https://www.sec.gov/edgar/searchedgar/companysearch?companySearchBox=${encodeURIComponent(ticker)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-accent/10"
+            title={
+              locale === "zh"
+                ? `在 SEC EDGAR 查看 ${ticker} 官方 10-Q/10-K 文件`
+                : `View official ${ticker} 10-Q/10-K filings on SEC EDGAR`
+            }
+          >
+            <span>
+              {locale === "zh" ? "SEC EDGAR 原版申报" : "SEC EDGAR Filings"}
+            </span>
+            <ExternalLink className="size-3" />
+          </a>
+        )}
       </div>
 
       {/* New or Escalated Risks */}

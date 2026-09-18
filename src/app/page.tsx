@@ -18,7 +18,6 @@ import {
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
 import { MemoView } from "@/components/MemoView";
-import { FileUploader } from "@/components/FileUploader";
 import { EstimatesTab } from "@/components/tabs/EstimatesTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
 import { MoatTab } from "@/components/tabs/MoatTab";
@@ -50,7 +49,6 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<string>("valuation");
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -75,7 +73,6 @@ export default function HomePage() {
 
   const handleToggleLocale = useCallback((newLocale: Locale) => {
     setLocale(newLocale);
-    setReportDocLang(newLocale);
     try {
       localStorage.setItem("stress_alpha_locale", newLocale);
     } catch (e) {
@@ -158,24 +155,44 @@ export default function HomePage() {
       }
       if (urlState.mode) {
         setViewMode(urlState.mode);
+      } else if (!urlState.report) {
+        // No explicit report in URL -> default to Universe Screener as Home
+        setViewMode("screener");
       }
       if (urlState.lang) {
         setLocale(urlState.lang);
         setReportDocLang(urlState.lang);
       }
 
-      const list = await fetchReportsList();
+      await fetchReportsList();
 
       if (urlState.report) {
         await loadReport(urlState.report, urlState.stressParams);
-      } else if (list.length > 0) {
-        await loadReport(list[0].slug, urlState.stressParams);
       } else {
+        // Homepage: show Universe Screener without picking an arbitrary ticker
         setIsLoading(false);
       }
     };
     init();
   }, [fetchReportsList, loadReport]);
+
+  // Handle browser Back / Forward history navigation (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlState = parseScenarioUrlState(
+        window.location.search || window.location.hash
+      );
+      if (urlState.tab) setActiveTab(urlState.tab);
+      if (urlState.mode) setViewMode(urlState.mode);
+      if (urlState.lang) setLocale(urlState.lang);
+      if (urlState.report && urlState.report !== currentSlug) {
+        loadReport(urlState.report, urlState.stressParams);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [currentSlug, loadReport]);
 
   // Handle URL search parameter synchronization for shareable deep linking
   const syncStateToUrl = useCallback(() => {
@@ -196,6 +213,52 @@ export default function HomePage() {
   useEffect(() => {
     syncStateToUrl();
   }, [syncStateToUrl]);
+
+  // View mode navigation with browser history push
+  const handleViewModeChange = useCallback(
+    (mode: "cockpit" | "memo" | "screener") => {
+      setViewMode(mode);
+      if (typeof window !== "undefined") {
+        const queryString = serializeScenarioUrlState({
+          report: currentSlug ?? undefined,
+          tab: activeTab,
+          mode,
+          lang: locale,
+          stressParams,
+        });
+        window.history.pushState(
+          null,
+          "",
+          window.location.pathname + queryString
+        );
+      }
+    },
+    [currentSlug, activeTab, locale, stressParams]
+  );
+
+  // Select report and navigate directly to Cockpit
+  const handleSelectReport = useCallback(
+    (slug: string, mode?: "cockpit" | "memo") => {
+      const nextMode = mode ?? "cockpit";
+      setViewMode(nextMode);
+      loadReport(slug);
+      if (typeof window !== "undefined") {
+        const queryString = serializeScenarioUrlState({
+          report: slug,
+          tab: activeTab,
+          mode: nextMode,
+          lang: locale,
+          stressParams,
+        });
+        window.history.pushState(
+          null,
+          "",
+          window.location.pathname + queryString
+        );
+      }
+    },
+    [loadReport, activeTab, locale, stressParams]
+  );
 
   // Share scenario link
   const handleShare = () => {
@@ -252,12 +315,21 @@ export default function HomePage() {
     if (!reportData?.catalysts) return;
     const updated = [...reportData.catalysts.catalysts];
     updated[idx] = { ...updated[idx], probability: prob };
+
+    let updatedZh = reportData.catalystsZh;
+    if (updatedZh?.catalysts?.[idx]) {
+      const zhList = [...updatedZh.catalysts];
+      zhList[idx] = { ...zhList[idx], probability: prob };
+      updatedZh = { ...updatedZh, catalysts: zhList };
+    }
+
     setReportData({
       ...reportData,
       catalysts: {
         ...reportData.catalysts,
         catalysts: updated,
       },
+      catalystsZh: updatedZh,
     });
   };
 
@@ -272,6 +344,21 @@ export default function HomePage() {
       scenarios: updatedScenarios,
     };
 
+    // Synchronize numerical edits to Chinese scenarios so inputs persist across language switches
+    let newScenariosZh = reportData.scenariosZh;
+    if (newScenariosZh?.scenarios?.[idx]) {
+      const updatedZh = [...newScenariosZh.scenarios];
+      updatedZh[idx] = {
+        ...updatedZh[idx],
+        ...(patch.probability !== undefined && {
+          probability: patch.probability,
+        }),
+        ...(patch.forwardEps !== undefined && { forwardEps: patch.forwardEps }),
+        ...(patch.multiple !== undefined && { multiple: patch.multiple }),
+      };
+      newScenariosZh = { ...newScenariosZh, scenarios: updatedZh };
+    }
+
     // Deterministically recompute valuation
     const updatedValuation = computeValuation({
       facts: reportData.facts,
@@ -283,6 +370,7 @@ export default function HomePage() {
     setReportData({
       ...reportData,
       scenarios: newScenarios,
+      scenariosZh: newScenariosZh,
       valuation: updatedValuation,
     });
   };
@@ -473,10 +561,9 @@ export default function HomePage() {
         facts={displayFacts}
         valuation={dynamicValuation ?? reportData?.valuation}
         currentSlug={currentSlug}
-        onSelectReport={loadReport}
+        onSelectReport={handleSelectReport}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onOpenUploadModal={() => setIsUploadModalOpen(true)}
+        onViewModeChange={handleViewModeChange}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
         onShare={handleShare}
         locale={locale}
@@ -488,11 +575,7 @@ export default function HomePage() {
         {viewMode === "screener" ? (
           <ScreenerView
             reports={reports}
-            onSelectReport={(slug, mode) => {
-              if (mode) setViewMode(mode);
-              else setViewMode("cockpit");
-              loadReport(slug);
-            }}
+            onSelectReport={handleSelectReport}
             locale={locale}
           />
         ) : isLoading ? (
@@ -521,10 +604,10 @@ export default function HomePage() {
             </div>
             <button
               type="button"
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={() => handleViewModeChange("screener")}
               className="rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-accent/25 transition-all hover:scale-[1.02] hover:bg-accent-hover hover:shadow-accent/40 active:scale-[0.98]"
             >
-              {t.page.uploadFolderBtn}
+              {t.header.screener}
             </button>
           </div>
         ) : viewMode === "memo" ? (
@@ -538,7 +621,7 @@ export default function HomePage() {
               valuation: dynamicValuation ?? reportData.valuation,
             }}
             stressResult={stressResult}
-            onBackToCockpit={() => setViewMode("cockpit")}
+            onBackToCockpit={() => handleViewModeChange("cockpit")}
             locale={locale}
             onLocaleChange={handleToggleLocale}
           />
@@ -561,7 +644,7 @@ export default function HomePage() {
             {/* Right Tabbed Intelligence Workspace (min-w-0 prevents blowout) */}
             <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
               {/* Tab Navigation Ribbon */}
-              <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto scroll-smooth border-b border-white/[0.08] pb-1.5">
+              <div className="custom-scrollbar flex items-center gap-1.5 overflow-x-auto scroll-smooth border-b border-white/[0.08] pb-2">
                 {tabItems.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -655,6 +738,7 @@ export default function HomePage() {
                     filingData={displayFiling}
                     reactionsData={displayReactions}
                     locale={locale}
+                    ticker={reportData?.facts?.ticker}
                   />
                 )}
 
@@ -741,20 +825,6 @@ export default function HomePage() {
           </div>
         )}
       </main>
-
-      {/* Upload Modal */}
-      {isUploadModalOpen && (
-        <FileUploader
-          onDataLoaded={(data) => {
-            setReportData(data);
-            setCurrentSlug(data.folderSlug);
-            setIsUploadModalOpen(false);
-            showToast(t.page.customLoadedToast);
-          }}
-          onClose={() => setIsUploadModalOpen(false)}
-          locale={locale}
-        />
-      )}
 
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (

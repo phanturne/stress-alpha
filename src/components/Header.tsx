@@ -6,11 +6,11 @@ import {
   FileText,
   Share2,
   SlidersHorizontal,
-  Upload,
   Globe,
   HelpCircle,
   BarChart3,
   BookOpen,
+  ExternalLink,
 } from "lucide-react";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
@@ -41,7 +41,6 @@ interface HeaderProps {
   onSelectReport: (slug: string) => void;
   viewMode: "cockpit" | "memo" | "screener";
   onViewModeChange: (mode: "cockpit" | "memo" | "screener") => void;
-  onOpenUploadModal?: () => void;
   onOpenShortcutsModal?: () => void;
   onShare?: () => void;
   locale?: Locale;
@@ -55,7 +54,6 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectReport,
   viewMode,
   onViewModeChange,
-  onOpenUploadModal,
   onOpenShortcutsModal,
   onShare,
   locale = "zh",
@@ -67,18 +65,24 @@ export const Header: React.FC<HeaderProps> = ({
   const upsidePct = valuation?.upsidePct ?? 0;
 
   return (
-    <header className="glass-panel sticky top-0 z-40 flex w-full items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
+    <header className="glass-panel sticky top-0 z-40 flex w-full flex-nowrap items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent shadow-glow">
+        {/* Clickable Brand Logo -> Returns to Home (Screener) */}
+        <button
+          type="button"
+          onClick={() => onViewModeChange("screener")}
+          className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90"
+          title="StressAlpha Home — Universe Screener"
+        >
+          <div className="flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent shadow-glow transition-transform group-hover:scale-105">
             <span className="font-mono text-sm font-extrabold tracking-tighter">
               S<span className="text-white">α</span>
             </span>
           </div>
           <div className="xs:block hidden">
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-extrabold tracking-tight text-white">
+              <span className="text-base font-extrabold tracking-tight text-white transition-colors group-hover:text-accent">
                 Stress<span className="text-accent">Alpha</span>
               </span>
               <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-400">
@@ -86,124 +90,147 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
           </div>
-        </div>
+        </button>
 
         <div className="mx-0.5 hidden h-4 w-px bg-white/[0.08] sm:block" />
 
         {/* Direct Report Selection from reports/ folder */}
         <ReportSelector
           currentSlug={currentSlug ?? null}
-          onSelectReport={onSelectReport}
+          onSelectReport={(slug) => {
+            onViewModeChange("cockpit");
+            onSelectReport(slug);
+          }}
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
+
+        {/* Ticker Hyperlink to Yahoo Finance */}
+        {facts?.ticker && (
+          <a
+            href={`https://finance.yahoo.com/quote/${facts.ticker}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-1 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2 py-1.5 font-mono text-xs font-semibold text-slate-400 transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
+            title={`View ${facts.ticker} quote on Yahoo Finance`}
+          >
+            <span>{facts.ticker}</span>
+            <ExternalLink className="size-3" />
+          </a>
+        )}
       </div>
 
-      {/* Middle: Live Market Data Bar - Responsive (Compact on md-lg, Full on xl+) */}
+      {/* Middle: Live Market Data Bar - Absolutely Centered in Viewport */}
       {facts && (
         <>
           {/* Full Bar (xl+) */}
-          <div className="glass-panel-subtle hidden items-center gap-5 rounded-lg px-3.5 py-1.5 font-mono text-xs tabular-nums xl:flex">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">
-                {t.currentPrice}:
-              </span>
-              <span className="font-bold text-white">
-                {formatCurrency(currentPrice)}
-              </span>
-            </div>
-            <div className="h-3 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">
-                {t.weightedFairValue}:
-              </span>
-              <span
-                className={`font-bold ${
-                  upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
-                }`}
-              >
-                {formatCurrency(weightedFairValue, 0)}{" "}
-                <span className="text-[11px] font-semibold">
-                  ({formatPercent(upsidePct)})
+          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:flex">
+            <div className="glass-panel-subtle pointer-events-auto flex items-center gap-5 whitespace-nowrap rounded-lg px-3.5 py-1.5 font-mono text-xs tabular-nums shadow-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-slate-400">
+                  {t.currentPrice}:
                 </span>
-              </span>
-            </div>
-            <div className="h-3 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">{t.cleanEps}:</span>
-              <span className="font-bold text-accent">
-                {formatCurrency(facts.epsOperating)}
-              </span>
-            </div>
-            <div className="h-3 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">
-                {t.fwdEstimate}:
-              </span>
-              <span className="text-slate-300">
-                {facts.forwardEpsConsensus
-                  ? formatCurrency(facts.forwardEpsConsensus)
-                  : facts.epsConsensus
-                    ? formatCurrency(facts.epsConsensus)
-                    : "N/A"}
-              </span>
+                <span className="font-bold text-white">
+                  {formatCurrency(currentPrice)}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-white/[0.08]" />
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-slate-400">
+                  {t.weightedFairValue}:
+                </span>
+                <span
+                  className={`font-bold ${
+                    upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
+                  }`}
+                >
+                  {formatCurrency(weightedFairValue, 0)}{" "}
+                  <span className="text-[11px] font-semibold">
+                    ({formatPercent(upsidePct)})
+                  </span>
+                </span>
+              </div>
+              <div className="h-3 w-px bg-white/[0.08]" />
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-slate-400">
+                  {t.cleanEps}:
+                </span>
+                <span className="font-bold text-accent">
+                  {formatCurrency(facts.epsOperating)}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-white/[0.08]" />
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-slate-400">
+                  {t.fwdEstimate}:
+                </span>
+                <span className="text-slate-300">
+                  {facts.forwardEpsConsensus
+                    ? formatCurrency(facts.forwardEpsConsensus)
+                    : facts.epsConsensus
+                      ? formatCurrency(facts.epsConsensus)
+                      : "N/A"}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Compact Bar (md to lg) */}
-          <div className="glass-panel-subtle hidden items-center gap-3 rounded-lg px-3 py-1.5 font-mono text-xs tabular-nums md:flex xl:hidden">
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-slate-400">
-                {t.currentPrice}:
-              </span>
-              <span className="text-[11px] font-bold text-white">
-                {formatCurrency(currentPrice)}
-              </span>
-            </div>
-            <div className="h-3 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-slate-400">
-                {t.weightedFairValue}:
-              </span>
-              <span
-                className={`text-[11px] font-bold ${
-                  upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
-                }`}
-              >
-                {formatCurrency(weightedFairValue, 0)} (
-                {formatPercent(upsidePct)})
-              </span>
+          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex xl:hidden">
+            <div className="glass-panel-subtle pointer-events-auto flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-1.5 font-mono text-xs tabular-nums shadow-sm">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-slate-400">
+                  {t.currentPrice}:
+                </span>
+                <span className="text-[11px] font-bold text-white">
+                  {formatCurrency(currentPrice)}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-white/[0.08]" />
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-slate-400">
+                  {t.weightedFairValue}:
+                </span>
+                <span
+                  className={`text-[11px] font-bold ${
+                    upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
+                  }`}
+                >
+                  {formatCurrency(weightedFairValue, 0)} (
+                  {formatPercent(upsidePct)})
+                </span>
+              </div>
             </div>
           </div>
         </>
       )}
 
-      {/* Right: Language Switcher, View Mode, Share, Upload */}
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        {/* Prominent Language Switcher */}
+      {/* Right: Language Switcher, View Mode, Methodology, GitHub, Share, Shortcuts */}
+      <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">
+        {/* Prominent Language Switcher (Clicking toggles EN <-> ZH) */}
         <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 shadow-sm">
           <Globe className="ml-1.5 mr-0.5 hidden size-3.5 text-accent sm:inline" />
           <button
             type="button"
-            onClick={() => onToggleLocale("en")}
+            onClick={() => onToggleLocale(locale === "en" ? "zh" : "en")}
             className={`rounded-md px-2 py-1 text-xs font-bold transition-all sm:px-2.5 ${
               locale === "en"
                 ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
                 : "text-slate-400 hover:text-white"
             }`}
-            title="English Version"
+            title="Click to toggle English / 中文"
           >
             <span>EN</span>
           </button>
           <button
             type="button"
-            onClick={() => onToggleLocale("zh")}
+            onClick={() => onToggleLocale(locale === "en" ? "zh" : "en")}
             className={`rounded-md px-2 py-1 text-xs font-bold transition-all sm:px-2.5 ${
               locale === "zh"
                 ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
                 : "text-slate-400 hover:text-white"
             }`}
-            title="中文版研报与仪表盘"
+            title="点击切换 中文 / English"
           >
             <span>中文</span>
           </button>
@@ -281,19 +308,6 @@ export const Header: React.FC<HeaderProps> = ({
           <Share2 className="size-3.5" />
           <span className="hidden sm:inline">{t.share}</span>
         </button>
-
-        {/* Upload Fallback Button */}
-        {onOpenUploadModal && (
-          <button
-            type="button"
-            onClick={onOpenUploadModal}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white sm:px-3"
-            title={t.uploadTooltip}
-          >
-            <Upload className="size-3.5" />
-            <span className="hidden sm:inline">{t.upload}</span>
-          </button>
-        )}
 
         {/* Shortcuts Helper Button */}
         {onOpenShortcutsModal && (

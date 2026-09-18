@@ -15,6 +15,7 @@ import {
   BarChart3,
   CheckCircle2,
   Percent,
+  ExternalLink,
 } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { formatCurrency, formatPercent } from "@/lib/utils";
@@ -240,7 +241,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         </div>
 
         {/* Highest Upside Pick */}
-        <div className="glass-panel rounded-xl p-3.5 sm:p-4">
+        <div
+          className={`glass-panel rounded-xl p-3.5 sm:p-4 ${
+            stats.topPick
+              ? "cursor-pointer transition-all hover:border-accent/40 hover:bg-surface-2/40"
+              : ""
+          }`}
+          onClick={() =>
+            stats.topPick && onSelectReport(stats.topPick.slug, "cockpit")
+          }
+          title={
+            stats.topPick
+              ? locale === "zh"
+                ? `点击进入 ${stats.topPick.ticker} 操盘驾驶舱`
+                : `Open ${stats.topPick.ticker} Cockpit`
+              : undefined
+          }
+        >
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-[11px] font-medium tracking-wide sm:text-xs">
               {ts.statsTopPick}
@@ -525,6 +542,22 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               <span className="font-bold text-white group-hover:text-accent">
                                 {report.ticker || report.slug}
                               </span>
+                              {report.ticker && (
+                                <a
+                                  href={`https://finance.yahoo.com/quote/${report.ticker}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-slate-500 hover:text-accent"
+                                  title={
+                                    locale === "zh"
+                                      ? `在 Yahoo Finance 查看 ${report.ticker}`
+                                      : `View ${report.ticker} on Yahoo Finance`
+                                  }
+                                >
+                                  <ExternalLink className="size-3" />
+                                </a>
+                              )}
                               {report.quarter && (
                                 <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-400">
                                   {report.quarter}

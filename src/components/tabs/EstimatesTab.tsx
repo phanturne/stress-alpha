@@ -132,19 +132,33 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           return (
             r.includes("buy") ||
             r.includes("outperform") ||
-            r.includes("overweight")
+            r.includes("overweight") ||
+            r.includes("positive") ||
+            r.includes("买入") ||
+            r.includes("增持") ||
+            r.includes("跑赢大盘") ||
+            r.includes("跑赢行业")
           );
         }
         if (ratingFilter === "hold") {
           return (
-            r.includes("hold") || r.includes("neutral") || r.includes("equal")
+            r.includes("hold") ||
+            r.includes("neutral") ||
+            r.includes("equal") ||
+            r.includes("market") ||
+            r.includes("中性") ||
+            r.includes("持有")
           );
         }
         if (ratingFilter === "sell") {
           return (
             r.includes("sell") ||
             r.includes("underperform") ||
-            r.includes("underweight")
+            r.includes("underweight") ||
+            r.includes("negative") ||
+            r.includes("卖出") ||
+            r.includes("减持") ||
+            r.includes("跑输行业")
           );
         }
         return true;
@@ -578,7 +592,20 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         <td className="px-4 py-3.5">
                           <div className="flex flex-col">
                             <div className="flex items-center gap-1.5 font-semibold text-white">
-                              <span>{item.firm}</span>
+                              <a
+                                href={`https://www.google.com/search?q=${encodeURIComponent(`${item.firm} equity research`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 hover:text-accent hover:underline"
+                                title={
+                                  isZh
+                                    ? `在 Google 搜索 ${item.firm} 研报`
+                                    : `Search ${item.firm} research on Google`
+                                }
+                              >
+                                <span>{item.firm}</span>
+                                <ExternalLink className="size-3 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />
+                              </a>
                               {actionStyle && item.action && (
                                 <span
                                   className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-medium ${actionStyle.className}`}
