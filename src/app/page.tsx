@@ -564,6 +564,11 @@ export default function HomePage() {
   // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Never intercept browser-native shortcuts (Cmd+R, Ctrl+R, Cmd+W, etc.)
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
       if (
         tag === "input" ||
@@ -577,12 +582,6 @@ export default function HomePage() {
       if (num >= 1 && num <= tabItems.length) {
         e.preventDefault();
         setActiveTab(tabItems[num - 1].id);
-        return;
-      }
-
-      if (e.key === "r" || e.key === "R") {
-        e.preventDefault();
-        handleResetDefaults();
         return;
       }
 

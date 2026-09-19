@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FolderOpen,
-  RefreshCw,
   ChevronDown,
   Check,
   Sparkles,
@@ -30,22 +29,6 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const t = getTranslations(locale).selector;
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-
-  const fetchReports = useCallback(async () => {
-    setIsFetching(true);
-    try {
-      const res = await fetch("/api/reports");
-      if (res.ok) {
-        const data = await res.json();
-        setReports(data.reports || []);
-      }
-    } catch (err) {
-      console.error("Failed to load reports:", err);
-    } finally {
-      setIsFetching(false);
-    }
-  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -71,7 +54,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
 
   return (
     <div className="relative inline-block text-left">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -96,18 +79,6 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           </span>
           <ChevronDown
             className={`size-3.5 text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-accent" : ""}`}
-          />
-        </button>
-
-        <button
-          type="button"
-          onClick={fetchReports}
-          disabled={isFetching}
-          className="rounded-lg border border-white/[0.08] bg-surface-1/90 p-1.5 text-slate-400 transition-colors hover:border-accent/50 hover:bg-surface-2 hover:text-accent"
-          title={t.refreshTitle}
-        >
-          <RefreshCw
-            className={`size-3.5 ${isFetching ? "animate-spin text-accent" : ""}`}
           />
         </button>
       </div>

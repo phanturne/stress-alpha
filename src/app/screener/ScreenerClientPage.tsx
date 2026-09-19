@@ -81,6 +81,11 @@ export function ScreenerClientPage({
   // Keyboard shortcut listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Never intercept browser-native shortcuts (Cmd+R, Ctrl+R, etc.)
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+
       const target = e.target as HTMLElement;
       if (
         target.tagName === "INPUT" ||

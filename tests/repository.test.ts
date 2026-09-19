@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   DrizzleReportRepository,
-  FsReportRepository,
   InMemoryReportRepository,
   getReportRepository,
   setReportRepository,
@@ -52,18 +51,6 @@ describe("Data Access Layer: Repository Pattern", () => {
     it("returns null for non-existent slug", async () => {
       const report = await drizzleRepo.getReport("NONEXISTENT-SLUG");
       expect(report).toBeNull();
-    });
-  });
-
-  describe("FsReportRepository", () => {
-    it("handles missing directory gracefully and returns empty array", async () => {
-      const emptyRepo = new FsReportRepository(
-        "/tmp/nonexistent-stressalpha-reports"
-      );
-      const reports = await emptyRepo.listReports();
-      expect(reports).toEqual([]);
-      expect(await emptyRepo.hasReport("any-slug")).toBe(false);
-      expect(await emptyRepo.getReport("any-slug")).toBeNull();
     });
   });
 
@@ -170,36 +157,9 @@ describe("Data Access Layer: Repository Pattern", () => {
       setReportRepository(null);
     });
 
-    it("provides FsReportRepository by default when DATABASE_URL is unset", () => {
-      const originalUrl = process.env.DATABASE_URL;
-      delete process.env.DATABASE_URL;
-      try {
-        setReportRepository(null);
-        const repo = getReportRepository();
-        expect(repo).toBeInstanceOf(FsReportRepository);
-      } finally {
-        if (originalUrl) {
-          process.env.DATABASE_URL = originalUrl;
-        }
-      }
-    });
-
-    it("switches to DrizzleReportRepository when DATABASE_URL is present", async () => {
-      const originalUrl = process.env.DATABASE_URL;
-      process.env.DATABASE_URL = "postgresql://mock:mock@localhost:5432/mock";
-      try {
-        setReportRepository(null);
-        const { DrizzleReportRepository } = await import("@/lib/repository");
-        const repo = getReportRepository();
-        expect(repo).toBeInstanceOf(DrizzleReportRepository);
-      } finally {
-        if (originalUrl) {
-          process.env.DATABASE_URL = originalUrl;
-        } else {
-          delete process.env.DATABASE_URL;
-        }
-        setReportRepository(null);
-      }
+    it("provides DrizzleReportRepository as default repository", () => {
+      const repo = getReportRepository();
+      expect(repo).toBeInstanceOf(DrizzleReportRepository);
     });
 
     it("allows swapping with an in-memory repository", () => {

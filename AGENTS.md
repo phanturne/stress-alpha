@@ -56,12 +56,12 @@ All data access is mediated through the **Repository Pattern** defined in [`src/
 ┌────────────────────────────────────────────────────────┐
 │                   IReportRepository                    │
 └────────────────────────────────────────────────────────┘
-            ▲                                ▲
-            │                                │
-┌───────────────────────┐        ┌───────────────────────┐
-│   FsReportRepository  │        │ DrizzleReportRepository│
-│ (Local JSON Folders)  │        │  (Neon PostgreSQL DB) │
-└───────────────────────┘        └───────────────────────┘
+                            ▲
+                            │
+                 ┌───────────────────────┐
+                 │ DrizzleReportRepository│
+                 │ (Neon PostgreSQL DB)  │
+                 └───────────────────────┘
 ```
 
 1. **`IReportRepository` Contract**:
@@ -71,7 +71,7 @@ All data access is mediated through the **Repository Pattern** defined in [`src/
    - `deleteReport(folderSlug: string): Promise<void>`
    - `syncPrice(ticker: string, price: number): Promise<void>`
 2. **Factory Selection**:
-   - Always use `getReportRepository()` which auto-detects `DATABASE_URL` for Neon PostgreSQL with graceful fallback to local files.
+   - Always use `getReportRepository()` which instantiates `DrizzleReportRepository` connected directly to Neon PostgreSQL.
    - **Never bypass repository interfaces** in API routes or extraction scripts.
 
 ---
