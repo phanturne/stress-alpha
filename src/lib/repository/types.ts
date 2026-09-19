@@ -24,6 +24,13 @@ export interface ReportSummary {
   analystCount?: number;
   snowflakeScore?: number;
   snowflakeTier?: "exceptional" | "strong" | "balanced" | "cautious";
+  snowflakePillars?: {
+    valuation: number;
+    future: number;
+    earnings: number;
+    moat: number;
+    resilience: number;
+  };
   hasFacts: boolean;
   hasScenarios: boolean;
   hasValuation: boolean;

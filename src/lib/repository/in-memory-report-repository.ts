@@ -40,10 +40,26 @@ export class InMemoryReportRepository implements IReportRepository {
     let snowflakeScore: number | undefined;
     let snowflakeTier:
       "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+    let snowflakePillars:
+      | {
+          valuation: number;
+          future: number;
+          earnings: number;
+          moat: number;
+          resilience: number;
+        }
+      | undefined;
     try {
       const sRes = computeSnowflakeScore(report);
       snowflakeScore = sRes.totalScore;
       snowflakeTier = sRes.ratingTier;
+      snowflakePillars = {
+        valuation: sRes.pillars.valuation.score,
+        future: sRes.pillars.future.score,
+        earnings: sRes.pillars.earnings.score,
+        moat: sRes.pillars.moat.score,
+        resilience: sRes.pillars.resilience.score,
+      };
     } catch {
       // ignore
     }
@@ -68,6 +84,7 @@ export class InMemoryReportRepository implements IReportRepository {
       analystCount,
       snowflakeScore,
       snowflakeTier,
+      snowflakePillars,
       hasFacts: true,
       hasScenarios: true,
       hasValuation: !!report.valuation,

@@ -40,6 +40,12 @@ describe("Screener & Reports API", () => {
     expect(nvda.snowflakeScore).toBeGreaterThanOrEqual(0);
     expect(nvda.snowflakeScore).toBeLessThanOrEqual(30);
     expect(nvda.snowflakeTier).toBeDefined();
+    expect(nvda.snowflakePillars).toBeDefined();
+    expect(typeof nvda.snowflakePillars?.valuation).toBe("number");
+    expect(typeof nvda.snowflakePillars?.future).toBe("number");
+    expect(typeof nvda.snowflakePillars?.earnings).toBe("number");
+    expect(typeof nvda.snowflakePillars?.moat).toBe("number");
+    expect(typeof nvda.snowflakePillars?.resilience).toBe("number");
   });
 
   it("verifies all covered reports contain valid pricing and valuation metrics", async () => {

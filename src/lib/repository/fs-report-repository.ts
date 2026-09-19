@@ -187,6 +187,15 @@ export class FsReportRepository implements IReportRepository {
       let snowflakeScore: number | undefined;
       let snowflakeTier:
         "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+      let snowflakePillars:
+        | {
+            valuation: number;
+            future: number;
+            earnings: number;
+            moat: number;
+            resilience: number;
+          }
+        | undefined;
 
       try {
         const fullReport = await this.getReport(folder.name);
@@ -194,6 +203,13 @@ export class FsReportRepository implements IReportRepository {
           const sRes = computeSnowflakeScore(fullReport);
           snowflakeScore = sRes.totalScore;
           snowflakeTier = sRes.ratingTier;
+          snowflakePillars = {
+            valuation: sRes.pillars.valuation.score,
+            future: sRes.pillars.future.score,
+            earnings: sRes.pillars.earnings.score,
+            moat: sRes.pillars.moat.score,
+            resilience: sRes.pillars.resilience.score,
+          };
         }
       } catch {
         // ignore snowflake scoring errors in summary list
@@ -223,6 +239,7 @@ export class FsReportRepository implements IReportRepository {
         analystCount,
         snowflakeScore,
         snowflakeTier,
+        snowflakePillars,
         hasFacts: fs.existsSync(factsPath),
         hasScenarios: fs.existsSync(scenariosPath),
         hasValuation: fs.existsSync(valuationPath),

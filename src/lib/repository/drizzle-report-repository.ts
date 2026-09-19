@@ -84,6 +84,15 @@ export class DrizzleReportRepository implements IReportRepository {
       let snowflakeScore: number | undefined;
       let snowflakeTier:
         "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+      let snowflakePillars:
+        | {
+            valuation: number;
+            future: number;
+            earnings: number;
+            moat: number;
+            resilience: number;
+          }
+        | undefined;
       if (report.facts && report.scenarios) {
         try {
           const reportPayload: ReportData = {
@@ -101,6 +110,13 @@ export class DrizzleReportRepository implements IReportRepository {
           const res = computeSnowflakeScore(reportPayload);
           snowflakeScore = res.totalScore;
           snowflakeTier = res.ratingTier;
+          snowflakePillars = {
+            valuation: res.pillars.valuation.score,
+            future: res.pillars.future.score,
+            earnings: res.pillars.earnings.score,
+            moat: res.pillars.moat.score,
+            resilience: res.pillars.resilience.score,
+          };
         } catch {
           // ignore snowflake computation error in summary listing
         }
@@ -134,6 +150,7 @@ export class DrizzleReportRepository implements IReportRepository {
         analystCount,
         snowflakeScore,
         snowflakeTier,
+        snowflakePillars,
         hasFacts: !!report.facts,
         hasScenarios: !!report.scenarios,
         hasValuation: !!report.valuation,

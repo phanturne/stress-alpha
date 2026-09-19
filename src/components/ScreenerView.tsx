@@ -3,8 +3,6 @@
 import React, { useState, useMemo } from "react";
 import {
   Search,
-  SlidersHorizontal,
-  FileText,
   TrendingUp,
   Shield,
   ShieldAlert,
@@ -18,6 +16,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
+import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -696,9 +695,6 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                     />
                   </div>
                 </th>
-
-                {/* Action */}
-                <th className="px-4 py-3.5 text-right">{ts.colAction}</th>
               </tr>
             </thead>
 
@@ -728,9 +724,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                       {/* Snowflake */}
                       <td className="px-3 py-3.5">
-                        <Skeleton
-                          className={`h-5 ${row.snowflakeW} rounded-full`}
-                        />
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="size-8 shrink-0 rounded-full" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-3 w-8" />
+                            <Skeleton className="h-2 w-10" />
+                          </div>
+                        </div>
                       </td>
 
                       {/* Price */}
@@ -776,21 +776,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       <td className="hidden px-3 py-3.5 text-right xl:table-cell">
                         <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
                       </td>
-
-                      {/* Action */}
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="ml-auto flex items-center justify-end gap-1.5">
-                          <Skeleton className="h-7 w-16 rounded-md" />
-                          <Skeleton className="h-7 w-14 rounded-md" />
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </>
               ) : filteredReports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={9}
                     className="px-4 py-12 text-center text-slate-400"
                   >
                     <p className="text-sm font-medium">{ts.noResults}</p>
@@ -903,26 +895,46 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         )}
                       </td>
 
-                      {/* Snowflake Fundamental Radar Audit */}
+                      {/* Snowflake Fundamental Radar & Score */}
                       <td className="px-3 py-3.5">
                         {report.snowflakeScore !== undefined ? (
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold ${
-                                report.snowflakeScore >= 24
-                                  ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                  : report.snowflakeScore >= 18
-                                    ? "border border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
-                                    : report.snowflakeScore >= 12
-                                      ? "border border-amber-500/30 bg-amber-500/10 text-amber-400"
-                                      : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
-                              }`}
-                              title={`${report.snowflakeScore}/30 Snowflake Radar`}
-                            >
-                              <Sparkles className="size-2.5" />
-                              <span>{report.snowflakeScore}</span>
-                              <span className="text-[9px] opacity-60">/30</span>
-                            </span>
+                          <div
+                            className="flex items-center gap-2.5"
+                            title={
+                              report.snowflakePillars
+                                ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
+                                : `${report.snowflakeScore}/30 Snowflake Radar`
+                            }
+                          >
+                            <MiniSnowflakeRadar
+                              score={report.snowflakeScore}
+                              tier={report.snowflakeTier}
+                              pillars={report.snowflakePillars}
+                              size={34}
+                            />
+                            <div className="flex flex-col">
+                              <div className="flex items-baseline gap-0.5">
+                                <span className="font-mono text-xs font-bold text-white">
+                                  {report.snowflakeScore}
+                                </span>
+                                <span className="font-mono text-[9px] text-slate-500">
+                                  /30
+                                </span>
+                              </div>
+                              <span
+                                className={`font-mono text-[9px] font-semibold uppercase tracking-wider ${
+                                  report.snowflakeScore >= 24
+                                    ? "text-emerald-400"
+                                    : report.snowflakeScore >= 18
+                                      ? "text-cyan-400"
+                                      : report.snowflakeScore >= 12
+                                        ? "text-amber-400"
+                                        : "text-rose-400"
+                                }`}
+                              >
+                                {report.snowflakeTier ?? "balanced"}
+                              </span>
+                            </div>
                           </div>
                         ) : (
                           <span className="text-xs text-slate-600">—</span>
@@ -1091,39 +1103,6 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         ) : (
                           <span className="text-slate-600">—</span>
                         )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-4 py-3.5 text-right">
-                        <div
-                          className="flex items-center justify-end gap-1.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            type="button"
-                            onClick={() =>
-                              onSelectReport(report.slug, "cockpit")
-                            }
-                            className="inline-flex items-center gap-1 rounded-lg border border-accent/40 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
-                            title={ts.openCockpit}
-                          >
-                            <SlidersHorizontal className="size-3" />
-                            <span className="hidden sm:inline">
-                              {ts.openCockpit}
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => onSelectReport(report.slug, "memo")}
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/[0.2] hover:bg-surface-2 hover:text-white"
-                            title={ts.openMemo}
-                          >
-                            <FileText className="size-3 text-slate-400" />
-                            <span className="hidden sm:inline">
-                              {ts.openMemo}
-                            </span>
-                          </button>
-                        </div>
                       </td>
                     </tr>
                   );
