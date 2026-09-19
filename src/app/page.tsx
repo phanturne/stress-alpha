@@ -42,6 +42,9 @@ import {
   serializeScenarioUrlState,
 } from "@/lib/url-state";
 
+const clientReportDataCache = new Map<string, ReportData>();
+let clientReportsListCache: ReportSummary[] | null = null;
+
 export default function HomePage() {
   const router = useRouter();
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
@@ -99,9 +102,29 @@ export default function HomePage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Load report from API with optional initial shock overrides
+  // Load report from API with optional initial shock overrides & client cache
   const loadReport = useCallback(
     async (slug: string, initialOverrides?: StressTestParams) => {
+      const cached = clientReportDataCache.get(slug);
+      if (cached) {
+        setReportData(cached);
+        setCurrentSlug(slug);
+        const initialShocks: Record<string, number> = {};
+        if (cached.baseline?.upstreamDrivers) {
+          for (const d of cached.baseline.upstreamDrivers) {
+            initialShocks[d.id] =
+              initialOverrides?.driverShocks?.[d.id] ?? d.defaultShockPct ?? 0;
+          }
+        }
+        setStressParams({
+          driverShocks: initialShocks,
+          grossMarginBpsDelta: initialOverrides?.grossMarginBpsDelta ?? 0,
+          fixedOpexShiftPct: initialOverrides?.fixedOpexShiftPct ?? 0,
+        });
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       try {
         const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
@@ -109,6 +132,7 @@ export default function HomePage() {
           throw new Error(`Failed to fetch report ${slug}`);
         }
         const data: ReportData = await res.json();
+        clientReportDataCache.set(slug, data);
         setReportData(data);
         setCurrentSlug(slug);
 
@@ -137,12 +161,18 @@ export default function HomePage() {
   );
 
   const fetchReportsList = useCallback(async () => {
+    if (clientReportsListCache) {
+      setReports(clientReportsListCache);
+      setIsReportsLoading(false);
+      return clientReportsListCache;
+    }
     setIsReportsLoading(true);
     try {
       const res = await fetch("/api/reports");
       if (res.ok) {
         const data = await res.json();
         const list: ReportSummary[] = data.reports || [];
+        clientReportsListCache = list;
         setReports(list);
         return list;
       }
@@ -178,11 +208,12 @@ export default function HomePage() {
         return;
       }
 
-      await fetchReportsList();
-
-      if (urlState.report) {
-        await loadReport(urlState.report, urlState.stressParams);
-      }
+      // Parallelize: Load active report immediately without waiting for full reports list
+      const reportPromise = urlState.report
+        ? loadReport(urlState.report, urlState.stressParams)
+        : Promise.resolve();
+      const listPromise = fetchReportsList();
+      await Promise.all([reportPromise, listPromise]);
     };
     init();
   }, [fetchReportsList, loadReport, router]);

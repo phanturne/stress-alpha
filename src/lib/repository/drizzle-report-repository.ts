@@ -6,6 +6,14 @@ import type { ReportData, Valuation } from "@/lib/schemas";
 import { computeSnowflakeScore } from "@/lib/snowflake";
 
 export class DrizzleReportRepository implements IReportRepository {
+  private cachedSummaries: ReportSummary[] | null = null;
+  private lastSummariesTime = 0;
+  private readonly CACHE_TTL_MS = 60_000;
+  private cachedReports = new Map<
+    string,
+    { data: ReportData; timestamp: number }
+  >();
+
   async hasReport(slug: string): Promise<boolean> {
     const db = getDb();
     const rows = await db
@@ -18,6 +26,13 @@ export class DrizzleReportRepository implements IReportRepository {
   }
 
   async listReports(): Promise<ReportSummary[]> {
+    if (
+      this.cachedSummaries &&
+      Date.now() - this.lastSummariesTime < this.CACHE_TTL_MS
+    ) {
+      return this.cachedSummaries;
+    }
+
     const db = getDb();
 
     const rows = await db
@@ -163,10 +178,17 @@ export class DrizzleReportRepository implements IReportRepository {
       });
     }
 
+    this.cachedSummaries = summaries;
+    this.lastSummariesTime = Date.now();
     return summaries;
   }
 
   async getReport(slug: string): Promise<ReportData | null> {
+    const cached = this.cachedReports.get(slug);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL_MS) {
+      return cached.data;
+    }
+
     const db = getDb();
 
     const rows = await db
@@ -211,7 +233,7 @@ export class DrizzleReportRepository implements IReportRepository {
       }
     }
 
-    return {
+    const reportData: ReportData = {
       folderSlug: report.slug,
       folderName: report.slug,
       facts,
@@ -235,5 +257,11 @@ export class DrizzleReportRepository implements IReportRepository {
       reportMarkdown: report.reportMd ?? undefined,
       reportMarkdownZh: report.reportMdZh ?? undefined,
     };
+
+    this.cachedReports.set(slug, {
+      data: reportData,
+      timestamp: Date.now(),
+    });
+    return reportData;
   }
 }

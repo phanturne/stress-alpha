@@ -7,8 +7,6 @@ import {
   Share2,
   SlidersHorizontal,
   Globe,
-  HelpCircle,
-  BarChart3,
   BookOpen,
   ExternalLink,
   Settings,
@@ -60,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
   onViewModeChange,
   onOpenShortcutsModal,
   onShare,
-  onOpenSnowflake,
+  onOpenSnowflake: _onOpenSnowflake,
   locale = "zh",
   onToggleLocale = () => {},
 }) => {
@@ -86,12 +84,12 @@ export const Header: React.FC<HeaderProps> = ({
               S<span className="text-white">α</span>
             </span>
           </div>
-          <div className="xs:block hidden">
+          <div className="hidden sm:block">
             <div className="flex items-center gap-1.5">
               <span className="text-base font-extrabold tracking-tight text-white transition-colors group-hover:text-accent">
                 Stress<span className="text-accent">Alpha</span>
               </span>
-              <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="hidden rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-400 md:inline">
                 {t.engineTag}
               </span>
             </div>
@@ -112,92 +110,39 @@ export const Header: React.FC<HeaderProps> = ({
         />
       </div>
 
-      {/* Middle: Live Market Data Bar - Absolutely Centered in Viewport */}
-      {facts && (
-        <>
-          {/* Full Bar (xl+) */}
-          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:flex">
-            <div className="glass-panel-subtle pointer-events-auto flex items-center gap-5 whitespace-nowrap rounded-lg px-3.5 py-1.5 font-mono text-xs tabular-nums shadow-sm">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-400">
-                  {t.currentPrice}:
+      {/* Middle: Lean Live Market Data Bar - Absolutely Centered in Viewport */}
+      {facts && viewMode !== "screener" && (
+        <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:flex">
+          <div className="glass-panel-subtle pointer-events-auto flex items-center gap-3.5 whitespace-nowrap rounded-lg px-3 py-1 font-mono text-xs tabular-nums shadow-sm">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-slate-400">
+                {t.currentPrice}:
+              </span>
+              <span className="font-bold text-white">
+                {formatCurrency(currentPrice)}
+              </span>
+            </div>
+            <div className="h-3 w-px bg-white/[0.08]" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-slate-400">
+                {t.weightedFairValue}:
+              </span>
+              <span
+                className={`font-bold ${
+                  upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
+                }`}
+              >
+                {formatCurrency(weightedFairValue, 0)}{" "}
+                <span className="text-[11px] font-semibold">
+                  ({formatPercent(upsidePct)})
                 </span>
-                <span className="font-bold text-white">
-                  {formatCurrency(currentPrice)}
-                </span>
-              </div>
-              <div className="h-3 w-px bg-white/[0.08]" />
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-400">
-                  {t.weightedFairValue}:
-                </span>
-                <span
-                  className={`font-bold ${
-                    upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
-                  }`}
-                >
-                  {formatCurrency(weightedFairValue, 0)}{" "}
-                  <span className="text-[11px] font-semibold">
-                    ({formatPercent(upsidePct)})
-                  </span>
-                </span>
-              </div>
-              <div className="h-3 w-px bg-white/[0.08]" />
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-400">
-                  {t.cleanEps}:
-                </span>
-                <span className="font-bold text-accent">
-                  {formatCurrency(facts.epsOperating)}
-                </span>
-              </div>
-              <div className="h-3 w-px bg-white/[0.08]" />
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-400">
-                  {t.fwdEstimate}:
-                </span>
-                <span className="text-slate-300">
-                  {facts.forwardEpsConsensus
-                    ? formatCurrency(facts.forwardEpsConsensus)
-                    : facts.epsConsensus
-                      ? formatCurrency(facts.epsConsensus)
-                      : "N/A"}
-                </span>
-              </div>
+              </span>
             </div>
           </div>
-
-          {/* Compact Bar (md to lg) */}
-          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex xl:hidden">
-            <div className="glass-panel-subtle pointer-events-auto flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-1.5 font-mono text-xs tabular-nums shadow-sm">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-slate-400">
-                  {t.currentPrice}:
-                </span>
-                <span className="text-[11px] font-bold text-white">
-                  {formatCurrency(currentPrice)}
-                </span>
-              </div>
-              <div className="h-3 w-px bg-white/[0.08]" />
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-slate-400">
-                  {t.weightedFairValue}:
-                </span>
-                <span
-                  className={`text-[11px] font-bold ${
-                    upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
-                  }`}
-                >
-                  {formatCurrency(weightedFairValue, 0)} (
-                  {formatPercent(upsidePct)})
-                </span>
-              </div>
-            </div>
-          </div>
-        </>
+        </div>
       )}
 
-      {/* Right: View Modes, Share, GitHub Icon, and Settings & Resources Menu */}
+      {/* Right: View Modes, Share, and Settings & Resources Menu */}
       <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">
         {/* View Mode Switcher: Cockpit & Memo available only when a report is selected */}
         {viewMode !== "screener" && (
@@ -213,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
               title={t.cockpit}
             >
               <SlidersHorizontal className="size-3.5" />
-              <span className="hidden md:inline">{t.cockpit}</span>
+              <span className="hidden sm:inline">{t.cockpit}</span>
             </button>
             <button
               type="button"
@@ -226,25 +171,10 @@ export const Header: React.FC<HeaderProps> = ({
               title={t.memo}
             >
               <FileText className="size-3.5" />
-              <span className="hidden md:inline">{t.memo}</span>
+              <span className="hidden sm:inline">{t.memo}</span>
             </button>
           </div>
         )}
-
-        {/* Universe Screener Button */}
-        <button
-          type="button"
-          onClick={() => onViewModeChange("screener")}
-          className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition-all ${
-            viewMode === "screener"
-              ? "border-accent/40 bg-surface-3 text-accent ring-1 ring-accent/30"
-              : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
-          }`}
-          title={t.screener}
-        >
-          <BarChart3 className="size-3.5 text-accent" />
-          <span className="hidden sm:inline">{t.screener}</span>
-        </button>
 
         {/* Unified Share & Export Button - available when a report is selected */}
         {onShare && viewMode !== "screener" && facts && (

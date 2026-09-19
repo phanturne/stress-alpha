@@ -20,6 +20,13 @@ import { computeSnowflakeScore } from "@/lib/snowflake";
 
 export class FsReportRepository implements IReportRepository {
   private readonly reportsDir: string;
+  private cachedSummaries: ReportSummary[] | null = null;
+  private lastSummariesTime = 0;
+  private readonly CACHE_TTL_MS = 60_000;
+  private cachedReports = new Map<
+    string,
+    { data: ReportData; timestamp: number }
+  >();
 
   constructor(reportsDir?: string) {
     this.reportsDir = reportsDir ?? path.join(process.cwd(), "reports");
@@ -32,6 +39,13 @@ export class FsReportRepository implements IReportRepository {
   }
 
   async listReports(): Promise<ReportSummary[]> {
+    if (
+      this.cachedSummaries &&
+      Date.now() - this.lastSummariesTime < this.CACHE_TTL_MS
+    ) {
+      return this.cachedSummaries;
+    }
+
     if (!fs.existsSync(this.reportsDir)) {
       return [];
     }
@@ -254,11 +268,18 @@ export class FsReportRepository implements IReportRepository {
 
     // Sort: most recent or alphabetical
     reports.sort((a, b) => (b.slug > a.slug ? 1 : -1));
+    this.cachedSummaries = reports;
+    this.lastSummariesTime = Date.now();
     return reports;
   }
 
   async getReport(slug: string): Promise<ReportData | null> {
     const sanitizedSlug = path.basename(slug);
+    const cached = this.cachedReports.get(sanitizedSlug);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL_MS) {
+      return cached.data;
+    }
+
     const reportDir = path.join(this.reportsDir, sanitizedSlug);
 
     if (!fs.existsSync(reportDir)) {
@@ -398,7 +419,7 @@ export class FsReportRepository implements IReportRepository {
       );
     }
 
-    return {
+    const reportData: ReportData = {
       folderSlug: sanitizedSlug,
       folderName: sanitizedSlug,
       facts,
@@ -422,5 +443,10 @@ export class FsReportRepository implements IReportRepository {
       reportMarkdown,
       reportMarkdownZh,
     };
+    this.cachedReports.set(sanitizedSlug, {
+      data: reportData,
+      timestamp: Date.now(),
+    });
+    return reportData;
   }
 }
