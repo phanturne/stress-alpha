@@ -28,6 +28,8 @@ import {
   CARD_DIMENSIONS,
   THEME_CONFIGS,
   TEMPLATE_SECTION_PRESETS,
+  CARD_SECTIONS,
+  findMatchingPreset,
   generateSocialPostText,
   downloadDataUrl,
   exportSocialCardAsPng,
@@ -58,7 +60,9 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
   locale: initialLocale = "en",
   onShowToast,
 }) => {
-  const [template, setTemplate] = useState<CardTemplate>("valuation");
+  const [template, setTemplate] = useState<CardTemplate | "custom">(
+    "valuation"
+  );
   const [selectedSections, setSelectedSections] = useState<CardSection[]>(
     TEMPLATE_SECTION_PRESETS.valuation
   );
@@ -219,26 +223,21 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
     setSelectedSections(TEMPLATE_SECTION_PRESETS[preset]);
   }, []);
 
-  // Toggle an individual section on/off (switches to "custom" mode)
+  // Toggle an individual section on/off (automatically syncs matching preset)
   const handleToggleSection = useCallback((section: CardSection) => {
     setSelectedSections((prev) => {
-      const next = prev.includes(section)
+      const updated = prev.includes(section)
         ? prev.filter((s) => s !== section)
         : [...prev, section];
+      const next = CARD_SECTIONS.filter((s) => updated.includes(s));
+      const matched = findMatchingPreset(next);
+      setTemplate(matched ?? "custom");
       return next;
     });
   }, []);
 
   // All available sections in display order
-  const ALL_SECTIONS: CardSection[] = [
-    "valuationHero",
-    "regimes",
-    "earnings",
-    "segments",
-    "moat",
-    "catalysts",
-    "snowflake",
-  ];
+  const ALL_SECTIONS = CARD_SECTIONS;
 
   if (!isOpen || !facts || !stressResult) return null;
 
@@ -442,10 +441,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                       "snowflake",
                     ] as CardTemplate[]
                   ).map((preset) => {
-                    const presetSections = TEMPLATE_SECTION_PRESETS[preset];
-                    const isActive =
-                      presetSections.length === selectedSections.length &&
-                      presetSections.every((s) => selectedSections.includes(s));
+                    const isActive = template === preset;
                     return (
                       <button
                         key={preset}

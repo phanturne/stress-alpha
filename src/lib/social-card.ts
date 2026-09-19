@@ -5,7 +5,6 @@ import { formatCurrency, formatPercent } from "./utils";
 export type CardTemplate =
   "valuation" | "earnings" | "thesis" | "summary" | "snowflake";
 
-/** Composable sections that users can select for custom export cards */
 export type CardSection =
   | "valuationHero"
   | "regimes"
@@ -15,6 +14,17 @@ export type CardSection =
   | "catalysts"
   | "snowflake";
 
+/** Canonical display and layout ordering for card sections */
+export const CARD_SECTIONS: CardSection[] = [
+  "valuationHero",
+  "regimes",
+  "earnings",
+  "segments",
+  "moat",
+  "catalysts",
+  "snowflake",
+];
+
 /** Default section presets for each legacy card template */
 export const TEMPLATE_SECTION_PRESETS: Record<CardTemplate, CardSection[]> = {
   valuation: ["valuationHero", "regimes"],
@@ -23,6 +33,26 @@ export const TEMPLATE_SECTION_PRESETS: Record<CardTemplate, CardSection[]> = {
   summary: ["valuationHero", "earnings", "moat"],
   snowflake: ["snowflake"],
 };
+
+/**
+ * Resolves a matching preset template name if the provided sections match any standard preset.
+ * Works regardless of section array ordering.
+ */
+export function findMatchingPreset(
+  sections: CardSection[]
+): CardTemplate | null {
+  for (const [preset, presetSections] of Object.entries(
+    TEMPLATE_SECTION_PRESETS
+  ) as [CardTemplate, CardSection[]][]) {
+    if (
+      presetSections.length === sections.length &&
+      presetSections.every((s) => sections.includes(s))
+    ) {
+      return preset;
+    }
+  }
+  return null;
+}
 
 export type CardAspectRatio = "landscape" | "square" | "portrait";
 export type CardTheme = "cyber" | "navy" | "emerald" | "crimson";

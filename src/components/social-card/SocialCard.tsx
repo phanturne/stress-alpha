@@ -21,6 +21,8 @@ import {
   CARD_DIMENSIONS,
   THEME_CONFIGS,
   TEMPLATE_SECTION_PRESETS,
+  CARD_SECTIONS,
+  findMatchingPreset,
 } from "@/lib/social-card";
 import { computeSnowflakeScore } from "@/lib/snowflake";
 import { SnowflakeRadar } from "@/components/snowflake/SnowflakeRadar";
@@ -30,7 +32,7 @@ export interface SocialCardProps {
   valuation?: Valuation;
   stressResult: StressResult;
   reportData?: ReportData;
-  template?: CardTemplate;
+  template?: CardTemplate | "custom";
   selectedSections?: CardSection[];
   aspectRatio: CardAspectRatio;
   theme?: CardTheme;
@@ -136,10 +138,22 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
       locale,
     ]);
 
-    const activeSections: CardSection[] =
+    const rawActiveSections: CardSection[] =
       selectedSections && selectedSections.length > 0
         ? selectedSections
-        : (TEMPLATE_SECTION_PRESETS[template] ?? ["valuationHero", "regimes"]);
+        : template !== "custom" &&
+            TEMPLATE_SECTION_PRESETS[template as CardTemplate]
+          ? TEMPLATE_SECTION_PRESETS[template as CardTemplate]
+          : ["valuationHero", "regimes"];
+
+    // Maintain canonical display and layout ordering for consistent visual hierarchy
+    const activeSections: CardSection[] = CARD_SECTIONS.filter((sec) =>
+      rawActiveSections.includes(sec)
+    );
+
+    const resolvedTemplate =
+      findMatchingPreset(activeSections) ??
+      (template !== "custom" ? (template as CardTemplate) : undefined);
 
     // 1. Valuation Hero Section (Current Price vs Weighted Fair Value + Asymmetry)
     const renderValuationHero = (spanClass: string) => (
@@ -1279,13 +1293,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
         {/* ----------------- CARD BODY CONTENT ----------------- */}
         <main className="relative z-10 my-auto flex-1 py-6">
-          {/* Executive Summary Presets */}
-          {template === "summary" &&
-          (!selectedSections ||
-            (selectedSections.length === 3 &&
-              selectedSections.includes("valuationHero") &&
-              selectedSections.includes("earnings") &&
-              selectedSections.includes("moat"))) ? (
+          {/* Executive Summary Preset or Matching Composed Sections */}
+          {resolvedTemplate === "summary" ? (
             renderSummary()
           ) : (
             <div

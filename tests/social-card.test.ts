@@ -4,6 +4,8 @@ import {
   CARD_DIMENSIONS,
   THEME_CONFIGS,
   TEMPLATE_SECTION_PRESETS,
+  CARD_SECTIONS,
+  findMatchingPreset,
   type CardAspectRatio,
   type CardTheme,
   type CardSection,
@@ -259,15 +261,7 @@ describe("Social Media Card Feature", () => {
     });
 
     it("has bilingual translations for all composable sections", () => {
-      const allSections: CardSection[] = [
-        "valuationHero",
-        "regimes",
-        "earnings",
-        "segments",
-        "moat",
-        "catalysts",
-        "snowflake",
-      ];
+      const allSections = CARD_SECTIONS;
       const en = getTranslations("en").socialCard;
       const zh = getTranslations("zh").socialCard;
 
@@ -275,6 +269,49 @@ describe("Social Media Card Feature", () => {
         expect(en.sections[s]).toBeTruthy();
         expect(zh.sections[s]).toBeTruthy();
       }
+    });
+
+    it("orders CARD_SECTIONS in canonical hierarchy", () => {
+      expect(CARD_SECTIONS).toEqual([
+        "valuationHero",
+        "regimes",
+        "earnings",
+        "segments",
+        "moat",
+        "catalysts",
+        "snowflake",
+      ]);
+    });
+
+    it("matches presets regardless of section order", () => {
+      // Summary preset (even in reverse or shuffled order)
+      expect(findMatchingPreset(["moat", "valuationHero", "earnings"])).toBe(
+        "summary"
+      );
+      expect(findMatchingPreset(["valuationHero", "earnings", "moat"])).toBe(
+        "summary"
+      );
+
+      // Valuation preset
+      expect(findMatchingPreset(["regimes", "valuationHero"])).toBe(
+        "valuation"
+      );
+
+      // Thesis preset
+      expect(findMatchingPreset(["catalysts", "moat"])).toBe("thesis");
+
+      // Earnings preset
+      expect(findMatchingPreset(["segments", "earnings"])).toBe("earnings");
+
+      // Snowflake preset
+      expect(findMatchingPreset(["snowflake"])).toBe("snowflake");
+
+      // Custom non-preset combinations return null
+      expect(findMatchingPreset(["valuationHero", "moat"])).toBeNull();
+      expect(
+        findMatchingPreset(["valuationHero", "regimes", "snowflake"])
+      ).toBeNull();
+      expect(findMatchingPreset([])).toBeNull();
     });
   });
 });
