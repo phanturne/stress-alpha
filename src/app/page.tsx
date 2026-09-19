@@ -235,9 +235,6 @@ export default function HomePage() {
   const handleViewModeChange = useCallback(
     (mode: "cockpit" | "memo" | "screener") => {
       if (mode === "screener") {
-        // Requirement 4: moving to screener page will unselect the current ticker
-        setCurrentSlug(null);
-        setReportData(null);
         router.push("/screener");
         return;
       }
@@ -652,6 +649,8 @@ export default function HomePage() {
             locale={locale}
             isLoading={isReportsLoading}
           />
+        ) : !currentSlug && !reportData ? (
+          <div className="min-h-[60vh]" />
         ) : isLoading ? (
           <CockpitSkeleton />
         ) : !reportData || !stressResult ? (
