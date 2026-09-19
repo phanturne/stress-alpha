@@ -28,6 +28,7 @@ export interface Translations {
     availableReports: string;
     noReportsFound: string;
     refreshTitle: string;
+    openScreener: string;
   };
   cockpit: {
     title: string;
@@ -579,6 +580,7 @@ export const translations: Record<Locale, Translations> = {
       availableReports: "Available Reports",
       noReportsFound: "No reports found under reports/",
       refreshTitle: "Refresh reports folder",
+      openScreener: "Open Universe Screener",
     },
     cockpit: {
       title: "Stress Flow-Through Cockpit",
@@ -1159,6 +1161,7 @@ export const translations: Record<Locale, Translations> = {
       availableReports: "可用研报列表",
       noReportsFound: "在 reports/ 目录下未找到任何研报",
       refreshTitle: "刷新研报目录",
+      openScreener: "打开全景估值筛选",
     },
     cockpit: {
       title: "实时情景压力驾驶舱",

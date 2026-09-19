@@ -14,7 +14,6 @@ import {
   Settings,
   Keyboard,
   ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
@@ -200,75 +199,65 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: View Modes, Share, GitHub Icon, and Settings & Resources Menu */}
       <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">
-        {/* View Mode Segmented Control */}
-        <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
-          <button
-            type="button"
-            onClick={() => onViewModeChange("cockpit")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
-              viewMode === "cockpit"
-                ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white"
-            }`}
-            title={t.cockpit}
-          >
-            <SlidersHorizontal className="size-3.5" />
-            <span className="hidden md:inline">{t.cockpit}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewModeChange("memo")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
-              viewMode === "memo"
-                ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white"
-            }`}
-            title={t.memo}
-          >
-            <FileText className="size-3.5" />
-            <span className="hidden md:inline">{t.memo}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewModeChange("screener")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
-              viewMode === "screener"
-                ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white"
-            }`}
-            title={t.screener}
-          >
-            <BarChart3 className="size-3.5" />
-            <span className="hidden md:inline">{t.screener}</span>
-          </button>
-        </div>
-
-        {/* Snowflake 30-Point Audit Button */}
-        {onOpenSnowflake && facts && (
-          <button
-            type="button"
-            onClick={onOpenSnowflake}
-            className="group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white sm:px-3"
-            title={t.snowflakeTooltip}
-          >
-            <Sparkles className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
-            <span className="hidden sm:inline">{t.snowflake}</span>
-            <span className="hidden font-mono text-[10px] text-slate-500 xl:inline">
-              [W]
-            </span>
-          </button>
+        {/* View Mode Switcher: Cockpit & Memo available only when a report is selected */}
+        {viewMode !== "screener" && (
+          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
+            <button
+              type="button"
+              onClick={() => onViewModeChange("cockpit")}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
+                viewMode === "cockpit"
+                  ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
+                  : "text-slate-400 hover:text-white"
+              }`}
+              title={t.cockpit}
+            >
+              <SlidersHorizontal className="size-3.5" />
+              <span className="hidden md:inline">{t.cockpit}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange("memo")}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
+                viewMode === "memo"
+                  ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
+                  : "text-slate-400 hover:text-white"
+              }`}
+              title={t.memo}
+            >
+              <FileText className="size-3.5" />
+              <span className="hidden md:inline">{t.memo}</span>
+            </button>
+          </div>
         )}
 
-        {/* Unified Share & Export Button */}
+        {/* Universe Screener Button */}
         <button
           type="button"
-          onClick={onShare}
-          className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
-          title={t.shareTooltip}
+          onClick={() => onViewModeChange("screener")}
+          className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition-all ${
+            viewMode === "screener"
+              ? "border-accent/40 bg-surface-3 text-accent ring-1 ring-accent/30"
+              : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+          }`}
+          title={t.screener}
         >
-          <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
-          <span className="hidden sm:inline">{t.share}</span>
+          <BarChart3 className="size-3.5 text-accent" />
+          <span className="hidden sm:inline">{t.screener}</span>
         </button>
+
+        {/* Unified Share & Export Button - available when a report is selected */}
+        {onShare && viewMode !== "screener" && facts && (
+          <button
+            type="button"
+            onClick={onShare}
+            className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
+            title={t.shareTooltip}
+          >
+            <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
+            <span className="hidden sm:inline">{t.share}</span>
+          </button>
+        )}
 
         {/* GitHub Repository Icon Button */}
         <a

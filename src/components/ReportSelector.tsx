@@ -190,11 +190,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                   className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
                 >
                   <BarChart3 className="size-3.5" />
-                  <span>
-                    {locale === "zh"
-                      ? "打开全景估值筛选"
-                      : "Open Universe Screener"}
-                  </span>
+                  <span>{t.openScreener}</span>
                 </button>
               </div>
             )}

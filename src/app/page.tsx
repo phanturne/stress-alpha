@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   FolderOpen,
   Sparkles,
@@ -42,6 +43,7 @@ import {
 } from "@/lib/url-state";
 
 export default function HomePage() {
+  const router = useRouter();
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [reports, setReports] = useState<ReportSummary[]>([]);
@@ -162,28 +164,28 @@ export default function HomePage() {
       if (urlState.tab) {
         setActiveTab(urlState.tab);
       }
-      if (urlState.mode) {
+      if (urlState.mode === "memo" || urlState.mode === "cockpit") {
         setViewMode(urlState.mode);
-      } else if (!urlState.report) {
-        // No explicit report in URL -> default to Universe Screener as Home
-        setViewMode("screener");
       }
       if (urlState.lang) {
         setLocale(urlState.lang);
         setReportDocLang(urlState.lang);
       }
 
+      // Requirement 2: screener is a separate page and not associated with a specific report
+      if (urlState.mode === "screener" || !urlState.report) {
+        router.replace("/screener");
+        return;
+      }
+
       await fetchReportsList();
 
       if (urlState.report) {
         await loadReport(urlState.report, urlState.stressParams);
-      } else {
-        // Homepage: show Universe Screener without picking an arbitrary ticker
-        setIsLoading(false);
       }
     };
     init();
-  }, [fetchReportsList, loadReport]);
+  }, [fetchReportsList, loadReport, router]);
 
   // Handle browser Back / Forward history navigation (popstate)
   useEffect(() => {
@@ -205,7 +207,13 @@ export default function HomePage() {
 
   // Handle URL search parameter synchronization for shareable deep linking
   const syncStateToUrl = useCallback(() => {
-    if (typeof window === "undefined" || isLoading) return;
+    if (
+      typeof window === "undefined" ||
+      isLoading ||
+      !currentSlug ||
+      viewMode === "screener"
+    )
+      return;
 
     const queryString = serializeScenarioUrlState({
       report: currentSlug ?? undefined,
@@ -226,6 +234,13 @@ export default function HomePage() {
   // View mode navigation with browser history push
   const handleViewModeChange = useCallback(
     (mode: "cockpit" | "memo" | "screener") => {
+      if (mode === "screener") {
+        // Requirement 4: moving to screener page will unselect the current ticker
+        setCurrentSlug(null);
+        setReportData(null);
+        router.push("/screener");
+        return;
+      }
       setViewMode(mode);
       if (typeof window !== "undefined") {
         const queryString = serializeScenarioUrlState({
@@ -242,7 +257,7 @@ export default function HomePage() {
         );
       }
     },
-    [currentSlug, activeTab, locale, stressParams]
+    [currentSlug, activeTab, locale, stressParams, router]
   );
 
   // Select report and navigate directly to Cockpit
@@ -551,7 +566,7 @@ export default function HomePage() {
 
       if (e.key === "s" || e.key === "S") {
         e.preventDefault();
-        setViewMode((prev) => (prev === "screener" ? "cockpit" : "screener"));
+        handleViewModeChange("screener");
         return;
       }
 
@@ -608,6 +623,7 @@ export default function HomePage() {
     isSnowflakeOpen,
     handleResetDefaults,
     handleToggleLocale,
+    handleViewModeChange,
   ]);
 
   return (
