@@ -23,12 +23,11 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 ### 2. Live Database & Direct Report Selector
 - **Neon Serverless Postgres + Drizzle ORM:** Enterprise-grade database backend with typed JSONB columns bound to Zod validation schemas.
 - **Nightly Market Price Sync:** Automated GitHub Actions cron updates live closing prices across the coverage universe every trading day at 5:00 PM EST.
-- **Dynamic Valuation Recalculation:** The Screener and Cockpit dynamically calculate fresh fair value upside percentages and asymmetry skews against the live market close without needing to regenerate earnings reports.
-- **Dual-Mode Repository:** Seamlessly serves from Neon Postgres when `DATABASE_URL` is set, or falls back to local [`reports/`](./reports) files for offline development and local test runners.
+- **High-Performance In-Memory Repository:** Serves directly from Neon Serverless PostgreSQL with a 60-second in-memory server cache and client-side memory caching, delivering <5ms response times.
 - Live API endpoints:
-  - `GET /api/reports`: Queries summaries, live stock prices, and dynamic valuation metrics.
-  - `GET /api/reports/[slug]`: Ingests and serves the full set of artifacts for a selected report.
-- URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=screener`.
+  - `GET /api/reports`: Queries summaries, live stock prices, snowflake scores, and dynamic valuation metrics.
+  - `GET /api/reports/[slug]`: Serves the complete artifact bundle for a selected report.
+- URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=cockpit` and dedicated `http://localhost:3000/screener`.
 
 ### 3. Sticky Flow-Through Cockpit
 - **Live P&L Strip:** Stressed Revenue, Gross Profit, Operating Income, Net Income, and Stressed Diluted EPS.
@@ -145,14 +144,16 @@ stress-alpha/
 │       ├── i18n.ts                   # Internationalization dictionary
 │       └── repository/               # Data Access Layer (DAL)
 │           ├── types.ts              # IReportRepository interface
-│           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices
-│           ├── fs-report-repository.ts # Filesystem fallback implementation
-│           └── index.ts              # Dual-mode repository factory
-└── tests/                            # Vitest unit test suite (62 tests)
+│           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices & 60s cache
+│           ├── in-memory-report-repository.ts # In-memory mock repository for tests
+│           └── index.ts              # Repository factory singleton
+└── tests/                            # Vitest unit test suite (79 tests)
     ├── valuation.test.ts
     ├── schemas.test.ts
     ├── repository.test.ts
     ├── screener.test.ts
+    ├── snowflake.test.ts
+    ├── social-card.test.ts
     ├── url-state.test.ts
     ├── report.test.ts
     └── utils.test.ts

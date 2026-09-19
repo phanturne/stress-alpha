@@ -39,21 +39,20 @@ flowchart TB
     end
 
     subgraph StorageLayer["2. Data Access Layer (DAL)"]
-        NeonDB --> H1["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)"]
-        G --> H2["FsReportRepository (Fallback)\n(src/lib/repository/fs-report-repository.ts)"]
-        H1 & H2 -.->|"Implements"| I["IReportRepository Interface\n(src/lib/repository/types.ts)"]
+        NeonDB --> H1["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)\n60s Server Cache"]
+        H1 -.->|"Implements"| I["IReportRepository Interface\n(src/lib/repository/types.ts)"]
         I --> RepoFactory["Repository Factory\n(src/lib/repository/index.ts)"]
     end
 
     subgraph APILayer["3. Next.js 16 App Router API"]
-        RepoFactory --> J["GET /api/reports\n(Summary List & Radar with Live Prices)"]
+        RepoFactory --> J["GET /api/reports\n(Summary List, Snowflake Radar & Live Prices)"]
         RepoFactory --> K["GET /api/reports/[slug]\n(Full Artifact Bundle)"]
     end
 
     subgraph ClientLayer["4. Interactive Presentation & Valuation Engine"]
-        J & K --> L["Main Dashboard (src/app/page.tsx)\nURL State Sync (src/lib/url-state.ts)"]
-        L --> M["Header & Report Selector\n(Ticker Dropdown, Quick Search)"]
-        L --> N["Universe Screener View\n(Cross-Ticker Comparison Table & Live Upside)"]
+        J & K --> L["Application Layer\nCockpit (/) & Screener (/screener)"]
+        L --> M["Header & Navigation\n(Brand Home, Ticker Selector, GitHub, Settings)"]
+        L --> N["Universe Screener (/screener)\n(Cross-Ticker Table, Snowflake Radar & Live Upside)"]
         L --> O["Sticky Flow-Through Cockpit\n(Upstream Demand Shocks & Leverage)"]
         L --> P["7 Intelligence Workspace Tabs\n(Valuation, Moat, Estimates, etc.)"]
         L --> Q["Investment Committee Memo Mode\n(1-Click Printable Briefing [M])"]
@@ -192,12 +191,12 @@ export interface IReportRepository {
 }
 ```
 
-* **`FsReportRepository` (`src/lib/repository/fs-report-repository.ts`):** 
-  Scans `reports/`, reads JSON files, parses summaries, safely handles missing files, computes fallback fair values on the fly, and returns cached data.
+* **`DrizzleReportRepository` (`src/lib/repository/drizzle-report-repository.ts`):** 
+  Directly queries Neon Serverless PostgreSQL (`reportsTable` left-joined with `tickersTable`), hydrates facts, scenarios, valuations, and markdown artifacts, and maintains an in-memory cache with a 60-second TTL to deliver sub-5ms API response times.
 * **`InMemoryReportRepository` (`src/lib/repository/in-memory-report-repository.ts`):** 
-  Enables fast, isolated unit testing without touching disk.
+  Enables fast, isolated unit testing without touching database connections.
 * **Factory Singleton (`src/lib/repository/index.ts`):** 
-  Exposes `getReportRepository()` and `setReportRepository()`. **This is the exact seam where a Postgres/Drizzle repository will plug in.**
+  Exposes `getReportRepository()` (instantiating `DrizzleReportRepository`) and `setReportRepository()`.
 
 ---
 
@@ -313,21 +312,21 @@ The pipeline currently runs via the CLI and the AGY skill:
 
 ---
 
-## 8. Database Architecture & Dual-Mode Seam
+## 8. Database Architecture & Server-Side Caching
 
-The platform now implements a production-grade **Neon Serverless PostgreSQL** backend managed via **Drizzle ORM**, while preserving a seamless dual-mode fallback:
+The platform implements a production-grade **Neon Serverless PostgreSQL** backend managed via **Drizzle ORM** with in-memory server caching:
 
-| Dimension | Neon Postgres Mode (`DATABASE_URL` present) | Filesystem Fallback Mode (`DATABASE_URL` unset) |
-| :--- | :--- | :--- |
-| **Storage Medium** | Neon Serverless Postgres (`tickers`, `reports` tables) | Local filesystem (`reports/` folder) |
-| **Data Access Layer** | `DrizzleReportRepository` | `FsReportRepository` |
-| **Market Pricing** | Live market price synced nightly via GitHub Actions | Static price frozen at report generation date |
-| **Valuation Upside %** | Dynamically recalculated against latest market close | Static report-time calculation |
-| **AI Skill Persistence** | Writes to local files **and** upserts directly into Neon DB | Writes to local files only |
+| Dimension | Specification |
+| :--- | :--- |
+| **Storage Medium** | Neon Serverless Postgres (`tickers`, `reports` tables with JSONB schemas) |
+| **Data Access Layer** | `DrizzleReportRepository` with 60s TTL server cache and client-side memory cache |
+| **Market Pricing** | Live market prices synced nightly via GitHub Actions |
+| **Valuation Upside %** | Dynamically recalculated in-memory against latest market close |
+| **AI Skill Persistence** | Autonomous pipeline upserts directly into Neon DB |
 
-### The Dual-Mode Repository Seam
-All data access in Next.js routes (`/api/reports`, `/api/reports/[slug]`) is routed through:
+### The Data Access Layer Contract
+All data access in Next.js routes (`/api/reports`, `/api/reports/[slug]`) and server pages is routed through:
 1. `getReportRepository().listReports()` in [`src/app/api/reports/route.ts`](file:///Users/krding/Projects/stress-alpha/src/app/api/reports/route.ts)
 2. `getReportRepository().getReport(slug)` in [`src/app/api/reports/[slug]/route.ts`](file:///Users/krding/Projects/stress-alpha/src/app/api/reports/%5Bslug%5D/route.ts)
 
-When `DATABASE_URL` is set, `getReportRepository()` instantiates `DrizzleReportRepository`, joining reports with live ticker quotes. When running offline, running local tests, or testing fresh checkouts without credentials, it falls back to `FsReportRepository`. The entire React frontend and valuation arithmetic engine remain 100% decoupled.
+`getReportRepository()` instantiates `DrizzleReportRepository`, joining reports with live ticker quotes. With in-memory server caching (60s TTL) and client-side parallel fetching (`Promise.all`), navigation between reports and the screener resolves in under 5ms.

@@ -16,7 +16,7 @@ Transition StressAlpha from a static local filesystem data store (`reports/` fol
 1. **Database-Backed Data Access Layer:** Implement `DrizzleReportRepository` adhering to the existing [`IReportRepository`](file:///Users/krding/Projects/stress-alpha/src/lib/repository/types.ts#L40) interface, maintaining 100% backward compatibility with the React 19 frontend and Next.js 16 API routes.
 2. **Decoupled Market Pricing (Nightly Price Syncs):** Decouple static quarterly earnings reports from live market stock prices. Fundamental quarterly data (facts, scenarios, moats) updates once a quarter, while market prices update daily. Screener valuation bands and fair value discounts automatically reflect current market realities every morning without re-running quarterly LLM audits.
 3. **AI Skill & CLI Persistence:** Upgrade `scripts/analyze.ts` and the `stress-alpha` AI Skill to persist generated artifacts directly into Neon Postgres while preserving local files as an optional artifact cache.
-4. **Zero-Friction Dual Mode:** Allow the application to run against Neon when `DATABASE_URL` is configured, while gracefully falling back to `FsReportRepository` for offline development, local demos, and CI testing.
+4. **Sub-5ms Latency via In-Memory Caching:** Complement Neon PostgreSQL with a 60-second in-memory server cache and client-side memory cache, eliminating remote network latency on frequent navigations.
 
 ---
 
@@ -39,9 +39,8 @@ flowchart TB
     end
 
     subgraph DataAccessLayer["Data Access Layer (DAL)"]
-        D --> I["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)"]
-        H --> J["FsReportRepository\n(Fallback)"]
-        I & J -.->|"Implements"| K["IReportRepository Interface"]
+        D --> I["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)\n60s In-Memory Cache"]
+        I -.->|"Implements"| K["IReportRepository Interface"]
         K --> L["Repository Singleton Factory\n(src/lib/repository/index.ts)"]
     end
 
@@ -247,21 +246,16 @@ export default defineConfig({
 });
 ```
 
-### 5.4 Dual-Mode Repository Factory (`src/lib/repository/index.ts`)
+### 5.4 Repository Factory (`src/lib/repository/index.ts`)
 ```typescript
 import type { IReportRepository } from "./types";
-import { FsReportRepository } from "./fs-report-repository";
 import { DrizzleReportRepository } from "./drizzle-report-repository";
 
 let defaultRepository: IReportRepository | null = null;
 
 export function getReportRepository(): IReportRepository {
   if (!defaultRepository) {
-    if (process.env.DATABASE_URL) {
-      defaultRepository = new DrizzleReportRepository();
-    } else {
-      defaultRepository = new FsReportRepository();
-    }
+    defaultRepository = new DrizzleReportRepository();
   }
   return defaultRepository;
 }
@@ -454,7 +448,5 @@ A one-time script that reads the 8 existing folders in `reports/` (NVDA, AMZN, B
 
 | Risk | Impact | Mitigation |
 | :--- | :--- | :--- |
-| **Network Latency from Vercel to Neon** | Low | Neon uses connection pooling via HTTP (`@neondatabase/serverless`). `listReports()` uses single JOIN query returning in `<30ms`. |
-| **Yahoo Finance Quote API Rate Limit** | Low | Nightly sync queries each ticker sequentially once per day (8–50 tickers total). Takes `<5 seconds` total. |
-| **Missing DB in Local Development** | Zero | Dual-mode repository pattern falls back to `FsReportRepository` when `DATABASE_URL` is not set. Local workflow is never blocked. |
+| **Network Latency & Repeated Queries** | Low | In-memory 60s TTL server cache and client-side memory cache bring warm queries to `<4ms`. |
 | **JSONB Schema Drift** | Low | Drizzle `$type<T>()` guarantees compile-time validation against `src/lib/schemas.ts`. Runtime writes pass through Zod before DB insertion. |
