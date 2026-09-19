@@ -36,6 +36,10 @@ describe("Screener & Reports API", () => {
     expect(nvda.analystRating).toBe("Strong Buy");
     expect(nvda.analystCount).toBe(61);
     expect(typeof nvda.analystUpsidePct).toBe("number");
+    expect(typeof nvda.snowflakeScore).toBe("number");
+    expect(nvda.snowflakeScore).toBeGreaterThanOrEqual(0);
+    expect(nvda.snowflakeScore).toBeLessThanOrEqual(30);
+    expect(nvda.snowflakeTier).toBeDefined();
   });
 
   it("verifies all covered reports contain valid pricing and valuation metrics", async () => {

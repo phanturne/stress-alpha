@@ -1,5 +1,6 @@
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData } from "@/lib/schemas";
+import { computeSnowflakeScore } from "@/lib/snowflake";
 
 export class InMemoryReportRepository implements IReportRepository {
   private reports: Map<string, ReportData> = new Map();
@@ -36,6 +37,17 @@ export class InMemoryReportRepository implements IReportRepository {
     const analystRating = report.estimates?.consensus?.consensus;
     const analystCount = report.estimates?.consensus?.totalAnalysts;
 
+    let snowflakeScore: number | undefined;
+    let snowflakeTier:
+      "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+    try {
+      const sRes = computeSnowflakeScore(report);
+      snowflakeScore = sRes.totalScore;
+      snowflakeTier = sRes.ratingTier;
+    } catch {
+      // ignore
+    }
+
     const baseSummary: ReportSummary = {
       slug,
       name: report.folderName || slug,
@@ -54,6 +66,8 @@ export class InMemoryReportRepository implements IReportRepository {
       analystUpsidePct,
       analystRating,
       analystCount,
+      snowflakeScore,
+      snowflakeTier,
       hasFacts: true,
       hasScenarios: true,
       hasValuation: !!report.valuation,

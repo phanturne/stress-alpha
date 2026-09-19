@@ -22,6 +22,8 @@ export interface ReportSummary {
   analystUpsidePct?: number;
   analystRating?: string;
   analystCount?: number;
+  snowflakeScore?: number;
+  snowflakeTier?: "exceptional" | "strong" | "balanced" | "cautious";
   hasFacts: boolean;
   hasScenarios: boolean;
   hasValuation: boolean;

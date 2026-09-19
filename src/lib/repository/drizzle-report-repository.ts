@@ -3,6 +3,7 @@ import { getDb } from "@/db";
 import { reportsTable, tickersTable } from "@/db/schema";
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData, Valuation } from "@/lib/schemas";
+import { computeSnowflakeScore } from "@/lib/snowflake";
 
 export class DrizzleReportRepository implements IReportRepository {
   async hasReport(slug: string): Promise<boolean> {
@@ -80,6 +81,31 @@ export class DrizzleReportRepository implements IReportRepository {
         analystCount = report.estimates.consensus.totalAnalysts;
       }
 
+      let snowflakeScore: number | undefined;
+      let snowflakeTier:
+        "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+      if (report.facts && report.scenarios) {
+        try {
+          const reportPayload: ReportData = {
+            folderSlug: report.slug,
+            folderName: report.slug,
+            facts: report.facts,
+            valuation: (report.valuation as Valuation) ?? undefined,
+            scenarios: report.scenarios,
+            baseline: report.baseline ?? undefined,
+            moat: report.moat ?? undefined,
+            catalysts: report.catalysts ?? undefined,
+            estimates: report.estimates ?? undefined,
+            filing: report.filing ?? undefined,
+          };
+          const res = computeSnowflakeScore(reportPayload);
+          snowflakeScore = res.totalScore;
+          snowflakeTier = res.ratingTier;
+        } catch {
+          // ignore snowflake computation error in summary listing
+        }
+      }
+
       summaries.push({
         slug: report.slug,
         name: report.slug,
@@ -106,6 +132,8 @@ export class DrizzleReportRepository implements IReportRepository {
         analystUpsidePct,
         analystRating,
         analystCount,
+        snowflakeScore,
+        snowflakeTier,
         hasFacts: !!report.facts,
         hasScenarios: !!report.scenarios,
         hasValuation: !!report.valuation,

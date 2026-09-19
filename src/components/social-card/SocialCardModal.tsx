@@ -11,19 +11,10 @@ import {
   X,
   Download,
   Copy,
-  Share2,
   FileText,
   Sparkles,
-  Check,
-  Target,
-  BarChart3,
-  Award,
-  Maximize2,
-  Sliders,
-  Globe,
   Loader2,
   CheckCircle2,
-  AlertCircle,
   Link2,
 } from "lucide-react";
 import type { Facts, Valuation, StressResult, ReportData } from "@/lib/schemas";
@@ -31,10 +22,12 @@ import type { StressTestParams } from "@/lib/valuation";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import {
   type CardTemplate,
+  type CardSection,
   type CardAspectRatio,
   type CardTheme,
   CARD_DIMENSIONS,
   THEME_CONFIGS,
+  TEMPLATE_SECTION_PRESETS,
   generateSocialPostText,
   downloadDataUrl,
   exportSocialCardAsPng,
@@ -66,6 +59,9 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
   onShowToast,
 }) => {
   const [template, setTemplate] = useState<CardTemplate>("valuation");
+  const [selectedSections, setSelectedSections] = useState<CardSection[]>(
+    TEMPLATE_SECTION_PRESETS.valuation
+  );
   const [aspectRatio, setAspectRatio] = useState<CardAspectRatio>("landscape");
   const [theme, setTheme] = useState<CardTheme>("cyber");
   const [selectedLocale, setSelectedLocale] = useState<Locale | null>(null);
@@ -86,18 +82,13 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
 
   // Active locale: user selection or default to initial
   const cardLocale = selectedLocale ?? initialLocale;
-  const isZh = cardLocale === "zh";
+  const t = getTranslations(cardLocale).socialCard;
 
   // Compute smart default note if user hasn't typed a custom note
   const defaultNote = facts
-    ? isZh
-      ? `${facts.company} ${facts.quarter} 业绩超预期，经调整核心营业利润率维持高位，估值具备不对称防护。`
-      : `${facts.company} delivers strong ${facts.quarter} beat with high operating margins and asymmetric risk/reward.`
+    ? t.controls.defaultNote(facts.company, facts.quarter)
     : "";
   const customNote = userNote !== null ? userNote : defaultNote;
-
-  // Translations
-  const t = getTranslations(cardLocale).socialCard;
 
   // Calculate applied shocks summary
   const appliedShocks = stressParams?.driverShocks ?? {};
@@ -162,11 +153,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
       );
     } catch (err) {
       console.error("Export error:", err);
-      onShowToast?.(
-        isZh
-          ? "图片导出失败，请重试或尝试复制文本。"
-          : "Failed to export image. Please try again."
-      );
+      onShowToast?.(t.actions.exportError);
     } finally {
       setIsExporting(false);
     }
@@ -182,11 +169,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
     } catch (err) {
       console.error("Copy image error:", err);
       // Fallback: try download or toast
-      onShowToast?.(
-        isZh
-          ? "当前浏览器不支持直接写入剪贴板图片，请使用下载 PNG 功能。"
-          : "Direct image copy not supported in this browser. Please use Download PNG."
-      );
+      onShowToast?.(t.actions.clipboardError);
     } finally {
       setIsCopying(false);
     }
@@ -229,6 +212,33 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
       })
       .catch(() => prompt("Copy scenario link:", url));
   };
+
+  // Select a preset template which sets the sections to the preset's defaults
+  const handleSelectPreset = useCallback((preset: CardTemplate) => {
+    setTemplate(preset);
+    setSelectedSections(TEMPLATE_SECTION_PRESETS[preset]);
+  }, []);
+
+  // Toggle an individual section on/off (switches to "custom" mode)
+  const handleToggleSection = useCallback((section: CardSection) => {
+    setSelectedSections((prev) => {
+      const next = prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section];
+      return next;
+    });
+  }, []);
+
+  // All available sections in display order
+  const ALL_SECTIONS: CardSection[] = [
+    "valuationHero",
+    "regimes",
+    "earnings",
+    "segments",
+    "moat",
+    "catalysts",
+    "snowflake",
+  ];
 
   if (!isOpen || !facts || !stressResult) return null;
 
@@ -336,6 +346,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   stressResult={stressResult}
                   reportData={reportData}
                   template={template}
+                  selectedSections={selectedSections}
                   aspectRatio={aspectRatio}
                   theme={theme}
                   locale={cardLocale}
@@ -352,7 +363,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
             {/* Float Zoom Pill at bottom-left of preview */}
             <div className="glass-panel-subtle absolute bottom-4 left-4 flex items-center gap-2 rounded-xl px-3 py-1.5 font-mono text-xs text-slate-400 shadow-md">
               <span>
-                {Math.round(previewScale * 100)}% {isZh ? "预览缩放" : "Scale"}
+                {Math.round(previewScale * 100)}% {t.controls.previewScale}
               </span>
               <button
                 type="button"
@@ -384,7 +395,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     <span>{t.controls.scenarioLinkLabel}</span>
                   </div>
                   <span className="font-mono text-[10px] text-slate-400">
-                    {isZh ? "保存当前滑块参数" : "Live stress parameters"}
+                    {t.controls.liveStressParams}
                   </span>
                 </div>
 
@@ -403,7 +414,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                       <>
                         <CheckCircle2 className="size-3.5 text-emerald-400" />
                         <span className="text-emerald-400">
-                          {isZh ? "已复制" : "Copied"}
+                          {t.actions.copied}
                         </span>
                       </>
                     ) : (
@@ -416,83 +427,83 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                 </div>
               </div>
 
-              {/* 1. Template Selector */}
+              {/* 1. Quick Preset Buttons */}
               <div>
                 <label className="font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
-                  {t.controls.templateLabel}
+                  {t.presets.label}
                 </label>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setTemplate("valuation")}
-                    className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
-                      template === "valuation"
-                        ? "border-accent bg-accent/15 text-white shadow-sm ring-1 ring-accent/40"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <Target className="size-3.5 text-accent" />
-                      <span>{t.templates.valuation}</span>
-                    </div>
-                    <span className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
-                      {t.templates.valuationDesc}
-                    </span>
-                  </button>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {(
+                    [
+                      "valuation",
+                      "earnings",
+                      "thesis",
+                      "summary",
+                      "snowflake",
+                    ] as CardTemplate[]
+                  ).map((preset) => {
+                    const presetSections = TEMPLATE_SECTION_PRESETS[preset];
+                    const isActive =
+                      presetSections.length === selectedSections.length &&
+                      presetSections.every((s) => selectedSections.includes(s));
+                    return (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => handleSelectPreset(preset)}
+                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                          isActive
+                            ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30"
+                            : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
+                        }`}
+                      >
+                        {t.templates[preset]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setTemplate("earnings")}
-                    className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
-                      template === "earnings"
-                        ? "border-accent bg-accent/15 text-white shadow-sm ring-1 ring-accent/40"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <BarChart3 className="size-3.5 text-emerald-400" />
-                      <span>{t.templates.earnings}</span>
-                    </div>
-                    <span className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
-                      {t.templates.earningsDesc}
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setTemplate("thesis")}
-                    className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
-                      template === "thesis"
-                        ? "border-accent bg-accent/15 text-white shadow-sm ring-1 ring-accent/40"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <Award className="size-3.5 text-purple-400" />
-                      <span>{t.templates.thesis}</span>
-                    </div>
-                    <span className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
-                      {t.templates.thesisDesc}
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setTemplate("summary")}
-                    className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition-all ${
-                      template === "summary"
-                        ? "border-accent bg-accent/15 text-white shadow-sm ring-1 ring-accent/40"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <Sparkles className="size-3.5 text-sky-400" />
-                      <span>{t.templates.summary}</span>
-                    </div>
-                    <span className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
-                      {t.templates.summaryDesc}
-                    </span>
-                  </button>
+              {/* 2. Section Multi-Select Checkboxes */}
+              <div>
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
+                  {t.controls.sectionsLabel}
+                </label>
+                <div className="mt-2 flex flex-col gap-1.5">
+                  {ALL_SECTIONS.map((section) => {
+                    const isChecked = selectedSections.includes(section);
+                    return (
+                      <label
+                        key={section}
+                        className={`flex cursor-pointer items-center gap-2.5 rounded-xl border p-2 transition-all ${
+                          isChecked
+                            ? "border-accent/40 bg-accent/10"
+                            : "border-white/[0.06] bg-surface-2/50 hover:border-slate-500"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleSection(section)}
+                          className="size-3.5 rounded border-slate-600 bg-surface-2 text-accent focus:ring-accent"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className={`text-xs font-bold ${isChecked ? "text-white" : "text-slate-400"}`}
+                          >
+                            {t.sections[section]}
+                          </div>
+                          <div className="truncate text-[10px] text-slate-500">
+                            {
+                              t.sections[
+                                `${section}Desc` as keyof typeof t.sections
+                              ]
+                            }
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -595,7 +606,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     onClick={() => setUserNote("")}
                     className="text-[10px] text-slate-400 hover:text-slate-200"
                   >
-                    {isZh ? "清空" : "Clear"}
+                    {t.controls.clear}
                   </button>
                 </div>
                 <textarea

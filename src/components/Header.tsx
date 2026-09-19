@@ -47,6 +47,7 @@ interface HeaderProps {
   onViewModeChange: (mode: "cockpit" | "memo" | "screener") => void;
   onOpenShortcutsModal?: () => void;
   onShare?: () => void;
+  onOpenSnowflake?: () => void;
   locale?: Locale;
   onToggleLocale?: (l: Locale) => void;
 }
@@ -60,6 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
   onViewModeChange,
   onOpenShortcutsModal,
   onShare,
+  onOpenSnowflake,
   locale = "zh",
   onToggleLocale = () => {},
 }) => {
@@ -240,6 +242,22 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline">{t.screener}</span>
           </button>
         </div>
+
+        {/* Snowflake 30-Point Audit Button */}
+        {onOpenSnowflake && facts && (
+          <button
+            type="button"
+            onClick={onOpenSnowflake}
+            className="group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white sm:px-3"
+            title={t.snowflakeTooltip}
+          >
+            <Sparkles className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
+            <span className="hidden sm:inline">{t.snowflake}</span>
+            <span className="hidden font-mono text-[10px] text-slate-500 xl:inline">
+              [W]
+            </span>
+          </button>
+        )}
 
         {/* Unified Share & Export Button */}
         <button

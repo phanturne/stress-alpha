@@ -16,6 +16,7 @@ import {
 } from "@/lib/schemas";
 import { computeValuation, deriveEffectiveBaseline } from "@/lib/valuation";
 import { renderReport } from "@/lib/report";
+import { computeSnowflakeScore } from "@/lib/snowflake";
 
 export class FsReportRepository implements IReportRepository {
   private readonly reportsDir: string;
@@ -183,6 +184,21 @@ export class FsReportRepository implements IReportRepository {
         }
       }
 
+      let snowflakeScore: number | undefined;
+      let snowflakeTier:
+        "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+
+      try {
+        const fullReport = await this.getReport(folder.name);
+        if (fullReport) {
+          const sRes = computeSnowflakeScore(fullReport);
+          snowflakeScore = sRes.totalScore;
+          snowflakeTier = sRes.ratingTier;
+        }
+      } catch {
+        // ignore snowflake scoring errors in summary list
+      }
+
       reports.push({
         slug: folder.name,
         name: folder.name,
@@ -205,6 +221,8 @@ export class FsReportRepository implements IReportRepository {
         analystUpsidePct,
         analystRating,
         analystCount,
+        snowflakeScore,
+        snowflakeTier,
         hasFacts: fs.existsSync(factsPath),
         hasScenarios: fs.existsSync(scenariosPath),
         hasValuation: fs.existsSync(valuationPath),

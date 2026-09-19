@@ -38,7 +38,8 @@ type SortField =
   | "price"
   | "opMargin"
   | "revGrowth"
-  | "ticker";
+  | "ticker"
+  | "snowflake";
 type SortDirection = "asc" | "desc";
 
 const SKELETON_ROWS = [
@@ -46,6 +47,7 @@ const SKELETON_ROWS = [
     tickerW: "w-14",
     nameW: "w-32",
     moatW: "w-16",
+    snowflakeW: "w-12",
     targetW: "w-14",
     baseW: "w-14",
     wfvW: "w-16",
@@ -56,6 +58,7 @@ const SKELETON_ROWS = [
     tickerW: "w-12",
     nameW: "w-40",
     moatW: "w-14",
+    snowflakeW: "w-12",
     targetW: "w-16",
     baseW: "w-16",
     wfvW: "w-14",
@@ -66,6 +69,7 @@ const SKELETON_ROWS = [
     tickerW: "w-16",
     nameW: "w-28",
     moatW: "w-16",
+    snowflakeW: "w-12",
     targetW: "w-12",
     baseW: "w-14",
     wfvW: "w-16",
@@ -76,6 +80,7 @@ const SKELETON_ROWS = [
     tickerW: "w-14",
     nameW: "w-36",
     moatW: "w-14",
+    snowflakeW: "w-12",
     targetW: "w-14",
     baseW: "w-12",
     wfvW: "w-14",
@@ -86,6 +91,7 @@ const SKELETON_ROWS = [
     tickerW: "w-12",
     nameW: "w-24",
     moatW: "w-16",
+    snowflakeW: "w-12",
     targetW: "w-16",
     baseW: "w-16",
     wfvW: "w-16",
@@ -96,6 +102,7 @@ const SKELETON_ROWS = [
     tickerW: "w-16",
     nameW: "w-32",
     moatW: "w-16",
+    snowflakeW: "w-12",
     targetW: "w-14",
     baseW: "w-14",
     wfvW: "w-14",
@@ -106,6 +113,7 @@ const SKELETON_ROWS = [
     tickerW: "w-14",
     nameW: "w-36",
     moatW: "w-14",
+    snowflakeW: "w-12",
     targetW: "w-12",
     baseW: "w-12",
     wfvW: "w-16",
@@ -116,6 +124,7 @@ const SKELETON_ROWS = [
     tickerW: "w-12",
     nameW: "w-28",
     moatW: "w-16",
+    snowflakeW: "w-12",
     targetW: "w-16",
     baseW: "w-14",
     wfvW: "w-14",
@@ -241,6 +250,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           case "ticker":
             valA = a.ticker || a.slug;
             valB = b.ticker || b.slug;
+            break;
+          case "snowflake":
+            valA = a.snowflakeScore ?? -1;
+            valB = b.snowflakeScore ?? -1;
             break;
         }
 
@@ -562,6 +575,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 {/* Moat */}
                 <th className="px-3 py-3.5">{ts.colMoat}</th>
 
+                {/* Snowflake 30-Point Audit Radar */}
+                <th
+                  onClick={() => handleSort("snowflake")}
+                  className="cursor-pointer px-3 py-3.5 transition-colors hover:text-white"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{ts.colSnowflake}</span>
+                    <ArrowUpDown
+                      className={`size-3 ${
+                        sortField === "snowflake"
+                          ? "text-accent"
+                          : "text-slate-500"
+                      }`}
+                    />
+                  </div>
+                </th>
+
                 {/* Price */}
                 <th
                   onClick={() => handleSort("price")}
@@ -694,6 +724,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       {/* Moat */}
                       <td className="px-3 py-3.5">
                         <Skeleton className={`h-5 ${row.moatW} rounded-full`} />
+                      </td>
+
+                      {/* Snowflake */}
+                      <td className="px-3 py-3.5">
+                        <Skeleton
+                          className={`h-5 ${row.snowflakeW} rounded-full`}
+                        />
                       </td>
 
                       {/* Price */}
@@ -860,6 +897,32 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                     : "→"}
                               </span>
                             )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-600">—</span>
+                        )}
+                      </td>
+
+                      {/* Snowflake Fundamental Radar Audit */}
+                      <td className="px-3 py-3.5">
+                        {report.snowflakeScore !== undefined ? (
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold ${
+                                report.snowflakeScore >= 24
+                                  ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                                  : report.snowflakeScore >= 18
+                                    ? "border border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
+                                    : report.snowflakeScore >= 12
+                                      ? "border border-amber-500/30 bg-amber-500/10 text-amber-400"
+                                      : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+                              }`}
+                              title={`${report.snowflakeScore}/30 Snowflake Radar`}
+                            >
+                              <Sparkles className="size-2.5" />
+                              <span>{report.snowflakeScore}</span>
+                              <span className="text-[9px] opacity-60">/30</span>
+                            </span>
                           </div>
                         ) : (
                           <span className="text-xs text-slate-600">—</span>

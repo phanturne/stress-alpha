@@ -13,12 +13,15 @@ import {
 import type { ReportData, StressResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { computeSnowflakeScore } from "@/lib/snowflake";
+import { SnowflakeRadar } from "./snowflake/SnowflakeRadar";
 
 interface MemoViewProps {
   reportData: ReportData;
   stressResult: StressResult;
   onBackToCockpit: () => void;
   onOpenSocialCard?: () => void;
+  onOpenSnowflake?: () => void;
   locale?: Locale;
   onLocaleChange?: (locale: Locale) => void;
 }
@@ -28,6 +31,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   stressResult,
   onBackToCockpit,
   onOpenSocialCard,
+  onOpenSnowflake,
   locale = "zh",
   onLocaleChange,
 }) => {
@@ -40,7 +44,10 @@ export const MemoView: React.FC<MemoViewProps> = ({
   };
 
   const isZh = memoLang === "zh";
-  const t = getTranslations(memoLang).memo;
+  const translations = getTranslations(memoLang);
+  const t = translations.memo;
+  const tHeader = translations.header;
+  const tMoat = translations.moatTab;
   const facts =
     isZh && reportData.factsZh ? reportData.factsZh : reportData.facts;
   const catalysts =
@@ -59,6 +66,20 @@ export const MemoView: React.FC<MemoViewProps> = ({
       ? reportData.estimatesZh
       : reportData.estimates;
   const currentPrice = facts.currentPrice;
+
+  const snowflakeScore = React.useMemo(() => {
+    return computeSnowflakeScore(
+      {
+        ...reportData,
+        facts,
+        catalysts,
+        scenarios,
+        moat,
+      },
+      stressResult,
+      memoLang
+    );
+  }, [reportData, facts, catalysts, scenarios, moat, stressResult, memoLang]);
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6">
@@ -105,10 +126,10 @@ export const MemoView: React.FC<MemoViewProps> = ({
               type="button"
               onClick={onOpenSocialCard}
               className="flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/15 px-3.5 py-2 text-xs font-bold text-accent shadow-md transition-all hover:bg-accent/25 hover:text-white"
-              title={isZh ? "分享研报与导出卡片 (E)" : "Share & Export (E)"}
+              title={tHeader.exportCardTooltip}
             >
               <Share2 className="size-4 text-accent" />
-              <span>{isZh ? "分享与导出" : "Share & Export"}</span>
+              <span>{tHeader.exportCard}</span>
             </button>
           )}
 
@@ -235,6 +256,79 @@ export const MemoView: React.FC<MemoViewProps> = ({
               </p>
             </>
           )}
+        </div>
+
+        {/* 5-Pillar Snowflake Institutional Audit Section */}
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface-0/60 p-5 shadow-sm">
+          <div className="flex flex-col justify-between gap-2 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2">
+              <Sparkles className="size-4 text-accent" />
+              <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-300">
+                {t.secSnowflakeTitle}
+              </h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs font-bold text-accent">
+                {snowflakeScore.totalScore} / 30 ({snowflakeScore.percentage}%)
+              </span>
+              <span className="rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-bold text-accent">
+                {snowflakeScore.ratingLabel}
+              </span>
+              {onOpenSnowflake && (
+                <button
+                  type="button"
+                  onClick={onOpenSnowflake}
+                  className="no-print rounded-lg border border-white/[0.08] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
+                >
+                  {t.snowflakeView30}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
+            {/* Left: Radar Chart */}
+            <div className="flex justify-center md:col-span-5">
+              <SnowflakeRadar
+                scoreResult={snowflakeScore}
+                size="sm"
+                interactive={false}
+                locale={memoLang}
+                showLabels={true}
+              />
+            </div>
+
+            {/* Right: 5 Pillars List */}
+            <div className="flex flex-col gap-2 md:col-span-7">
+              {snowflakeScore.pillarList.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-surface-1/60 px-3.5 py-2"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: p.color }}
+                    />
+                    <div>
+                      <div className="text-xs font-bold text-white">
+                        {p.label}
+                      </div>
+                      <div className="line-clamp-1 text-[11px] text-slate-400">
+                        {p.summary}
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="shrink-0 font-mono text-xs font-bold"
+                    style={{ color: p.color }}
+                  >
+                    {p.score} / 6
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Valuation Regimes Table */}
@@ -503,9 +597,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                       </th>
                       <th className="p-2.5 font-semibold">Pricing Power</th>
                       <th className="p-2.5 font-semibold">
-                        {isZh
-                          ? "产品管线与核心优劣势"
-                          : "Key Advantage / Vulnerability"}
+                        {tMoat.colAdvantage}
                       </th>
                     </tr>
                   </thead>
@@ -572,10 +664,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {estimates && (
           <div className="flex flex-col gap-3">
             <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
-              {t.secEstimatesTitle ??
-                (isZh
-                  ? "五(附)、 华尔街分析师共识与目标价 (Analyst Estimates)"
-                  : "5b. Wall Street Analyst Consensus & Estimates")}
+              {t.secEstimatesTitle}
             </h2>
 
             <div className="flex flex-col gap-2.5 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
@@ -585,18 +674,14 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     {estimates.consensus.consensus}
                   </span>
                   <span className="font-mono text-[11px] text-slate-300">
-                    {estimates.consensus.totalAnalysts}{" "}
-                    {isZh ? "位分析师覆盖" : "Analysts"} (
-                    {estimates.consensus.bullishCount}{" "}
-                    {isZh ? "看多" : "Bullish"},{" "}
-                    {estimates.consensus.neutralCount}{" "}
-                    {isZh ? "中性" : "Neutral"},{" "}
-                    {estimates.consensus.bearishCount}{" "}
-                    {isZh ? "看空" : "Bearish"})
+                    {t.analystsCount(estimates.consensus.totalAnalysts)} (
+                    {estimates.consensus.bullishCount} {t.bullish},{" "}
+                    {estimates.consensus.neutralCount} {t.neutral},{" "}
+                    {estimates.consensus.bearishCount} {t.bearish})
                   </span>
                 </div>
                 <div className="font-mono text-xs text-slate-300">
-                  {isZh ? "目标价区间: " : "52W Range: "}
+                  {t.targetRange}
                   <span className="font-bold text-white">
                     ${estimates.priceTargets.low} – $
                     {estimates.priceTargets.high}
@@ -617,23 +702,17 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 <table className="w-full border-collapse text-left text-[11px]">
                   <thead>
                     <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-                      <th className="p-2.5 font-semibold">
-                        {isZh ? "券商机构" : "Firm"}
-                      </th>
-                      <th className="p-2.5 font-semibold">
-                        {isZh ? "分析师" : "Analyst"}
-                      </th>
-                      <th className="p-2.5 font-semibold">
-                        {isZh ? "评级" : "Rating"}
+                      <th className="p-2.5 font-semibold">{t.colFirm}</th>
+                      <th className="p-2.5 font-semibold">{t.colAnalyst}</th>
+                      <th className="p-2.5 font-semibold">{t.colRating}</th>
+                      <th className="p-2.5 text-right font-semibold">
+                        {t.colPriceTarget}
                       </th>
                       <th className="p-2.5 text-right font-semibold">
-                        {isZh ? "52周目标价" : "Price Target"}
+                        {t.colUpside}
                       </th>
                       <th className="p-2.5 text-right font-semibold">
-                        {isZh ? "预期空间" : "Upside"}
-                      </th>
-                      <th className="p-2.5 text-right font-semibold">
-                        {isZh ? "日期" : "Date"}
+                        {t.colDate}
                       </th>
                     </tr>
                   </thead>
@@ -658,7 +737,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                           ${e.priceTarget.toFixed(2)}
                           {e.priorPriceTarget && (
                             <span className="ml-1 text-[10px] font-normal text-slate-500">
-                              ({isZh ? "前值" : "from"} $
+                              ({t.targetPriorFrom} $
                               {e.priorPriceTarget.toFixed(0)})
                             </span>
                           )}

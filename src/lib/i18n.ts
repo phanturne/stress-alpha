@@ -16,6 +16,8 @@ export interface Translations {
     shareTooltip: string;
     exportCard: string;
     exportCardTooltip: string;
+    snowflake: string;
+    snowflakeTooltip: string;
     linkCopied: string;
     settings: string;
     language: string;
@@ -31,6 +33,8 @@ export interface Translations {
     title: string;
     reset: string;
     resetTooltip: string;
+    snowflakeButton: string;
+    snowflakeTooltip: string;
     stressedForwardEps: string;
     cleanOperatingEps: string;
     stressedRev: string;
@@ -76,8 +80,11 @@ export interface Translations {
     presets: {
       title: string;
       baseline: string;
+      baselineTooltip: string;
       mild: string;
+      mildTooltip: string;
       severe: string;
+      severeTooltip: string;
     };
     sliderTabs: {
       volume: string;
@@ -92,7 +99,36 @@ export interface Translations {
     toggleMemo: string;
     toggleLang: string;
     exportCard: string;
+    openSnowflake: string;
+    toggleScreener: string;
     close: string;
+  };
+  snowflake: {
+    title: string;
+    subtitle: string;
+    badgeTitle: string;
+    scoreCardTitle: string;
+    totalScore: string;
+    outOf30: string;
+    viewAudit: string;
+    hideAudit: string;
+    clickToViewAudit: string;
+    modalTitle: string;
+    modalSubtitle: string;
+    filterAll: string;
+    filterByPillar: string;
+    passedBadge: string;
+    exportCard: string;
+    close: string;
+    footerNotice: string;
+    overallScoreSub: (
+      score: number,
+      max: number,
+      pct: number,
+      label: string
+    ) => string;
+    wfvLabel: string;
+    upsideLabel: string;
   };
   priceMeter: {
     title: string;
@@ -312,6 +348,20 @@ export interface Translations {
     regimeBase: string;
     regimePanic: string;
     prob: string;
+    secSnowflakeTitle: string;
+    snowflakeView30: string;
+    analystsCount: (count: number) => string;
+    bullish: string;
+    neutral: string;
+    bearish: string;
+    targetRange: string;
+    colFirm: string;
+    colAnalyst: string;
+    colRating: string;
+    colPriceTarget: string;
+    colUpside: string;
+    colDate: string;
+    targetPriorFrom: string;
   };
   page: {
     loading: string;
@@ -351,6 +401,7 @@ export interface Translations {
     narrowMoat: string;
     colTicker: string;
     colCompany: string;
+    colSnowflake: string;
     colMoat: string;
     colPrice: string;
     colAnalystTarget: string;
@@ -388,6 +439,28 @@ export interface Translations {
       thesisDesc: string;
       summary: string;
       summaryDesc: string;
+      snowflake: string;
+      snowflakeDesc: string;
+    };
+    sections: {
+      valuationHero: string;
+      valuationHeroDesc: string;
+      regimes: string;
+      regimesDesc: string;
+      earnings: string;
+      earningsDesc: string;
+      segments: string;
+      segmentsDesc: string;
+      moat: string;
+      moatDesc: string;
+      catalysts: string;
+      catalystsDesc: string;
+      snowflake: string;
+      snowflakeDesc: string;
+    };
+    presets: {
+      label: string;
+      custom: string;
     };
     aspectRatios: {
       landscape: string;
@@ -402,6 +475,7 @@ export interface Translations {
     };
     controls: {
       templateLabel: string;
+      sectionsLabel: string;
       formatLabel: string;
       themeLabel: string;
       scenarioLinkLabel: string;
@@ -410,19 +484,68 @@ export interface Translations {
       customNote: string;
       customNotePlaceholder: string;
       cardLanguage: string;
+      liveStressParams: string;
+      previewScale: string;
+      clear: string;
+      defaultNote: (company: string, quarter: string) => string;
     };
     actions: {
       downloadPng: string;
       copyImage: string;
       copyText: string;
       copyLink: string;
+      copied: string;
       copiedToast: string;
       textCopiedToast: string;
       linkCopiedToast: string;
       downloadSuccessToast: string;
+      exportError: string;
+      clipboardError: string;
       generating: string;
       copying: string;
       close: string;
+    };
+    labels: {
+      earningsAuditTag: string;
+      tickerLabel: string;
+      secAuditVerified: string;
+      currentPriceLabel: string;
+      weightedFairValueLabel: string;
+      riskRewardLabel: string;
+      panicDefenseLabel: string;
+      marketPricingLabel: string;
+      bullRegimeLabel: string;
+      baseCaseLabel: string;
+      panicFloorLabel: string;
+      stressedFwdEpsLabel: string;
+      stressedRevLabel: string;
+      netIncomeLabel: string;
+      earningsBeatLabel: string;
+      revenueLabel: string;
+      operatingIncomeLabel: string;
+      cleanOperatingEpsLabel: string;
+      consensusLabel: string;
+      beatLabel: string;
+      incomeQualityFilterLabel: string;
+      marketCapLabel: string;
+      nextFyConsensusLabel: string;
+      segmentsLabel: string;
+      ofTotalRevenueLabel: string;
+      valuationUpsideLabel: string;
+      weightedFairValueShortLabel: string;
+      snowflake30Label: string;
+      wfvShortLabel: string;
+      upsideShortLabel: string;
+      secDisclosuresVerified: string;
+      tagline: string;
+      auditGrade: string;
+      asymmetryLabel: string;
+      panicFloorShortLabel: string;
+      valuationSpectrumLabel: string;
+      financialHighlightsLabel: string;
+      moatRatingLabel: string;
+      pricedInMultipleLabel: string;
+      probLabel: string;
     };
   };
 }
@@ -444,6 +567,8 @@ export const translations: Record<Locale, Translations> = {
       shareTooltip: "Share analysis & export visual cards (E)",
       exportCard: "Card",
       exportCardTooltip: "Export as polished social media card (E)",
+      snowflake: "Snowflake",
+      snowflakeTooltip: "30-Point Snowflake (W)",
       linkCopied: "Scenario link copied to clipboard!",
       settings: "Settings & Resources",
       language: "Language",
@@ -459,6 +584,8 @@ export const translations: Record<Locale, Translations> = {
       title: "Stress Flow-Through Cockpit",
       reset: "Reset All",
       resetTooltip: "Reset all shock sliders to initial baseline values",
+      snowflakeButton: "Snowflake",
+      snowflakeTooltip: "30-Point Snowflake Audit (W)",
       stressedForwardEps: "Stressed Forward EPS (Annual)",
       cleanOperatingEps: "Clean Operating EPS",
       stressedRev: "Stressed Rev",
@@ -505,8 +632,14 @@ export const translations: Record<Locale, Translations> = {
       presets: {
         title: "Macro Presets",
         baseline: "0% Neutral",
+        baselineTooltip:
+          "Preset: Apply 0% flat baseline across all volume drivers",
         mild: "-10% Strain",
+        mildTooltip:
+          "Preset: Apply -10% volume strain, -100 bps margin, +2% OpEx",
         severe: "-25% Panic",
+        severeTooltip:
+          "Preset: Apply -25% severe shock, -300 bps margin, +5% OpEx",
       },
       sliderTabs: {
         volume: "Volume Drivers",
@@ -521,7 +654,39 @@ export const translations: Record<Locale, Translations> = {
       toggleMemo: "Toggle Cockpit / Memo (M)",
       toggleLang: "Toggle Language (L)",
       exportCard: "Export Social Media Card (E)",
+      openSnowflake: "Snowflake Analysis (W)",
+      toggleScreener: "Toggle Universe Screener (S)",
       close: "Close Dialog (Esc / ?)",
+    },
+    snowflake: {
+      title: "Snowflake Analysis",
+      subtitle:
+        "5-Pillar Comprehensive Institutional Quality & Valuation Audit",
+      badgeTitle: "30-Point Snowflake",
+      scoreCardTitle: "Snowflake Score",
+      totalScore: "Total Score",
+      outOf30: "out of 30 points",
+      viewAudit: "View 30-Point Audit",
+      hideAudit: "Hide Audit",
+      clickToViewAudit: "Click to view 30-point audit",
+      modalTitle: "30-Point Snowflake Audit",
+      modalSubtitle:
+        "Complete deterministic evaluation across Valuation, Growth, Quality, Moat & Resilience",
+      filterAll: "All 30 Points",
+      filterByPillar: "Filter by Pillar",
+      passedBadge: "Passed",
+      exportCard: "Export Card",
+      close: "Close (Esc)",
+      footerNotice:
+        "Deterministic fundamental & stress valuation audit • Zero conjecture",
+      overallScoreSub: (
+        score: number,
+        max: number,
+        pct: number,
+        label: string
+      ) => `Overall Score: ${score}/${max} (${pct}%) • ${label}`,
+      wfvLabel: "WFV",
+      upsideLabel: "Upside",
     },
     priceMeter: {
       title: "Valuation Meter",
@@ -754,6 +919,20 @@ export const translations: Record<Locale, Translations> = {
       regimeBase: "⚖️ Base Regime",
       regimePanic: "🚨 Panic Floor",
       prob: "prob",
+      secSnowflakeTitle: "30-Point Snowflake Fundamental Audit",
+      snowflakeView30: "View 30 Checks",
+      analystsCount: (count: number) => `${count} Analysts Covering`,
+      bullish: "Bullish",
+      neutral: "Neutral",
+      bearish: "Bearish",
+      targetRange: "52W Range: ",
+      colFirm: "Firm",
+      colAnalyst: "Analyst",
+      colRating: "Rating",
+      colPriceTarget: "Price Target",
+      colUpside: "Upside",
+      colDate: "Date",
+      targetPriorFrom: "from",
     },
     page: {
       loading: "Loading StressAlpha Report...",
@@ -796,6 +975,7 @@ export const translations: Record<Locale, Translations> = {
       narrowMoat: "Narrow Moat",
       colTicker: "Ticker",
       colCompany: "Company",
+      colSnowflake: "Snowflake",
       colMoat: "Economic Moat",
       colPrice: "Current Price",
       colAnalystTarget: "Analyst Target",
@@ -836,6 +1016,29 @@ export const translations: Record<Locale, Translations> = {
         thesisDesc: "Economic moat rating, upside catalysts, and key risks",
         summary: "Executive Teaser",
         summaryDesc: "All-in-one high-density institutional snapshot",
+        snowflake: "Snowflake Radar",
+        snowflakeDesc:
+          "5-Pillar circular institutional quality & stress radar chart",
+      },
+      sections: {
+        valuationHero: "Valuation & Price",
+        valuationHeroDesc: "Current price, fair value, upside, and asymmetry",
+        regimes: "Valuation Regimes",
+        regimesDesc: "Bull, Base, and Panic floor scenario targets",
+        earnings: "Earnings Scorecard",
+        earningsDesc: "Revenue, operating income, clean EPS audit",
+        segments: "Segment Breakdown",
+        segmentsDesc: "Revenue segment dynamics and growth",
+        moat: "Economic Moat",
+        moatDesc: "Moat rating, trend, and competitive sources",
+        catalysts: "Catalysts & Risks",
+        catalystsDesc: "Growth catalysts and downside fragility risks",
+        snowflake: "Snowflake Radar",
+        snowflakeDesc: "30-point 5-pillar institutional quality radar",
+      },
+      presets: {
+        label: "Quick Presets",
+        custom: "Custom",
       },
       aspectRatios: {
         landscape: "Landscape 16:9 (X / LinkedIn)",
@@ -850,6 +1053,7 @@ export const translations: Record<Locale, Translations> = {
       },
       controls: {
         templateLabel: "Card Template",
+        sectionsLabel: "Card Sections",
         formatLabel: "Card Ratio",
         themeLabel: "Color Theme",
         scenarioLinkLabel: "Interactive Scenario Link",
@@ -859,20 +1063,71 @@ export const translations: Record<Locale, Translations> = {
         customNotePlaceholder:
           "Add a punchy 1-2 sentence investment takeaway or catalyst highlight...",
         cardLanguage: "Card Language",
+        liveStressParams: "Live stress parameters",
+        previewScale: "Scale",
+        clear: "Clear",
+        defaultNote: (company: string, quarter: string) =>
+          `${company} delivers strong ${quarter} beat with high operating margins and asymmetric risk/reward.`,
       },
       actions: {
         downloadPng: "Download PNG",
         copyImage: "Copy Image",
         copyText: "Copy Post Text",
         copyLink: "Copy Link",
+        copied: "Copied",
         copiedToast:
           "Image copied to clipboard! Ready to paste into X, Slack, or LinkedIn.",
         textCopiedToast: "Social post text copied to clipboard!",
         linkCopiedToast: "Scenario link copied to clipboard!",
         downloadSuccessToast: "Card image downloaded successfully!",
+        exportError: "Failed to export image. Please try again.",
+        clipboardError:
+          "Direct image copy not supported in this browser. Please use Download PNG.",
         generating: "Rendering...",
         copying: "Copying...",
         close: "Close",
+      },
+      labels: {
+        earningsAuditTag: "Earnings Audit",
+        tickerLabel: "TICKER",
+        secAuditVerified: "SEC Audit Verified",
+        currentPriceLabel: "CURRENT PRICE",
+        weightedFairValueLabel: "WEIGHTED FAIR VALUE",
+        riskRewardLabel: "RISK / REWARD",
+        panicDefenseLabel: "PANIC DEFENSE",
+        marketPricingLabel: "Market Pricing",
+        bullRegimeLabel: "Bull Regime",
+        baseCaseLabel: "Base Case",
+        panicFloorLabel: "Panic Floor",
+        stressedFwdEpsLabel: "Stressed Fwd EPS",
+        stressedRevLabel: "Stressed Rev",
+        netIncomeLabel: "Net Income",
+        earningsBeatLabel: "EARNINGS BEAT",
+        revenueLabel: "REVENUE",
+        operatingIncomeLabel: "OPERATING INCOME",
+        cleanOperatingEpsLabel: "CLEAN OPERATING EPS",
+        consensusLabel: "Consensus",
+        beatLabel: "Beat",
+        incomeQualityFilterLabel: "Income-Quality Filter",
+        marketCapLabel: "Market Cap",
+        nextFyConsensusLabel: "Next FY Consensus",
+        segmentsLabel: "Segments",
+        ofTotalRevenueLabel: "of total revenue",
+        valuationUpsideLabel: "Valuation Upside",
+        weightedFairValueShortLabel: "Weighted Fair Value",
+        snowflake30Label: "30-POINT SNOWFLAKE",
+        wfvShortLabel: "WFV",
+        upsideShortLabel: "Upside",
+        secDisclosuresVerified: "Audited against SEC 10-Q filing disclosures",
+        tagline: "Scenario Stress Valuation Engine",
+        auditGrade: "RESEARCH AUDIT GRADE",
+        asymmetryLabel: "Asymmetry",
+        panicFloorShortLabel: "Panic Floor",
+        valuationSpectrumLabel: "VALUATION SPECTRUM & REGIMES",
+        financialHighlightsLabel: "FINANCIAL & MOAT HIGHLIGHTS",
+        moatRatingLabel: "Economic Moat",
+        pricedInMultipleLabel: "Priced-in Multiple",
+        probLabel: "Prob",
       },
     },
   },
@@ -892,6 +1147,8 @@ export const translations: Record<Locale, Translations> = {
       shareTooltip: "分享研报与导出社媒卡片 (E)",
       exportCard: "卡片",
       exportCardTooltip: "导出精美社媒卡片 (E)",
+      snowflake: "雪花图",
+      snowflakeTooltip: "30项全景雪花图 (W)",
       linkCopied: "情景分析链接已复制到剪贴板！",
       settings: "偏好与设置",
       language: "界面语言",
@@ -907,6 +1164,8 @@ export const translations: Record<Locale, Translations> = {
       title: "实时情景压力驾驶舱",
       reset: "重置全部",
       resetTooltip: "重置所有滑块至初始基准值",
+      snowflakeButton: "雪花图",
+      snowflakeTooltip: "30项全景雪花图审计 (W)",
       stressedForwardEps: "压力测试远期 EPS (年化)",
       cleanOperatingEps: "核心经营 EPS",
       stressedRev: "测算营收",
@@ -952,8 +1211,11 @@ export const translations: Record<Locale, Translations> = {
       presets: {
         title: "宏观情景预设",
         baseline: "0% 基准中性",
+        baselineTooltip: "预设方案：将所有业务因子设为 0% 基准状态",
         mild: "-10% 轻度承压",
+        mildTooltip: "预设方案：-10% 需求冲击，-100 bps 毛利，+2% 费用",
         severe: "-25% 极度恐慌",
+        severeTooltip: "预设方案：-25% 极端冲击，-300 bps 毛利，+5% 费用",
       },
       sliderTabs: {
         volume: "业务量驱动",
@@ -968,7 +1230,37 @@ export const translations: Record<Locale, Translations> = {
       toggleMemo: "切换驾驶舱 / 备忘录 (M)",
       toggleLang: "切换中英文 (L)",
       exportCard: "导出社媒卡片 (E)",
+      openSnowflake: "全景雪花图审计 (W)",
+      toggleScreener: "切换全景筛选与对比 (S)",
       close: "关闭窗口 (Esc / ?)",
+    },
+    snowflake: {
+      title: "全景雪花图评分",
+      subtitle: "五维机构级基本面、护城河与压力估值确定性审计",
+      badgeTitle: "30项全景雪花图",
+      scoreCardTitle: "全景雪花评分",
+      totalScore: "全景综合得分",
+      outOf30: "满分 30 分",
+      viewAudit: "查看 30 项全景审计明细",
+      hideAudit: "收起明细",
+      clickToViewAudit: "点击查看 30 项全景审计明细",
+      modalTitle: "30 项全景雪花图审计明细",
+      modalSubtitle:
+        "基于估值、增长、盈利质量、护城河与抗风险韧性的全量确定性评估",
+      filterAll: "全部 30 项",
+      filterByPillar: "分项筛选",
+      passedBadge: "项达标",
+      exportCard: "导出社媒卡片",
+      close: "关闭 (Esc)",
+      footerNotice: "纯确定性基本面与压力估值审计 • 零推测模型",
+      overallScoreSub: (
+        score: number,
+        max: number,
+        pct: number,
+        label: string
+      ) => `综合得分: ${score}/${max} (${pct}%) • ${label}`,
+      wfvLabel: "加权公允价值",
+      upsideLabel: "预期空间",
     },
     priceMeter: {
       title: "估值区间标尺",
@@ -1197,6 +1489,20 @@ export const translations: Record<Locale, Translations> = {
       regimeBase: "⚖️ 基准情景 (Base)",
       regimePanic: "🚨 恐慌底价 (Panic)",
       prob: "概率",
+      secSnowflakeTitle: "30项全景雪花基本面与压力审计",
+      snowflakeView30: "查看全部30项审计",
+      analystsCount: (count: number) => `共 ${count} 位华尔街分析师覆盖`,
+      bullish: "看多 / 买入",
+      neutral: "中性 / 持有",
+      bearish: "看空 / 卖出",
+      targetRange: "52周目标价区间: ",
+      colFirm: "券商机构",
+      colAnalyst: "分析师",
+      colRating: "评级",
+      colPriceTarget: "目标价",
+      colUpside: "空间",
+      colDate: "发布日期",
+      targetPriorFrom: "前值",
     },
     page: {
       loading: "正在加载 StressAlpha 研报数据...",
@@ -1239,6 +1545,7 @@ export const translations: Record<Locale, Translations> = {
       narrowMoat: "窄护城河",
       colTicker: "代码",
       colCompany: "公司名称",
+      colSnowflake: "雪花评分",
       colMoat: "经济护城河",
       colPrice: "当前股价",
       colAnalystTarget: "华尔街目标价",
@@ -1277,6 +1584,28 @@ export const translations: Record<Locale, Translations> = {
         thesisDesc: "经济护城河评级、核心成长催化与主要风险",
         summary: "高管全景速览",
         summaryDesc: "一站式全景速览与核心结论总结",
+        snowflake: "全景雪花图",
+        snowflakeDesc: "五维机构级质量、护城河与压力估值圆形雷达卡片",
+      },
+      sections: {
+        valuationHero: "估值与价格",
+        valuationHeroDesc: "现价、公允价值、估值空间与不对称性",
+        regimes: "估值谱系情景",
+        regimesDesc: "乐观、基准与恐慌底线目标价",
+        earnings: "财报业绩审计",
+        earningsDesc: "营收、营业利润、核心经调EPS审计",
+        segments: "业务分部拆解",
+        segmentsDesc: "分部营收动态与增速",
+        moat: "经济护城河",
+        moatDesc: "护城河评级、趋势与竞争壁垒来源",
+        catalysts: "催化与风险",
+        catalystsDesc: "成长催化因子与下行脆弱性风险",
+        snowflake: "全景雪花图",
+        snowflakeDesc: "30项五维机构级质量雷达审计",
+      },
+      presets: {
+        label: "快捷预设",
+        custom: "自定义",
       },
       aspectRatios: {
         landscape: "横版 16:9 (X / LinkedIn)",
@@ -1291,6 +1620,7 @@ export const translations: Record<Locale, Translations> = {
       },
       controls: {
         templateLabel: "卡片模版",
+        sectionsLabel: "卡片内容板块",
         formatLabel: "画幅尺寸",
         themeLabel: "视觉主题",
         scenarioLinkLabel: "交互式情景推演链接",
@@ -1300,20 +1630,71 @@ export const translations: Record<Locale, Translations> = {
         customNotePlaceholder:
           "输入 1-2 句精炼的投资逻辑、风险提示或催化亮点...",
         cardLanguage: "卡片呈现语言",
+        liveStressParams: "保存当前滑块参数",
+        previewScale: "预览缩放",
+        clear: "清空",
+        defaultNote: (company: string, quarter: string) =>
+          `${company} ${quarter} 业绩超预期，经调整核心营业利润率维持高位，估值具备不对称防护。`,
       },
       actions: {
         downloadPng: "下载高清图片",
         copyImage: "复制图片到剪贴板",
         copyText: "复制社媒文案",
         copyLink: "复制链接",
+        copied: "已复制",
         copiedToast:
           "卡片图片已复制到剪贴板！可直接粘贴至微信、Slack 或 Twitter。",
         textCopiedToast: "社媒文案已复制到剪贴板！",
         linkCopiedToast: "情景分析链接已复制到剪贴板！",
         downloadSuccessToast: "高清卡片图片已成功下载！",
+        exportError: "图片导出失败，请重试或尝试复制文本。",
+        clipboardError:
+          "当前浏览器不支持直接写入剪贴板图片，请使用下载 PNG 功能。",
         generating: "正在渲染...",
         copying: "正在复制...",
         close: "关闭",
+      },
+      labels: {
+        earningsAuditTag: "财报审计",
+        tickerLabel: "股票代码",
+        secAuditVerified: "SEC 10-Q 审计验证",
+        currentPriceLabel: "当前股价",
+        weightedFairValueLabel: "概率加权公允价值",
+        riskRewardLabel: "盈亏比与不对称性",
+        panicDefenseLabel: "恐慌防御垫",
+        marketPricingLabel: "市场定价",
+        bullRegimeLabel: "牛市区间",
+        baseCaseLabel: "基准情景",
+        panicFloorLabel: "恐慌底价",
+        stressedFwdEpsLabel: "压力远期EPS",
+        stressedRevLabel: "压力营收",
+        netIncomeLabel: "净利润",
+        earningsBeatLabel: "业绩超预期",
+        revenueLabel: "营业收入",
+        operatingIncomeLabel: "营业利润",
+        cleanOperatingEpsLabel: "核心经营EPS",
+        consensusLabel: "一致预期",
+        beatLabel: "超预期",
+        incomeQualityFilterLabel: "收益质量过滤器",
+        marketCapLabel: "总市值",
+        nextFyConsensusLabel: "下一财年一致预期",
+        segmentsLabel: "业务分部",
+        ofTotalRevenueLabel: "占总营收比重",
+        valuationUpsideLabel: "估值空间",
+        weightedFairValueShortLabel: "加权公允价",
+        snowflake30Label: "30项全景雪花",
+        wfvShortLabel: "加权公允",
+        upsideShortLabel: "空间",
+        secDisclosuresVerified: "已通过 SEC 10-Q 披露数据交叉核验",
+        tagline: "情景压力测试估值决策引擎",
+        auditGrade: "机构研究审计级",
+        asymmetryLabel: "不对称比率",
+        panicFloorShortLabel: "恐慌底",
+        valuationSpectrumLabel: "动态估值谱系与区间",
+        financialHighlightsLabel: "核心财务与护城河指标",
+        moatRatingLabel: "经济护城河",
+        pricedInMultipleLabel: "已计入倍数",
+        probLabel: "概率",
       },
     },
   },

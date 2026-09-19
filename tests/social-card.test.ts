@@ -3,8 +3,10 @@ import {
   generateSocialPostText,
   CARD_DIMENSIONS,
   THEME_CONFIGS,
+  TEMPLATE_SECTION_PRESETS,
   type CardAspectRatio,
   type CardTheme,
+  type CardSection,
 } from "@/lib/social-card";
 import { getTranslations } from "@/lib/i18n";
 import type { Facts, Valuation, StressResult } from "@/lib/schemas";
@@ -234,6 +236,45 @@ describe("Social Media Card Feature", () => {
       expect(t.socialCard.actions.copyImage).toBe("复制图片到剪贴板");
       expect(t.socialCard.actions.copyText).toBe("复制社媒文案");
       expect(t.socialCard.actions.copyLink).toBe("复制链接");
+    });
+  });
+
+  describe("Composable Card Sections", () => {
+    it("defines default section presets for all standard templates", () => {
+      expect(TEMPLATE_SECTION_PRESETS.valuation).toEqual([
+        "valuationHero",
+        "regimes",
+      ]);
+      expect(TEMPLATE_SECTION_PRESETS.earnings).toEqual([
+        "earnings",
+        "segments",
+      ]);
+      expect(TEMPLATE_SECTION_PRESETS.thesis).toEqual(["moat", "catalysts"]);
+      expect(TEMPLATE_SECTION_PRESETS.summary).toEqual([
+        "valuationHero",
+        "earnings",
+        "moat",
+      ]);
+      expect(TEMPLATE_SECTION_PRESETS.snowflake).toEqual(["snowflake"]);
+    });
+
+    it("has bilingual translations for all composable sections", () => {
+      const allSections: CardSection[] = [
+        "valuationHero",
+        "regimes",
+        "earnings",
+        "segments",
+        "moat",
+        "catalysts",
+        "snowflake",
+      ];
+      const en = getTranslations("en").socialCard;
+      const zh = getTranslations("zh").socialCard;
+
+      for (const s of allSections) {
+        expect(en.sections[s]).toBeTruthy();
+        expect(zh.sections[s]).toBeTruthy();
+      }
     });
   });
 });

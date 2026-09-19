@@ -10,19 +10,20 @@ import {
   Wand2,
   ChevronDown,
   ChevronUp,
-  Sparkles,
-  Share2,
 } from "lucide-react";
 import type {
   FinancialModelBaseline,
   Facts,
   StressResult,
   Valuation,
+  ReportData,
 } from "@/lib/schemas";
 import { type StressTestParams, round2 } from "@/lib/valuation";
 import { PriceMeter } from "./PriceMeter";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { computeSnowflakeScore } from "@/lib/snowflake";
+import { SnowflakeCard } from "./snowflake/SnowflakeCard";
 
 interface CockpitProps {
   baseline: FinancialModelBaseline;
@@ -30,11 +31,12 @@ interface CockpitProps {
   stressParams: StressTestParams;
   stressResult: StressResult;
   valuation?: Valuation;
+  reportData?: ReportData;
   onDriverShockChange: (driverId: string, shockPct: number) => void;
   onGrossMarginDeltaChange: (bps: number) => void;
   onFixedOpexShiftChange: (shiftPct: number) => void;
   onResetDefaults: () => void;
-  onOpenSocialCard?: () => void;
+  onOpenSnowflake?: () => void;
   locale?: Locale;
 }
 
@@ -44,15 +46,33 @@ export const Cockpit: React.FC<CockpitProps> = ({
   stressParams,
   stressResult,
   valuation,
+  reportData,
   onDriverShockChange,
   onGrossMarginDeltaChange,
   onFixedOpexShiftChange,
   onResetDefaults,
-  onOpenSocialCard,
+  onOpenSnowflake,
   locale = "zh",
 }) => {
   const t = getTranslations(locale).cockpit;
-  const isZh = locale === "zh";
+
+  const snowflakeScore = React.useMemo(() => {
+    const effectiveReportData: ReportData = reportData ?? {
+      folderSlug: facts.ticker,
+      folderName: facts.company,
+      facts,
+      valuation,
+      baseline,
+      scenarios: {
+        ticker: facts.ticker,
+        basisYear: "FY2027",
+        currentPrice: facts.currentPrice,
+        consensusTarget: valuation?.consensusTarget ?? 0,
+        scenarios: [],
+      },
+    };
+    return computeSnowflakeScore(effectiveReportData, stressResult, locale);
+  }, [reportData, facts, valuation, baseline, stressResult, locale]);
   const [activeSliderTab, setActiveSliderTab] = useState<
     "volume" | "margins" | "all"
   >("volume");
@@ -100,17 +120,6 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </h2>
           </div>
           <div className="flex items-center gap-1.5">
-            {onOpenSocialCard && (
-              <button
-                type="button"
-                onClick={onOpenSocialCard}
-                className="group flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white"
-                title={isZh ? "分享研报与导出卡片 (E)" : "Share & Export (E)"}
-              >
-                <Share2 className="size-3 text-accent transition-transform group-hover:scale-110" />
-                <span>{isZh ? "分享" : "Share"}</span>
-              </button>
-            )}
             <button
               type="button"
               onClick={onResetDefaults}
@@ -134,11 +143,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("baseline")}
               className="truncate rounded-lg bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
-              title={
-                isZh
-                  ? "预设方案：将所有业务因子设为 0% 基准状态"
-                  : "Preset: Apply 0% flat baseline across all volume drivers"
-              }
+              title={t.presets.baselineTooltip}
             >
               {t.presets.baseline}
             </button>
@@ -146,11 +151,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("mild")}
               className="truncate rounded-lg border border-fintech-amber/25 bg-fintech-amberGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-amber transition-colors hover:bg-fintech-amberGlow/20"
-              title={
-                isZh
-                  ? "预设方案：所有业务因子承受 -10% 轻度承压"
-                  : "Preset: Apply -10% moderate strain across all volume drivers"
-              }
+              title={t.presets.mildTooltip}
             >
               {t.presets.mild}
             </button>
@@ -158,11 +159,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               type="button"
               onClick={() => handleApplyPreset("severe")}
               className="truncate rounded-lg border border-fintech-red/25 bg-fintech-redGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-red transition-colors hover:bg-fintech-redGlow/20"
-              title={
-                isZh
-                  ? "预设方案：所有业务因子承受 -25% 极度恐慌冲击"
-                  : "Preset: Apply -25% severe macro contraction across all volume drivers"
-              }
+              title={t.presets.severeTooltip}
             >
               {t.presets.severe}
             </button>
@@ -258,7 +255,14 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
       </div>
 
-      {/* 2. Harmonized Dynamic Scenario Targets (Bull, Base, Bear) + Panic Floor */}
+      {/* 2. 5-Pillar Snowflake Radar Overview */}
+      <SnowflakeCard
+        scoreResult={snowflakeScore}
+        onOpenModal={() => onOpenSnowflake?.()}
+        locale={locale}
+      />
+
+      {/* 3. Harmonized Dynamic Scenario Targets (Bull, Base, Bear) + Panic Floor */}
       {(() => {
         const bullScenario = valuation?.scenarioResults?.find(
           (s) => s.name.toLowerCase().includes("bull") || s.name.includes("牛")

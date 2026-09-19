@@ -26,6 +26,8 @@ import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
 import { ScreenerView } from "@/components/ScreenerView";
 import { SocialCardModal } from "@/components/social-card/SocialCardModal";
+import { SnowflakeModal } from "@/components/snowflake/SnowflakeModal";
+import { computeSnowflakeScore } from "@/lib/snowflake";
 import type { ReportData, Scenario } from "@/lib/schemas";
 import type { ReportSummary } from "@/app/api/reports/route";
 import {
@@ -53,6 +55,7 @@ export default function HomePage() {
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
+  const [isSnowflakeOpen, setIsSnowflakeOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Restore saved language preference from localStorage on mount
@@ -427,6 +430,33 @@ export default function HomePage() {
       ? reportData.estimatesZh
       : reportData?.estimates;
 
+  // 5-Pillar Snowflake Score calculation
+  const snowflakeScore = useMemo(() => {
+    if (!reportData || !displayFacts) return null;
+    const effectiveReportData: ReportData = {
+      ...reportData,
+      facts: displayFacts,
+      catalysts: displayCatalysts,
+      scenarios: displayScenarios ?? reportData.scenarios,
+      moat: displayMoat,
+      valuation: dynamicValuation ?? reportData.valuation,
+    };
+    return computeSnowflakeScore(
+      effectiveReportData,
+      stressResult ?? undefined,
+      locale
+    );
+  }, [
+    reportData,
+    displayFacts,
+    displayCatalysts,
+    displayScenarios,
+    displayMoat,
+    dynamicValuation,
+    stressResult,
+    locale,
+  ]);
+
   // 7 Focused Institutional Intelligence Workspaces
   const tabItems = useMemo(
     () => [
@@ -537,6 +567,12 @@ export default function HomePage() {
         return;
       }
 
+      if (e.key === "w" || e.key === "W") {
+        e.preventDefault();
+        setIsSnowflakeOpen((prev) => !prev);
+        return;
+      }
+
       if (e.key === "?" || (e.shiftKey && e.key === "/")) {
         e.preventDefault();
         setIsShortcutsOpen((prev) => !prev);
@@ -544,6 +580,11 @@ export default function HomePage() {
       }
 
       if (e.key === "Escape") {
+        if (isSnowflakeOpen) {
+          e.preventDefault();
+          setIsSnowflakeOpen(false);
+          return;
+        }
         if (isSocialCardOpen) {
           e.preventDefault();
           setIsSocialCardOpen(false);
@@ -564,6 +605,7 @@ export default function HomePage() {
     locale,
     isShortcutsOpen,
     isSocialCardOpen,
+    isSnowflakeOpen,
     handleResetDefaults,
     handleToggleLocale,
   ]);
@@ -580,6 +622,7 @@ export default function HomePage() {
         onViewModeChange={handleViewModeChange}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
         onShare={handleShare}
+        onOpenSnowflake={() => setIsSnowflakeOpen(true)}
         locale={locale}
         onToggleLocale={handleToggleLocale}
       />
@@ -630,6 +673,7 @@ export default function HomePage() {
             stressResult={stressResult}
             onBackToCockpit={() => handleViewModeChange("cockpit")}
             onOpenSocialCard={() => setIsSocialCardOpen(true)}
+            onOpenSnowflake={() => setIsSnowflakeOpen(true)}
             locale={locale}
             onLocaleChange={handleToggleLocale}
           />
@@ -642,11 +686,19 @@ export default function HomePage() {
               stressParams={stressParams}
               stressResult={stressResult}
               valuation={dynamicValuation ?? reportData.valuation}
+              reportData={{
+                ...reportData,
+                facts: displayFacts!,
+                catalysts: displayCatalysts,
+                scenarios: displayScenarios!,
+                filing: displayFiling,
+                valuation: dynamicValuation ?? reportData.valuation,
+              }}
               onDriverShockChange={handleDriverShockChange}
               onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
               onFixedOpexShiftChange={handleFixedOpexShiftChange}
               onResetDefaults={handleResetDefaults}
-              onOpenSocialCard={() => setIsSocialCardOpen(true)}
+              onOpenSnowflake={() => setIsSnowflakeOpen(true)}
               locale={locale}
             />
 
@@ -929,6 +981,15 @@ export default function HomePage() {
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
                 <span className="text-xs text-slate-300">
+                  {t.shortcuts.openSnowflake}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                  W
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
                   {t.shortcuts.close}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -958,6 +1019,19 @@ export default function HomePage() {
         locale={locale}
         onShowToast={showToast}
       />
+
+      {/* 30-Point Snowflake Audit Modal */}
+      {snowflakeScore && displayFacts && (
+        <SnowflakeModal
+          isOpen={isSnowflakeOpen}
+          onClose={() => setIsSnowflakeOpen(false)}
+          scoreResult={snowflakeScore}
+          ticker={displayFacts.ticker}
+          company={displayFacts.company}
+          locale={locale}
+          onOpenSocialCard={() => setIsSocialCardOpen(true)}
+        />
+      )}
 
       {/* Toast Notification */}
       {toastMessage && (

@@ -2,7 +2,28 @@ import type { Facts, Valuation, StressResult, Scenario } from "./schemas";
 import type { Locale } from "./i18n";
 import { formatCurrency, formatPercent } from "./utils";
 
-export type CardTemplate = "valuation" | "earnings" | "thesis" | "summary";
+export type CardTemplate =
+  "valuation" | "earnings" | "thesis" | "summary" | "snowflake";
+
+/** Composable sections that users can select for custom export cards */
+export type CardSection =
+  | "valuationHero"
+  | "regimes"
+  | "earnings"
+  | "segments"
+  | "moat"
+  | "catalysts"
+  | "snowflake";
+
+/** Default section presets for each legacy card template */
+export const TEMPLATE_SECTION_PRESETS: Record<CardTemplate, CardSection[]> = {
+  valuation: ["valuationHero", "regimes"],
+  earnings: ["earnings", "segments"],
+  thesis: ["moat", "catalysts"],
+  summary: ["valuationHero", "earnings", "moat"],
+  snowflake: ["snowflake"],
+};
+
 export type CardAspectRatio = "landscape" | "square" | "portrait";
 export type CardTheme = "cyber" | "navy" | "emerald" | "crimson";
 
