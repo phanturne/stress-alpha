@@ -418,16 +418,23 @@ export interface Translations {
     colAction: string;
     openCockpit: string;
     openMemo: string;
+    openCockpitTooltip: (ticker: string) => string;
     statsCoverage: string;
     statsAvgUpside: string;
+    statsAvgUpsideSub: string;
     statsTopPick: string;
     statsWideMoat: string;
+    statsWideMoatSub: (count: number, total: number) => string;
     noResults: string;
     resetFilters: string;
+    resultsCount: (shown: number, total: number) => string;
     bearLabel: string;
     baseLabel: string;
     bullLabel: string;
     currentPriceLabel: string;
+    analystsLabel: string;
+    rangeTooltip: string;
+    rangeBearBullHint: string;
     sortPrompt: string;
     loading: string;
   };
@@ -984,28 +991,37 @@ export const translations: Record<Locale, Translations> = {
       colTicker: "Ticker",
       colCompany: "Company",
       colSnowflake: "Snowflake",
-      colMoat: "Economic Moat",
-      colPrice: "Current Price",
+      colMoat: "Moat",
+      colPrice: "Price",
       colAnalystTarget: "Analyst Target",
-      colBaseFairValue: "Base Fair Value",
-      colWeightedFairValue: "Weighted Fair Value",
+      colBaseFairValue: "Base Target",
+      colWeightedFairValue: "Weighted FV",
       colUpside: "Implied Upside",
-      colOperatingMargin: "Operating Margin",
+      colOperatingMargin: "Op. Margin",
       colRevenueGrowth: "Rev Growth (YoY)",
-      colValuationRange: "Stress Range (Bear / Base / Bull)",
+      colValuationRange: "Stress Range",
       colAction: "Action",
       openCockpit: "Cockpit",
       openMemo: "Memo",
+      openCockpitTooltip: (ticker: string) => `Open ${ticker} Cockpit`,
       statsCoverage: "Coverage Universe",
       statsAvgUpside: "Avg. Weighted Upside",
+      statsAvgUpsideSub: "Probability-weighted consensus",
       statsTopPick: "Highest Upside",
       statsWideMoat: "Wide Moat Share",
+      statsWideMoatSub: (count: number, total: number) =>
+        `${count} of ${total} wide moats`,
       noResults: "No companies match your filters.",
       resetFilters: "Reset Filters",
+      resultsCount: (shown: number, total: number) =>
+        `Showing ${shown} of ${total} tickers`,
       bearLabel: "Bear",
       baseLabel: "Base",
       bullLabel: "Bull",
       currentPriceLabel: "Current",
+      analystsLabel: "analysts",
+      rangeTooltip: "Stress Range (Bear ↔ Base ↔ Bull)",
+      rangeBearBullHint: "(bear ↔ bull)",
       sortPrompt: "Sort By",
       loading: "Loading universe reports...",
     },
@@ -1556,30 +1572,39 @@ export const translations: Record<Locale, Translations> = {
       wideMoat: "宽护城河",
       narrowMoat: "窄护城河",
       colTicker: "代码",
-      colCompany: "公司名称",
+      colCompany: "公司",
       colSnowflake: "雪花评分",
-      colMoat: "经济护城河",
-      colPrice: "当前股价",
-      colAnalystTarget: "华尔街目标价",
-      colBaseFairValue: "基准公允价",
-      colWeightedFairValue: "加权公允价",
+      colMoat: "护城河",
+      colPrice: "现价",
+      colAnalystTarget: "分析师目标价",
+      colBaseFairValue: "基准估值",
+      colWeightedFairValue: "加权估值 (WFV)",
       colUpside: "估值空间",
       colOperatingMargin: "营业利润率",
-      colRevenueGrowth: "营收同比增速",
-      colValuationRange: "压力估值谱系 (悲观 / 基准 / 乐观)",
+      colRevenueGrowth: "营收增速 (YoY)",
+      colValuationRange: "压力估值区间",
       colAction: "操作",
       openCockpit: "驾驶舱",
       openMemo: "研报备忘",
+      openCockpitTooltip: (ticker: string) => `进入 ${ticker} 操盘驾驶舱`,
       statsCoverage: "覆盖标的池",
       statsAvgUpside: "平均加权估值空间",
+      statsAvgUpsideSub: "基于多情景概率加权",
       statsTopPick: "最高估值弹性",
       statsWideMoat: "宽护城河占比",
+      statsWideMoatSub: (count: number, total: number) =>
+        `${total} 家中含 ${count} 家宽护城河`,
       noResults: "未找到符合当前筛选条件的公司。",
       resetFilters: "重置筛选条件",
+      resultsCount: (shown: number, total: number) =>
+        `显示 ${shown} / 共 ${total} 家标的`,
       bearLabel: "悲观",
       baseLabel: "基准",
       bullLabel: "乐观",
       currentPriceLabel: "现价",
+      analystsLabel: "位分析师",
+      rangeTooltip: "压力估值区间 (悲观 ↔ 基准 ↔ 乐观)",
+      rangeBearBullHint: "(悲观 ↔ 乐观)",
       sortPrompt: "排序依据",
       loading: "正在加载研报筛选池...",
     },

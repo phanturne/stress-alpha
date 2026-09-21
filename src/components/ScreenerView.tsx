@@ -5,15 +5,15 @@ import {
   Search,
   TrendingUp,
   Shield,
-  ShieldAlert,
+  ArrowUp,
+  ArrowDown,
   ArrowUpDown,
   ArrowUpRight,
   ArrowDownRight,
   Sparkles,
   BarChart3,
   CheckCircle2,
-  Percent,
-  ExternalLink,
+  RotateCcw,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
@@ -38,7 +38,8 @@ type SortField =
   | "opMargin"
   | "revGrowth"
   | "ticker"
-  | "snowflake";
+  | "snowflake"
+  | "moat";
 type SortDirection = "asc" | "desc";
 
 const SKELETON_ROWS = [
@@ -254,6 +255,17 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             valA = a.snowflakeScore ?? -1;
             valB = b.snowflakeScore ?? -1;
             break;
+          case "moat": {
+            const moatRank = (r?: string) => {
+              const m = r?.toLowerCase();
+              if (m === "wide") return 2;
+              if (m === "narrow") return 1;
+              return 0;
+            };
+            valA = moatRank(a.moatRating);
+            valB = moatRank(b.moatRating);
+            break;
+          }
         }
 
         if (typeof valA === "string" && typeof valB === "string") {
@@ -280,8 +292,21 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection("desc");
+      setSortDirection(field === "ticker" ? "asc" : "desc");
     }
+  };
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField === field) {
+      return sortDirection === "asc" ? (
+        <ArrowUp className="size-3 shrink-0 text-accent" />
+      ) : (
+        <ArrowDown className="size-3 shrink-0 text-accent" />
+      );
+    }
+    return (
+      <ArrowUpDown className="size-3 shrink-0 text-slate-500 opacity-30 transition-opacity group-hover/th:opacity-100" />
+    );
   };
 
   return (
@@ -364,7 +389,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 {stats.avgUpside.toFixed(1)}%
               </div>
               <p className="mt-1 text-[11px] text-slate-400">
-                Weighted probability model
+                {ts.statsAvgUpsideSub}
               </p>
             </>
           )}
@@ -384,9 +409,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           }
           title={
             stats.topPick && !isLoading
-              ? locale === "zh"
-                ? `点击进入 ${stats.topPick.ticker} 操盘驾驶舱`
-                : `Open ${stats.topPick.ticker} Cockpit`
+              ? ts.openCockpitTooltip(
+                  stats.topPick.ticker || stats.topPick.slug
+                )
               : undefined
           }
         >
@@ -407,9 +432,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 <span className="font-mono text-2xl font-black text-white sm:text-3xl">
                   {stats.topPick?.ticker || "—"}
                 </span>
-                {stats.topPick?.upsidePct && (
-                  <span className="font-mono text-sm font-bold text-green-400">
-                    +{stats.topPick.upsidePct.toFixed(1)}%
+                {stats.topPick?.upsidePct !== undefined && (
+                  <span
+                    className={`font-mono text-sm font-bold ${
+                      stats.topPick.upsidePct >= 0
+                        ? "text-green-400"
+                        : "text-rose-400"
+                    }`}
+                  >
+                    {stats.topPick.upsidePct >= 0 ? "+" : ""}
+                    {stats.topPick.upsidePct.toFixed(1)}%
                   </span>
                 )}
               </div>
@@ -441,7 +473,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   : "0%"}
               </div>
               <p className="mt-1 text-[11px] text-slate-400">
-                {`${stats.wideMoatCount} of ${stats.count} wide moats`}
+                {ts.statsWideMoatSub(stats.wideMoatCount, stats.count)}
               </p>
             </>
           )}
@@ -458,7 +490,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={ts.searchPlaceholder}
-            className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-2 pl-9 pr-3 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
+            className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-2 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
           />
           {searchQuery && (
             <button
@@ -470,8 +502,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           )}
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Filter Pills & Result Counter */}
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Moat Filter */}
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
             <button
@@ -545,6 +577,30 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               {ts.filterHighUpside}
             </button>
           </div>
+
+          {/* Results count and active reset */}
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[11px] text-slate-500">
+              {ts.resultsCount(filteredReports.length, reports.length)}
+            </span>
+            {(searchQuery ||
+              moatFilter !== "all" ||
+              upsideFilter !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setMoatFilter("all");
+                  setUpsideFilter("all");
+                }}
+                className="inline-flex items-center gap-1 rounded bg-surface-2 px-2 py-1 font-mono text-[11px] text-accent transition-colors hover:bg-surface-3"
+                title={ts.resetFilters}
+              >
+                <RotateCcw className="size-2.5" />
+                <span>{ts.resetFilters}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -557,142 +613,112 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 {/* Ticker & Company */}
                 <th
                   onClick={() => handleSort("ticker")}
-                  className="cursor-pointer px-4 py-3.5 transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap py-3 pl-4 pr-3 transition-colors hover:text-white"
                 >
                   <div className="flex items-center gap-1.5">
                     <span>{ts.colTicker}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "ticker"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("ticker")}
                   </div>
                 </th>
 
                 {/* Moat */}
-                <th className="px-3 py-3.5">{ts.colMoat}</th>
+                <th
+                  onClick={() => handleSort("moat")}
+                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{ts.colMoat}</span>
+                    {renderSortIcon("moat")}
+                  </div>
+                </th>
 
                 {/* Snowflake 30-Point Audit Radar */}
                 <th
                   onClick={() => handleSort("snowflake")}
-                  className="cursor-pointer px-3 py-3.5 transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
                 >
                   <div className="flex items-center gap-1.5">
                     <span>{ts.colSnowflake}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "snowflake"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("snowflake")}
                   </div>
                 </th>
 
                 {/* Price */}
                 <th
                   onClick={() => handleSort("price")}
-                  className="cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colPrice}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "price" ? "text-accent" : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("price")}
                   </div>
                 </th>
 
                 {/* Analyst Consensus Target */}
                 <th
                   onClick={() => handleSort("analystTarget")}
-                  className="cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colAnalystTarget}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "analystTarget"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("analystTarget")}
                   </div>
                 </th>
 
                 {/* Base Fair Value */}
                 <th
                   onClick={() => handleSort("baseUpside")}
-                  className="cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colBaseFairValue}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "baseUpside"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("baseUpside")}
                   </div>
                 </th>
 
                 {/* Weighted Fair Value & Upside */}
                 <th
                   onClick={() => handleSort("upside")}
-                  className="cursor-pointer px-4 py-3.5 text-right transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colWeightedFairValue}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "upside"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("upside")}
                   </div>
                 </th>
 
-                {/* Valuation Spectrum */}
-                <th className="hidden min-w-[200px] px-4 py-3.5 lg:table-cell">
-                  {ts.colValuationRange}
+                {/* Valuation Spectrum / Stress Range */}
+                <th
+                  className="hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
+                  title={ts.rangeTooltip}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{ts.colValuationRange}</span>
+                    <span className="hidden font-mono text-[9px] font-normal lowercase tracking-normal text-slate-500 xl:inline">
+                      {ts.rangeBearBullHint}
+                    </span>
+                  </div>
                 </th>
 
                 {/* Operating Margin */}
                 <th
                   onClick={() => handleSort("opMargin")}
-                  className="hidden cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white xl:table-cell"
+                  className="group/th hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colOperatingMargin}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "opMargin"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("opMargin")}
                   </div>
                 </th>
 
                 {/* Revenue Growth */}
                 <th
                   onClick={() => handleSort("revGrowth")}
-                  className="hidden cursor-pointer px-3 py-3.5 text-right transition-colors hover:text-white xl:table-cell"
+                  className="group/th hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
                 >
                   <div className="flex items-center justify-end gap-1.5">
                     <span>{ts.colRevenueGrowth}</span>
-                    <ArrowUpDown
-                      className={`size-3 ${
-                        sortField === "revGrowth"
-                          ? "text-accent"
-                          : "text-slate-500"
-                      }`}
-                    />
+                    {renderSortIcon("revGrowth")}
                   </div>
                 </th>
               </tr>
@@ -707,9 +733,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       className="border-b border-white/[0.03]"
                     >
                       {/* Ticker & Company */}
-                      <td className="px-4 py-3.5">
+                      <td className="py-2.5 pl-4 pr-3">
                         <div className="flex items-center gap-2.5">
-                          <Skeleton className="size-8 shrink-0 rounded-lg" />
+                          <Skeleton className="size-7 shrink-0 rounded-lg" />
                           <div className="space-y-1.5">
                             <Skeleton className={`h-3.5 ${row.tickerW}`} />
                             <Skeleton className={`h-2.5 ${row.nameW}`} />
@@ -718,14 +744,14 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Moat */}
-                      <td className="px-3 py-3.5">
+                      <td className="whitespace-nowrap p-2.5">
                         <Skeleton className={`h-5 ${row.moatW} rounded-full`} />
                       </td>
 
                       {/* Snowflake */}
-                      <td className="px-3 py-3.5">
+                      <td className="whitespace-nowrap p-2.5">
                         <div className="flex items-center gap-2">
-                          <Skeleton className="size-8 shrink-0 rounded-full" />
+                          <Skeleton className="size-7 shrink-0 rounded-full" />
                           <div className="space-y-1">
                             <Skeleton className="h-3 w-8" />
                             <Skeleton className="h-2 w-10" />
@@ -734,46 +760,46 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Price */}
-                      <td className="px-3 py-3.5 text-right">
-                        <Skeleton className="ml-auto h-4 w-16" />
+                      <td className="whitespace-nowrap p-2.5 text-right">
+                        <Skeleton className="ml-auto h-4 w-14" />
                       </td>
 
                       {/* Analyst Target */}
-                      <td className="px-3 py-3.5 text-right">
+                      <td className="whitespace-nowrap p-2.5 text-right">
                         <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
                       </td>
 
                       {/* Base Fair Value */}
-                      <td className="px-3 py-3.5 text-right">
+                      <td className="whitespace-nowrap p-2.5 text-right">
                         <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
                       </td>
 
                       {/* Weighted Fair Value & Upside */}
-                      <td className="px-4 py-3.5 text-right">
+                      <td className="whitespace-nowrap px-3 py-2.5 text-right">
                         <div className="ml-auto space-y-1">
                           <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
                           <Skeleton className="ml-auto h-3 w-12 rounded-full" />
                         </div>
                       </td>
 
-                      {/* Valuation Spectrum */}
-                      <td className="hidden min-w-[200px] px-4 py-3.5 lg:table-cell">
+                      {/* Valuation Spectrum / Stress Range */}
+                      <td className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell">
                         <div className="space-y-1.5">
                           <div className="flex justify-between">
                             <Skeleton className="h-2 w-8" />
                             <Skeleton className="h-2 w-8" />
                           </div>
-                          <Skeleton className="h-2 w-full rounded-full" />
+                          <Skeleton className="h-1.5 w-full rounded-full" />
                         </div>
                       </td>
 
                       {/* Operating Margin */}
-                      <td className="hidden px-3 py-3.5 text-right xl:table-cell">
+                      <td className="hidden whitespace-nowrap p-2.5 text-right xl:table-cell">
                         <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
                       </td>
 
                       {/* Revenue Growth */}
-                      <td className="hidden px-3 py-3.5 text-right xl:table-cell">
+                      <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right xl:table-cell">
                         <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
                       </td>
                     </tr>
@@ -782,7 +808,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               ) : filteredReports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-4 py-12 text-center text-slate-400"
                   >
                     <p className="text-sm font-medium">{ts.noResults}</p>
@@ -827,9 +853,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       onClick={() => onSelectReport(report.slug, "cockpit")}
                     >
                       {/* Ticker & Company */}
-                      <td className="px-4 py-3.5">
+                      <td className="py-2.5 pl-4 pr-3">
                         <div className="flex items-center gap-2.5">
-                          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-surface-1 font-mono text-xs font-black tracking-tight text-white shadow-sm group-hover:border-accent/50 group-hover:text-accent">
+                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-surface-1 font-mono text-[11px] font-black tracking-tight text-white shadow-sm group-hover:border-accent/50 group-hover:text-accent">
                             {report.ticker || report.slug.split("-")[0]}
                           </span>
                           <div className="min-w-0">
@@ -837,29 +863,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               <span className="font-bold text-white group-hover:text-accent">
                                 {report.ticker || report.slug}
                               </span>
-                              {report.ticker && (
-                                <a
-                                  href={`https://finance.yahoo.com/quote/${report.ticker}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="text-slate-500 hover:text-accent"
-                                  title={
-                                    locale === "zh"
-                                      ? `在 Yahoo Finance 查看 ${report.ticker}`
-                                      : `View ${report.ticker} on Yahoo Finance`
-                                  }
-                                >
-                                  <ExternalLink className="size-3" />
-                                </a>
-                              )}
                               {report.quarter && (
-                                <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-400">
+                                <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
                                   {report.quarter}
                                 </span>
                               )}
                             </div>
-                            <p className="max-w-[180px] truncate text-[11px] text-slate-400 sm:max-w-[240px]">
+                            <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[180px] xl:max-w-[220px]">
                               {report.company || report.slug}
                             </p>
                           </div>
@@ -867,11 +877,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Economic Moat */}
-                      <td className="px-3 py-3.5">
+                      <td className="whitespace-nowrap p-2.5">
                         {report.moatRating ? (
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[11px] ${
                                 report.moatRating.toLowerCase() === "wide"
                                   ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
                                   : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
@@ -881,7 +891,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               {report.moatRating}
                             </span>
                             {report.moatTrend && (
-                              <span className="hidden font-mono text-[10px] text-slate-500 sm:inline">
+                              <span
+                                className={`hidden font-mono text-[10px] font-bold sm:inline ${
+                                  report.moatTrend === "Widening"
+                                    ? "text-emerald-400"
+                                    : report.moatTrend === "Narrowing"
+                                      ? "text-rose-400"
+                                      : "text-slate-500"
+                                }`}
+                                title={`${report.moatTrend} Moat Trend`}
+                              >
                                 {report.moatTrend === "Widening"
                                   ? "↗"
                                   : report.moatTrend === "Narrowing"
@@ -896,10 +915,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Snowflake Fundamental Radar & Score */}
-                      <td className="px-3 py-3.5">
+                      <td className="whitespace-nowrap p-2.5">
                         {report.snowflakeScore !== undefined ? (
                           <div
-                            className="flex items-center gap-2.5"
+                            className="flex items-center gap-2"
                             title={
                               report.snowflakePillars
                                 ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
@@ -910,7 +929,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               score={report.snowflakeScore}
                               tier={report.snowflakeTier}
                               pillars={report.snowflakePillars}
-                              size={34}
+                              size={28}
                             />
                             <div className="flex flex-col">
                               <div className="flex items-baseline gap-0.5">
@@ -942,21 +961,17 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Current Stock Price */}
-                      <td className="px-3 py-3.5 text-right font-mono font-medium text-white">
+                      <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-white sm:text-sm">
                         {price > 0 ? formatCurrency(price) : "—"}
                       </td>
 
                       {/* Analyst Consensus Target */}
-                      <td className="px-3 py-3.5 text-right font-mono">
+                      <td className="whitespace-nowrap p-2.5 text-right font-mono">
                         {report.analystTarget && report.analystTarget > 0 ? (
                           <div
                             title={
                               report.analystCount
-                                ? `${report.analystCount} ${
-                                    locale === "zh"
-                                      ? "位分析师评级"
-                                      : "analysts"
-                                  }${
+                                ? `${report.analystCount} ${ts.analystsLabel}${
                                     report.analystRating
                                       ? ` · ${report.analystRating}`
                                       : ""
@@ -964,16 +979,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 : undefined
                             }
                           >
-                            <div className="font-medium text-slate-200">
+                            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
                               {formatCurrency(report.analystTarget)}
                             </div>
-                            <div className="flex items-center justify-end gap-1 text-[11px]">
+                            <div className="flex items-center justify-end gap-1 font-mono text-[10px] tabular-nums sm:text-[11px]">
                               {report.analystUpsidePct !== undefined && (
                                 <span
                                   className={
                                     report.analystUpsidePct >= 0
-                                      ? "text-emerald-400"
-                                      : "text-rose-400"
+                                      ? "font-medium text-emerald-400"
+                                      : "font-medium text-rose-400"
                                   }
                                 >
                                   {report.analystUpsidePct >= 0 ? "+" : ""}
@@ -981,7 +996,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 </span>
                               )}
                               {report.analystRating && (
-                                <span className="hidden text-[10px] text-slate-500 sm:inline">
+                                <span className="hidden text-[9px] text-slate-500 sm:inline">
                                   • {report.analystRating}
                                 </span>
                               )}
@@ -993,16 +1008,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Base Fair Value & Upside */}
-                      <td className="px-3 py-3.5 text-right font-mono">
+                      <td className="whitespace-nowrap p-2.5 text-right font-mono">
                         {baseFv > 0 ? (
                           <div>
-                            <div className="font-medium text-slate-200">
+                            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
                               {formatCurrency(baseFv)}
                             </div>
                             <div
-                              className={`text-[11px] ${
+                              className={`font-mono text-[10px] font-medium tabular-nums sm:text-[11px] ${
                                 baseUpside >= 0
-                                  ? "text-green-400"
+                                  ? "text-emerald-400"
                                   : "text-rose-400"
                               }`}
                             >
@@ -1016,23 +1031,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Weighted Fair Value & Upside */}
-                      <td className="px-4 py-3.5 text-right font-mono">
+                      <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono">
                         {wfv > 0 ? (
                           <div>
-                            <div className="font-bold text-white">
+                            <div className="font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
                               {formatCurrency(wfv)}
                             </div>
                             <span
-                              className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold ${
+                              className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums sm:text-[11px] ${
                                 isPositive
                                   ? "border border-green-500/30 bg-green-500/10 text-green-400"
                                   : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
                               }`}
                             >
                               {isPositive ? (
-                                <ArrowUpRight className="size-3" />
+                                <ArrowUpRight className="size-2.5" />
                               ) : (
-                                <ArrowDownRight className="size-3" />
+                                <ArrowDownRight className="size-2.5" />
                               )}
                               {isPositive ? "+" : ""}
                               {upside.toFixed(1)}%
@@ -1044,33 +1059,48 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Stress Range Bar */}
-                      <td className="hidden min-w-[200px] px-4 py-3.5 lg:table-cell">
+                      <td
+                        className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell"
+                        title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
+                      >
                         {price > 0 && bull > bear ? (
                           <div className="space-y-1">
-                            <div className="relative h-2 w-full rounded-full bg-surface-3">
+                            <div className="relative h-1.5 w-full rounded-full bg-surface-3">
                               {/* Range track from Bear to Bull */}
                               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
 
                               {/* Base FV Marker */}
                               <div
                                 style={{ left: `${basePos}%` }}
-                                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400"
-                                title={`Base FV: ${formatCurrency(baseFv)}`}
+                                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
+                                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
                               />
 
                               {/* Current Price Marker */}
                               <div
                                 style={{ left: `${pricePos}%` }}
-                                className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-accent shadow"
-                                title={`Current Price: ${formatCurrency(price)}`}
+                                className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                                title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
                               />
                             </div>
-                            <div className="flex justify-between font-mono text-[10px] text-slate-500">
-                              <span>${Math.round(bear)}</span>
-                              <span className="font-semibold text-accent">
-                                {ts.currentPriceLabel}: ${Math.round(price)}
+                            <div className="flex items-center justify-between font-mono text-[10px] tabular-nums text-slate-500">
+                              <span
+                                title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
+                              >
+                                ${Math.round(bear)}
                               </span>
-                              <span>${Math.round(bull)}</span>
+                              <span
+                                className="flex items-center gap-1 font-mono text-[9px] text-slate-400"
+                                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+                              >
+                                <span className="size-1.5 rounded-full bg-sky-400" />
+                                ${Math.round(baseFv)}
+                              </span>
+                              <span
+                                title={`${ts.bullLabel}: ${formatCurrency(bull)}`}
+                              >
+                                ${Math.round(bull)}
+                              </span>
                             </div>
                           </div>
                         ) : (
@@ -1079,7 +1109,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Operating Margin */}
-                      <td className="hidden px-3 py-3.5 text-right font-mono text-slate-300 xl:table-cell">
+                      <td className="hidden whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm xl:table-cell">
                         {report.operatingMarginPct !== undefined ? (
                           <span>{report.operatingMarginPct.toFixed(1)}%</span>
                         ) : (
@@ -1088,7 +1118,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </td>
 
                       {/* Revenue Growth */}
-                      <td className="hidden px-3 py-3.5 text-right font-mono xl:table-cell">
+                      <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm xl:table-cell">
                         {report.revenueGrowthPct !== undefined ? (
                           <span
                             className={
