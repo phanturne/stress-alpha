@@ -41,6 +41,7 @@ import {
   parseScenarioUrlState,
   serializeScenarioUrlState,
 } from "@/lib/url-state";
+import { useWatchlist } from "@/lib/watchlist";
 
 const clientReportDataCache = new Map<string, ReportData>();
 let clientReportsListCache: ReportSummary[] | null = null;
@@ -62,6 +63,7 @@ export default function HomePage() {
   const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
   const [isSnowflakeOpen, setIsSnowflakeOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { isFavorite, toggleFavorite } = useWatchlist();
 
   // Restore saved language preference from localStorage on mount
   useEffect(() => {
@@ -615,6 +617,20 @@ export default function HomePage() {
         return;
       }
 
+      if (e.key === "f" || e.key === "F") {
+        const symbol = reportData?.facts?.ticker || currentSlug;
+        if (symbol) {
+          e.preventDefault();
+          const added = toggleFavorite(symbol);
+          showToast(
+            added
+              ? t.header.addedToWatchlistToast(symbol)
+              : t.header.removedFromWatchlistToast(symbol)
+          );
+          return;
+        }
+      }
+
       if (e.key === "?" || (e.shiftKey && e.key === "/")) {
         e.preventDefault();
         setIsShortcutsOpen((prev) => !prev);
@@ -645,6 +661,10 @@ export default function HomePage() {
   }, [
     tabItems,
     locale,
+    t,
+    reportData?.facts?.ticker,
+    currentSlug,
+    toggleFavorite,
     isShortcutsOpen,
     isSocialCardOpen,
     isSnowflakeOpen,
@@ -1028,6 +1048,15 @@ export default function HomePage() {
                 </span>
                 <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   W
+                </kbd>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.toggleFavorite}
+                </span>
+                <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                  F
                 </kbd>
               </div>
 

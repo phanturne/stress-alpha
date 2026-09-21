@@ -10,6 +10,7 @@ import {
   Wand2,
   ChevronDown,
   ChevronUp,
+  Star,
 } from "lucide-react";
 import type {
   FinancialModelBaseline,
@@ -23,6 +24,7 @@ import { PriceMeter } from "./PriceMeter";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { computeSnowflakeScore } from "@/lib/snowflake";
+import { useWatchlist } from "@/lib/watchlist";
 import { SnowflakeCard } from "./snowflake/SnowflakeCard";
 
 interface CockpitProps {
@@ -55,6 +57,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
   locale = "zh",
 }) => {
   const t = getTranslations(locale).cockpit;
+  const headerT = getTranslations(locale).header;
+  const { isFavorite, toggleFavorite } = useWatchlist();
+  const isFav = isFavorite(facts.ticker);
 
   const snowflakeScore = React.useMemo(() => {
     const effectiveReportData: ReportData = reportData ?? {
@@ -133,6 +138,29 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 <h2 className="font-mono text-sm font-black uppercase tracking-tight text-white sm:text-base">
                   {facts.ticker}
                 </h2>
+                <button
+                  type="button"
+                  onClick={() => toggleFavorite(facts.ticker)}
+                  className="rounded p-0.5 text-slate-500 transition-transform hover:scale-125 hover:text-amber-400 active:scale-95"
+                  title={
+                    isFav
+                      ? headerT.removeFromWatchlist
+                      : headerT.addToWatchlist
+                  }
+                  aria-label={
+                    isFav
+                      ? headerT.removeFromWatchlist
+                      : headerT.addToWatchlist
+                  }
+                >
+                  <Star
+                    className={`size-3.5 transition-colors ${
+                      isFav
+                        ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                        : "text-slate-500 hover:text-amber-300"
+                    }`}
+                  />
+                </button>
                 <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
                   {facts.quarter}
                 </span>

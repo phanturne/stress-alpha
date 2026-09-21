@@ -12,7 +12,9 @@ import {
   Settings,
   Keyboard,
   ArrowUpRight,
+  Star,
 } from "lucide-react";
+import { useWatchlist } from "@/lib/watchlist";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   return (
@@ -62,7 +64,10 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLocale = () => {},
 }) => {
   const t = getTranslations(locale).header;
+  const { isFavorite, toggleFavorite } = useWatchlist();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const currentSymbol = facts?.ticker || currentSlug;
+  const isCurrentFavorite = currentSymbol ? isFavorite(currentSymbol) : false;
 
   return (
     <header className="glass-panel sticky top-0 z-40 flex w-full flex-nowrap items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
@@ -138,6 +143,39 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden sm:inline">{t.memo}</span>
             </button>
           </div>
+        )}
+
+        {/* Watchlist Quick Toggle Button - available when a report is active */}
+        {viewMode !== "screener" && currentSymbol && (
+          <button
+            type="button"
+            onClick={() => toggleFavorite(currentSymbol)}
+            className={`group flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition-all sm:px-3 ${
+              isCurrentFavorite
+                ? "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:border-amber-500/60 hover:bg-amber-500/25"
+                : "border-white/[0.08] bg-surface-1/90 text-slate-400 hover:border-white/20 hover:bg-surface-2 hover:text-white"
+            }`}
+            title={
+              isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist
+            }
+            aria-label={
+              isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist
+            }
+          >
+            <Star
+              className={`size-3.5 transition-transform duration-200 group-hover:scale-110 ${
+                isCurrentFavorite
+                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                  : "text-slate-400 group-hover:text-amber-300"
+              }`}
+            />
+            <span className="hidden md:inline">
+              {isCurrentFavorite ? t.bookmarked : t.bookmark}
+            </span>
+            <kbd className="hidden font-mono text-[9px] text-slate-500 xl:inline">
+              F
+            </kbd>
+          </button>
         )}
 
         {/* Unified Share & Export Button - available when a report is selected */}

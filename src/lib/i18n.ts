@@ -22,6 +22,13 @@ export interface Translations {
     settings: string;
     language: string;
     shortcuts: string;
+    watchlist: string;
+    addToWatchlist: string;
+    removeFromWatchlist: string;
+    bookmarked: string;
+    bookmark: string;
+    addedToWatchlistToast: (ticker: string) => string;
+    removedFromWatchlistToast: (ticker: string) => string;
   };
   selector: {
     selectReport: string;
@@ -29,6 +36,9 @@ export interface Translations {
     noReportsFound: string;
     refreshTitle: string;
     openScreener: string;
+    watchlistSection: string;
+    allReportsSection: string;
+    starredTooltip: string;
   };
   cockpit: {
     title: string;
@@ -105,6 +115,7 @@ export interface Translations {
     exportCard: string;
     openSnowflake: string;
     toggleScreener: string;
+    toggleFavorite: string;
     close: string;
   };
   snowflake: {
@@ -428,6 +439,12 @@ export interface Translations {
     noResults: string;
     resetFilters: string;
     resultsCount: (shown: number, total: number) => string;
+    filterWatchlist: string;
+    colFavorite: string;
+    watchlistEmptyTitle: string;
+    watchlistEmptyDesc: string;
+    viewAllReports: string;
+    watchlistCount: (count: number) => string;
     bearLabel: string;
     baseLabel: string;
     bullLabel: string;
@@ -584,6 +601,14 @@ export const translations: Record<Locale, Translations> = {
       settings: "Settings & Resources",
       language: "Language",
       shortcuts: "Keyboard Shortcuts",
+      watchlist: "Watchlist",
+      addToWatchlist: "Add to Watchlist (F)",
+      removeFromWatchlist: "Remove from Watchlist (F)",
+      bookmarked: "Watchlisted",
+      bookmark: "Watchlist",
+      addedToWatchlistToast: (ticker: string) => `Added ${ticker} to Watchlist`,
+      removedFromWatchlistToast: (ticker: string) =>
+        `Removed ${ticker} from Watchlist`,
     },
     selector: {
       selectReport: "Select Report...",
@@ -591,6 +616,9 @@ export const translations: Record<Locale, Translations> = {
       noReportsFound: "No reports found under reports/",
       refreshTitle: "Refresh reports folder",
       openScreener: "Open Stock Screener",
+      watchlistSection: "Pinned Watchlist",
+      allReportsSection: "All Covered Reports",
+      starredTooltip: "Toggle Watchlist",
     },
     cockpit: {
       title: "Stress Test Cockpit",
@@ -671,6 +699,7 @@ export const translations: Record<Locale, Translations> = {
       exportCard: "Export Social Media Card (E)",
       openSnowflake: "Snowflake Analysis (W)",
       toggleScreener: "Toggle Stock Screener (S)",
+      toggleFavorite: "Toggle Watchlist / Favorite (F)",
       close: "Close Dialog (Esc / ?)",
     },
     snowflake: {
@@ -1013,6 +1042,13 @@ export const translations: Record<Locale, Translations> = {
       resetFilters: "Reset Filters",
       resultsCount: (shown: number, total: number) =>
         `Showing ${shown} of ${total} tickers`,
+      filterWatchlist: "Watchlist",
+      colFavorite: "Watch",
+      watchlistEmptyTitle: "Your Watchlist is Empty",
+      watchlistEmptyDesc:
+        "Star companies in the table or press [F] in the cockpit to curate your focus universe.",
+      viewAllReports: "View All Reports",
+      watchlistCount: (count: number) => `Watchlist (${count})`,
       bearLabel: "Bear",
       baseLabel: "Base",
       bullLabel: "Bull",
@@ -1174,6 +1210,14 @@ export const translations: Record<Locale, Translations> = {
       settings: "偏好与设置",
       language: "界面语言",
       shortcuts: "键盘快捷键",
+      watchlist: "自选关注",
+      addToWatchlist: "加入自选 (F)",
+      removeFromWatchlist: "移出自选 (F)",
+      bookmarked: "已自选",
+      bookmark: "自选",
+      addedToWatchlistToast: (ticker: string) => `已将 ${ticker} 加入自选关注`,
+      removedFromWatchlistToast: (ticker: string) =>
+        `已将 ${ticker} 移出自选关注`,
     },
     selector: {
       selectReport: "选择财报研报...",
@@ -1181,6 +1225,9 @@ export const translations: Record<Locale, Translations> = {
       noReportsFound: "在 reports/ 目录下未找到任何研报",
       refreshTitle: "刷新研报目录",
       openScreener: "打开股票筛选",
+      watchlistSection: "已关注自选标的",
+      allReportsSection: "全部覆盖研报",
+      starredTooltip: "切换自选状态",
     },
     cockpit: {
       title: "压力测试驾驶舱",
@@ -1257,6 +1304,7 @@ export const translations: Record<Locale, Translations> = {
       exportCard: "导出社媒卡片 (E)",
       openSnowflake: "全景雪花图审计 (W)",
       toggleScreener: "打开/关闭股票筛选 (S)",
+      toggleFavorite: "加入/移出自选标的 (F)",
       close: "关闭窗口 (Esc / ?)",
     },
     snowflake: {
@@ -1591,6 +1639,13 @@ export const translations: Record<Locale, Translations> = {
       resetFilters: "重置筛选条件",
       resultsCount: (shown: number, total: number) =>
         `显示 ${shown} / 共 ${total} 家标的`,
+      filterWatchlist: "自选关注",
+      colFavorite: "关注",
+      watchlistEmptyTitle: "自选列表暂无标的",
+      watchlistEmptyDesc:
+        "在全景表格中点击星标或在驾驶舱按 [F] 键，即可添加重点跟踪标的。",
+      viewAllReports: "查看全部标的",
+      watchlistCount: (count: number) => `自选关注 (${count})`,
       bearLabel: "悲观",
       baseLabel: "基准",
       bullLabel: "乐观",

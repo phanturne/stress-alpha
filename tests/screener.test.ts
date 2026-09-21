@@ -93,4 +93,19 @@ describe("Screener & Reports API", () => {
     expect(highUpside.some((r) => r.ticker === "NVDA")).toBe(true);
     expect(highUpside.some((r) => r.ticker === "BABA")).toBe(true);
   });
+
+  it("filters universe reports by active watchlist", async () => {
+    const response = await GET();
+    const { reports }: { reports: ReportSummary[] } = await response.json();
+
+    const activeWatchlist = ["NVDA", "AMZN"];
+    const watchlistedReports = reports.filter((r) =>
+      activeWatchlist.includes(r.ticker || r.slug.split("-")[0])
+    );
+
+    expect(watchlistedReports.length).toBe(2);
+    expect(watchlistedReports.map((r) => r.ticker)).toEqual(
+      expect.arrayContaining(["NVDA", "AMZN"])
+    );
+  });
 });

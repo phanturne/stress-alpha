@@ -14,12 +14,14 @@ import {
   BarChart3,
   CheckCircle2,
   RotateCcw,
+  Star,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { useWatchlist } from "@/lib/watchlist";
 
 interface ScreenerViewProps {
   reports: ReportSummary[];
@@ -142,15 +144,21 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
   const t = getTranslations(locale);
   const ts = t.screener;
 
+  const { isFavorite, toggleFavorite, count: watchlistCount } = useWatchlist();
   const [searchQuery, setSearchQuery] = useState("");
+  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(false);
   const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
   const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  // Summary statistics
+  // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
   const stats = useMemo(() => {
-    if (reports.length === 0) {
+    const baseList = watchlistOnly
+      ? reports.filter((r) => isFavorite(r.ticker || r.slug))
+      : reports;
+
+    if (baseList.length === 0) {
       return {
         count: 0,
         avgUpside: 0,
@@ -159,7 +167,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       };
     }
 
-    const validUpsides = reports
+    const validUpsides = baseList
       .map((r) => r.upsidePct)
       .filter((u): u is number => typeof u === "number" && !isNaN(u));
     const avgUpside =
@@ -171,7 +179,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     let maxUpside = -Infinity;
     let wideMoatCount = 0;
 
-    for (const r of reports) {
+    for (const r of baseList) {
       if (typeof r.upsidePct === "number" && r.upsidePct > maxUpside) {
         maxUpside = r.upsidePct;
         topPick = r;
@@ -182,17 +190,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     }
 
     return {
-      count: reports.length,
+      count: baseList.length,
       avgUpside,
       topPick,
       wideMoatCount,
     };
-  }, [reports]);
+  }, [reports, watchlistOnly, isFavorite]);
 
   // Filter and sort reports
   const filteredReports = useMemo(() => {
     return reports
       .filter((r) => {
+        // Watchlist filter
+        if (watchlistOnly) {
+          const symbol = r.ticker || r.slug;
+          if (!isFavorite(symbol)) return false;
+        }
+
         // Text search
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
@@ -281,6 +295,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
   }, [
     reports,
     searchQuery,
+    watchlistOnly,
+    isFavorite,
     moatFilter,
     upsideFilter,
     sortField,
@@ -504,6 +520,38 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
         {/* Filter Pills & Result Counter */}
         <div className="flex flex-wrap items-center gap-2.5">
+          {/* Watchlist Filter Pill */}
+          <button
+            type="button"
+            onClick={() => setWatchlistOnly(!watchlistOnly)}
+            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
+              watchlistOnly
+                ? "border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-sm ring-1 ring-amber-500/30"
+                : "border-white/[0.08] bg-surface-0/60 text-slate-400 hover:border-white/20 hover:text-white"
+            }`}
+            title={ts.filterWatchlist}
+          >
+            <Star
+              className={`size-3.5 ${
+                watchlistOnly
+                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                  : "text-slate-400"
+              }`}
+            />
+            <span>{ts.filterWatchlist}</span>
+            {watchlistCount > 0 && (
+              <span
+                className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
+                  watchlistOnly
+                    ? "bg-amber-400 font-bold text-slate-950"
+                    : "bg-surface-3 text-slate-400"
+                }`}
+              >
+                {watchlistCount}
+              </span>
+            )}
+          </button>
+
           {/* Moat Filter */}
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
             <button
@@ -585,13 +633,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </span>
             {(searchQuery ||
               moatFilter !== "all" ||
-              upsideFilter !== "all") && (
+              upsideFilter !== "all" ||
+              watchlistOnly) && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery("");
                   setMoatFilter("all");
                   setUpsideFilter("all");
+                  setWatchlistOnly(false);
                 }}
                 className="inline-flex items-center gap-1 rounded bg-surface-2 px-2 py-1 font-mono text-[11px] text-accent transition-colors hover:bg-surface-3"
                 title={ts.resetFilters}
@@ -610,10 +660,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           <table className="w-full text-left text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-white/[0.08] bg-surface-2/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                {/* Watchlist Star */}
+                <th
+                  className="w-10 whitespace-nowrap py-3 pl-3 pr-1 text-center"
+                  title={ts.colFavorite}
+                >
+                  <Star className="mx-auto size-3.5 text-slate-400" />
+                </th>
+
                 {/* Ticker & Company */}
                 <th
                   onClick={() => handleSort("ticker")}
-                  className="group/th cursor-pointer whitespace-nowrap py-3 pl-4 pr-3 transition-colors hover:text-white"
+                  className="group/th cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
                 >
                   <div className="flex items-center gap-1.5">
                     <span>{ts.colTicker}</span>
@@ -732,8 +790,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       key={`skeleton-${idx}`}
                       className="border-b border-white/[0.03]"
                     >
+                      {/* Watchlist Star Skeleton */}
+                      <td className="w-10 py-2.5 pl-3 pr-1 text-center">
+                        <Skeleton className="mx-auto size-4 rounded" />
+                      </td>
+
                       {/* Ticker & Company */}
-                      <td className="py-2.5 pl-4 pr-3">
+                      <td className="py-2.5 pl-2 pr-3">
                         <div className="flex items-center gap-2.5">
                           <Skeleton className="size-7 shrink-0 rounded-lg" />
                           <div className="space-y-1.5">
@@ -808,20 +871,44 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               ) : filteredReports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={10}
-                    className="px-4 py-12 text-center text-slate-400"
+                    colSpan={11}
+                    className="px-4 py-16 text-center text-slate-400"
                   >
-                    <p className="text-sm font-medium">{ts.noResults}</p>
-                    <button
-                      onClick={() => {
-                        setSearchQuery("");
-                        setMoatFilter("all");
-                        setUpsideFilter("all");
-                      }}
-                      className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
-                    >
-                      {ts.resetFilters}
-                    </button>
+                    {watchlistOnly ? (
+                      <div className="flex flex-col items-center">
+                        <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
+                          <Star className="size-6 fill-amber-400" />
+                        </div>
+                        <h3 className="mt-3 text-base font-bold text-white">
+                          {ts.watchlistEmptyTitle}
+                        </h3>
+                        <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
+                          {ts.watchlistEmptyDesc}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setWatchlistOnly(false)}
+                          className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                        >
+                          {ts.viewAllReports}
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium">{ts.noResults}</p>
+                        <button
+                          onClick={() => {
+                            setSearchQuery("");
+                            setMoatFilter("all");
+                            setUpsideFilter("all");
+                            setWatchlistOnly(false);
+                          }}
+                          className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
+                        >
+                          {ts.resetFilters}
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ) : (
@@ -852,8 +939,41 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       className="group cursor-pointer transition-colors hover:bg-surface-2/70"
                       onClick={() => onSelectReport(report.slug, "cockpit")}
                     >
+                      {/* Watchlist Star Toggle */}
+                      <td
+                        className="w-10 py-2.5 pl-3 pr-1 text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(report.ticker || report.slug);
+                          }}
+                          className="group/star inline-flex items-center justify-center rounded p-1 transition-transform hover:scale-125 active:scale-95"
+                          title={
+                            isFavorite(report.ticker || report.slug)
+                              ? t.header.removeFromWatchlist
+                              : t.header.addToWatchlist
+                          }
+                          aria-label={
+                            isFavorite(report.ticker || report.slug)
+                              ? t.header.removeFromWatchlist
+                              : t.header.addToWatchlist
+                          }
+                        >
+                          <Star
+                            className={`size-4 transition-colors ${
+                              isFavorite(report.ticker || report.slug)
+                                ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
+                                : "text-slate-600 hover:text-amber-400"
+                            }`}
+                          />
+                        </button>
+                      </td>
+
                       {/* Ticker & Company */}
-                      <td className="py-2.5 pl-4 pr-3">
+                      <td className="py-2.5 pl-2 pr-3">
                         <div className="flex items-center gap-2.5">
                           <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-surface-1 font-mono text-[11px] font-black tracking-tight text-white shadow-sm group-hover:border-accent/50 group-hover:text-accent">
                             {report.ticker || report.slug.split("-")[0]}

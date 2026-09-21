@@ -7,9 +7,11 @@ import {
   Check,
   Sparkles,
   BarChart3,
+  Star,
 } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { useWatchlist } from "@/lib/watchlist";
 
 interface ReportSelectorProps {
   currentSlug: string | null;
@@ -27,6 +29,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   onOpenScreener,
 }) => {
   const t = getTranslations(locale).selector;
+  const { isFavorite, toggleFavorite } = useWatchlist();
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -51,6 +54,74 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const currentLabel = currentReport
     ? `${currentReport.ticker || currentReport.slug}${currentReport.quarter ? ` • ${currentReport.quarter}` : ""}${currentReport.company ? ` — ${currentReport.company}` : ""}`
     : t.selectReport;
+
+  const pinnedReports = reports.filter((r) => isFavorite(r.ticker || r.slug));
+  const otherReports = reports.filter((r) => !isFavorite(r.ticker || r.slug));
+
+  const renderReportItem = (r: ReportSummary) => {
+    const isSelected = r.slug === currentSlug;
+    const isFav = isFavorite(r.ticker || r.slug);
+    return (
+      <div
+        key={r.slug}
+        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+          isSelected
+            ? "bg-accent/10 font-semibold text-accent"
+            : "text-slate-300 hover:bg-surface-2 hover:text-white"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            onSelectReport(r.slug);
+            setIsOpen(false);
+          }}
+          className="flex min-w-0 flex-1 flex-col gap-0.5 text-left"
+        >
+          <div className="flex items-center gap-2">
+            <span className="font-mono font-bold text-white">
+              {r.ticker || r.name}
+            </span>
+            {r.quarter && (
+              <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-accent">
+                {r.quarter}
+              </span>
+            )}
+          </div>
+          <span
+            className="truncate text-[11px] text-slate-400"
+            title={r.company || r.name}
+          >
+            {r.company || r.name}
+          </span>
+        </button>
+
+        <div className="ml-2 flex shrink-0 items-center gap-1.5">
+          {isSelected && (
+            <Check className="size-3.5 shrink-0 text-accent" />
+          )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(r.ticker || r.slug);
+            }}
+            className="rounded p-1 text-slate-500 transition-all hover:scale-125"
+            title={t.starredTooltip}
+            aria-label={t.starredTooltip}
+          >
+            <Star
+              className={`size-3.5 transition-colors ${
+                isFav
+                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                  : "text-slate-600 hover:text-amber-400"
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="relative inline-block text-left">
@@ -100,53 +171,36 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               </span>
             </div>
 
-            <div className="max-h-64 overflow-y-auto py-1">
+            <div className="max-h-72 overflow-y-auto py-1">
               {reports.length === 0 ? (
                 <div className="px-3 py-4 text-center text-xs text-slate-500">
                   {t.noReportsFound}
                 </div>
               ) : (
-                reports.map((r) => {
-                  const isSelected = r.slug === currentSlug;
-                  return (
-                    <button
-                      key={r.slug}
-                      type="button"
-                      onClick={() => {
-                        onSelectReport(r.slug);
-                        setIsOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
-                        isSelected
-                          ? "bg-accent/10 font-semibold text-accent"
-                          : "text-slate-300 hover:bg-surface-2 hover:text-white"
-                      }`}
-                    >
-                      <div className="flex flex-col gap-0.5 truncate">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-white">
-                            {r.ticker || r.name}
-                          </span>
-                          {r.quarter && (
-                            <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-accent">
-                              {r.quarter}
-                            </span>
-                          )}
-                        </div>
-                        <span
-                          className="truncate text-[11px] text-slate-400"
-                          title={r.company || r.name}
-                        >
-                          {r.company || r.name}
+                <>
+                  {pinnedReports.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1.5 border-b border-white/[0.04] bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                        <Star className="size-3 fill-amber-400 text-amber-400" />
+                        <span>
+                          {t.watchlistSection} ({pinnedReports.length})
                         </span>
                       </div>
+                      {pinnedReports.map(renderReportItem)}
+                    </div>
+                  )}
 
-                      {isSelected && (
-                        <Check className="ml-2 size-4 shrink-0 text-accent" />
+                  {otherReports.length > 0 && (
+                    <div>
+                      {pinnedReports.length > 0 && (
+                        <div className="flex items-center gap-1.5 border-y border-white/[0.04] bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          <span>{t.allReportsSection}</span>
+                        </div>
                       )}
-                    </button>
-                  );
-                })
+                      {otherReports.map(renderReportItem)}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
