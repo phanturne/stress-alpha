@@ -179,15 +179,15 @@ export function ScreenerClientPage({
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">{t.shortcuts.toggleFavorite}</span>
+                <span className="text-slate-400">
+                  {t.shortcuts.toggleFavorite}
+                </span>
                 <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
                   F
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">
-                  {t.shortcuts.close}
-                </span>
+                <span className="text-slate-400">{t.shortcuts.close}</span>
                 <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-slate-300">
                   ESC
                 </kbd>

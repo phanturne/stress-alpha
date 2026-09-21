@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -13,8 +13,14 @@ import {
   Keyboard,
   ArrowUpRight,
   Star,
+  LogIn,
+  LogOut,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
-import { useWatchlist } from "@/lib/watchlist";
+import { useWatchlist, AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
+import { useSession, signOut } from "@/lib/auth-client";
+import { AuthModal } from "./AuthModal";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   return (
@@ -63,11 +69,26 @@ export const Header: React.FC<HeaderProps> = ({
   locale = "zh",
   onToggleLocale = () => {},
 }) => {
-  const t = getTranslations(locale).header;
-  const { isFavorite, toggleFavorite } = useWatchlist();
+  const translations = getTranslations(locale);
+  const t = translations.header;
+  const tAuth = translations.auth;
+  const { isFavorite, toggleFavorite, isSyncing } = useWatchlist();
+  const { data: session } = useSession();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const currentSymbol = facts?.ticker || currentSlug;
   const isCurrentFavorite = currentSymbol ? isFavorite(currentSymbol) : false;
+
+  useEffect(() => {
+    const handleAuthRequired = () => {
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener(AUTH_REQUIRED_EVENT, handleAuthRequired);
+    return () => {
+      window.removeEventListener(AUTH_REQUIRED_EVENT, handleAuthRequired);
+    };
+  }, []);
 
   return (
     <header className="glass-panel sticky top-0 z-40 flex w-full flex-nowrap items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
@@ -155,9 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:border-amber-500/60 hover:bg-amber-500/25"
                 : "border-white/[0.08] bg-surface-1/90 text-slate-400 hover:border-white/20 hover:bg-surface-2 hover:text-white"
             }`}
-            title={
-              isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist
-            }
+            title={isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist}
             aria-label={
               isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist
             }
@@ -315,7 +334,93 @@ export const Header: React.FC<HeaderProps> = ({
             </>
           )}
         </div>
+
+        {/* User Profile / Authentication Menu */}
+        {session?.user ? (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs font-semibold shadow-sm transition-all sm:gap-2 sm:px-2.5 ${
+                isUserMenuOpen
+                  ? "border-accent/40 bg-surface-2 text-accent ring-1 ring-accent/30"
+                  : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-white/20 hover:bg-surface-2 hover:text-white"
+              }`}
+              title={tAuth.accountMenu}
+              aria-label={tAuth.accountMenu}
+            >
+              <div className="flex size-5 items-center justify-center rounded-full bg-accent/20 text-[10px] font-bold text-accent">
+                {session.user.name
+                  ? session.user.name.charAt(0).toUpperCase()
+                  : "A"}
+              </div>
+              <span className="hidden max-w-[80px] truncate sm:inline md:max-w-[120px]">
+                {session.user.name || tAuth.profile}
+              </span>
+              {isSyncing ? (
+                <Loader2 className="size-3 animate-spin text-accent" />
+              ) : (
+                <span
+                  className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
+                  title={tAuth.cloudSyncTooltip}
+                />
+              )}
+            </button>
+
+            {isUserMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsUserMenuOpen(false)}
+                />
+                <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-56 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+                  <div className="px-2.5 py-2">
+                    <div className="truncate text-xs font-bold text-white">
+                      {session.user.name || tAuth.profile}
+                    </div>
+                    <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
+                      {session.user.email}
+                    </div>
+                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400">
+                      <CheckCircle2 className="size-3 shrink-0 text-emerald-400" />
+                      <span>{tAuth.cloudSyncActive}</span>
+                    </div>
+                  </div>
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setIsUserMenuOpen(false);
+                        await signOut();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-rose-300 transition-colors hover:bg-rose-500/10 hover:text-rose-200"
+                    >
+                      <LogOut className="size-3.5 text-rose-400" />
+                      <span>{tAuth.signOut}</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsAuthModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-medium text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+            title={tAuth.signIn}
+          >
+            <LogIn className="size-3.5 text-accent" />
+            <span className="hidden sm:inline">{tAuth.signIn}</span>
+          </button>
+        )}
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        locale={locale}
+      />
     </header>
   );
 };

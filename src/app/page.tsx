@@ -63,7 +63,7 @@ export default function HomePage() {
   const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
   const [isSnowflakeOpen, setIsSnowflakeOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const { isFavorite, toggleFavorite } = useWatchlist();
+  const { isFavorite, toggleFavorite, isAuthenticated } = useWatchlist();
 
   // Restore saved language preference from localStorage on mount
   useEffect(() => {
@@ -621,6 +621,11 @@ export default function HomePage() {
         const symbol = reportData?.facts?.ticker || currentSlug;
         if (symbol) {
           e.preventDefault();
+          if (!isAuthenticated) {
+            toggleFavorite(symbol);
+            showToast(t.header.signInRequiredToast);
+            return;
+          }
           const added = toggleFavorite(symbol);
           showToast(
             added
@@ -665,6 +670,7 @@ export default function HomePage() {
     reportData?.facts?.ticker,
     currentSlug,
     toggleFavorite,
+    isAuthenticated,
     isShortcutsOpen,
     isSocialCardOpen,
     isSnowflakeOpen,

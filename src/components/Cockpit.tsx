@@ -143,14 +143,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   onClick={() => toggleFavorite(facts.ticker)}
                   className="rounded p-0.5 text-slate-500 transition-transform hover:scale-125 hover:text-amber-400 active:scale-95"
                   title={
-                    isFav
-                      ? headerT.removeFromWatchlist
-                      : headerT.addToWatchlist
+                    isFav ? headerT.removeFromWatchlist : headerT.addToWatchlist
                   }
                   aria-label={
-                    isFav
-                      ? headerT.removeFromWatchlist
-                      : headerT.addToWatchlist
+                    isFav ? headerT.removeFromWatchlist : headerT.addToWatchlist
                   }
                 >
                   <Star

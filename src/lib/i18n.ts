@@ -29,6 +29,7 @@ export interface Translations {
     bookmark: string;
     addedToWatchlistToast: (ticker: string) => string;
     removedFromWatchlistToast: (ticker: string) => string;
+    signInRequiredToast: string;
   };
   selector: {
     selectReport: string;
@@ -576,6 +577,35 @@ export interface Translations {
       probLabel: string;
     };
   };
+  auth: {
+    signIn: string;
+    signOut: string;
+    signUp: string;
+    createAccount: string;
+    email: string;
+    password: string;
+    name: string;
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    passwordPlaceholder: string;
+    signInTitle: string;
+    signUpTitle: string;
+    signInSubtitle: string;
+    signUpSubtitle: string;
+    alreadyHaveAccount: string;
+    dontHaveAccount: string;
+    loading: string;
+    errorTitle: string;
+    loginSuccess: string;
+    signupSuccess: string;
+    signoutSuccess: string;
+    cloudSyncActive: string;
+    cloudSyncTooltip: string;
+    accountMenu: string;
+    profile: string;
+    guestUser: string;
+    syncing: string;
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -609,6 +639,8 @@ export const translations: Record<Locale, Translations> = {
       addedToWatchlistToast: (ticker: string) => `Added ${ticker} to Watchlist`,
       removedFromWatchlistToast: (ticker: string) =>
         `Removed ${ticker} from Watchlist`,
+      signInRequiredToast:
+        "Sign in required to save stocks to database watchlist",
     },
     selector: {
       selectReport: "Select Report...",
@@ -1187,6 +1219,37 @@ export const translations: Record<Locale, Translations> = {
         probLabel: "Prob",
       },
     },
+    auth: {
+      signIn: "Sign In",
+      signOut: "Sign Out",
+      signUp: "Create Account",
+      createAccount: "Sign Up",
+      email: "Institutional Email",
+      password: "Password",
+      name: "Full Name",
+      namePlaceholder: "e.g. Portfolio Manager",
+      emailPlaceholder: "analyst@fund.com",
+      passwordPlaceholder: "••••••••",
+      signInTitle: "Institutional Terminal Sign In",
+      signUpTitle: "Create Analyst Account",
+      signInSubtitle:
+        "Sign in to synchronize your stock watchlists and custom valuation parameters to the cloud database.",
+      signUpSubtitle:
+        "Join StressAlpha to maintain persistent watchlists and scenario presets across sessions.",
+      alreadyHaveAccount: "Already have an account? Sign in",
+      dontHaveAccount: "Need an institutional account? Sign up",
+      loading: "Processing...",
+      errorTitle: "Authentication Error",
+      loginSuccess: "Signed in successfully",
+      signupSuccess: "Account created successfully",
+      signoutSuccess: "Signed out",
+      cloudSyncActive: "Cloud Sync Active",
+      cloudSyncTooltip: "Watchlist synchronized with Neon PostgreSQL",
+      accountMenu: "Account Settings",
+      profile: "Analyst Profile",
+      guestUser: "Guest",
+      syncing: "Syncing...",
+    },
   },
   zh: {
     header: {
@@ -1218,6 +1281,7 @@ export const translations: Record<Locale, Translations> = {
       addedToWatchlistToast: (ticker: string) => `已将 ${ticker} 加入自选关注`,
       removedFromWatchlistToast: (ticker: string) =>
         `已将 ${ticker} 移出自选关注`,
+      signInRequiredToast: "请先登录以将自选股保存至云端数据库",
     },
     selector: {
       selectReport: "选择财报研报...",
@@ -1781,6 +1845,36 @@ export const translations: Record<Locale, Translations> = {
         pricedInMultipleLabel: "已计入倍数",
         probLabel: "概率",
       },
+    },
+    auth: {
+      signIn: "登录",
+      signOut: "退出登录",
+      signUp: "创建账户",
+      createAccount: "注册",
+      email: "机构邮箱",
+      password: "密码",
+      name: "姓名",
+      namePlaceholder: "例如：投资经理",
+      emailPlaceholder: "analyst@fund.com",
+      passwordPlaceholder: "••••••••",
+      signInTitle: "机构工作台登录",
+      signUpTitle: "创建分析师账户",
+      signInSubtitle: "登录以将自选股清单与压力测试模型参数同步至云端数据库。",
+      signUpSubtitle:
+        "加入 StressAlpha，跨设备持久化保存您的重点关注标的与情景预设。",
+      alreadyHaveAccount: "已有账户？立即登录",
+      dontHaveAccount: "尚未拥有账户？立即注册",
+      loading: "处理中...",
+      errorTitle: "身份认证失败",
+      loginSuccess: "登录成功",
+      signupSuccess: "账户注册成功",
+      signoutSuccess: "已退出登录",
+      cloudSyncActive: "云端已同步",
+      cloudSyncTooltip: "自选股已实时同步至 Neon PostgreSQL 数据库",
+      accountMenu: "账户设置",
+      profile: "分析师资料",
+      guestUser: "访客",
+      syncing: "同步中...",
     },
   },
 };

@@ -7,41 +7,24 @@ import {
   addToWatchlist,
   removeFromWatchlist,
   toggleInWatchlist,
-  WATCHLIST_STORAGE_KEY,
+  fetchWatchlistFromDb,
+  mutateDbWatchlist,
+  clearDbWatchlist,
+  requestAuthLogin,
+  AUTH_REQUIRED_EVENT,
   WATCHLIST_CHANGE_EVENT,
 } from "@/lib/watchlist";
 import { getTranslations } from "@/lib/i18n";
 
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-
-  getItem(key: string): string | null {
-    return this.store[key] ?? null;
-  }
-
-  setItem(key: string, value: string): void {
-    this.store[key] = String(value);
-  }
-
-  removeItem(key: string): void {
-    delete this.store[key];
-  }
-
-  clear(): void {
-    this.store = {};
-  }
-}
-
-describe("Watchlist Utility & Storage", () => {
-  let mockStorage: LocalStorageMock;
+describe("Watchlist Utility & Database Store", () => {
   const originalWindow = global.window;
+  const originalFetch = global.fetch;
 
   beforeEach(() => {
-    mockStorage = new LocalStorageMock();
+    saveStoredWatchlist([]);
     const eventListeners: Record<string, EventListener[]> = {};
 
     global.window = {
-      localStorage: mockStorage,
       addEventListener: vi.fn((event: string, cb: EventListener) => {
         if (!eventListeners[event]) eventListeners[event] = [];
         eventListeners[event].push(cb);
@@ -60,7 +43,6 @@ describe("Watchlist Utility & Storage", () => {
       }),
     } as unknown as Window & typeof globalThis;
 
-    global.localStorage = mockStorage as unknown as Storage;
     if (typeof global.CustomEvent === "undefined") {
       class CustomEventMock<T = unknown> extends Event {
         detail: T;
@@ -75,6 +57,7 @@ describe("Watchlist Utility & Storage", () => {
 
   afterEach(() => {
     global.window = originalWindow;
+    global.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
@@ -151,18 +134,21 @@ describe("Watchlist Utility & Storage", () => {
       expect(toggle1.updated).toEqual(["NVDA", "AMZN"]);
 
       // Remove NVDA via slug
-      const toggle2 = toggleInWatchlist(toggle1.updated, "NVDA-Q2-2027-analysis");
+      const toggle2 = toggleInWatchlist(
+        toggle1.updated,
+        "NVDA-Q2-2027-analysis"
+      );
       expect(toggle2.added).toBe(false);
       expect(toggle2.updated).toEqual(["AMZN"]);
     });
   });
 
-  describe("getStoredWatchlist and saveStoredWatchlist", () => {
-    it("returns empty array when nothing is stored", () => {
+  describe("Reactive Watchlist Snapshot Management", () => {
+    it("returns empty array initially", () => {
       expect(getStoredWatchlist()).toEqual([]);
     });
 
-    it("persists unique tickers and emits CustomEvent", () => {
+    it("updates in-memory snapshot and broadcasts event", () => {
       const eventSpy = vi.fn();
       window.addEventListener(WATCHLIST_CHANGE_EVENT, eventSpy);
 
@@ -170,29 +156,106 @@ describe("Watchlist Utility & Storage", () => {
 
       const stored = getStoredWatchlist();
       expect(stored).toEqual(["NVDA", "AMZN", "BABA"]);
-      expect(mockStorage.getItem(WATCHLIST_STORAGE_KEY)).toBe(
-        JSON.stringify(["NVDA", "AMZN", "BABA"])
-      );
-
       expect(eventSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("filters out non-string and empty elements in storage", () => {
-      mockStorage.setItem(
-        WATCHLIST_STORAGE_KEY,
-        JSON.stringify(["NVDA", 123, null, "", "tsla"])
-      );
-      expect(getStoredWatchlist()).toEqual(["NVDA", "TSLA"]);
-    });
+    it("dispatches AUTH_REQUIRED_EVENT when requestAuthLogin is called", () => {
+      const authSpy = vi.fn();
+      window.addEventListener(AUTH_REQUIRED_EVENT, authSpy);
 
-    it("handles corrupt localStorage data gracefully", () => {
-      mockStorage.setItem(WATCHLIST_STORAGE_KEY, "invalid-json{");
-      expect(getStoredWatchlist()).toEqual([]);
+      requestAuthLogin();
+      expect(authSpy).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("i18n Localization Parity for Watchlist", () => {
-    it("ensures all watchlist keys exist in both English and Chinese dictionaries", () => {
+  describe("Database API Direct Helpers", () => {
+    it("fetchWatchlistFromDb fetches directly from /api/watchlist", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          authenticated: true,
+          watchlist: ["NVDA", "AMZN", "MSFT"],
+        }),
+      } as Response);
+
+      const res = await fetchWatchlistFromDb();
+      expect(res.authenticated).toBe(true);
+      expect(res.watchlist).toEqual(["NVDA", "AMZN", "MSFT"]);
+      expect(global.fetch).toHaveBeenCalledWith("/api/watchlist", {
+        method: "GET",
+        headers: { "Cache-Control": "no-cache" },
+      });
+    });
+
+    it("fetchWatchlistFromDb returns empty list when unauthenticated", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          authenticated: false,
+          watchlist: [],
+        }),
+      } as Response);
+
+      const res = await fetchWatchlistFromDb();
+      expect(res.authenticated).toBe(false);
+      expect(res.watchlist).toEqual([]);
+    });
+
+    it("mutateDbWatchlist executes toggle mutation against /api/watchlist", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          added: true,
+          watchlist: ["NVDA", "GOOGL"],
+        }),
+      } as Response);
+
+      const res = await mutateDbWatchlist("toggle", "GOOGL");
+      expect(res?.success).toBe(true);
+      expect(res?.added).toBe(true);
+      expect(res?.watchlist).toEqual(["NVDA", "GOOGL"]);
+      expect(global.fetch).toHaveBeenCalledWith("/api/watchlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggle", ticker: "GOOGL" }),
+      });
+    });
+
+    it("mutateDbWatchlist executes batch sync mutation against /api/watchlist", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          watchlist: ["NVDA", "AAPL", "MSFT"],
+        }),
+      } as Response);
+
+      const res = await mutateDbWatchlist("sync", ["NVDA", "AAPL"]);
+      expect(res?.success).toBe(true);
+      expect(res?.watchlist).toEqual(["NVDA", "AAPL", "MSFT"]);
+      expect(global.fetch).toHaveBeenCalledWith("/api/watchlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync", tickers: ["NVDA", "AAPL"] }),
+      });
+    });
+
+    it("clearDbWatchlist sends DELETE request to /api/watchlist", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+      } as Response);
+
+      const success = await clearDbWatchlist();
+      expect(success).toBe(true);
+      expect(global.fetch).toHaveBeenCalledWith("/api/watchlist", {
+        method: "DELETE",
+      });
+    });
+  });
+
+  describe("i18n Localization Parity for Watchlist & Auth", () => {
+    it("ensures all watchlist and auth keys exist in both English and Chinese dictionaries", () => {
       const en = getTranslations("en");
       const zh = getTranslations("zh");
 
@@ -205,6 +268,8 @@ describe("Watchlist Utility & Storage", () => {
       expect(zh.header.removeFromWatchlist).toContain("(F)");
       expect(en.header.bookmarked).toBeTruthy();
       expect(zh.header.bookmarked).toBeTruthy();
+      expect(en.header.signInRequiredToast).toBeTruthy();
+      expect(zh.header.signInRequiredToast).toBeTruthy();
       expect(en.header.addedToWatchlistToast("NVDA")).toContain("NVDA");
       expect(zh.header.addedToWatchlistToast("NVDA")).toContain("NVDA");
       expect(en.header.removedFromWatchlistToast("NVDA")).toContain("NVDA");
@@ -231,6 +296,16 @@ describe("Watchlist Utility & Storage", () => {
       // Shortcuts key
       expect(en.shortcuts.toggleFavorite).toContain("(F)");
       expect(zh.shortcuts.toggleFavorite).toContain("(F)");
+
+      // Auth keys
+      expect(en.auth.signIn).toBeTruthy();
+      expect(zh.auth.signIn).toBeTruthy();
+      expect(en.auth.signOut).toBeTruthy();
+      expect(zh.auth.signOut).toBeTruthy();
+      expect(en.auth.signUp).toBeTruthy();
+      expect(zh.auth.signUp).toBeTruthy();
+      expect(en.auth.cloudSyncActive).toBeTruthy();
+      expect(zh.auth.cloudSyncActive).toBeTruthy();
     });
   });
 });

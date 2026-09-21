@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   index,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import type {
   Facts,
   Scenarios,
@@ -141,3 +142,149 @@ export type TickerInsert = typeof tickersTable.$inferInsert;
 
 export type ReportSelect = typeof reportsTable.$inferSelect;
 export type ReportInsert = typeof reportsTable.$inferInsert;
+
+// ---------------------------------------------------------------------------
+// 3. Authentication Tables (Better Auth Core Schema)
+// ---------------------------------------------------------------------------
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const session = pgTable(
+  "session",
+  {
+    id: text("id").primaryKey(),
+    expiresAt: timestamp("expires_at").notNull(),
+    token: text("token").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .$onUpdate(() => new Date())
+      .notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+  },
+  (table) => [index("session_userId_idx").on(table.userId)]
+);
+
+export const account = pgTable(
+  "account",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at"),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+    scope: text("scope"),
+    password: text("password"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index("account_userId_idx").on(table.userId)]
+);
+
+export const verification = pgTable(
+  "verification",
+  {
+    id: text("id").primaryKey(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index("verification_identifier_idx").on(table.identifier)]
+);
+
+// Convenience aliases
+export const usersTable = user;
+export const sessionsTable = session;
+export const accountsTable = account;
+export const verificationsTable = verification;
+
+// ---------------------------------------------------------------------------
+// 4. User Watchlist Table (Cloud synchronization for institutional watchlists)
+// ---------------------------------------------------------------------------
+export const userWatchlistsTable = pgTable(
+  "user_watchlists",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    ticker: text("ticker").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_user_watchlists_user").on(table.userId),
+    uniqueIndex("idx_user_watchlists_user_ticker").on(
+      table.userId,
+      table.ticker
+    ),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// 5. Relations
+// ---------------------------------------------------------------------------
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  watchlists: many(userWatchlistsTable),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const userWatchlistsRelations = relations(
+  userWatchlistsTable,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [userWatchlistsTable.userId],
+      references: [user.id],
+    }),
+  })
+);
+
+export type UserSelect = typeof user.$inferSelect;
+export type UserInsert = typeof user.$inferInsert;
+export type SessionSelect = typeof session.$inferSelect;
+export type AccountSelect = typeof account.$inferSelect;
+export type VerificationSelect = typeof verification.$inferSelect;
+export type UserWatchlistSelect = typeof userWatchlistsTable.$inferSelect;
+export type UserWatchlistInsert = typeof userWatchlistsTable.$inferInsert;

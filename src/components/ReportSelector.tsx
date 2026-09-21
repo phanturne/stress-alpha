@@ -97,9 +97,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         </button>
 
         <div className="ml-2 flex shrink-0 items-center gap-1.5">
-          {isSelected && (
-            <Check className="size-3.5 shrink-0 text-accent" />
-          )}
+          {isSelected && <Check className="size-3.5 shrink-0 text-accent" />}
           <button
             type="button"
             onClick={(e) => {

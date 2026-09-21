@@ -23,3 +23,17 @@ export function formatPercent(
 export function formatBillions(value: number, decimals: number = 1): string {
   return `$${value.toFixed(decimals)}B`;
 }
+
+/**
+ * Normalizes a ticker or report slug into an uppercase ticker symbol.
+ * E.g. "NVDA-Q2-2027-analysis" -> "NVDA", "nvda" -> "NVDA"
+ */
+export function normalizeTicker(tickerOrSlug?: string | null): string {
+  if (!tickerOrSlug) return "";
+  const cleaned = tickerOrSlug.trim();
+  if (cleaned.includes("-")) {
+    const candidate = cleaned.split("-")[0].toUpperCase().trim();
+    if (candidate) return candidate;
+  }
+  return cleaned.toUpperCase();
+}
