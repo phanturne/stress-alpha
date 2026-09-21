@@ -169,7 +169,7 @@ export default function MethodologyPage() {
               href="#revenue-shock"
               className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
-              1. {isZh ? "上游需求扰动传导" : "Upstream Shocks"}
+              1. {isZh ? "需求驱动与业务量冲击" : "Demand & Volume Drivers"}
             </a>
             <a
               href="#operating-leverage"
@@ -181,13 +181,14 @@ export default function MethodologyPage() {
               href="#income-guardrail"
               className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
-              3. {isZh ? "收益质量与核心EPS" : "Clean Operating EPS"}
+              3. {isZh ? "盈利质量与核心EPS" : "Earnings Quality & EPS"}
             </a>
             <a
               href="#valuation-regimes"
               className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
-              4. {isZh ? "估值谱系与风险不对称" : "Valuation Regimes"}
+              4.{" "}
+              {isZh ? "情景目标价与盈亏比" : "Scenario Targets & Risk/Reward"}
             </a>
             <a
               href="#base-vs-wfv"
@@ -236,7 +237,7 @@ export default function MethodologyPage() {
               <div className="mt-3 grid grid-cols-1 gap-1 text-[11px] text-slate-400 sm:grid-cols-3">
                 <div>
                   <span className="text-accent">Shock_i:</span>{" "}
-                  {isZh ? "滑块扰动幅度 (%)" : "Perturbation (%)"}
+                  {isZh ? "滑块调整幅度 (%)" : "Adjustment (%)"}
                 </div>
                 <div>
                   <span className="text-accent">Exposure_i:</span>{" "}
@@ -335,8 +336,8 @@ export default function MethodologyPage() {
               <h2 className="text-lg font-bold text-white sm:text-xl">
                 3.{" "}
                 {isZh
-                  ? "收益质量防线与核心经营 EPS 净化"
-                  : "Income Quality Guardrail & Clean Operating EPS"}
+                  ? "盈利质量防线与核心经营 EPS 净化"
+                  : "Earnings Quality Audit & Clean Operating EPS"}
               </h2>
             </div>
 
@@ -402,8 +403,8 @@ export default function MethodologyPage() {
               <h2 className="text-lg font-bold text-white sm:text-xl">
                 4.{" "}
                 {isZh
-                  ? "动态估值谱系与风险收益不对称性"
-                  : "Valuation Outcome Regimes & Risk Asymmetry"}
+                  ? "情景目标价谱系与盈亏收益比"
+                  : "Scenario Target Prices & Risk/Reward Ratio"}
               </h2>
             </div>
 
@@ -461,8 +462,8 @@ export default function MethodologyPage() {
             <div className="glass-panel rounded-xl border border-white/[0.08] p-4">
               <div className="text-xs font-bold text-white sm:text-sm">
                 {isZh
-                  ? "风险收益不对称比率 (Risk/Reward Asymmetry Skew)"
-                  : "Risk/Reward Asymmetry Skew Ratio"}
+                  ? "盈亏收益比 (Risk/Reward Ratio)"
+                  : "Risk / Reward Ratio"}
               </div>
               <p className="mt-1 text-xs text-slate-400">
                 {isZh
@@ -489,8 +490,8 @@ export default function MethodologyPage() {
 
             <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
-                ? "这是全景筛选器（Screener）与估值树中最核心的两个指标："
-                : "These are the two anchor valuation figures featured in the Universe Screener and Cockpit:"}
+                ? "这是股票筛选器（Screener）与估值模型中最核心的两个指标："
+                : "These are the two anchor valuation figures featured in the Stock Screener and Cockpit:"}
             </p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

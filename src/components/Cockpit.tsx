@@ -905,8 +905,8 @@ export const Cockpit: React.FC<CockpitProps> = ({
               className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-300 shadow-sm transition-colors hover:border-accent/40 hover:text-white"
               title={
                 isGuardrailOpen
-                  ? "Click to collapse non-operating items breakdown"
-                  : "Click to expand non-operating items breakdown"
+                  ? t.guardrail.toggleHide
+                  : t.guardrail.toggleShow
               }
             >
               <span>

@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={() => onViewModeChange("screener")}
           className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90"
-          title="StressAlpha Home — Universe Screener"
+          title={`StressAlpha Home — ${t.screener}`}
         >
           <div className="flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent shadow-glow transition-transform group-hover:scale-105">
             <span className="font-mono text-sm font-extrabold tracking-tighter">

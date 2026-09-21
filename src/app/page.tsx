@@ -997,9 +997,7 @@ export default function HomePage() {
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
                 <span className="text-xs text-slate-300">
-                  {locale === "zh"
-                    ? "切换全景筛选与对比"
-                    : "Toggle Universe Screener"}
+                  {t.shortcuts.toggleScreener}
                 </span>
                 <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                   S
