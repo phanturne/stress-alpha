@@ -31,7 +31,6 @@ function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   );
 }
 import { ReportSelector } from "./ReportSelector";
-import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { Facts, Valuation } from "@/lib/schemas";
 
@@ -51,7 +50,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   facts,
-  valuation,
+  valuation: _valuation,
   currentSlug,
   onSelectReport,
   viewMode,
@@ -63,9 +62,6 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLocale = () => {},
 }) => {
   const t = getTranslations(locale).header;
-  const currentPrice = facts?.currentPrice ?? 0;
-  const weightedFairValue = valuation?.weightedFairValue ?? 0;
-  const upsidePct = valuation?.upsidePct ?? 0;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
@@ -109,38 +105,6 @@ export const Header: React.FC<HeaderProps> = ({
           onOpenScreener={() => onViewModeChange("screener")}
         />
       </div>
-
-      {/* Middle: Lean Live Market Data Bar - Absolutely Centered in Viewport */}
-      {facts && viewMode !== "screener" && (
-        <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:flex">
-          <div className="glass-panel-subtle pointer-events-auto flex items-center gap-3.5 whitespace-nowrap rounded-lg px-3 py-1 font-mono text-xs tabular-nums shadow-sm">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">
-                {t.currentPrice}:
-              </span>
-              <span className="font-bold text-white">
-                {formatCurrency(currentPrice)}
-              </span>
-            </div>
-            <div className="h-3 w-px bg-white/[0.08]" />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-400">
-                {t.weightedFairValue}:
-              </span>
-              <span
-                className={`font-bold ${
-                  upsidePct >= 0 ? "text-fintech-green" : "text-fintech-red"
-                }`}
-              >
-                {formatCurrency(weightedFairValue, 0)}{" "}
-                <span className="text-[11px] font-semibold">
-                  ({formatPercent(upsidePct)})
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Right: View Modes, Share, and Settings & Resources Menu */}
       <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">

@@ -91,6 +91,18 @@ export const Cockpit: React.FC<CockpitProps> = ({
   } = stressResult;
 
   const currentPrice = facts.currentPrice;
+  const weightedFairValue =
+    valuation?.weightedFairValue ??
+    valuation?.scenarioResults?.reduce(
+      (acc, s) => acc + s.probability * s.fairValue,
+      0
+    ) ??
+    0;
+  const upsidePct =
+    valuation?.upsidePct ??
+    (currentPrice > 0 && weightedFairValue > 0
+      ? round2(((weightedFairValue - currentPrice) / currentPrice) * 100)
+      : 0);
 
   const handleApplyPreset = (preset: "baseline" | "mild" | "severe") => {
     if (preset === "baseline") {
@@ -108,18 +120,32 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
   return (
     <aside className="custom-scrollbar flex w-full shrink-0 flex-col gap-4 lg:sticky lg:top-[66px] lg:max-h-[calc(100vh-82px)] lg:w-[380px] lg:overflow-y-auto lg:pr-1 xl:w-[415px] 2xl:w-[440px]">
-      {/* 1. Header, Presets & Live P&L Strip */}
+      {/* 1. Header, Stock Identity & Live Valuation Strip */}
       <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-              <Zap className="size-3.5" />
+        {/* Stock Identity & Reset Action */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="shrink-0 rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
+              <Zap className="size-4" />
             </div>
-            <h2 className="font-mono text-xs font-bold uppercase tracking-tight text-white sm:text-sm">
-              {t.title}
-            </h2>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="font-mono text-sm font-black uppercase tracking-tight text-white sm:text-base">
+                  {facts.ticker}
+                </h2>
+                <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
+                  {facts.quarter}
+                </span>
+              </div>
+              <div
+                className="truncate text-xs font-medium text-slate-400"
+                title={facts.company}
+              >
+                {facts.company}
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
               onClick={onResetDefaults}
@@ -129,6 +155,47 @@ export const Cockpit: React.FC<CockpitProps> = ({
               <RotateCcw className="size-3 text-accent transition-transform duration-200 group-hover:-rotate-45" />
               <span>{t.reset}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Live Stock Pricing & Weighted Fair Value Strip */}
+        <div className="relative grid grid-cols-2 gap-3 overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 p-3 shadow-inner">
+          <div className="pointer-events-none absolute left-0 top-0 size-28 rounded-full bg-accent/5 blur-2xl" />
+          {/* Current Price */}
+          <div>
+            <div
+              className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
+              title={t.currentPrice}
+            >
+              {t.currentPrice}
+            </div>
+            <div className="mt-0.5 font-mono text-xl font-black tabular-nums tracking-tight text-white sm:text-2xl">
+              {formatCurrency(currentPrice)}
+            </div>
+          </div>
+
+          {/* Weighted Fair Value */}
+          <div className="text-right">
+            <div
+              className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
+              title={t.weightedFairValue}
+            >
+              {t.weightedFairValue}
+            </div>
+            <div className="mt-0.5 flex items-baseline justify-end gap-1.5">
+              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-accent sm:text-2xl">
+                {formatCurrency(weightedFairValue, 2)}
+              </span>
+              <span
+                className={`rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
+                  upsidePct >= 0
+                    ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
+                    : "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                }`}
+              >
+                {formatPercent(upsidePct)}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -301,9 +368,27 @@ export const Cockpit: React.FC<CockpitProps> = ({
           <div className="glass-panel flex flex-col gap-3.5 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
             <div className="flex items-center justify-between font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
               <span>{t.valuationRegimes}</span>
-              <span className="font-mono text-[11px] tabular-nums text-slate-400">
-                {t.current}: {formatCurrency(currentPrice)}
-              </span>
+              <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
+                <span className="text-slate-400">
+                  {t.current}: {formatCurrency(currentPrice)}
+                </span>
+                {weightedFairValue > 0 && (
+                  <>
+                    <span className="text-slate-600">•</span>
+                    <span
+                      className={`font-bold ${
+                        upsidePct >= 0
+                          ? "text-fintech-green"
+                          : "text-fintech-red"
+                      }`}
+                      title={`${t.weightedFairValue}: ${formatCurrency(weightedFairValue, 2)}`}
+                    >
+                      {t.wfvShort}: {formatCurrency(weightedFairValue, 0)} (
+                      {formatPercent(upsidePct)})
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* 3 Core Scenario Cards: Bull, Base, Bear */}

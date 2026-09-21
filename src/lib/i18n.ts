@@ -44,6 +44,9 @@ export interface Translations {
     netIncome: string;
     valuationRegimes: string;
     current: string;
+    currentPrice: string;
+    weightedFairValue: string;
+    wfvShort: string;
     regimes: {
       bull: string;
       base: string;
@@ -596,6 +599,9 @@ export const translations: Record<Locale, Translations> = {
       netIncome: "Net Income",
       valuationRegimes: "Dynamic Scenario Targets",
       current: "Current",
+      currentPrice: "Current Price",
+      weightedFairValue: "Weighted Fair Value",
+      wfvShort: "WFV",
       regimes: {
         bull: "🐂 Bull",
         base: "⚖️ Base",
@@ -1177,6 +1183,9 @@ export const translations: Record<Locale, Translations> = {
       netIncome: "净利润",
       valuationRegimes: "动态情景估值目标",
       current: "现价",
+      currentPrice: "当前股价",
+      weightedFairValue: "加权公允价值",
+      wfvShort: "加权估值",
       regimes: {
         bull: "🐂 牛市情景",
         base: "⚖️ 基准情景",
