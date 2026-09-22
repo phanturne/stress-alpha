@@ -30,6 +30,13 @@ export interface Translations {
     addedToWatchlistToast: (ticker: string) => string;
     removedFromWatchlistToast: (ticker: string) => string;
     signInRequiredToast: string;
+    quarterHistory: string;
+    latestBadge: string;
+    historicalBadge: string;
+    historicalBanner: (quarter: string, date?: string) => string;
+    jumpToLatest: (quarter: string) => string;
+    quartersAvailable: (count: number) => string;
+    noEarlierQuarters: string;
   };
   selector: {
     selectReport: string;
@@ -40,6 +47,7 @@ export interface Translations {
     watchlistSection: string;
     allReportsSection: string;
     starredTooltip: string;
+    quartersCount: (count: number) => string;
   };
   cockpit: {
     title: string;
@@ -641,16 +649,27 @@ export const translations: Record<Locale, Translations> = {
         `Removed ${ticker} from Watchlist`,
       signInRequiredToast:
         "Sign in required to save stocks to database watchlist",
+      quarterHistory: "Quarterly Reports",
+      latestBadge: "Latest",
+      historicalBadge: "Historical",
+      historicalBanner: (quarter: string, date?: string) =>
+        `Historical Analysis: Viewing ${quarter}${date ? ` (Filed: ${date})` : ""}. Model reflects point-in-time snapshot.`,
+      jumpToLatest: (quarter: string) => `Jump to Latest (${quarter})`,
+      quartersAvailable: (count: number) =>
+        `${count} ${count === 1 ? "quarter" : "quarters"} available`,
+      noEarlierQuarters: "No earlier quarterly reports in archive",
     },
     selector: {
-      selectReport: "Select Report...",
-      availableReports: "Available Reports",
-      noReportsFound: "No reports found under reports/",
-      refreshTitle: "Refresh reports folder",
+      selectReport: "Select Stock...",
+      availableReports: "Covered Stocks",
+      noReportsFound: "No stocks found in coverage",
+      refreshTitle: "Refresh coverage list",
       openScreener: "Open Stock Screener",
       watchlistSection: "Pinned Watchlist",
-      allReportsSection: "All Covered Reports",
+      allReportsSection: "All Covered Stocks",
       starredTooltip: "Toggle Watchlist",
+      quartersCount: (count: number) =>
+        `${count} ${count === 1 ? "Quarter" : "Quarters"}`,
     },
     cockpit: {
       title: "Stress Test Cockpit",
@@ -1282,16 +1301,25 @@ export const translations: Record<Locale, Translations> = {
       removedFromWatchlistToast: (ticker: string) =>
         `已将 ${ticker} 移出自选关注`,
       signInRequiredToast: "请先登录以将自选股保存至云端数据库",
+      quarterHistory: "季度研报历史",
+      latestBadge: "最新",
+      historicalBadge: "历史",
+      historicalBanner: (quarter: string, date?: string) =>
+        `历史财报分析：正在查看 ${quarter}${date ? `（归档日期：${date}）` : ""}，估值模型反映当时的历史假设。`,
+      jumpToLatest: (quarter: string) => `跳转至最新 (${quarter})`,
+      quartersAvailable: (count: number) => `${count} 个季度研报可用`,
+      noEarlierQuarters: "归档中暂无更早历史研报",
     },
     selector: {
-      selectReport: "选择财报研报...",
-      availableReports: "可用研报列表",
-      noReportsFound: "在 reports/ 目录下未找到任何研报",
-      refreshTitle: "刷新研报目录",
+      selectReport: "选择标的股票...",
+      availableReports: "覆盖股票标的",
+      noReportsFound: "未找到任何覆盖股票",
+      refreshTitle: "刷新标的列表",
       openScreener: "打开股票筛选",
       watchlistSection: "已关注自选标的",
-      allReportsSection: "全部覆盖研报",
+      allReportsSection: "全部覆盖标的",
       starredTooltip: "切换自选状态",
+      quartersCount: (count: number) => `${count} 个季度`,
     },
     cockpit: {
       title: "压力测试驾驶舱",

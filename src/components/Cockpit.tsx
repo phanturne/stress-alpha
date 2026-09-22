@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
+  History,
 } from "lucide-react";
 import type {
   FinancialModelBaseline,
@@ -34,6 +35,10 @@ interface CockpitProps {
   stressResult: StressResult;
   valuation?: Valuation;
   reportData?: ReportData;
+  latestSlug?: string;
+  latestQuarter?: string;
+  isHistorical?: boolean;
+  onSelectReport?: (slug: string) => void;
   onDriverShockChange: (driverId: string, shockPct: number) => void;
   onGrossMarginDeltaChange: (bps: number) => void;
   onFixedOpexShiftChange: (shiftPct: number) => void;
@@ -49,6 +54,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
   stressResult,
   valuation,
   reportData,
+  latestSlug,
+  latestQuarter,
+  isHistorical = false,
+  onSelectReport,
   onDriverShockChange,
   onGrossMarginDeltaChange,
   onFixedOpexShiftChange,
@@ -125,6 +134,25 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
   return (
     <aside className="custom-scrollbar flex w-full shrink-0 flex-col gap-4 lg:sticky lg:top-[66px] lg:max-h-[calc(100vh-82px)] lg:w-[380px] lg:overflow-y-auto lg:pr-1 xl:w-[415px] 2xl:w-[440px]">
+      {/* Historical Quarter Notice Banner */}
+      {isHistorical && latestSlug && onSelectReport && (
+        <div className="flex items-center justify-between gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-200 shadow-sm">
+          <div className="flex min-w-0 items-center gap-2">
+            <History className="size-4 shrink-0 text-amber-400" />
+            <span className="truncate text-[11px] leading-tight">
+              {headerT.historicalBanner(facts.quarter, facts.reportDate)}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSelectReport(latestSlug)}
+            className="shrink-0 rounded-md border border-amber-500/40 bg-amber-500/20 px-2 py-1 font-mono text-[10px] font-bold text-amber-300 transition-colors hover:bg-amber-500/30"
+          >
+            {headerT.jumpToLatest(latestQuarter || "Latest")} →
+          </button>
+        </div>
+      )}
+
       {/* 1. Header, Stock Identity & Live Valuation Strip */}
       <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
         {/* Stock Identity & Reset Action */}
@@ -160,6 +188,15 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
                   {facts.quarter}
                 </span>
+                {isHistorical ? (
+                  <span className="rounded border border-amber-500/30 bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-400">
+                    {headerT.historicalBadge}
+                  </span>
+                ) : (
+                  <span className="rounded border border-emerald-500/30 bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-400">
+                    {headerT.latestBadge}
+                  </span>
+                )}
               </div>
               <div
                 className="truncate text-xs font-medium text-slate-400"

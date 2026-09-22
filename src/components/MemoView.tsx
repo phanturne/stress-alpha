@@ -9,6 +9,7 @@ import {
   Globe,
   Sparkles,
   Share2,
+  History,
 } from "lucide-react";
 import type { ReportData, StressResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
@@ -19,6 +20,10 @@ import { SnowflakeRadar } from "./snowflake/SnowflakeRadar";
 interface MemoViewProps {
   reportData: ReportData;
   stressResult: StressResult;
+  latestSlug?: string;
+  latestQuarter?: string;
+  isHistorical?: boolean;
+  onSelectReport?: (slug: string) => void;
   onBackToCockpit: () => void;
   onOpenSocialCard?: () => void;
   onOpenSnowflake?: () => void;
@@ -29,6 +34,10 @@ interface MemoViewProps {
 export const MemoView: React.FC<MemoViewProps> = ({
   reportData,
   stressResult,
+  latestSlug,
+  latestQuarter,
+  isHistorical = false,
+  onSelectReport,
   onBackToCockpit,
   onOpenSocialCard,
   onOpenSnowflake,
@@ -143,6 +152,25 @@ export const MemoView: React.FC<MemoViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Historical Quarter Notice Banner */}
+      {isHistorical && latestSlug && onSelectReport && (
+        <div className="no-print mb-6 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200 shadow-sm">
+          <div className="flex min-w-0 items-center gap-2">
+            <History className="size-4 shrink-0 text-amber-400" />
+            <span className="truncate text-xs leading-tight">
+              {tHeader.historicalBanner(facts.quarter, facts.reportDate)}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSelectReport(latestSlug)}
+            className="shrink-0 rounded-lg border border-amber-500/40 bg-amber-500/20 px-3 py-1.5 font-mono text-xs font-bold text-amber-300 transition-colors hover:bg-amber-500/30"
+          >
+            {tHeader.jumpToLatest(latestQuarter || "Latest")} →
+          </button>
+        </div>
+      )}
 
       {/* Printable Memo Sheet */}
       <div className="memo-print-page glass-panel flex flex-col gap-8 rounded-2xl border border-border/80 p-8 text-slate-100 shadow-2xl md:p-12">

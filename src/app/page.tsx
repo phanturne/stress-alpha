@@ -679,6 +679,27 @@ export default function HomePage() {
     handleViewModeChange,
   ]);
 
+  // Historical multi-quarter reporting state
+  const currentTicker = reportData?.facts?.ticker;
+  const siblingReports = useMemo(() => {
+    if (!reports || reports.length === 0) return [];
+    if (currentTicker) {
+      return reports
+        .filter((r) => r.ticker === currentTicker)
+        .sort(
+          (a, b) =>
+            (b.reportDate || "").localeCompare(a.reportDate || "") ||
+            b.slug.localeCompare(a.slug)
+        );
+    }
+    return [];
+  }, [reports, currentTicker]);
+
+  const latestReport = siblingReports[0];
+  const isViewingHistorical = Boolean(
+    latestReport && currentSlug && latestReport.slug !== currentSlug
+  );
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-slate-100">
       {/* Top Navigation */}
@@ -686,6 +707,7 @@ export default function HomePage() {
         facts={displayFacts}
         valuation={dynamicValuation ?? reportData?.valuation}
         currentSlug={currentSlug}
+        reports={reports}
         onSelectReport={handleSelectReport}
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
@@ -742,6 +764,10 @@ export default function HomePage() {
               valuation: dynamicValuation ?? reportData.valuation,
             }}
             stressResult={stressResult}
+            latestSlug={latestReport?.slug}
+            latestQuarter={latestReport?.quarter}
+            isHistorical={isViewingHistorical}
+            onSelectReport={handleSelectReport}
             onBackToCockpit={() => handleViewModeChange("cockpit")}
             onOpenSocialCard={() => setIsSocialCardOpen(true)}
             onOpenSnowflake={() => setIsSnowflakeOpen(true)}
@@ -765,6 +791,10 @@ export default function HomePage() {
                 filing: displayFiling,
                 valuation: dynamicValuation ?? reportData.valuation,
               }}
+              latestSlug={latestReport?.slug}
+              latestQuarter={latestReport?.quarter}
+              isHistorical={isViewingHistorical}
+              onSelectReport={handleSelectReport}
               onDriverShockChange={handleDriverShockChange}
               onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
               onFixedOpexShiftChange={handleFixedOpexShiftChange}

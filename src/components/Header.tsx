@@ -39,6 +39,8 @@ function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   );
 }
 import { ReportSelector } from "./ReportSelector";
+import { QuarterSwitcher } from "./QuarterSwitcher";
+import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { Facts, Valuation } from "@/lib/schemas";
 
@@ -46,6 +48,7 @@ interface HeaderProps {
   facts?: Facts;
   valuation?: Valuation;
   currentSlug?: string | null;
+  reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
   viewMode: "cockpit" | "memo" | "screener";
   onViewModeChange: (mode: "cockpit" | "memo" | "screener") => void;
@@ -60,6 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
   facts,
   valuation: _valuation,
   currentSlug,
+  reports = [],
   onSelectReport,
   viewMode,
   onViewModeChange,
@@ -79,6 +83,24 @@ export const Header: React.FC<HeaderProps> = ({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const currentSymbol = facts?.ticker || currentSlug;
   const isCurrentFavorite = currentSymbol ? isFavorite(currentSymbol) : false;
+
+  const currentTicker = facts?.ticker;
+  const siblingReports = React.useMemo(() => {
+    if (!reports || reports.length === 0) return [];
+    if (currentTicker) {
+      return reports
+        .filter((r) => r.ticker === currentTicker)
+        .sort(
+          (a, b) =>
+            (b.reportDate || "").localeCompare(a.reportDate || "") ||
+            b.slug.localeCompare(a.slug)
+        );
+    }
+    if (currentSlug) {
+      return reports.filter((r) => r.slug === currentSlug);
+    }
+    return [];
+  }, [reports, currentTicker, currentSlug]);
 
   useEffect(() => {
     const handleAuthRequired = () => {
@@ -123,6 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Direct Report Selection from reports/ folder */}
         <ReportSelector
           currentSlug={currentSlug ?? null}
+          reports={reports}
           onSelectReport={(slug) => {
             onViewModeChange("cockpit");
             onSelectReport(slug);
@@ -130,6 +153,22 @@ export const Header: React.FC<HeaderProps> = ({
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
+
+        {/* Quarter Switcher for the active ticker */}
+        {viewMode !== "screener" && facts?.quarter && (
+          <QuarterSwitcher
+            currentSlug={currentSlug ?? null}
+            currentQuarter={facts.quarter}
+            currentDate={facts.reportDate}
+            ticker={facts.ticker}
+            siblingReports={siblingReports}
+            onSelectReport={(slug) => {
+              onViewModeChange("cockpit");
+              onSelectReport(slug);
+            }}
+            locale={locale}
+          />
+        )}
       </div>
 
       {/* Right: View Modes, Share, and Settings & Resources Menu */}
