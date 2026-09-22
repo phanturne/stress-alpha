@@ -12,13 +12,10 @@ import {
   Settings,
   Keyboard,
   ArrowUpRight,
-  Star,
   LogIn,
   LogOut,
-  CheckCircle2,
-  Loader2,
 } from "lucide-react";
-import { useWatchlist, AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
+import { AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
 import { useSession, signOut } from "@/lib/auth-client";
 import { AuthModal } from "./AuthModal";
 
@@ -76,13 +73,10 @@ export const Header: React.FC<HeaderProps> = ({
   const translations = getTranslations(locale);
   const t = translations.header;
   const tAuth = translations.auth;
-  const { isFavorite, toggleFavorite, isSyncing } = useWatchlist();
   const { data: session } = useSession();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const currentSymbol = facts?.ticker || currentSlug;
-  const isCurrentFavorite = currentSymbol ? isFavorite(currentSymbol) : false;
 
   const currentTicker = facts?.ticker;
   const siblingReports = React.useMemo(() => {
@@ -142,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="mx-0.5 hidden h-4 w-px bg-white/[0.08] sm:block" />
 
-        {/* Direct Report Selection from reports/ folder */}
+        {/* Direct Report Selection from database */}
         <ReportSelector
           currentSlug={currentSlug ?? null}
           reports={reports}
@@ -203,37 +197,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden sm:inline">{t.memo}</span>
             </button>
           </div>
-        )}
-
-        {/* Watchlist Quick Toggle Button - available when a report is active */}
-        {viewMode !== "screener" && currentSymbol && (
-          <button
-            type="button"
-            onClick={() => toggleFavorite(currentSymbol)}
-            className={`group flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition-all sm:px-3 ${
-              isCurrentFavorite
-                ? "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:border-amber-500/60 hover:bg-amber-500/25"
-                : "border-white/[0.08] bg-surface-1/90 text-slate-400 hover:border-white/20 hover:bg-surface-2 hover:text-white"
-            }`}
-            title={isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist}
-            aria-label={
-              isCurrentFavorite ? t.removeFromWatchlist : t.addToWatchlist
-            }
-          >
-            <Star
-              className={`size-3.5 transition-transform duration-200 group-hover:scale-110 ${
-                isCurrentFavorite
-                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
-                  : "text-slate-400 group-hover:text-amber-300"
-              }`}
-            />
-            <span className="hidden md:inline">
-              {isCurrentFavorite ? t.bookmarked : t.bookmark}
-            </span>
-            <kbd className="hidden font-mono text-[9px] text-slate-500 xl:inline">
-              F
-            </kbd>
-          </button>
         )}
 
         {/* Unified Share & Export Button - available when a report is selected */}
@@ -396,14 +359,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden max-w-[80px] truncate sm:inline md:max-w-[120px]">
                 {session.user.name || tAuth.profile}
               </span>
-              {isSyncing ? (
-                <Loader2 className="size-3 animate-spin text-accent" />
-              ) : (
-                <span
-                  className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
-                  title={tAuth.cloudSyncTooltip}
-                />
-              )}
             </button>
 
             {isUserMenuOpen && (
@@ -419,10 +374,6 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
                     <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
                       {session.user.email}
-                    </div>
-                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400">
-                      <CheckCircle2 className="size-3 shrink-0 text-emerald-400" />
-                      <span>{tAuth.cloudSyncActive}</span>
                     </div>
                   </div>
                   <div className="pt-1">

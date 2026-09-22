@@ -68,26 +68,15 @@ flowchart TB
 
 ```
 stress-alpha/
-├── reports/                            # Local file-based report repository
-│   ├── NVDA-Q2-2027-analysis/          # Report directory per ticker-quarter
-│   │   ├── facts.json                  # Fundamental facts & income statement
-│   │   ├── scenarios.json              # Bull/Base/Bear scenario specifications
-│   │   ├── valuation.json              # Deterministic valuation outputs
-│   │   ├── stress-baseline.json        # Upstream elasticity baseline
-│   │   ├── moat-competitors.json       # 5-pillar moat & peer matrix
-│   │   ├── analyst-estimates.json      # Wall Street consensus & targets
-│   │   ├── catalysts.json              # Directional catalysts & weights
-│   │   ├── earnings-sentiment.json     # Tone scorecard & guidance quotes
-│   │   ├── filing-extracts.json        # SEC 10-Q risk disclosures
-│   │   ├── reactions.json              # Historical price reactions
-│   │   ├── report.md                   # Generated bilingual investment report
-│   │   └── report_zh.md                # Chinese translation report
-│   ├── AMZN-Q2-2026-analysis/
-│   └── ... (8 covered companies)
 ├── .github/workflows/
 │   ├── ci.yml                          # GitHub Actions CI workflow
 │   └── nightly-price-sync.yml          # Automated 5:00 PM EST market price sync
 ├── drizzle.config.ts                   # Drizzle ORM configuration for PostgreSQL
+├── docs/                               # System specifications and architectural blueprints
+│   ├── architecture.md
+│   ├── spec-neon-drizzle.md
+│   ├── spec-multi-quarter-earnings.md
+│   └── images/                         # UI preview screenshots
 ├── prompts/                            # Multi-stage LLM extraction prompt templates
 │   ├── stage1-facts.md
 │   ├── stage1b-moat.md

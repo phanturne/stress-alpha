@@ -82,8 +82,8 @@ StressAlpha includes a dedicated AI Skill installed at:
 
 ### CLI Analysis Engine:
 ```bash
-# Compute deterministic valuation, render markdown & persist to Neon DB
-npx tsx scripts/analyze.ts reports/LITE-Q4-2026-analysis
+# Compute deterministic valuation, render markdown & persist directly to Neon DB
+npx tsx scripts/analyze.ts LITE-Q4-2026-analysis
 ```
 
 ---
@@ -104,16 +104,13 @@ stress-alpha/
 ├── docs/
 │   ├── architecture.md               # Canonical system architecture documentation
 │   ├── spec-neon-drizzle.md          # Neon Postgres + Drizzle ORM technical spec
+│   ├── spec-multi-quarter-earnings.md# Multi-quarter historical earnings specification
 │   └── images/                       # High-res UI preview screenshots
-├── reports/                          # Institutional earnings datasets (8 covered tickers)
-│   ├── NVDA-Q2-2027-analysis/
-│   ├── AMZN-Q2-2026-analysis/
-│   └── ...
 ├── prompts/                          # LLM audit & extraction prompt templates
 ├── scripts/
 │   ├── analyze.ts                    # CLI valuation & DB persistence engine
 │   ├── sync_prices.ts                # Standalone Yahoo Finance market price sync
-│   ├── migrate_to_neon.ts            # Seeder importing reports/ into Neon DB
+│   ├── migrate_to_neon.ts            # One-time migration seeder into Neon DB
 │   ├── fetch_analyst_estimates.py    # Yahoo Finance consensus extractor
 │   ├── capture_screenshots.sh        # Headless Chrome snapshot capture script
 │   ├── run_flow.sh                   # Flow runner
@@ -122,41 +119,57 @@ stress-alpha/
 │   ├── app/
 │   │   ├── layout.tsx                # App layout (next/font/google)
 │   │   ├── page.tsx                  # Main dashboard (Cockpit + Intelligence Workspaces)
+│   │   ├── screener/                 # Dedicated standalone screener route (/screener)
 │   │   ├── globals.css               # Theme & styles
 │   │   ├── methodology/page.tsx      # Formula documentation page
-│   │   └── api/reports/              # API endpoints for summaries and reports
+│   │   └── api/
+│   │       ├── auth/[...all]/        # Better Auth session & authentication endpoints
+│   │       ├── watchlist/            # Cloud watchlist persistence
+│   │       └── reports/              # API endpoints for summaries and reports
 │   ├── components/
-│   │   ├── Header.tsx                # Navigation & live metrics
+│   │   ├── Header.tsx                # Navigation, mode toggle & quick actions
 │   │   ├── Cockpit.tsx               # Sticky left flow-through simulator
 │   │   ├── ScreenerView.tsx          # Multi-ticker universe screener with live prices
-│   │   ├── ReportSelector.tsx        # Dropdown report browser
+│   │   ├── ReportSelector.tsx        # Streamlined ticker selector
+│   │   ├── QuarterSwitcher.tsx       # Multi-quarter history navigation pill
 │   │   ├── PriceMeter.tsx            # Visual price range meter
 │   │   ├── MemoView.tsx              # Committee memorandum mode
+│   │   ├── AuthModal.tsx             # Better Auth sign-in / sign-up modal
+│   │   ├── snowflake/                # 5-Pillar Snowflake Radar chart & modal
+│   │   ├── social-card/              # Institutional social media card generator
 │   │   └── tabs/                     # 7 Focused intelligence workspaces
 │   ├── db/
-│   │   ├── schema.ts                 # Drizzle PostgreSQL schema (tickers, reports)
+│   │   ├── schema.ts                 # Drizzle PostgreSQL schema (tickers, reports, auth)
 │   │   └── index.ts                  # Neon serverless client & connection pooling
 │   └── lib/
 │       ├── schemas.ts                # Zod schemas & types
 │       ├── valuation.ts              # Deterministic arithmetic engine
+│       ├── snowflake.ts              # 30-point 5-pillar fundamental radar scorer
+│       ├── social-card.ts            # High-res social export cards
+│       ├── watchlist.ts              # Cloud & localStorage hybrid watchlist hook
+│       ├── auth.ts                   # Better Auth server configuration
+│       ├── auth-client.ts            # Better Auth React client
 │       ├── url-state.ts              # URL search param state sync & serializer
 │       ├── report.ts                 # Bilingual markdown report generator
-│       ├── i18n.ts                   # Internationalization dictionary
+│       ├── i18n.ts                   # Centralized internationalization dictionary
 │       └── repository/               # Data Access Layer (DAL)
 │           ├── types.ts              # IReportRepository interface
 │           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices & 60s cache
 │           ├── in-memory-report-repository.ts # In-memory mock repository for tests
 │           └── index.ts              # Repository factory singleton
-└── tests/                            # Vitest unit test suite (79 tests)
-    ├── valuation.test.ts
-    ├── schemas.test.ts
+└── tests/                            # Vitest unit test suite (107 tests across 12 suites)
+    ├── auth.test.ts
+    ├── multi-quarter.test.ts
+    ├── report.test.ts
     ├── repository.test.ts
+    ├── schemas.test.ts
     ├── screener.test.ts
     ├── snowflake.test.ts
     ├── social-card.test.ts
     ├── url-state.test.ts
-    ├── report.test.ts
-    └── utils.test.ts
+    ├── utils.test.ts
+    ├── valuation.test.ts
+    └── watchlist.test.ts
 ```
 
 ---

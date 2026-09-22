@@ -25,7 +25,13 @@ if ! curl -s -I "http://localhost:${PORT}" > /dev/null 2>&1; then
   npm run start &
   SERVER_PID=$!
   SERVER_STARTED=true
-  sleep 3
+  for i in {1..30}; do
+    if curl -s -I "http://localhost:${PORT}" > /dev/null 2>&1; then
+      echo "✅ Server is ready on port ${PORT}!"
+      break
+    fi
+    sleep 1
+  done
 fi
 
 cleanup() {
