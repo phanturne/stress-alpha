@@ -594,6 +594,8 @@ export function computeSnowflakeScore(
           facts,
           scenarios: reportData.scenarios,
           baseline,
+          moat: reportData.moat,
+          estimates: reportData.estimates,
         })
       : undefined);
 

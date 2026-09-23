@@ -219,7 +219,13 @@ async function main() {
   }
 
   console.log("\n🧮 Running deterministic StressAlpha calculation...\n");
-  const valuation = computeValuation({ facts, scenarios, baseline });
+  const valuation = computeValuation({
+    facts,
+    scenarios,
+    baseline,
+    moat,
+    estimates,
+  });
   const validatedValuation = ValuationSchema.parse(valuation);
 
   const valuationPath = path.join(absRunDir, "valuation.json");
@@ -280,6 +286,19 @@ async function main() {
   console.log(
     `  Verdict:              ${validatedValuation.verdictVsConsensus}`
   );
+
+  if (validatedValuation.calibrationAudit) {
+    const ca = validatedValuation.calibrationAudit;
+    console.log(
+      `  QPCE Calibration:     ${ca.skewDirection} (Veto: ${
+        ca.governanceVetoTriggered ? "🚨 ACTIVE" : "None"
+      })`
+    );
+    const probStr = Object.entries(ca.calibratedProbabilities)
+      .map(([name, p]) => `${name}: ${Math.round(p * 100)}%`)
+      .join(" | ");
+    console.log(`  Calibrated Probs:     ${probStr}`);
+  }
 
   if (validatedValuation.stressTest) {
     const st = validatedValuation.stressTest;

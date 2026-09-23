@@ -202,6 +202,15 @@ export default function MethodologyPage() {
             >
               6. {isZh ? "五维经济护城河评级" : "Economic Moat"}
             </a>
+            <a
+              href="#qpce-calibration"
+              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+            >
+              7.{" "}
+              {isZh
+                ? "量化概率校准引擎 (QPCE)"
+                : "Probability Calibration (QPCE)"}
+            </a>
           </div>
         </div>
 
@@ -612,6 +621,154 @@ export default function MethodologyPage() {
                     : "Capital intensity deterring new entrants."}
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* SECTION 7: Quantitative Probability Calibration Engine (QPCE) */}
+          <section id="qpce-calibration" className="scroll-mt-24 space-y-4">
+            <div className="flex items-center gap-2.5 text-accent">
+              <Calculator className="size-5" />
+              <h2 className="text-lg font-bold text-white sm:text-xl">
+                7.{" "}
+                {isZh
+                  ? "量化情景概率校准引擎 (QPCE)"
+                  : "Quantitative Probability Calibration Engine (QPCE)"}
+              </h2>
+            </div>
+
+            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+              {isZh
+                ? "传统定性估值模型通常给乐观（Bull）、基准（Base）和悲观（Panic）情景赋予机械对称的先验权重（如 25% / 50% / 25%）。当公司面临严重审计师辞职、司法部调查或薄弱毛利率时，未校准的模型会给出脱离现实的“虚假阿尔法（False Alpha）”。StressAlpha 引入 QPCE 引擎，将先验概率转换至多项对数几率空间（Multinomial Log-Odds），通过四维制度性锚点执行纯确定性校准并以 Softmax 闭合映射。"
+                : "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha's QPCE engine maps scenario priors into Multinomial Log-Odds space, performs 4-pillar deterministic adjustments, and resolves posteriors via temperature-controlled Softmax with simplex contraction."}
+            </p>
+
+            {/* Formula Card */}
+            <div className="glass-panel space-y-2 overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/90 p-4 font-mono text-xs text-slate-200 shadow-inner">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-accent">
+                {isZh
+                  ? "对数几率变换与 Softmax 闭合"
+                  : "LOG-ODDS & SOFTMAX PROBABILITY SIMPLEX"}
+              </div>
+              <div className="text-white">
+                z_i = ln(p_i^prior) + Δz_i^governance + Δz_i^moat +
+                Δz_i^consensus + Δz_i^market
+              </div>
+              <div className="text-white">
+                p_i^* = exp(z_i / T) / ∑ exp(z_j / T) &nbsp;&nbsp;&nbsp; (T =
+                1.0)
+              </div>
+              <div className="pt-1 font-semibold text-emerald-400 sm:text-sm">
+                p_i = clamp(p_i^*, 0.05, 0.85) &nbsp; s.t. &nbsp; ∑ p_i ≡ 1.000
+              </div>
+            </div>
+
+            {/* 4 Pillars Grid */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="glass-panel rounded-xl border-l-2 border-rose-400 p-3.5">
+                <div className="text-xs font-bold text-rose-400">
+                  ⚖️{" "}
+                  {isZh
+                    ? "支柱一：司法审计与治理否决权"
+                    : "Pillar 1: Forensic & Governance Veto"}
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                  {isZh
+                    ? "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，施加非线性对数惩罚（Panic +1.8，Bull -1.2），并触发硬性字典序否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利缓冲），杜绝 Wirecard/Enron 陷阱。"
+                    : "Severe governance flags or forensic accounting probes trigger a non-linear logit shift (+1.8 Panic, -1.2 Bull) and an institutional lexicographic veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled), preventing the Wirecard/Enron trap."}
+                </p>
+              </div>
+
+              <div className="glass-panel rounded-xl border-l-2 border-amber-400 p-3.5">
+                <div className="text-xs font-bold text-amber-400">
+                  🛡️{" "}
+                  {isZh
+                    ? "支柱二：商业范式校准与现金跑道护栏（复合/扩张/创投三分类）"
+                    : "Pillar 2: Archetype-Aware Resilience & Capital Runway"}
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                  {isZh
+                    ? "将标的划分为三类范式：1) 现金复合型 (Compounder)：营业利润率 >30% 奖赏，<15% 施加去杠杆惩罚（好市多高周转宽护城河豁免）；2) 经营杠杆型 (Operating Scaler)：增速 ≥25% 且毛利 ≥60% 奖赏经营杠杆释放速度；3) 创投极速扩张型 (Venture Hypergrowth)：如 ONDS 增速 ≥50% 且营业亏损。若毛利率 ≥35% 判定单位经济模型成立，豁免营业亏损惩罚；同时审计净流动现金跑道：若跑道 <9 个月，施加 +1.25 恐慌对数惩罚，真实反映股权增发与破发折价稀释风险。"
+                    : "Categorizes equities into 3 valuation archetypes: 1) Compounder: Operating margins >30% rewarded, <15% penalized unless protected by Wide Moat (Costco Exemption); 2) Operating Scaler: Growth ≥25% and gross margin ≥60% rewarded for operating leverage acceleration; 3) Venture Hypergrowth: High growth (≥50%) scale-ups with negative operating income (e.g. ONDS). Gated by a ≥35% gross margin floor to grant the Unit Economics Exemption; audited for Net Liquid Cash Runway: runways <9 months incur an acute +1.25 Panic logit penalty to reflect emergency secondary equity dilution."}
+                </p>
+              </div>
+
+              <div className="glass-panel rounded-xl border-l-2 border-sky-400 p-3.5">
+                <div className="text-xs font-bold text-sky-400">
+                  📊{" "}
+                  {isZh
+                    ? "支柱三：华尔街卖方预期偏度与离散度"
+                    : "Pillar 3: Sell-Side Consensus Skew & Dispersion"}
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                  {isZh
+                    ? "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 70% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.60，则对称提升极端情景权重，反映市场认知巨大分歧。"
+                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture institutional disagreement."}
+                </p>
+              </div>
+
+              <div className="glass-panel rounded-xl border-l-2 border-emerald-400 p-3.5">
+                <div className="text-xs font-bold text-emerald-400">
+                  ⚓{" "}
+                  {isZh
+                    ? "支柱四：内生市场价贝叶斯收缩锚"
+                    : "Pillar 4: Market Bayesian Shrinkage Anchor"}
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                  {isZh
+                    ? "根据当前市场成交价反推市场隐含的恐慌折价概率，并以 w_mkt = 0.20 的经验贝叶斯收缩权重锚定，使模型既扎根于真实市场定价，又不会退化为失去独立阿尔法发现能力的被动跟风模型。"
+                    : "Reverse-engineers the market-implied disaster probability from real-time stock price and applies a 20% empirical Bayesian shrinkage weight (w_mkt = 0.20), grounding the scenario distribution in market pricing without losing fundamental alpha discovery."}
+                </p>
+              </div>
+            </div>
+
+            {/* Case Study Alert */}
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs">
+              <div className="flex items-center gap-2 font-bold text-rose-300">
+                <AlertTriangle className="size-4" />
+                <span>
+                  {isZh
+                    ? "实测案例：超微电脑 (SMCI Q4 2026) 治理危机压力校准"
+                    : "Case Study: Super Micro Computer (SMCI Q4 2026) Governance Calibration"}
+                </span>
+              </div>
+              <p className="mt-2 leading-relaxed text-slate-300">
+                {isZh ? (
+                  <>
+                    SMCI 现价 <strong>$41.54</strong>。原始模型在未校准时分配{" "}
+                    <strong>
+                      25% Bull ($104) / 50% Base ($59.40) / 25% Panic ($19.00)
+                    </strong>
+                    ，计算出加权公允价高达{" "}
+                    <strong>$60.45 (+45.5% 虚假虚高空间)</strong>。<br />
+                    QPCE
+                    引擎检测到审计师辞职与调查，自动触发治理否决权与薄利（13.5%
+                    GM）惩罚，将概率校准为：
+                    <strong>Panic 75.0% / Base 17.0% / Bull 8.0%</strong>
+                    ，测得实际加权公允价为{" "}
+                    <strong>$31.91 (-23.2% 真实下行风险)</strong>
+                    ，成功保护投资决策免遭踩雷。
+                  </>
+                ) : (
+                  <>
+                    SMCI traded at <strong>$41.54</strong>. Uncalibrated priors
+                    assigned{" "}
+                    <strong>
+                      25% Bull ($104) / 50% Base ($59.40) / 25% Panic ($19.00)
+                    </strong>
+                    , producing an uncalibrated WFV of{" "}
+                    <strong>$60.45 (+45.5% False Alpha)</strong> despite active
+                    forensic accounting investigations.
+                    <br />
+                    QPCE detected severe governance risk and thin 13.5% gross
+                    margins, triggering the Lexicographic Veto to calibrate
+                    probabilities to:{" "}
+                    <strong>Panic 75.0% / Base 17.0% / Bull 8.0%</strong>. This
+                    adjusted Weighted Fair Value to{" "}
+                    <strong>$31.91 (-23.2% real downside risk)</strong>,
+                    accurately identifying asymmetric capital impairment danger.
+                  </>
+                )}
+              </p>
             </div>
           </section>
 

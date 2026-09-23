@@ -22,7 +22,7 @@ describe("Screener & Reports API", () => {
     expect(nvda.ticker).toBe("NVDA");
     expect(typeof nvda.currentPrice).toBe("number");
     expect(nvda.currentPrice).toBeGreaterThan(0);
-    expect(nvda.weightedFairValue).toBe(342.83);
+    expect(nvda.weightedFairValue).toBe(364.36);
     expect(typeof nvda.upsidePct).toBe("number");
     expect(nvda.baseFairValue).toBe(330);
     expect(typeof nvda.baseUpsidePct).toBe("number");
@@ -94,7 +94,7 @@ describe("Screener & Reports API", () => {
     const highUpside = reports.filter((r) => (r.upsidePct ?? 0) > 20);
     expect(highUpside.length).toBeGreaterThan(0);
     expect(highUpside.some((r) => r.ticker === "NVDA")).toBe(true);
-    expect(highUpside.some((r) => r.ticker === "BABA")).toBe(true);
+    expect(highUpside.some((r) => r.ticker === "AVGO")).toBe(true);
   });
 
   it("filters universe reports by active watchlist", async () => {
@@ -129,6 +129,8 @@ describe("Screener & Reports API", () => {
               facts: detail.facts,
               scenarios: detail.scenarios,
               baseline: detail.baseline,
+              moat: detail.moat,
+              estimates: detail.estimates,
             })
           : detail.valuation;
 

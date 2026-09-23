@@ -130,6 +130,8 @@ export class DrizzleReportRepository implements IReportRepository {
             facts,
             scenarios,
             baseline,
+            moat: report.moat ?? undefined,
+            estimates: report.estimates ?? undefined,
           });
 
           const stressResult =

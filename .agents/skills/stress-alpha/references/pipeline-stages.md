@@ -15,6 +15,7 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 ## Stage 1: Ingest & Income Quality Audit (`prompts/stage1-ingest.md`)
 * Ingests headline revenues, operating margins, segment data, and forward guidance.
 * **Core Rule (Income Quality Guardrail):** Identifies non-operating or transitory items (e.g. unrealized mark-to-market equity gains/losses under ASU 2016-01) and calculates true **Operating EPS**.
+* **Forensic Governance Audit (QPCE Anchor):** Audits for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
 * Output: `facts.json`
 
 ## Stage 1b: Economic Moat & Competitor Benchmarking (`prompts/stage1b-moat.md`)
@@ -45,7 +46,7 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * Output: `catalysts.json`
 
 ## Stage 3: Scenarios & Stress Baseline (`prompts/stage3-scenarios.md`)
-* Constructs discrete Bull, Base, and Panic scenarios with EPS and multiple assumptions.
+* Constructs discrete Bull, Base, and Panic scenarios with EPS and multiple assumptions. Probabilities assigned here represent initial raw priors (`rawProbability`).
 * Formulates `stress-baseline.json` specifying upstream demand drivers (with exposure shares and elasticities), fixed cost leverage, and valuation multiple regimes.
 * Output: `scenarios.json` and `stress-baseline.json`
 
@@ -54,5 +55,12 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * Output: `reactions.json`
 
 ## Stage 5: Deterministic Computation & Display
-* Runs `npx tsx scripts/analyze.ts reports/<folder>` to compute `valuation.json` and `report.md`.
+* Runs `npx tsx scripts/analyze.ts reports/<folder>`.
+* Executes the **Quantitative Probability Calibration Engine (QPCE)** across 4 pillars:
+  1. Forensic & Governance Veto (Lexicographic override for severe accounting/DOJ flags)
+  2. Moat & Margin Resilience (Gross margin buffer vs deleverage risk, plus Costco Compounder Exemption)
+  3. Wall Street Consensus Skew & Dispersion
+  4. Market-Implied Bayesian Shrinkage Anchor ($w_{\text{mkt}} = 0.20$)
+* Computes exact mathematical fair values, valuation bands (Bull, Base, Panic), risk asymmetry metrics, and renders bilingual markdown reports.
+* Persists directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
 * Automatically loads in the Next.js web application at `http://localhost:3000/?report=<folder>`.

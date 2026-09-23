@@ -19,14 +19,20 @@ mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-a
 ```
 
 ### Step 2: Extract & Ingest Artifacts
+
+Run fundamental profile extractor:
+```bash
+python3 /Users/krding/Projects/stress-alpha/scripts/fetch_fundamental_profile.py <TICKER> /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+```
+
 Follow the institutional prompt templates in `/Users/krding/Projects/stress-alpha/prompts/` to generate:
-- `facts.json`: Headline financials, segment unit economics, management forward guidance, and income quality clean operating EPS.
+- `facts.json`: Headline financials, segment unit economics, management forward guidance, income quality clean operating EPS, **forensic governance audit** (`governanceRisk`: 'none'|'low'|'moderate'|'severe', `accountingFlags`, `materialLitigationOrDoj`), and **valuation archetype & capital runway** (`valuationArchetype`: 'compounder'|'operating_scaler'|'venture_hypergrowth', `grossMarginPct`, `cashAndEquivalentsBillions`, `quarterlyCashBurnBillions`, `cashRunwayMonths`).
 - `moat-competitors.json`: Morningstar 5-pillar moat evaluation, sector-velocity calibrated durability, and direct competitor benchmarking.
 - `analyst-estimates.json` / `analyst-estimates_zh.json`: Wall Street analyst consensus breakdown, 52W price target range (low/mean/high), sell-side estimates roster with prior targets, and synthesis narrative. Run automated tool:
   ```bash
   python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
   ```
-- `scenarios.json`: Discrete Bull, Base, Panic regimes with forward EPS and multiples.
+- `scenarios.json`: Discrete Bull, Base, Panic regimes with forward EPS, multiples, and initial raw prior probabilities (`rawProbability`).
 - `stress-baseline.json`: Baseline revenue, operating cost leverage, and upstream driver elasticities.
 - `catalysts.json` / `earnings-sentiment.json` / `filing-extracts.json` / `filing-extracts_zh.json` / `reactions.json`: Qualitative audit logs.
 
@@ -34,7 +40,7 @@ Follow the institutional prompt templates in `/Users/krding/Projects/stress-alph
 ```bash
 npx tsx /Users/krding/Projects/stress-alpha/scripts/analyze.ts /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
-This computes the deterministic valuation math, validates all schemas, renders bilingual reports, and persists the record directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
+This runs the **Quantitative Probability Calibration Engine (QPCE)** across 4 pillars (Lexicographic Governance Veto, Archetype-Aware Resilience & Cash Runway Dilution Guardrails, Sell-Side Skew, Market Shrinkage Anchor), validates all schemas, renders bilingual reports, and persists the record directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
 
 ### Step 4: Open in the Web Cockpit
 ```bash

@@ -21,7 +21,7 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(nvda).toBeDefined();
       expect(typeof nvda?.currentPrice).toBe("number");
       expect(nvda?.currentPrice).toBeGreaterThan(0);
-      expect(nvda?.weightedFairValue).toBe(342.83);
+      expect(nvda?.weightedFairValue).toBe(364.36);
       expect(typeof nvda?.upsidePct).toBe("number");
       expect(nvda?.moatRating).toBe("Wide");
       expect(nvda?.operatingMarginPct).toBe(65);
@@ -43,7 +43,7 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(report?.facts.ticker).toBe("NVDA");
       expect(report?.facts.revenueGrowthPct).toBe(106);
       expect(report?.scenarios.scenarios.length).toBeGreaterThan(0);
-      expect(report?.valuation?.weightedFairValue).toBe(342.83);
+      expect(report?.valuation?.weightedFairValue).toBe(364.36);
       expect(report?.moat?.overallMoatRating).toBe("Wide");
       expect(report?.reportMarkdown).toBeTruthy();
     });

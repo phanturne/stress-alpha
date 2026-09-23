@@ -12,7 +12,7 @@
 **StressAlpha** is an institutional equity earnings analysis and deterministic scenario stress-testing platform. It bridges the gap between raw corporate financial filings (SEC 10-Q/8-K, earnings call transcripts) and real-time investment committee decision-making.
 
 ### Architectural Tenets
-1. **Deterministic Arithmetic Over LLM Hallucination:** Large Language Models are used exclusively for qualitative and quantitative **fact extraction**. All financial modeling, operating leverage calculations, valuation bands, and risk asymmetry skews are computed via pure TypeScript arithmetic with zero non-deterministic drift.
+1. **Deterministic Arithmetic Over LLM Hallucination:** Large Language Models are used exclusively for qualitative and forensic **fact extraction** (including corporate governance and accounting audit flags). All financial modeling, operating leverage flows, regime probability distributions (via the Quantitative Probability Calibration Engine), valuation bands, and risk asymmetry skews are computed via pure TypeScript arithmetic with zero non-deterministic drift.
 2. **Strict Zod Contract Validation:** Every piece of incoming data is validated against strongly-typed Zod schemas (`src/lib/schemas.ts`). Malformed inputs fail fast before reaching the valuation engine or presentation layer.
 3. **Sub-Millisecond Client-Side Simulation:** Once a report payload is loaded into the browser, all sensitivity sliders (Hyperscaler CapEx shocks, gross margin shifts, fixed OpEx elasticity) execute client-side at `<1ms` latency without round-trip network overhead.
 4. **Decoupled Data Access Layer (DAL):** The system isolates presentation and routing from storage behind an explicit repository interface (`IReportRepository`), enabling seamless transitions between local filesystem storage and cloud databases.
@@ -131,14 +131,19 @@ stress-alpha/
 │           ├── fs-report-repository.ts # Filesystem fallback implementation
 │           ├── in-memory-report-repository.ts # Test mock repository
 │           └── index.ts                # Dual-mode repository singleton factory
-└── tests/                              # Vitest automated test suite (62 tests)
-    ├── valuation.test.ts               # Arithmetic & elasticity shock unit tests
-    ├── schemas.test.ts                 # Zod validation suite
-    ├── repository.test.ts              # Data access layer & dual-mode tests
-    ├── screener.test.ts                # Metric calculation & API route tests
-    ├── url-state.test.ts               # Search param serialization tests
+└── tests/                              # Vitest automated test suite (111 tests across 12 suites)
+    ├── auth.test.ts                    # Better Auth endpoints & session tests
+    ├── multi-quarter.test.ts           # Multi-quarter historical earnings navigation tests
     ├── report.test.ts                  # Bilingual markdown rendering tests
-    └── utils.test.ts                   # Helpers & formatters tests
+    ├── repository.test.ts              # Data access layer & Neon DB tests
+    ├── schemas.test.ts                 # Zod validation suite
+    ├── screener.test.ts                # Universe metrics & API route tests
+    ├── snowflake.test.ts               # 30-point radar scoring tests
+    ├── social-card.test.ts             # Social media card rendering tests
+    ├── url-state.test.ts               # URL parameter state serialization tests
+    ├── utils.test.ts                   # Formatting & currency helpers tests
+    ├── valuation.test.ts               # Arithmetic, elasticity & QPCE calibration unit tests
+    └── watchlist.test.ts               # Cloud & local watchlist persistence tests
 ```
 
 ---
@@ -151,9 +156,9 @@ Data is structured as a collection of domain-specific JSON artifacts grouped ins
 
 | Artifact File | Schema | Key Attributes & Purpose |
 | :--- | :--- | :--- |
-| `facts.json` | `FactsSchema` | Revenue, YoY growth, operating income, GAAP EPS, consensus EPS, segment breakdown, forward guidance, and **one-time items**. |
-| `scenarios.json` | `ScenariosSchema` | Bear, Base, Bull, and Panic regimes with probabilities, forward EPS, exit multiples, and qualitative drivers. |
-| `valuation.json` | `ValuationSchema` | Precomputed weighted fair value, discount/premium, asymmetry skew, and priced-in multiple. |
+| `facts.json` | `FactsSchema` | Revenue, YoY growth, operating income, GAAP EPS, consensus EPS, segment breakdown, forward guidance, **one-time items**, and **governanceRisk** (`none`/`low`/`moderate`/`severe`), `accountingFlags`, `materialLitigationOrDoj`. |
+| `scenarios.json` | `ScenariosSchema` | Bear, Base, Bull, and Panic regimes with `rawProbability` (prior), `calibratedProbability` (posterior), forward EPS, exit multiples, and qualitative drivers. |
+| `valuation.json` | `ValuationSchema` | Precomputed weighted fair value, discount/premium, asymmetry skew, priced-in multiple, and `calibrationAudit` (QPCE audit log). |
 | `stress-baseline.json` | `FinancialModelBaselineSchema` | Macro shock exposures (CapEx, Consumer, Ad spend), gross margin baselines, fixed OpEx ratios, and segment elasticities. |
 | `moat-competitors.json` | `MoatCompetitorsSchema` | 5 moat pillars (0–10 scores), overall moat rating (*Wide/Narrow/None*), trend, and peer comparison matrix. |
 | `analyst-estimates.json`| `AnalystEstimatesSchema` | Street consensus target (low/mean/median/high), price target revisions, and rating distributions (Buy/Hold/Sell). |
@@ -215,6 +220,42 @@ When upstream macro sliders are perturbed, shocks propagate into the company's f
    $$\text{Asymmetry Skew} = \frac{\text{Bull Fair Value} - \text{Current Price}}{\text{Current Price} - \text{Panic Fair Value}}$$
    - Skew $> 2.0$: Highly favorable risk/reward (deep discount to regime boundaries).
    - Skew $< 0.8$: Asymmetric downside risk.
+
+### 5.2 Quantitative Probability Calibration Engine (QPCE)
+
+To eliminate naive symmetrical priors (e.g., universal 25% Bull / 50% Base / 25% Panic) and prevent distorted valuations (such as assigning high upside to governance-distressed equities like SMCI), StressAlpha incorporates a deterministic **Quantitative Probability Calibration Engine (QPCE)** in [`src/lib/valuation.ts`](file:///Users/krding/Projects/stress-alpha/src/lib/valuation.ts):
+
+#### Mathematical Log-Odds Softmax Formulation
+1. **Log-Odds Transformation:**
+   $$z_i = \ln(p_i) \quad \text{for } i \in \{\text{Bull}, \text{Base}, \text{Bear}, \text{Panic}\}$$
+2. **Deterministic Perturbation:**
+   $$z_i' = z_i + \Delta z_i^{\text{gov}} + \Delta z_i^{\text{margin}} + \Delta z_i^{\text{consensus}} + \Delta z_i^{\text{mkt}}$$
+3. **Temperature-Controlled Softmax ($T = 1.0$):**
+   $$p_i' = \frac{\exp(z_i' / T)}{\sum_{j} \exp(z_j' / T)}$$
+4. **Simplex Contraction & Bounding ($\epsilon = 0.05$):**
+   $$p_i \in [\epsilon, 1 - \epsilon] \quad \text{with} \quad \sum_{i} p_i \equiv 1.000$$
+
+#### The 4 Institutional Calibration Pillars
+1. **Forensic & Governance Veto (Pillar 1):**
+   - **Severe Risk / Accounting Flags / DOJ Scrutiny:** Applies a non-linear $+1.8$ logit penalty to Panic and $-1.2$ to Bull. Imposes a strict **Lexicographic Veto**: Panic probability is floored at $\ge 45\%$, Bull probability is capped at $\le 8\%$, and gross margin resilience cushions are disabled (the *Wirecard/Enron guardrail*).
+   - **Moderate Governance Risk:** Applies $+0.8$ to Panic and $-0.4$ to Bull.
+2. **Archetype-Aware Resilience & Capital Runway (Pillar 2):**
+   - **Archetype Classification:** Equities are categorized into 3 valuation archetypes with deterministic invariant gating:
+     - `compounder` (Archetype A): Mature cash cows (e.g. AAPL, CSCO, MSFT, COST). Operating margin $>30\%$ adds $+0.3$ Bull / $-0.4$ Panic. Operating margin $<15\%$ applies $-0.3$ Bull / $+0.5$ Panic, with the **Costco Compounder Exemption** waiving penalties for Wide Moat companies with $\ge 10$ years durability.
+     - `operating_scaler` (Archetype B): Operating leverage scalers (e.g. RDDT, NOW, PLTR) with revenue growth $\ge 25\%$ and gross margins $\ge 60\%$. High or inflecting operating margins reward operating leverage velocity ($+0.3$ Bull / $-0.35$ Panic).
+     - `venture_hypergrowth` (Archetype C): Scale-up innovators (e.g. ONDS) with revenue growth $\ge 50\%$ and negative operating margin.
+       - **Unit Economics Exemption:** Mandatory gross margin floor ($\ge 35\%$). If satisfied, waives negative operating margin penalties ($+0.1$ Bull / $-0.1$ Panic) as growth reinvestment. If failed ($<35\%$), triggers broken-unit-economics penalty ($-0.5$ Bull / $+0.6$ Panic).
+       - **Net Liquid Runway & Dilution Overhang:** Audits net cash runway $\tau_{\text{net}} = (\text{cash} - \text{short-term debt}) / \text{monthly burn}$:
+         - $\tau_{\text{net}} < 9$ months: Acute dilution penalty ($\Delta z_{\text{panic}} = +1.25, \Delta z_{\text{bull}} = -1.10$), pricing in emergency secondary equity dilution.
+         - $9 \le \tau_{\text{net}} < 18$ months: Moderate dilution overhang ($\Delta z_{\text{panic}} = +0.50, \Delta z_{\text{bull}} = -0.35$).
+         - $\tau_{\text{net}} \ge 18$ months: Abundant runway ($\Delta z_{\text{bull}} = +0.15$).
+   - **Moat Trend Adjustment:** Widening moats add $+0.2$ to $+0.25$ Bull / $-0.2$ to $-0.25$ Panic; narrowing moats add $-0.25$ to $-0.35$ Bull / $+0.3$ to $+0.4$ Panic.
+3. **Sell-Side Consensus Skew & Dispersion (Pillar 3):**
+   - Ingests consensus buy/hold/sell distributions and price target dispersion $(\text{High} - \text{Low}) / \text{Mean}$ from `analyst-estimates.json`.
+   - Strong consensus conviction ($>70\%$ Buy) shifts $+0.4$ Bull / $-0.3$ Panic; elevated dispersion ($>0.60$) widens tail probabilities (+0.2 Bull, +0.2 Panic).
+4. **Market-Price Bayesian Shrinkage Anchor (Pillar 4):**
+   - Solves for the market-implied disaster probability $P_{\text{mkt, panic}}$ from current trading price.
+   - Applies an empirical Bayesian shrinkage anchor ($w_{\text{mkt}} = 0.20$) to ground scenarios in market reality without eliminating fundamental mispricing discovery.
 
 ---
 

@@ -413,6 +413,8 @@ export default function HomePage() {
       facts: reportData.facts,
       scenarios: newScenarios,
       baseline: reportData.baseline,
+      moat: reportData.moat,
+      estimates: reportData.estimates,
       stressParams,
     });
 
@@ -442,6 +444,8 @@ export default function HomePage() {
       facts: reportData.facts,
       scenarios: reportData.scenarios,
       baseline: reportData.baseline,
+      moat: reportData.moat,
+      estimates: reportData.estimates,
       stressParams,
     });
   }, [reportData, stressParams]);

@@ -92,6 +92,20 @@ StressAlpha calculates four deterministic valuation regimes:
 - **Asymmetry Skew Ratio**:
   $$\text{Asymmetry} = \frac{\text{Upside to Bull } \%}{|\text{Downside to Panic } \%|}$$
 
+### Quantitative Probability Calibration Engine (QPCE) & Archetypes
+Scenario probabilities are calibrated in multinomial logit (softmax) space rather than naively assigned:
+- **Pillar 1: Lexicographic Governance Veto**: Severe governance risk (e.g. auditor resignation, DOJ probes, multiple accounting flags) overrides standard margin cushions, forcing Panic probability $\ge 45-50\%$ and capping Bull $\le 8\%$.
+- **Pillar 2: Archetype-Aware Resilience & Capital Runway**:
+  - `compounder` (Archetype A): Operating margin $>30\%$ rewarded; $<15\%$ penalized unless protected by durable Wide Moat (`Costco Compounder Exemption`).
+  - `operating_scaler` (Archetype B): Fast growth ($\ge 25\%$), high gross margins ($\ge 60\%$) rewarded for operating leverage velocity.
+  - `venture_hypergrowth` (Archetype C): Scale-up stage ($\ge 50\%$ growth, negative operating margin). Must satisfy deterministic gating ($\text{gross margin} \ge 35\%$) to grant the **Unit Economics Exemption** (waiving operating margin penalty). Audited for **Net Liquid Runway** ($\tau_{\text{net}} = (\text{cash} - \text{short-term debt}) / \text{monthly burn}$):
+    - $\tau_{\text{net}} < 9$ months: Acute dilution penalty ($\Delta z_{\text{panic}} = +1.25, \Delta z_{\text{bull}} = -1.10$) reflecting emergency secondary equity dilution.
+    - $9 \le \tau_{\text{net}} < 18$ months: Moderate dilution overhang ($\Delta z_{\text{panic}} = +0.50, \Delta z_{\text{bull}} = -0.35$).
+    - $\tau_{\text{net}} \ge 18$ months: Abundant runway ($\Delta z_{\text{bull}} = +0.15$).
+- **Pillar 3: Wall Street Consensus Skew & Dispersion**: Analyzes analyst bullish ratio and 52W target dispersion.
+- **Pillar 4: Market-Implied Reality Check**: Reverse-engineers market-priced-in disaster risk with a 20% Bayesian shrinkage anchor.
+- **Simplex Regularization**: Convex contraction ensuring probabilities strictly remain within $[0.05, 0.85]$ and sum precisely to $1.000$.
+
 ---
 
 ## 5. 5-Pillar Snowflake Radar Scoring
@@ -150,3 +164,18 @@ Every contribution must satisfy the following checks before committing:
    npm run build
    ```
    Turbopack compilation and static generation must succeed cleanly.
+4. **Documentation & Architecture Audit**:
+   - Inspect whether [`README.md`](file:///Users/krding/Projects/stress-alpha/README.md), architecture guidelines ([`AGENTS.md`](file:///Users/krding/Projects/stress-alpha/AGENTS.md)), methodology docs (`src/app/methodology/`), or skill guides (`.agents/skills/`) need to be updated to reflect the new feature, schema adjustment, or fix.
+
+---
+
+## 8. Continuous Documentation & Architecture Synchronization
+
+Whenever you implement a new feature, modify calculation engines, adjust data schemas, or resolve a bug:
+
+1. **Mandatory Documentation Review**:
+   - **[`README.md`](file:///Users/krding/Projects/stress-alpha/README.md)**: Keep feature lists, cockpit capabilities, CLI scripts, and API endpoint documentation synchronized with active code.
+   - **[`AGENTS.md`](file:///Users/krding/Projects/stress-alpha/AGENTS.md)**: Update engineering conventions, math modeling invariants (e.g. QPCE logit-space calibration), and CI requirements immediately whenever system behavior changes.
+   - **Architecture & Methodology Docs**: If valuation algorithms, risk factors, or accounting guardrails are added or modified, update the interactive methodology guide ([`src/app/methodology/`](file:///Users/krding/Projects/stress-alpha/src/app/methodology/)) and skill references ([`.agents/skills/`](file:///Users/krding/Projects/stress-alpha/.agents/skills/)).
+2. **Zero Documentation Drift**:
+   - Never leave documentation behind code changes. Outdated documentation is treated with the same rigor as a failing unit test or broken TypeScript build.

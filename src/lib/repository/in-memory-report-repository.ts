@@ -57,6 +57,8 @@ export class InMemoryReportRepository implements IReportRepository {
               facts: report.facts,
               scenarios: report.scenarios,
               baseline: report.baseline,
+              moat: report.moat,
+              estimates: report.estimates,
             })
           : report.valuation;
       const stressResult =

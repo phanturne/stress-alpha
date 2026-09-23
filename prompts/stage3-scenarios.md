@@ -6,7 +6,11 @@ Build a probability-weighted scenario tree (3–5 scenarios) for **{TICKER}** ov
 
 ## Scenario Design Rules
 
-1. **Probabilities MUST sum to 1.0** (the engine validates this)
+1. **Probabilities MUST sum to 1.0** (the engine validates this). Note: The probabilities you assign here serve as the **initial raw priors** (`rawProbability`). The deterministic TypeScript engine (`scripts/analyze.ts`) will automatically run the **Quantitative Probability Calibration Engine (QPCE)** to compute the final `calibratedProbability` based on:
+   - Forensic & Governance Veto (penalizing accounting red flags / DOJ probes)
+   - Moat & Margin Resilience (rewarding >65% margins, penalizing <20% margins unless Costco compounder exemption applies)
+   - Wall Street consensus skew & target dispersion
+   - Market-price Bayesian shrinkage anchor ($w_{\text{mkt}} = 0.20$)
 2. **Base case anchors on consensus** — the forward EPS and typical multiple
 3. **Bull/bear deviate with explicit reasons** — never just "things go well/badly"
 4. Each scenario specifies:

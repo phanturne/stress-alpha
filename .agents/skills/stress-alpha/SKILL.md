@@ -25,13 +25,20 @@ mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-a
 Example: `/Users/krding/Projects/stress-alpha/reports/NVDA-Q2-2027-analysis`
 
 ### Step 2: Extract & Ingest Artifacts
+
+Run fundamental profile extractor:
+```bash
+python3 /Users/krding/Projects/stress-alpha/scripts/fetch_fundamental_profile.py <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+```
+
 Generate the following structured JSON artifacts inside the staging folder using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 
 1. `facts.json` (Required):
    - Ingest headline earnings, segments, and guidance.
    - **Income Quality Guardrail:** Identify any non-operating one-time gains/losses (e.g. ASU 2016-01 equity marks) and isolate clean `epsOperating`.
+   - **Forensic Governance & Accounting Audit (QPCE Anchor):** Audit for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, restatements, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
 2. `scenarios.json` (Required):
-   - Formulate 3-4 scenarios (Bull, Base, Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0.
+   - Formulate 3-4 scenarios (Bull, Base, Panic/Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0 (these act as initial raw priors `rawProbability` to be deterministically calibrated by QPCE into `calibratedProbability`).
 3. `moat-competitors.json` (Recommended):
    - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
    - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
@@ -65,6 +72,7 @@ npx tsx scripts/analyze.ts reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
 This automatically:
 - Validates all schemas via Zod.
+- **Calibrates probabilities via QPCE:** Converts raw scenario priors into Multinomial Log-Odds space, calibrates probabilities across 4 pillars (Lexicographic Governance Veto, Archetype-Aware Resilience with Compounder/Operating Scaler/Venture Hypergrowth and Cash Runway Dilution Guardrails, Wall Street Consensus Skew, and Market Price Bayesian Shrinkage $w_{\text{mkt}} = 0.20$), and writes `calibratedProbability` with full audit logs.
 - Computes exact mathematical fair values, valuation bands (Bull, Base, Panic), and risk asymmetry metrics (`valuation.json`).
 - Generates bilingual human-readable reports (`report.md` and `report_zh.md`).
 - **Persists directly into Neon PostgreSQL (`tickers` and `reports` tables):** Upserts all structured JSONB artifacts, valuation bands, and rendered markdown into the database.
@@ -95,4 +103,5 @@ The web application:
 - Market Price Sync: [scripts/sync_prices.ts](/Users/krding/Projects/stress-alpha/scripts/sync_prices.ts)
 - Browser Opener Script: [scripts/open_report.sh](/Users/krding/Projects/stress-alpha/scripts/open_report.sh)
 - CLI Valuation Engine: [scripts/analyze.ts](/Users/krding/Projects/stress-alpha/scripts/analyze.ts)
+- Universe Probability Backfill: [scripts/backfill_qpce.ts](/Users/krding/Projects/stress-alpha/scripts/backfill_qpce.ts)
 - Analyst Estimates Extractor: [scripts/fetch_analyst_estimates.py](/Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py)

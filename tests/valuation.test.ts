@@ -210,6 +210,7 @@ describe("computeValuation", () => {
     const valuation = computeValuation({
       facts: mockFacts,
       scenarios: mockScenarios,
+      disableAutoCalibration: true,
     });
 
     // Bull: 8 * 25 = 200 (prob 0.25) -> 50
@@ -229,6 +230,7 @@ describe("computeValuation", () => {
     const valuation = computeValuation({
       facts: mockFacts,
       scenarios: mockScenarios,
+      disableAutoCalibration: true,
     });
 
     // 3 scenarios * 4 sensitivity parameters = 12 entries
@@ -249,6 +251,7 @@ describe("computeValuation", () => {
     const valuationBullish = computeValuation({
       facts: mockFacts,
       scenarios: { ...mockScenarios, consensusTarget: 100 }, // FV 125 vs 100 (+25%)
+      disableAutoCalibration: true,
     });
     expect(valuationBullish.verdictVsConsensus).toContain("Above consensus");
 
@@ -256,6 +259,7 @@ describe("computeValuation", () => {
     const valuationInLine = computeValuation({
       facts: mockFacts,
       scenarios: { ...mockScenarios, consensusTarget: 124 }, // FV 125 vs 124 (+0.8%)
+      disableAutoCalibration: true,
     });
     expect(valuationInLine.verdictVsConsensus).toContain(
       "In line with consensus"
@@ -265,6 +269,7 @@ describe("computeValuation", () => {
     const valuationCautious = computeValuation({
       facts: mockFacts,
       scenarios: { ...mockScenarios, consensusTarget: 150 }, // FV 125 vs 150 (-16.7%)
+      disableAutoCalibration: true,
     });
     expect(valuationCautious.verdictVsConsensus).toContain("Below consensus");
   });
@@ -295,5 +300,298 @@ describe("deriveEffectiveBaseline", () => {
     expect(derived.dilutedSharesBillions).toBe(2);
     expect(derived.multipleRegimes).toEqual({ bull: 34, base: 28, panic: 18 });
     expect(derived.upstreamDrivers.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Quantitative Probability Calibration Engine (QPCE)", () => {
+  const baseScenarios = [
+    {
+      name: "Bull",
+      probability: 0.25,
+      forwardEps: 10,
+      multiple: 20,
+      assumptions: [],
+      keyDrivers: [],
+    },
+    {
+      name: "Base",
+      probability: 0.5,
+      forwardEps: 8,
+      multiple: 15,
+      assumptions: [],
+      keyDrivers: [],
+    },
+    {
+      name: "Panic",
+      probability: 0.25,
+      forwardEps: 5,
+      multiple: 8,
+      assumptions: [],
+      keyDrivers: [],
+    },
+  ];
+
+  const standardFacts: Facts = FactsSchema.parse({
+    ticker: "TEST",
+    company: "Test Corp",
+    quarter: "Q2 2026",
+    reportDate: "2026-06-30",
+    currentPrice: 120,
+    marketCapBillions: 120,
+    revenueBillions: 50,
+    revenueGrowthPct: 15,
+    operatingIncomeBillions: 12.5,
+    operatingMarginPct: 25,
+    epsReported: 8,
+    epsOperating: 8,
+    segments: [{ name: "Core", revenueBillions: 50, growthPct: 15 }],
+  });
+
+  it("enforces strict simplex invariants (sum to 1.000 and within bounds [0.05, 0.85])", () => {
+    const val = computeValuation({
+      facts: standardFacts,
+      scenarios: {
+        ticker: "TEST",
+        basisYear: "FY2027",
+        currentPrice: 120,
+        consensusTarget: 120,
+        scenarios: baseScenarios,
+      },
+    });
+
+    expect(val.calibrationAudit).toBeDefined();
+    const probs = Object.values(val.calibrationAudit!.calibratedProbabilities);
+    const sum = probs.reduce((a, b) => a + b, 0);
+    expect(round2(sum)).toBe(1.0);
+    for (const p of probs) {
+      expect(p).toBeGreaterThanOrEqual(0.05);
+      expect(p).toBeLessThanOrEqual(0.85);
+    }
+  });
+
+  it("triggers Lexicographic Governance Veto on severe governance risk", () => {
+    const severeFacts: Facts = FactsSchema.parse({
+      ...standardFacts,
+      governanceRisk: "severe",
+      accountingFlags: ["Auditor resignation (EY)", "Special Committee probe"],
+      materialLitigationOrDoj: true,
+    });
+
+    const val = computeValuation({
+      facts: severeFacts,
+      scenarios: {
+        ticker: "TEST",
+        basisYear: "FY2027",
+        currentPrice: 120,
+        consensusTarget: 120,
+        scenarios: baseScenarios,
+      },
+    });
+
+    expect(val.calibrationAudit?.governanceVetoTriggered).toBe(true);
+    const calProbs = val.calibrationAudit?.calibratedProbabilities;
+    expect(calProbs?.Panic).toBeGreaterThanOrEqual(0.45);
+    expect(calProbs?.Bull).toBeLessThanOrEqual(0.08);
+  });
+
+  it("honors Costco compounder defense exemption (wide moat protects thin margin)", () => {
+    const thinMarginFacts: Facts = FactsSchema.parse({
+      ...standardFacts,
+      operatingMarginPct: 3.5, // thin margin
+    });
+
+    // Case 1: Without wide moat defense -> penalized with higher panic
+    const unexemptVal = computeValuation({
+      facts: thinMarginFacts,
+      scenarios: {
+        ticker: "TEST",
+        basisYear: "FY2027",
+        currentPrice: 120,
+        consensusTarget: 120,
+        scenarios: baseScenarios,
+      },
+    });
+
+    // Case 2: With wide moat compounder defense
+    const exemptVal = computeValuation({
+      facts: thinMarginFacts,
+      scenarios: {
+        ticker: "TEST",
+        basisYear: "FY2027",
+        currentPrice: 120,
+        consensusTarget: 120,
+        scenarios: baseScenarios,
+      },
+      moat: {
+        ticker: "TEST",
+        overallMoatRating: "Wide",
+        moatTrend: "Widening",
+        moatSources: [
+          {
+            source: "Cost Advantage",
+            strength: "Strong",
+            description: "Scale efficiency",
+            durabilityYears: 15,
+          },
+        ],
+        competitors: [],
+        competitiveDynamicsSummary: "Dominant scale",
+        sources: [],
+      },
+    });
+
+    expect(
+      exemptVal.calibrationAudit!.calibratedProbabilities.Panic
+    ).toBeLessThan(unexemptVal.calibrationAudit!.calibratedProbabilities.Panic);
+  });
+
+  describe("Archetype-Aware Calibration & Cash Runway Engine", () => {
+    const hyperGrowthFacts: Facts = FactsSchema.parse({
+      ticker: "VENT",
+      company: "Venture Corp",
+      quarter: "Q2 2026",
+      reportDate: "2026-08-15",
+      analysisDate: "2026-08-16",
+      currentPrice: 10,
+      marketCapBillions: 5,
+      revenueBillions: 0.2,
+      revenueGrowthPct: 150, // +150% YoY
+      operatingIncomeBillions: -0.1,
+      operatingMarginPct: -50, // Negative operating margin
+      epsReported: -0.2,
+      epsOperating: -0.2,
+      segments: [{ name: "Growth", revenueBillions: 0.2, growthPct: 150 }],
+      valuationArchetype: "venture_hypergrowth",
+      grossMarginPct: 55, // Healthy unit economics
+      cashAndEquivalentsBillions: 0.3, // $300M cash
+      shortTermDebtBillions: 0.05, // $50M debt -> $250M net
+      quarterlyCashBurnBillions: 0.03, // $10M/month burn -> ~25 months runway
+      cashRunwayMonths: 25,
+    });
+
+    const ventureScenarios = {
+      ticker: "VENT",
+      basisYear: "FY2027",
+      currentPrice: 10,
+      consensusTarget: 15,
+      scenarios: [
+        {
+          name: "Bull",
+          probability: 0.25,
+          forwardEps: 1.0,
+          multiple: 25,
+          assumptions: ["Rapid scaling"],
+          keyDrivers: [],
+        },
+        {
+          name: "Base",
+          probability: 0.5,
+          forwardEps: 0.6,
+          multiple: 18,
+          assumptions: ["Target ramp"],
+          keyDrivers: [],
+        },
+        {
+          name: "Panic",
+          probability: 0.25,
+          forwardEps: 0.2,
+          multiple: 10,
+          assumptions: ["Severe burn"],
+          keyDrivers: [],
+        },
+      ],
+    };
+
+    it("preserves bull probability and grants unit economics exemption for venture scale-up with ample runway (>18m)", () => {
+      const val = computeValuation({
+        facts: hyperGrowthFacts,
+        scenarios: ventureScenarios,
+      });
+
+      expect(val.calibrationAudit?.archetypeUsed).toBe("venture_hypergrowth");
+      expect(val.calibrationAudit?.netRunwayMonths).toBe(25);
+      const audit = val.calibrationAudit!;
+      // Ample runway (>18m) and unit economics exemption should keep Bull probability healthy
+      expect(audit.calibratedProbabilities.Bull).toBeGreaterThan(0.2);
+      expect(audit.calibratedProbabilities.Panic).toBeLessThan(0.35);
+
+      const exemptionStep = audit.steps.find(
+        (s) => s.label === "Venture Unit Economics Exemption"
+      );
+      expect(exemptionStep).toBeDefined();
+      const runwayStep = audit.steps.find(
+        (s) => s.label === "Abundant Net Liquid Runway"
+      );
+      expect(runwayStep).toBeDefined();
+    });
+
+    it("triggers acute dilution penalty (+1.25 panic logit) when cash runway is critical (<9m)", () => {
+      const shortRunwayFacts: Facts = FactsSchema.parse({
+        ...hyperGrowthFacts,
+        cashAndEquivalentsBillions: 0.03,
+        shortTermDebtBillions: 0.01,
+        quarterlyCashBurnBillions: 0.03, // $10M/month burn with $20M net cash = ~2.0 months runway
+        cashRunwayMonths: 2.0,
+      });
+
+      const val = computeValuation({
+        facts: shortRunwayFacts,
+        scenarios: ventureScenarios,
+      });
+
+      expect(val.calibrationAudit?.archetypeUsed).toBe("venture_hypergrowth");
+      expect(val.calibrationAudit?.netRunwayMonths).toBe(2.0);
+      const audit = val.calibrationAudit!;
+      // Acute dilution should push Panic up significantly and compress Bull
+      expect(audit.calibratedProbabilities.Panic).toBeGreaterThan(0.4);
+      expect(audit.calibratedProbabilities.Bull).toBeLessThan(0.15);
+
+      const dilutionStep = audit.steps.find(
+        (s) => s.label === "Acute Capital Dilution Overhang"
+      );
+      expect(dilutionStep).toBeDefined();
+      expect(dilutionStep?.deltaPanicLogit).toBe(1.25);
+    });
+
+    it("rejects venture hypergrowth exemption when gross margin fails gating invariant (<35%)", () => {
+      const brokenUnitEconomicsFacts: Facts = FactsSchema.parse({
+        ...hyperGrowthFacts,
+        grossMarginPct: 15, // Broken unit economics (< 35%)
+      });
+
+      const val = computeValuation({
+        facts: brokenUnitEconomicsFacts,
+        scenarios: ventureScenarios,
+      });
+
+      // Failed gating invariant falls back to compounder
+      expect(val.calibrationAudit?.archetypeUsed).toBe("compounder");
+      const rejectedStep = val.calibrationAudit?.steps.find(
+        (s) => s.label === "Venture Archetype Gating Invariant Rejection"
+      );
+      expect(rejectedStep).toBeDefined();
+    });
+
+    it("enforces strict simplex invariants [0.05, 0.85] and sum-to-1.000 under acute dilution shocks", () => {
+      const distressedFacts: Facts = FactsSchema.parse({
+        ...hyperGrowthFacts,
+        cashRunwayMonths: 0.5,
+      });
+
+      const val = computeValuation({
+        facts: distressedFacts,
+        scenarios: ventureScenarios,
+      });
+
+      const probs = Object.values(
+        val.calibrationAudit!.calibratedProbabilities
+      );
+      const sum = probs.reduce((a, b) => a + b, 0);
+      expect(round2(sum)).toBe(1.0);
+      for (const p of probs) {
+        expect(p).toBeGreaterThanOrEqual(0.05);
+        expect(p).toBeLessThanOrEqual(0.85);
+      }
+    });
   });
 });

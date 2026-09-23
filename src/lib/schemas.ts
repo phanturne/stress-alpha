@@ -73,7 +73,31 @@ export const FactsSchema = z.object({
   // Metadata
   sources: z.array(SourceSchema).optional().default([]),
   analysisDate: z.string().optional(),
+
+  // Qualitative risk & governance indicators (QPCE)
+  governanceRisk: z.enum(["none", "low", "moderate", "severe"]).optional(),
+  accountingFlags: z.array(z.string()).optional(),
+  materialLitigationOrDoj: z.boolean().optional(),
+  customerConcentrationPct: z.number().min(0).max(100).optional(),
+  shortInterestPct: z.number().min(0).max(100).optional(),
+
+  // Valuation Archetype & Capital Runway (QPCE)
+  valuationArchetype: z
+    .enum(["compounder", "operating_scaler", "venture_hypergrowth"])
+    .optional(),
+  grossMarginPct: z.number().min(-100).max(100).optional(),
+  cashAndEquivalentsBillions: z.number().nonnegative().optional(),
+  shortTermDebtBillions: z.number().nonnegative().optional(),
+  quarterlyCashBurnBillions: z.number().nonnegative().optional(),
+  cashRunwayMonths: z.number().nonnegative().optional(),
+  dilutionShareGrowthYoYPct: z
+    .number()
+    .optional()
+    .describe("Annual share count inflation %"),
 });
+export type ValuationArchetype =
+  "compounder" | "operating_scaler" | "venture_hypergrowth";
+export type GovernanceRiskLevel = "none" | "low" | "moderate" | "severe";
 export type Facts = z.infer<typeof FactsSchema>;
 
 // --- Stage 2: Catalysts ---
@@ -182,6 +206,8 @@ export type StressResult = z.infer<typeof StressResultSchema>;
 export const ScenarioSchema = z.object({
   name: z.string().describe("e.g. Bull, Base, Bear"),
   probability: z.number().min(0).max(1),
+  rawProbability: z.number().min(0).max(1).optional(),
+  calibratedProbability: z.number().min(0).max(1).optional(),
   forwardEps: z.number().describe("Estimated EPS for basis year"),
   multiple: z.number().describe("P/E multiple applied"),
   assumptions: z.array(z.string()).default([]),
@@ -350,6 +376,37 @@ export const SensitivityEntrySchema = z.object({
 });
 export type SensitivityEntry = z.infer<typeof SensitivityEntrySchema>;
 
+// --- QPCE Calibration Audit Schema ---
+export const CalibrationStepSchema = z.object({
+  pillar: z.enum([
+    "prior",
+    "governance",
+    "moat_margin",
+    "consensus_skew",
+    "market_implied",
+  ]),
+  label: z.string(),
+  deltaBullLogit: z.number(),
+  deltaBaseLogit: z.number(),
+  deltaPanicLogit: z.number(),
+  rationale: z.string(),
+});
+export type CalibrationStep = z.infer<typeof CalibrationStepSchema>;
+
+export const CalibrationAuditSchema = z.object({
+  rawProbabilities: z.record(z.string(), z.number()),
+  calibratedProbabilities: z.record(z.string(), z.number()),
+  marketImpliedPanicProb: z.number().optional(),
+  governanceVetoTriggered: z.boolean().default(false),
+  skewDirection: z.enum(["bull_skewed", "balanced", "panic_skewed"]),
+  archetypeUsed: z
+    .enum(["compounder", "operating_scaler", "venture_hypergrowth"])
+    .optional(),
+  netRunwayMonths: z.number().optional(),
+  steps: z.array(CalibrationStepSchema).default([]),
+});
+export type CalibrationAudit = z.infer<typeof CalibrationAuditSchema>;
+
 export const ValuationSchema = z.object({
   ticker: z.string(),
   analysisDate: z.string().optional(),
@@ -362,6 +419,7 @@ export const ValuationSchema = z.object({
   verdictVsConsensus: z.string(),
   baseline: FinancialModelBaselineSchema.optional(),
   stressTest: StressResultSchema.optional(),
+  calibrationAudit: CalibrationAuditSchema.optional(),
 });
 export type Valuation = z.infer<typeof ValuationSchema>;
 

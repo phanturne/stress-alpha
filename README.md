@@ -41,7 +41,17 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Operating Margin & Leverage Controls:** Perturb gross margin (bps) and fixed OpEx shifts (%).
 - **Income Quality Guardrail:** Identifies and strips non-operating one-time gains (e.g. Amazon's $53.4B Anthropic unrealized paper mark under ASU 2016-01) to surface the true Operating EPS.
 
-### 4. Intelligence Workspace Tabs (7 Workspaces)
+### 4. Quantitative Probability Calibration Engine (QPCE)
+- **Logit-Space Bayesian Calibration:** Replaces naive symmetrical priors (e.g. 25/50/25) with deterministic multinomial log-odds calibration ($z_i = \ln(p_i) + \Delta z_i$) and temperature-controlled Softmax, bounded by $\epsilon = 0.05$ simplex contraction ($p_i \in [0.05, 0.85], \sum p_i \equiv 1.000$).
+- **Forensic & Governance Veto (Pillar 1):** Severe governance risk, auditor resignations, or DOJ investigations trigger an institutional lexicographic override capping Bull ($\le 8\%$) and flooring Panic ($\ge 45\%$), preventing high gross margins from masking accounting fraud (Wirecard/Enron guardrail).
+- **Archetype-Aware Calibration & Cash Runway (Pillar 2):**
+  - **Archetype A (`compounder`):** Mature cash cows with operating margins $>30\%$ rewarded; $<15\%$ penalized unless protected by durable Wide Moat (`Costco Compounder Exemption`).
+  - **Archetype B (`operating_scaler`):** Fast growers ($\ge 25\%$) with gross margins $\ge 60\%$ rewarded for operating leverage acceleration (e.g. RDDT, NOW, PLTR).
+  - **Archetype C (`venture_hypergrowth`):** Scale-up companies ($\ge 50\%$ growth, negative operating income, e.g. ONDS). Gated by a mandatory gross margin floor ($\ge 35\%$) to grant the **Unit Economics Exemption** (waiving operating margin penalties for capital-reinvesting growth). Audits **Net Liquid Runway** ($\tau_{\text{net}} = (\text{cash} - \text{short-term debt}) / \text{monthly burn}$), applying an acute dilution penalty ($\Delta z_{\text{panic}} = +1.25, \Delta z_{\text{bull}} = -1.10$) if runway $<9$ months.
+- **Sell-Side Consensus Skew & Dispersion (Pillar 3):** Calibrates Wall Street ratings and price target dispersion into the scenario probability distribution.
+- **Market-Price Bayesian Shrinkage Anchor (Pillar 4):** Anchors scenarios against the market-implied multiple ($w_{\text{mkt}} = 0.20$) to ground models in market reality without sacrificing fundamental alpha discovery.
+
+### 5. Intelligence Workspace Tabs (7 Workspaces)
 - **1. Valuation & Scenario Tree:** Interactive Bull/Base/Bear matrix with inline-editable forward EPS and exit multiples, real-time fair value recalculation, and integrated parameter sensitivity analysis.
 - **2. Wall Street Estimates:** Sell-side consensus ratings, price target track (Low/Mean/Median/High), and analyst revision histories.
 - **3. Economic Moat:** 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and peer comparison matrix.
@@ -50,16 +60,16 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **6. Audit & Risk:** Consolidated audit workspace containing 10-Q SEC risk disclosures, management tone scorecard, and historical post-earnings price reactions.
 - **7. Full Report Markdown:** View bilingual reports (`report.md` / `report_zh.md`) with 1-click clipboard copy.
 
-### 5. Investment Committee Memo Mode
+### 6. Investment Committee Memo Mode
 - Toggle with one click (`[M]` key) into a publication-ready 1-page PDF / printable memorandum for investment committee review.
 
 <p align="center">
   <img src="./docs/images/memo-preview.png" alt="Investment Committee Memorandum Preview" width="100%" />
 </p>
 
-### 6. Deterministic Valuation Methodology & Formula Guide (`/methodology`)
+### 7. Deterministic Valuation Methodology & Formula Guide (`/methodology`)
 - Comprehensive interactive documentation page explaining all mathematical algorithms and accounting guardrails powering the platform.
-- Full mathematical breakdowns, parameter definitions, and worked real-world examples (e.g. NVDA CapEx elasticity, AMZN ASU 2016-01 mark-to-market normalization).
+- Full mathematical breakdowns, parameter definitions, and worked real-world examples (e.g. NVDA CapEx elasticity, AMZN ASU 2016-01 mark-to-market normalization, SMCI governance veto probability calibration).
 - Accessible anytime from the top navigation bar or via direct route `/methodology`, complete with instant bilingual EN/中文 switching and GitHub links.
 
 <p align="center">
@@ -157,7 +167,7 @@ stress-alpha/
 │           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices & 60s cache
 │           ├── in-memory-report-repository.ts # In-memory mock repository for tests
 │           └── index.ts              # Repository factory singleton
-└── tests/                            # Vitest unit test suite (107 tests across 12 suites)
+└── tests/                            # Vitest unit test suite (111 tests across 12 suites)
     ├── auth.test.ts
     ├── multi-quarter.test.ts
     ├── report.test.ts
