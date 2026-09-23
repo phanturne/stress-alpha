@@ -243,10 +243,10 @@ async function main() {
 
   const reportZhMd = renderReport(
     {
-      facts,
-      catalysts,
+      facts: factsZh ?? facts,
+      catalysts: catalystsZh ?? catalysts,
       valuation: validatedValuation,
-      reactions,
+      reactions: reactionsZh ?? reactions,
       moat: moatZh ?? moat,
       estimates: estimatesZh ?? estimates,
     },
@@ -356,7 +356,10 @@ async function main() {
         const bearScen = validatedValuation.scenarioResults.find(
           (s) =>
             s.name.toLowerCase() === "bear" ||
-            s.name.toLowerCase() === "bear case"
+            s.name.toLowerCase() === "bear case" ||
+            s.name.toLowerCase() === "panic" ||
+            s.name.toLowerCase() === "panic case" ||
+            s.name.toLowerCase() === "panic floor"
         );
         if (baseScen) baseFairValue = baseScen.fairValue;
         if (bullScen) bullFairValue = bullScen.fairValue;

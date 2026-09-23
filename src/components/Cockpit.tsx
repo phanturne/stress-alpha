@@ -24,7 +24,10 @@ import { type StressTestParams, round2 } from "@/lib/valuation";
 import { PriceMeter } from "./PriceMeter";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
-import { computeSnowflakeScore } from "@/lib/snowflake";
+import {
+  computeSnowflakeScore,
+  type SnowflakeScoreResult,
+} from "@/lib/snowflake";
 import { useWatchlist } from "@/lib/watchlist";
 import { SnowflakeCard } from "./snowflake/SnowflakeCard";
 
@@ -45,6 +48,7 @@ interface CockpitProps {
   onResetDefaults: () => void;
   onOpenSnowflake?: () => void;
   locale?: Locale;
+  snowflakeScore?: SnowflakeScoreResult | null;
 }
 
 export const Cockpit: React.FC<CockpitProps> = ({
@@ -64,6 +68,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   onResetDefaults,
   onOpenSnowflake,
   locale = "zh",
+  snowflakeScore: propSnowflakeScore,
 }) => {
   const t = getTranslations(locale).cockpit;
   const headerT = getTranslations(locale).header;
@@ -71,6 +76,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   const isFav = isFavorite(facts.ticker);
 
   const snowflakeScore = React.useMemo(() => {
+    if (propSnowflakeScore) return propSnowflakeScore;
     const effectiveReportData: ReportData = reportData ?? {
       folderSlug: facts.ticker,
       folderName: facts.company,
@@ -86,7 +92,15 @@ export const Cockpit: React.FC<CockpitProps> = ({
       },
     };
     return computeSnowflakeScore(effectiveReportData, stressResult, locale);
-  }, [reportData, facts, valuation, baseline, stressResult, locale]);
+  }, [
+    propSnowflakeScore,
+    reportData,
+    facts,
+    valuation,
+    baseline,
+    stressResult,
+    locale,
+  ]);
   const [activeSliderTab, setActiveSliderTab] = useState<
     "volume" | "margins" | "all"
   >("volume");

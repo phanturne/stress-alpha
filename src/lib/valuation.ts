@@ -153,7 +153,7 @@ export function computeStressedValuation(
  */
 export function computeValuation(input: ValuationInput): Valuation {
   const { facts, scenarios } = input;
-  const currentPrice = scenarios.currentPrice || facts.currentPrice;
+  const currentPrice = facts.currentPrice || scenarios.currentPrice;
 
   // StressAlpha flow-through computation if baseline provided
   const baseline = input.baseline ?? scenarios.baseline;

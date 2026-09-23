@@ -484,6 +484,7 @@ export default function HomePage() {
       catalysts: displayCatalysts,
       scenarios: displayScenarios ?? reportData.scenarios,
       moat: displayMoat,
+      estimates: displayEstimates,
       valuation: dynamicValuation ?? reportData.valuation,
     };
     return computeSnowflakeScore(
@@ -497,6 +498,7 @@ export default function HomePage() {
     displayCatalysts,
     displayScenarios,
     displayMoat,
+    displayEstimates,
     dynamicValuation,
     stressResult,
     locale,
@@ -783,11 +785,14 @@ export default function HomePage() {
               stressParams={stressParams}
               stressResult={stressResult}
               valuation={dynamicValuation ?? reportData.valuation}
+              snowflakeScore={snowflakeScore}
               reportData={{
                 ...reportData,
                 facts: displayFacts!,
                 catalysts: displayCatalysts,
                 scenarios: displayScenarios!,
+                moat: displayMoat,
+                estimates: displayEstimates,
                 filing: displayFiling,
                 valuation: dynamicValuation ?? reportData.valuation,
               }}

@@ -1,6 +1,7 @@
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData } from "@/lib/schemas";
 import { computeSnowflakeScore } from "@/lib/snowflake";
+import { computeStressedValuation, computeValuation } from "@/lib/valuation";
 
 export class InMemoryReportRepository implements IReportRepository {
   private reports: Map<string, ReportData> = new Map();
@@ -50,7 +51,23 @@ export class InMemoryReportRepository implements IReportRepository {
         }
       | undefined;
     try {
-      const sRes = computeSnowflakeScore(report);
+      const dynamicValuation =
+        report.scenarios && report.facts
+          ? computeValuation({
+              facts: report.facts,
+              scenarios: report.scenarios,
+              baseline: report.baseline,
+            })
+          : report.valuation;
+      const stressResult =
+        report.baseline && currentPrice && currentPrice > 0
+          ? computeStressedValuation(report.baseline, currentPrice)
+          : undefined;
+      const reportPayload: ReportData = {
+        ...report,
+        valuation: dynamicValuation,
+      };
+      const sRes = computeSnowflakeScore(reportPayload, stressResult);
       snowflakeScore = sRes.totalScore;
       snowflakeTier = sRes.ratingTier;
       snowflakePillars = {

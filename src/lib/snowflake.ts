@@ -7,7 +7,11 @@ import type {
   Catalysts,
 } from "./schemas";
 import type { Locale } from "./i18n";
-import { round2 } from "./valuation";
+import {
+  round2,
+  computeStressedValuation,
+  computeValuation,
+} from "./valuation";
 
 export type SnowflakeAxisId =
   "valuation" | "future" | "earnings" | "moat" | "resilience";
@@ -58,7 +62,10 @@ function computeValuationCriteria(
 ): SnowflakeCriterion[] {
   const currentPrice = facts.currentPrice;
   const weightedFairValue = valuation?.weightedFairValue ?? currentPrice;
-  const upsidePct = valuation?.upsidePct ?? 0;
+  const upsidePct =
+    currentPrice > 0 && weightedFairValue > 0
+      ? round2(((weightedFairValue - currentPrice) / currentPrice) * 100)
+      : (valuation?.upsidePct ?? 0);
   const consensusTarget = valuation?.consensusTarget ?? 0;
   const pricedInMultiple =
     stressResult?.asymmetry?.marketPricedInMultiple ??
@@ -552,15 +559,43 @@ export function computeSnowflakeScore(
   locale: Locale = "en"
 ): SnowflakeScoreResult {
   const isZh = locale === "zh";
-  const facts =
+  const rawFacts =
     isZh && reportData.factsZh ? reportData.factsZh : reportData.facts;
+  const facts: Facts = {
+    ...rawFacts,
+    currentPrice:
+      reportData.facts?.currentPrice > 0
+        ? reportData.facts.currentPrice
+        : rawFacts.currentPrice,
+  };
   const valuation = reportData.valuation;
   const catalysts =
     isZh && reportData.catalystsZh
       ? reportData.catalystsZh
       : reportData.catalysts;
   const moat = isZh && reportData.moatZh ? reportData.moatZh : reportData.moat;
-  const baseline = reportData.baseline;
+  const baseline =
+    reportData.baseline ??
+    reportData.scenarios?.baseline ??
+    reportData.valuation?.baseline;
+
+  const currentPrice = facts?.currentPrice ?? 0;
+
+  const effectiveStressResult =
+    stressResult ??
+    (baseline && currentPrice > 0
+      ? computeStressedValuation(baseline, currentPrice)
+      : (valuation?.stressTest ?? undefined));
+
+  const effectiveValuation =
+    valuation ??
+    (facts && reportData.scenarios
+      ? computeValuation({
+          facts,
+          scenarios: reportData.scenarios,
+          baseline,
+        })
+      : undefined);
 
   function localizeCriteria(
     criteria: SnowflakeCriterion[]
@@ -575,8 +610,8 @@ export function computeSnowflakeScore(
   // 1. Valuation Pillar
   const rawValCriteria = computeValuationCriteria(
     facts,
-    valuation,
-    stressResult
+    effectiveValuation,
+    effectiveStressResult
   );
   const valScore = rawValCriteria.filter((c) => c.passed).length;
   const valSummaryEn =
@@ -699,7 +734,7 @@ export function computeSnowflakeScore(
   // 5. Stress Resilience Pillar
   const rawResCriteria = computeResilienceCriteria(
     facts,
-    stressResult,
+    effectiveStressResult,
     baseline
   );
   const resScore = rawResCriteria.filter((c) => c.passed).length;

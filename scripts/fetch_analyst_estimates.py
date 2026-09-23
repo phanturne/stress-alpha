@@ -15,6 +15,12 @@ import argparse
 from datetime import datetime
 
 try:
+    import certifi
+    os.environ.setdefault("SSL_CERT_FILE", certifi.where())
+except ImportError:
+    pass
+
+try:
     import yfinance as yf
 except ImportError:
     print("Error: yfinance is required. Install via: pip install yfinance", file=sys.stderr)

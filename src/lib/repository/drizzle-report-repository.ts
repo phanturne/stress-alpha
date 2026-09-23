@@ -2,8 +2,9 @@ import { eq, desc } from "drizzle-orm";
 import { getDb } from "@/db";
 import { reportsTable, tickersTable } from "@/db/schema";
 import type { IReportRepository, ReportSummary } from "./types";
-import type { ReportData, Valuation } from "@/lib/schemas";
+import type { ReportData, Valuation, Facts, Scenarios } from "@/lib/schemas";
 import { computeSnowflakeScore } from "@/lib/snowflake";
+import { computeStressedValuation, computeValuation } from "@/lib/valuation";
 
 export class DrizzleReportRepository implements IReportRepository {
   private cachedSummaries: ReportSummary[] | null = null;
@@ -110,19 +111,45 @@ export class DrizzleReportRepository implements IReportRepository {
         | undefined;
       if (report.facts && report.scenarios) {
         try {
+          const facts: Facts = {
+            ...report.facts,
+            currentPrice:
+              effectivePrice > 0 ? effectivePrice : report.facts.currentPrice,
+          };
+          const scenarios: Scenarios = {
+            ...report.scenarios,
+            currentPrice:
+              effectivePrice > 0
+                ? effectivePrice
+                : report.scenarios.currentPrice,
+          };
+          const baseline = report.baseline ?? undefined;
+
+          // Compute dynamic valuation matching cockpit's default unperturbed state
+          const dynamicValuation = computeValuation({
+            facts,
+            scenarios,
+            baseline,
+          });
+
+          const stressResult =
+            baseline && facts.currentPrice > 0
+              ? computeStressedValuation(baseline, facts.currentPrice)
+              : undefined;
+
           const reportPayload: ReportData = {
             folderSlug: report.slug,
             folderName: report.slug,
-            facts: report.facts,
-            valuation: (report.valuation as Valuation) ?? undefined,
-            scenarios: report.scenarios,
-            baseline: report.baseline ?? undefined,
+            facts,
+            valuation: dynamicValuation,
+            scenarios,
+            baseline,
             moat: report.moat ?? undefined,
             catalysts: report.catalysts ?? undefined,
             estimates: report.estimates ?? undefined,
             filing: report.filing ?? undefined,
           };
-          const res = computeSnowflakeScore(reportPayload);
+          const res = computeSnowflakeScore(reportPayload, stressResult);
           snowflakeScore = res.totalScore;
           snowflakeTier = res.ratingTier;
           snowflakePillars = {
@@ -210,14 +237,28 @@ export class DrizzleReportRepository implements IReportRepository {
       tickerInfo?.currentPrice ?? report.reportPrice
     );
 
-    // Decorate facts and valuation in-memory with live price if different
+    // Decorate facts, scenarios and valuation in-memory with live price if different
     const facts = { ...report.facts };
+    const factsZh = report.factsZh ? { ...report.factsZh } : undefined;
+    const scenarios = report.scenarios ? { ...report.scenarios } : undefined;
+    const scenariosZh = report.scenariosZh
+      ? { ...report.scenariosZh }
+      : undefined;
     let valuation: Valuation | undefined = report.valuation
       ? { ...report.valuation }
       : undefined;
 
     if (effectivePrice > 0 && effectivePrice !== Number(report.reportPrice)) {
       facts.currentPrice = effectivePrice;
+      if (factsZh) {
+        factsZh.currentPrice = effectivePrice;
+      }
+      if (scenarios) {
+        scenarios.currentPrice = effectivePrice;
+      }
+      if (scenariosZh) {
+        scenariosZh.currentPrice = effectivePrice;
+      }
       if (valuation) {
         valuation = {
           ...valuation,
@@ -237,7 +278,7 @@ export class DrizzleReportRepository implements IReportRepository {
       folderSlug: report.slug,
       folderName: report.slug,
       facts,
-      scenarios: report.scenarios,
+      scenarios: (scenarios ?? report.scenarios)!,
       valuation,
       baseline: report.baseline ?? undefined,
       moat: report.moat ?? undefined,
@@ -252,8 +293,8 @@ export class DrizzleReportRepository implements IReportRepository {
       filingZh: report.filingZh ?? undefined,
       reactions: report.reactions ?? undefined,
       reactionsZh: report.reactionsZh ?? undefined,
-      factsZh: report.factsZh ?? undefined,
-      scenariosZh: report.scenariosZh ?? undefined,
+      factsZh,
+      scenariosZh,
       reportMarkdown: report.reportMd ?? undefined,
       reportMarkdownZh: report.reportMdZh ?? undefined,
     };

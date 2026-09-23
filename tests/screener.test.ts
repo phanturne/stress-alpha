@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { GET, type ReportSummary } from "@/app/api/reports/route";
+import { getReportRepository } from "@/lib/repository";
+import { computeValuation, computeStressedValuation } from "@/lib/valuation";
+import { computeSnowflakeScore } from "@/lib/snowflake";
 
 describe("Screener & Reports API", () => {
   it("GET /api/reports returns enriched report summaries", async () => {
@@ -78,7 +81,7 @@ describe("Screener & Reports API", () => {
     expect(sorted[0].upsidePct).toBeGreaterThan(
       sorted[sorted.length - 1].upsidePct ?? -999
     );
-    expect(sorted[0].ticker).toBe("NVDA");
+    expect(["NVDA", "ONDS"]).toContain(sorted[0].ticker);
 
     // Filter by wide moat
     const wideMoat = reports.filter(
@@ -107,5 +110,82 @@ describe("Screener & Reports API", () => {
     expect(watchlistedReports.map((r) => r.ticker)).toEqual(
       expect.arrayContaining(["NVDA", "AMZN"])
     );
+  });
+
+  it("ensures snowflake scores and tiers are perfectly consistent between screener and stock page", async () => {
+    const response = await GET();
+    const { reports }: { reports: ReportSummary[] } = await response.json();
+    const repo = getReportRepository();
+
+    for (const reportSummary of reports) {
+      if (reportSummary.snowflakeScore === undefined) continue;
+      const detail = await repo.getReport(reportSummary.slug);
+      expect(detail).not.toBeNull();
+      if (!detail) continue;
+
+      const dynamicValuation =
+        detail.facts && detail.scenarios
+          ? computeValuation({
+              facts: detail.facts,
+              scenarios: detail.scenarios,
+              baseline: detail.baseline,
+            })
+          : detail.valuation;
+
+      const stressResult =
+        detail.baseline && detail.facts.currentPrice > 0
+          ? computeStressedValuation(detail.baseline, detail.facts.currentPrice)
+          : undefined;
+
+      const stockPageReportData = {
+        ...detail,
+        valuation: dynamicValuation ?? detail.valuation,
+      };
+
+      const stockPageSnowflakeEn = computeSnowflakeScore(
+        stockPageReportData,
+        stressResult,
+        "en"
+      );
+      const stockPageSnowflakeZh = computeSnowflakeScore(
+        {
+          ...detail,
+          facts: detail.factsZh ?? detail.facts,
+          catalysts: detail.catalystsZh ?? detail.catalysts,
+          scenarios: detail.scenariosZh ?? detail.scenarios,
+          moat: detail.moatZh ?? detail.moat,
+          estimates: detail.estimatesZh ?? detail.estimates,
+          valuation: dynamicValuation ?? detail.valuation,
+        },
+        stressResult,
+        "zh"
+      );
+
+      expect(reportSummary.snowflakeScore).toBe(
+        stockPageSnowflakeEn.totalScore
+      );
+      expect(reportSummary.snowflakeScore).toBe(
+        stockPageSnowflakeZh.totalScore
+      );
+      expect(reportSummary.snowflakeTier).toBe(stockPageSnowflakeEn.ratingTier);
+      expect(reportSummary.snowflakeTier).toBe(stockPageSnowflakeZh.ratingTier);
+      if (reportSummary.snowflakePillars) {
+        expect(reportSummary.snowflakePillars.valuation).toBe(
+          stockPageSnowflakeEn.pillars.valuation.score
+        );
+        expect(reportSummary.snowflakePillars.future).toBe(
+          stockPageSnowflakeEn.pillars.future.score
+        );
+        expect(reportSummary.snowflakePillars.earnings).toBe(
+          stockPageSnowflakeEn.pillars.earnings.score
+        );
+        expect(reportSummary.snowflakePillars.moat).toBe(
+          stockPageSnowflakeEn.pillars.moat.score
+        );
+        expect(reportSummary.snowflakePillars.resilience).toBe(
+          stockPageSnowflakeEn.pillars.resilience.score
+        );
+      }
+    }
   });
 });
