@@ -76,6 +76,11 @@ A forward-looking financial decision and scenario-simulation platform for fundam
   <img src="./docs/images/methodology-preview.png" alt="Valuation Methodology Preview" width="100%" />
 </p>
 
+### 8. Global Dual-Theme Engine: Cyber Obsidian & Institutional Light
+- **Cyber Obsidian (Default Dark):** Signature dark terminal aesthetic featuring deep obsidian (`#07090e`), layered dark glassmorphic panels, cyan (`#38bdf8`) accent glow, and calibrated neon telemetry.
+- **Institutional Light:** High-contrast FactSet/WSJ day mode designed for daytime research and committee review, featuring clean white/light slate surfaces (`#ffffff` / `#f8fafc`), high-contrast slate-900 typography (`#0f172a`), deep sky accent (`#0284c7`), and crisp financial borders.
+- **Instant 1-Click Toggle:** Quick Sun/Moon switch in the top header and detailed switcher in Settings menu, with zero-flash (`0ms FOUC`) SSR persistence in `localStorage`.
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)

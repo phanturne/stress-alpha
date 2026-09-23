@@ -566,7 +566,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
             <div className="flex flex-col gap-2 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="rounded border border-fintech-green/30 bg-fintech-greenGlow/20 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
+                <span className="bg-fintech-greenGlow/20 rounded border border-fintech-green/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
                   {moat.overallMoatRating} Moat
                 </span>
                 <span className="rounded border border-border bg-surface-2 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-slate-300">
@@ -698,7 +698,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <div className="flex flex-col gap-2.5 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="rounded border border-fintech-green/30 bg-fintech-greenGlow/20 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
+                  <span className="bg-fintech-greenGlow/20 rounded border border-fintech-green/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
                     {estimates.consensus.consensus}
                   </span>
                   <span className="font-mono text-[11px] text-slate-300">

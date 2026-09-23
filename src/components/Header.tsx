@@ -14,9 +14,12 @@ import {
   ArrowUpRight,
   LogIn,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
 import { useSession, signOut } from "@/lib/auth-client";
+import { useTheme } from "@/context/ThemeContext";
 import { AuthModal } from "./AuthModal";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
@@ -74,6 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
   const t = translations.header;
   const tAuth = translations.auth;
   const { data: session } = useSession();
+  const { theme, setTheme, toggleTheme } = useTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -212,6 +216,21 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
+        {/* Quick Theme Toggle Button (Moon: Cyber Obsidian / Sun: Institutional Light) */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
+          title={t.toggleTheme}
+          aria-label={t.toggleTheme}
+        >
+          {theme === "light" ? (
+            <Sun className="size-3.5 text-amber-500 transition-transform duration-200 hover:rotate-45" />
+          ) : (
+            <Moon className="size-3.5 text-sky-400 transition-transform duration-200 hover:-rotate-12" />
+          )}
+        </button>
+
         {/* GitHub Repository Icon Button */}
         <a
           href="https://github.com/phanturne/stress-alpha"
@@ -250,7 +269,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSettingsOpen(false)}
               />
-              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-64 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-72 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
                 {/* Language Switcher Row */}
                 <div className="flex items-center justify-between px-2.5 py-2 text-xs">
                   <div className="flex items-center gap-2 font-medium text-slate-300">
@@ -279,6 +298,46 @@ export const Header: React.FC<HeaderProps> = ({
                       }`}
                     >
                       中文
+                    </button>
+                  </div>
+                </div>
+
+                {/* Visual Theme Switcher Row */}
+                <div className="flex items-center justify-between px-2.5 py-2 text-xs">
+                  <div className="flex items-center gap-2 font-medium text-slate-300">
+                    {theme === "light" ? (
+                      <Sun className="size-3.5 text-amber-500" />
+                    ) : (
+                      <Moon className="size-3.5 text-accent" />
+                    )}
+                    <span>{t.theme}</span>
+                  </div>
+                  <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setTheme("cyber")}
+                      className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                        theme === "cyber"
+                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                      title={t.themeCyber}
+                    >
+                      <Moon className="size-3" />
+                      <span>{t.themeCyberShort}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTheme("light")}
+                      className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                        theme === "light"
+                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                      title={t.themeLight}
+                    >
+                      <Sun className="size-3" />
+                      <span>{t.themeLightShort}</span>
                     </button>
                   </div>
                 </div>

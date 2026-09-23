@@ -83,12 +83,12 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         <div className="flex items-center gap-3">
           {/* Probability Validation Pill */}
           {!isProbValid ? (
-            <div className="flex items-center gap-1.5 rounded-md border border-fintech-amber/30 bg-fintech-amberGlow/10 px-2.5 py-1 font-mono text-xs text-fintech-amber">
+            <div className="bg-fintech-amberGlow/10 flex items-center gap-1.5 rounded-md border border-fintech-amber/30 px-2.5 py-1 font-mono text-xs text-fintech-amber">
               <AlertCircle className="size-3.5" />
               {t.probMismatch(Math.round(totalProbability * 100))}
             </div>
           ) : (
-            <div className="flex items-center gap-1 rounded-md border border-fintech-green/30 bg-fintech-greenGlow/10 px-2.5 py-1 font-mono text-xs text-fintech-green">
+            <div className="bg-fintech-greenGlow/10 flex items-center gap-1 rounded-md border border-fintech-green/30 px-2.5 py-1 font-mono text-xs text-fintech-green">
               <CheckCircle2 className="size-3" />
               {t.probValid}
             </div>
@@ -140,8 +140,8 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
             <span
               className={`rounded-full border px-2 py-0.5 font-mono text-xs font-bold tabular-nums ${
                 weightedUpsidePct >= 0
-                  ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
-                  : "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                  ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                  : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
               }`}
             >
               {formatPercent(weightedUpsidePct)} {t.vsCurrent}
@@ -256,8 +256,8 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                   <span
                     className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold tabular-nums ${
                       upside >= 0
-                        ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
-                        : "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                        ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                        : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                     }`}
                   >
                     {formatPercent(upside)}
@@ -607,8 +607,8 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                           <span
                             className={`rounded border px-2 py-0.5 font-mono text-xs font-bold tabular-nums ${
                               isPositive
-                                ? "border-fintech-green/30 bg-fintech-greenGlow/10 text-fintech-green"
-                                : "border-fintech-red/30 bg-fintech-redGlow/10 text-fintech-red"
+                                ? "bg-fintech-greenGlow/10 border-fintech-green/30 text-fintech-green"
+                                : "bg-fintech-redGlow/10 border-fintech-red/30 text-fintech-red"
                             }`}
                           >
                             {isPositive ? "+" : ""}

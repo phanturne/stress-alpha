@@ -71,8 +71,8 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                   <span
                     className={`flex items-center justify-center rounded-xl p-2 ${
                       isGrowth
-                        ? "border border-fintech-green/30 bg-fintech-greenGlow/20 text-fintech-green shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-                        : "border border-fintech-red/30 bg-fintech-redGlow/20 text-fintech-red shadow-[0_0_10px_rgba(244,63,94,0.15)]"
+                        ? "bg-fintech-greenGlow/20 border border-fintech-green/30 text-fintech-green shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+                        : "bg-fintech-redGlow/20 border border-fintech-red/30 text-fintech-red shadow-[0_0_10px_rgba(244,63,94,0.15)]"
                     }`}
                   >
                     {isGrowth ? (
@@ -90,8 +90,8 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                   <span
                     className={`rounded border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider shadow-sm ${
                       isGrowth
-                        ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
-                        : "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                        ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                        : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                     }`}
                   >
                     {isGrowth ? t.growth : t.risk}

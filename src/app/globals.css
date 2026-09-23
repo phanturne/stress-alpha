@@ -3,7 +3,29 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  [data-theme="cyber"],
+  .dark {
+    --bg-rgb: 7 9 14; /* #07090e */
+    --surface-0-rgb: 13 17 23; /* #0d1117 */
+    --surface-1-rgb: 19 25 34; /* #131922 */
+    --surface-2-rgb: 27 35 48; /* #1b2330 */
+    --surface-3-rgb: 36 47 64; /* #242f40 */
+    --border-rgb: 32 43 60; /* #202b3c */
+    --border-light-rgb: 45 59 80; /* #2d3b50 */
+    --text-primary-rgb: 240 246 252; /* #f0f6fc */
+    --text-secondary-rgb: 148 163 184; /* #94a3b8 */
+    --text-muted-rgb: 100 116 139; /* #64748b */
+    --accent-rgb: 56 189 248; /* #38bdf8 */
+    --accent-hover-rgb: 14 165 233; /* #0ea5e9 */
+    --accent-glow: rgba(56, 189, 248, 0.18);
+    --green-rgb: 16 185 129; /* #10b981 */
+    --green-glow: rgba(16, 185, 129, 0.18);
+    --red-rgb: 244 63 94; /* #f43f5e */
+    --red-glow: rgba(244, 63, 94, 0.18);
+    --amber-rgb: 245 158 11; /* #f59e0b */
+    --amber-glow: rgba(245, 158, 11, 0.18);
+
     --bg: #07090e;
     --surface-0: #0d1117;
     --surface-1: #131922;
@@ -16,13 +38,68 @@
     --text-muted: #64748b;
     --accent: #38bdf8;
     --accent-hover: #0ea5e9;
-    --accent-glow: rgba(56, 189, 248, 0.18);
     --green: #10b981;
-    --green-glow: rgba(16, 185, 129, 0.18);
     --red: #f43f5e;
-    --red-glow: rgba(244, 63, 94, 0.18);
     --amber: #f59e0b;
-    --amber-glow: rgba(245, 158, 11, 0.18);
+
+    --glass-bg: rgba(19, 25, 34, 0.78);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-subtle-bg: rgba(13, 17, 23, 0.65);
+    --glass-subtle-border: rgba(255, 255, 255, 0.05);
+
+    --scrollbar-track: #0d1117;
+    --scrollbar-thumb: #242f40;
+    --slider-track: #1b2330;
+    --slider-thumb-border: #07090e;
+  }
+
+  [data-theme="light"],
+  .light {
+    --bg-rgb: 248 250 252; /* #f8fafc */
+    --surface-0-rgb: 255 255 255; /* #ffffff */
+    --surface-1-rgb: 241 245 249; /* #f1f5f9 */
+    --surface-2-rgb: 226 232 240; /* #e2e8f0 */
+    --surface-3-rgb: 203 213 225; /* #cbd5e1 */
+    --border-rgb: 226 232 240; /* #e2e8f0 */
+    --border-light-rgb: 203 213 225; /* #cbd5e1 */
+    --text-primary-rgb: 15 23 42; /* #0f172a */
+    --text-secondary-rgb: 71 85 105; /* #475569 */
+    --text-muted-rgb: 100 116 139; /* #64748b */
+    --accent-rgb: 2 132 199; /* #0284c7 */
+    --accent-hover-rgb: 3 105 161; /* #0369a1 */
+    --accent-glow: rgba(2, 132, 199, 0.18);
+    --green-rgb: 5 150 105; /* #059669 */
+    --green-glow: rgba(5, 150, 105, 0.18);
+    --red-rgb: 220 38 38; /* #dc2626 */
+    --red-glow: rgba(220, 38 38, 0.18);
+    --amber-rgb: 217 119 6; /* #d97706 */
+    --amber-glow: rgba(217, 119, 6, 0.18);
+
+    --bg: #f8fafc;
+    --surface-0: #ffffff;
+    --surface-1: #f1f5f9;
+    --surface-2: #e2e8f0;
+    --surface-3: #cbd5e1;
+    --border: #e2e8f0;
+    --border-light: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent: #0284c7;
+    --accent-hover: #0369a1;
+    --green: #059669;
+    --red: #dc2626;
+    --amber: #d97706;
+
+    --glass-bg: rgba(255, 255, 255, 0.88);
+    --glass-border: rgba(15, 23, 42, 0.08);
+    --glass-subtle-bg: rgba(241, 245, 249, 0.82);
+    --glass-subtle-border: rgba(15, 23, 42, 0.05);
+
+    --scrollbar-track: #f1f5f9;
+    --scrollbar-thumb: #cbd5e1;
+    --slider-track: #e2e8f0;
+    --slider-thumb-border: #ffffff;
   }
 
   body {
@@ -38,22 +115,25 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     min-height: 100vh;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 }
 
 /* Glassmorphism & Card Utility Classes */
 .glass-panel {
-  background: rgba(19, 25, 34, 0.78);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-panel-subtle {
-  background: rgba(13, 17, 23, 0.65);
+  background: var(--glass-subtle-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-subtle-border);
 }
 
 .tabular-nums {
@@ -103,7 +183,7 @@ input[type="number"].no-spinners {
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  background: #1b2330;
+  background: var(--slider-track);
   height: 6px;
   border-radius: 9999px;
   outline: none;
@@ -122,10 +202,10 @@ input[type="range"]::-webkit-slider-thumb {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #38bdf8;
-  border: 2px solid #07090e;
+  background: var(--accent);
+  border: 2px solid var(--slider-thumb-border);
   cursor: grab;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 10px var(--accent-glow);
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
@@ -134,8 +214,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.25);
-  background: #7dd3fc;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
+  background: var(--accent-hover);
+  box-shadow: 0 0 14px var(--accent-glow);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
@@ -147,10 +227,10 @@ input[type="range"]::-moz-range-thumb {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #38bdf8;
-  border: 2px solid #07090e;
+  background: var(--accent);
+  border: 2px solid var(--slider-thumb-border);
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 10px var(--accent-glow);
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -212,14 +292,130 @@ input[type="range"]::-moz-range-thumb {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d1117;
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #242f40;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+  background: var(--accent);
+}
+
+/* =========================================================================
+   Light Mode Institutional Theme Adjustments
+   ========================================================================= */
+.light,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Remap high-contrast dark typography classes for light mode */
+.light .text-white,
+[data-theme="light"] .text-white {
+  color: #0f172a;
+}
+
+.light .text-slate-100,
+[data-theme="light"] .text-slate-100 {
+  color: #0f172a;
+}
+
+.light .text-slate-200,
+[data-theme="light"] .text-slate-200 {
+  color: #1e293b;
+}
+
+.light .text-slate-300,
+[data-theme="light"] .text-slate-300 {
+  color: #334155;
+}
+
+.light .text-slate-400,
+[data-theme="light"] .text-slate-400 {
+  color: #475569;
+}
+
+.light .text-slate-500,
+[data-theme="light"] .text-slate-500 {
+  color: #64748b;
+}
+
+/* Hover state overrides */
+.light .hover\:text-white:hover,
+[data-theme="light"] .hover\:text-white:hover {
+  color: #0284c7;
+}
+
+/* Remap white borders and dividers for crisp light contrast */
+.light [class*="border-white/"],
+[data-theme="light"] [class*="border-white/"] {
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.light [class*="divide-white/"] > :not([hidden]) ~ :not([hidden]),
+[data-theme="light"]
+  [class*="divide-white/"]
+  > :not([hidden])
+  ~ :not([hidden]) {
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.light [class*="ring-white/"],
+[data-theme="light"] [class*="ring-white/"] {
+  --tw-ring-color: rgba(15, 23, 42, 0.08);
+}
+
+/* Snowflake Radar light adjustments */
+.light .snowflake-rings circle,
+[data-theme="light"] .snowflake-rings circle {
+  stroke: rgba(15, 23, 42, 0.12);
+}
+
+.light .snowflake-axes line,
+[data-theme="light"] .snowflake-axes line {
+  stroke: rgba(15, 23, 42, 0.15);
+}
+
+.light svg .fill-white,
+[data-theme="light"] svg .fill-white {
+  fill: #0f172a;
+}
+
+.light svg .stroke-white\/20,
+[data-theme="light"] svg .stroke-white\/20 {
+  stroke: rgba(15, 23, 42, 0.15);
+}
+
+/* Isolate Social Card Canvas: export cards preserve their custom theme tokens */
+.light #social-card-canvas .text-white,
+[data-theme="light"] #social-card-canvas .text-white {
+  color: #ffffff !important;
+}
+
+.light #social-card-canvas .text-slate-100,
+[data-theme="light"] #social-card-canvas .text-slate-100 {
+  color: #f1f5f9 !important;
+}
+
+.light #social-card-canvas .text-slate-200,
+[data-theme="light"] #social-card-canvas .text-slate-200 {
+  color: #e2e8f0 !important;
+}
+
+.light #social-card-canvas .text-slate-300,
+[data-theme="light"] #social-card-canvas .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+.light #social-card-canvas .text-slate-400,
+[data-theme="light"] #social-card-canvas .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.light #social-card-canvas [class*="border-white/"],
+[data-theme="light"] #social-card-canvas [class*="border-white/"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Modern Shimmer Skeleton Loader Utility */

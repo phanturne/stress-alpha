@@ -21,6 +21,12 @@ export interface Translations {
     linkCopied: string;
     settings: string;
     language: string;
+    theme: string;
+    themeCyber: string;
+    themeLight: string;
+    themeCyberShort: string;
+    themeLightShort: string;
+    toggleTheme: string;
     shortcuts: string;
     watchlist: string;
     addToWatchlist: string;
@@ -638,6 +644,12 @@ export const translations: Record<Locale, Translations> = {
       linkCopied: "Scenario link copied to clipboard!",
       settings: "Settings & Resources",
       language: "Language",
+      theme: "Visual Theme",
+      themeCyber: "Cyber Obsidian",
+      themeLight: "Institutional Light",
+      themeCyberShort: "Cyber",
+      themeLightShort: "Light",
+      toggleTheme: "Toggle Visual Theme (Cyber Obsidian / Institutional Light)",
       shortcuts: "Keyboard Shortcuts",
       watchlist: "Watchlist",
       addToWatchlist: "Add to Watchlist (F)",
@@ -1291,6 +1303,12 @@ export const translations: Record<Locale, Translations> = {
       linkCopied: "情景分析链接已复制到剪贴板！",
       settings: "偏好与设置",
       language: "界面语言",
+      theme: "视觉主题",
+      themeCyber: "黑曜赛博",
+      themeLight: "浅色明亮",
+      themeCyberShort: "黑曜",
+      themeLightShort: "浅色",
+      toggleTheme: "切换视觉主题 (黑曜赛博 / 浅色明亮)",
       shortcuts: "键盘快捷键",
       watchlist: "自选关注",
       addToWatchlist: "加入自选 (F)",

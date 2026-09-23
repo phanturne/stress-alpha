@@ -81,7 +81,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           style={{ left: `${panicPct}%` }}
         >
           <div className="-mt-1 mb-1 h-2 w-0.5 bg-fintech-red/80" />
-          <span className="whitespace-nowrap rounded border border-fintech-red/40 bg-fintech-redGlow/20 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-red">
+          <span className="bg-fintech-redGlow/20 whitespace-nowrap rounded border border-fintech-red/40 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-red">
             {formatCurrency(panicTarget, 0)}
           </span>
         </div>
@@ -103,7 +103,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           style={{ left: `${bullPct}%` }}
         >
           <div className="-mt-1 mb-1 h-2 w-0.5 bg-fintech-green/80" />
-          <span className="whitespace-nowrap rounded border border-fintech-green/40 bg-fintech-greenGlow/20 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-green">
+          <span className="bg-fintech-greenGlow/20 whitespace-nowrap rounded border border-fintech-green/40 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-green">
             {formatCurrency(bullTarget, 0)}
           </span>
         </div>

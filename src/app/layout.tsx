@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,10 +29,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
+      data-theme="cyber"
     >
-      <body className="bg-background font-sans text-slate-100 antialiased selection:bg-accent/20 selection:text-accent">
-        {children}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('stress_alpha_theme');var theme=(t==='light')?'light':'cyber';document.documentElement.setAttribute('data-theme',theme);if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body className="bg-background font-sans text-foreground antialiased selection:bg-accent/20 selection:text-accent">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

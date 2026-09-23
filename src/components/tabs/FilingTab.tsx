@@ -73,7 +73,7 @@ export const FilingTab: React.FC<FilingTabProps> = ({
             {newRiskFactors.map((r, idx) => (
               <div
                 key={idx}
-                className="glass-panel flex items-start justify-between gap-4 rounded-xl border border-fintech-red/30 bg-fintech-redGlow/5 p-4 shadow-[0_0_12px_rgba(244,63,94,0.06)]"
+                className="glass-panel bg-fintech-redGlow/5 flex items-start justify-between gap-4 rounded-xl border border-fintech-red/30 p-4 shadow-[0_0_12px_rgba(244,63,94,0.06)]"
               >
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-semibold leading-relaxed text-slate-200">
@@ -83,7 +83,7 @@ export const FilingTab: React.FC<FilingTabProps> = ({
                     {r.priorLanguage === "new" ? t.newTag : t.expandedTag}
                   </span>
                 </div>
-                <span className="shrink-0 rounded-full border border-fintech-red/40 bg-fintech-redGlow/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-fintech-red shadow-sm">
+                <span className="bg-fintech-redGlow/20 shrink-0 rounded-full border border-fintech-red/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-fintech-red shadow-sm">
                   {r.severity}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export const FilingTab: React.FC<FilingTabProps> = ({
                           {finding.finding}
                         </span>
                         {isNew && (
-                          <span className="inline-flex shrink-0 items-center gap-1 rounded border border-fintech-amber/30 bg-fintech-amberGlow/20 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-fintech-amber shadow-sm">
+                          <span className="bg-fintech-amberGlow/20 inline-flex shrink-0 items-center gap-1 rounded border border-fintech-amber/30 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-fintech-amber shadow-sm">
                             <Sparkles className="size-2.5" />
                             {t.newBadge}
                           </span>

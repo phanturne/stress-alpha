@@ -264,8 +264,8 @@ export const Cockpit: React.FC<CockpitProps> = ({
               <span
                 className={`rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
                   upsidePct >= 0
-                    ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
-                    : "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                    ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                    : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                 }`}
               >
                 {formatPercent(upsidePct)}
@@ -292,7 +292,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("mild")}
-              className="truncate rounded-lg border border-fintech-amber/25 bg-fintech-amberGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-amber transition-colors hover:bg-fintech-amberGlow/20"
+              className="bg-fintech-amberGlow/10 hover:bg-fintech-amberGlow/20 truncate rounded-lg border border-fintech-amber/25 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-amber transition-colors"
               title={t.presets.mildTooltip}
             >
               {t.presets.mild}
@@ -300,7 +300,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("severe")}
-              className="truncate rounded-lg border border-fintech-red/25 bg-fintech-redGlow/10 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-red transition-colors hover:bg-fintech-redGlow/20"
+              className="bg-fintech-redGlow/10 hover:bg-fintech-redGlow/20 truncate rounded-lg border border-fintech-red/25 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-red transition-colors"
               title={t.presets.severeTooltip}
             >
               {t.presets.severe}
@@ -470,7 +470,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <div className="grid grid-cols-3 gap-2">
               {/* Bull */}
               <div
-                className="flex flex-col rounded-xl border border-fintech-green/30 bg-gradient-to-b from-fintech-greenGlow/15 to-surface-0/60 p-3 shadow-sm"
+                className="from-fintech-greenGlow/15 flex flex-col rounded-xl border border-fintech-green/30 bg-gradient-to-b to-surface-0/60 p-3 shadow-sm"
                 title={`${t.regimes.bull}: Optimistic expansion regime with premium multiple`}
               >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-green">
@@ -510,7 +510,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
               {/* Bear */}
               <div
-                className="flex flex-col rounded-xl border border-fintech-red/30 bg-gradient-to-b from-fintech-redGlow/15 to-surface-0/60 p-3 shadow-sm"
+                className="from-fintech-redGlow/15 flex flex-col rounded-xl border border-fintech-red/30 bg-gradient-to-b to-surface-0/60 p-3 shadow-sm"
                 title={`${t.regimes.bear}: Contraction regime with macroeconomic multiple de-rating`}
               >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-red">
@@ -529,7 +529,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
             {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
             <div
-              className="flex items-center justify-between rounded-xl border border-fintech-red/25 bg-fintech-redGlow/10 px-3 py-2 font-mono text-xs"
+              className="bg-fintech-redGlow/10 flex items-center justify-between rounded-xl border border-fintech-red/25 px-3 py-2 font-mono text-xs"
               title="Panic Floor: Cycle trough valuation limit during severe recession"
             >
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-fintech-red">
@@ -833,9 +833,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
                       }}
                       className={`rounded-full border px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums transition-all hover:ring-1 hover:ring-accent ${
                         (stressParams.grossMarginBpsDelta ?? 0) > 0
-                          ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
+                          ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
                           : (stressParams.grossMarginBpsDelta ?? 0) < 0
-                            ? "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                            ? "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                             : "border-white/[0.08] bg-surface-2 text-slate-300"
                       }`}
                       title="Click to type exact bps"
@@ -915,9 +915,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
                       }}
                       className={`rounded-full border px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums transition-all hover:ring-1 hover:ring-accent ${
                         (stressParams.fixedOpexShiftPct ?? 0) > 0
-                          ? "border-fintech-red/30 bg-fintech-redGlow/15 text-fintech-red"
+                          ? "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                           : (stressParams.fixedOpexShiftPct ?? 0) < 0
-                            ? "border-fintech-green/30 bg-fintech-greenGlow/15 text-fintech-green"
+                            ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
                             : "border-white/[0.08] bg-surface-2 text-slate-300"
                       }`}
                       title="Click to type exact percentage"
@@ -968,7 +968,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
       {/* 4. Collapsible Income Quality Guardrail Card (Saves 150px vertical height) */}
       {facts.oneTimeItems && facts.oneTimeItems.length > 0 && (
-        <div className="glass-panel flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 bg-fintech-amberGlow/5 p-3.5 shadow-lg sm:p-4">
+        <div className="glass-panel bg-fintech-amberGlow/5 flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 p-3.5 shadow-lg sm:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-fintech-amber">
               <ShieldAlert className="size-4" />
