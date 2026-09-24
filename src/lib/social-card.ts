@@ -1,4 +1,10 @@
-import type { Facts, Valuation, StressResult, Scenario } from "./schemas";
+import type {
+  Facts,
+  Valuation,
+  StressResult,
+  Scenario,
+  ReportData,
+} from "./schemas";
 import type { Locale } from "./i18n";
 import { formatCurrency, formatPercent } from "./utils";
 
@@ -52,6 +58,45 @@ export function findMatchingPreset(
     }
   }
   return null;
+}
+
+/**
+ * Determines whether a section has adequate audited data to display for a specific report/ticker.
+ * Prevents cut off or empty sections from displaying when a ticker lacks certain data fields.
+ */
+export function isSectionAvailableForReport(
+  section: CardSection,
+  facts?: Facts,
+  reportData?: ReportData
+): boolean {
+  if (!facts) return true;
+  switch (section) {
+    case "valuationHero":
+    case "regimes":
+    case "earnings":
+    case "snowflake":
+      return true;
+    case "segments":
+      return Boolean(facts.segments && facts.segments.length > 0);
+    case "moat":
+      return Boolean(
+        reportData?.moat?.overallMoatRating ||
+        (reportData?.moat?.moatSources &&
+          reportData.moat.moatSources.length > 0) ||
+        reportData?.moatZh?.overallMoatRating ||
+        (reportData?.moatZh?.moatSources &&
+          reportData.moatZh.moatSources.length > 0)
+      );
+    case "catalysts":
+      return Boolean(
+        (reportData?.catalysts?.catalysts &&
+          reportData.catalysts.catalysts.length > 0) ||
+        (reportData?.catalystsZh?.catalysts &&
+          reportData.catalystsZh.catalysts.length > 0)
+      );
+    default:
+      return true;
+  }
 }
 
 export type CardAspectRatio = "landscape" | "square" | "portrait";
@@ -210,7 +255,7 @@ export function generateSocialPostText(
 
     lines.push(
       ``,
-      `🔗 交互推演: StressAlpha 权益估值与极端承压测试引擎`,
+      `🔗 交互推演: https://stressalpha.vercel.app/${ticker.toLowerCase()} (StressAlpha 权益估值与极端承压测试引擎)`,
       `#美股 #股票估值 #${ticker} #财报分析 #价值投资 #压力测试`
     );
 
@@ -240,7 +285,7 @@ export function generateSocialPostText(
 
   lines.push(
     ``,
-    `Interactive institutional scenario simulation via StressAlpha`,
+    `Interactive institutional scenario simulation: https://stressalpha.vercel.app/${ticker.toLowerCase()} via StressAlpha`,
     `#${ticker} #stocks #earnings #investing #valuation #StressAlpha`
   );
 

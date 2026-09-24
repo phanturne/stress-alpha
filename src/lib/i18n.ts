@@ -589,6 +589,50 @@ export interface Translations {
       moatRatingLabel: string;
       pricedInMultipleLabel: string;
       probLabel: string;
+      upsideTag: string;
+      downsideTag: string;
+      activeStressTag: string;
+      neutralStressTag: string;
+      bullRegimeDesc: string;
+      baseRegimeDesc: string;
+      panicRegimeDesc: string;
+      quarterlyResultsTitle: string;
+      marginLabel: string;
+      durabilityLabel: string;
+      compositeScoreLabel: string;
+      fivePillarsTitle: string;
+      segmentsTitle: string;
+      competitiveAdvantageTitle: string;
+      catalystsTitle: string;
+      growthCatalystLabel: string;
+      downsideRiskLabel: string;
+      probabilityAnchoredLabel: string;
+      grossMarginLabel: string;
+      operatingMarginLabel: string;
+      consensusTargetLabel: string;
+      competitiveDynamicsLabel: string;
+      peerBenchmarkLabel: string;
+      revenueGuidanceLabel: string;
+      noDataAvailable: string;
+      moatTrendLabel: string;
+      priceSpectrumTrackLabel: string;
+      spreadLabel: string;
+      trailingPeLabel: string;
+      forwardPeLabel: string;
+      fairPeLabel: string;
+      marginOfSafetyLabel: string;
+      asymmetrySkewLabel: string;
+      multipleSpreadLabel: string;
+      stressOperatingFlowLabel: string;
+      bullUpsideLabel: string;
+      panicDownsideLabel: string;
+      gaapReportedEpsLabel: string;
+      adjustedSpreadLabel: string;
+      guidanceCorridorLabel: string;
+      cleanConversionTitle: string;
+      radarChartSubtitle: string;
+      operatingIncomeGrowthLabel: string;
+      revenueVsEstimateLabel: string;
     };
   };
   auth: {
@@ -1248,6 +1292,50 @@ export const translations: Record<Locale, Translations> = {
         moatRatingLabel: "Economic Moat",
         pricedInMultipleLabel: "Priced-in Multiple",
         probLabel: "Prob",
+        upsideTag: "UPSIDE",
+        downsideTag: "DOWNSIDE",
+        activeStressTag: "Live Stressed Scenario Applied",
+        neutralStressTag: "Baseline Macro Neutral Model (0% Shocks)",
+        bullRegimeDesc: "Multiple Expansion & High Growth",
+        baseRegimeDesc: "Guidance Midpoint Execution",
+        panicRegimeDesc: "Liquidity Defense Floor",
+        quarterlyResultsTitle: "QUARTERLY OPERATIONAL RESULTS",
+        marginLabel: "Margin",
+        durabilityLabel: "durability",
+        compositeScoreLabel: "Composite Score",
+        fivePillarsTitle: "5-PILLAR INSTITUTIONAL AUDIT",
+        segmentsTitle: "SEGMENT REVENUE DYNAMICS",
+        competitiveAdvantageTitle: "COMPETITIVE ADVANTAGE & MOAT",
+        catalystsTitle: "KEY CATALYSTS & FRAGILITY RISKS",
+        growthCatalystLabel: "GROWTH CATALYST",
+        downsideRiskLabel: "DOWNSIDE RISK",
+        probabilityAnchoredLabel: "Probability Anchored",
+        grossMarginLabel: "Gross Margin",
+        operatingMarginLabel: "Operating Margin",
+        consensusTargetLabel: "Consensus Target",
+        competitiveDynamicsLabel: "Strategic Competitive Thesis",
+        peerBenchmarkLabel: "Peer Benchmark",
+        revenueGuidanceLabel: "Guidance Range",
+        noDataAvailable: "No data available",
+        moatTrendLabel: "Moat Trend",
+        priceSpectrumTrackLabel: "STRESS-ADJUSTED PRICE SPECTRUM",
+        spreadLabel: "Spread",
+        trailingPeLabel: "TTM P/E",
+        forwardPeLabel: "Fwd P/E",
+        fairPeLabel: "Fair P/E",
+        marginOfSafetyLabel: "Margin of Safety",
+        asymmetrySkewLabel: "Risk/Reward Asymmetry Skew",
+        multipleSpreadLabel: "Multiple Expansion",
+        stressOperatingFlowLabel: "Stressed Operating Baselines",
+        bullUpsideLabel: "Bull Upside",
+        panicDownsideLabel: "Panic Floor",
+        gaapReportedEpsLabel: "GAAP Reported",
+        adjustedSpreadLabel: "Quality Filter Adj",
+        guidanceCorridorLabel: "Next Quarter Guidance",
+        cleanConversionTitle: "CLEAN OPERATING EPS & GAAP RECONCILIATION",
+        radarChartSubtitle: "Institutional Fundamental Radar",
+        operatingIncomeGrowthLabel: "Op Income Growth",
+        revenueVsEstimateLabel: "vs Consensus",
       },
     },
     auth: {
@@ -1890,6 +1978,50 @@ export const translations: Record<Locale, Translations> = {
         moatRatingLabel: "经济护城河",
         pricedInMultipleLabel: "已计入倍数",
         probLabel: "概率",
+        upsideTag: "空间",
+        downsideTag: "折价",
+        activeStressTag: "已启用当前自定义极端承压参数",
+        neutralStressTag: "基准无损中性宏观假设 (0% 冲击)",
+        bullRegimeDesc: "多重估值扩张与高增速",
+        baseRegimeDesc: "官方指引中值常态兑现",
+        panicRegimeDesc: "极端恐慌去杠杆防御底线",
+        quarterlyResultsTitle: "季度核心业绩概览",
+        marginLabel: "利润率",
+        durabilityLabel: "壁垒",
+        compositeScoreLabel: "综合得分",
+        fivePillarsTitle: "五维核心支柱审计得分",
+        segmentsTitle: "核心业务分部营收全景",
+        competitiveAdvantageTitle: "竞争优势与护城河壁垒",
+        catalystsTitle: "核心催化剂与脆弱性风险",
+        growthCatalystLabel: "成长催化",
+        downsideRiskLabel: "下行风险",
+        probabilityAnchoredLabel: "发生概率加权",
+        grossMarginLabel: "毛利率",
+        operatingMarginLabel: "营业利润率",
+        consensusTargetLabel: "一致目标价",
+        competitiveDynamicsLabel: "核心竞争壁垒论据",
+        peerBenchmarkLabel: "同业对标",
+        revenueGuidanceLabel: "官方指引区间",
+        noDataAvailable: "暂无数据",
+        moatTrendLabel: "护城河趋势",
+        priceSpectrumTrackLabel: "情景压力测试估值谱系轨",
+        spreadLabel: "极差跨度",
+        trailingPeLabel: "滚动市盈率",
+        forwardPeLabel: "远期市盈率",
+        fairPeLabel: "公允市盈率",
+        marginOfSafetyLabel: "安全边际",
+        asymmetrySkewLabel: "风险收益不对称偏度",
+        multipleSpreadLabel: "估值倍数扩张",
+        stressOperatingFlowLabel: "压力测算核心经营基准",
+        bullUpsideLabel: "乐观空间",
+        panicDownsideLabel: "恐慌底线",
+        gaapReportedEpsLabel: "GAAP 报告每股收益",
+        adjustedSpreadLabel: "收益质量过滤调节",
+        guidanceCorridorLabel: "下季度官方指引区间",
+        cleanConversionTitle: "核心营业每股收益与 GAAP 调节",
+        radarChartSubtitle: "机构五维量化雷达",
+        operatingIncomeGrowthLabel: "营业利润增速",
+        revenueVsEstimateLabel: "对比一致预期",
       },
     },
     auth: {

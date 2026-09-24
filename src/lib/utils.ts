@@ -6,10 +6,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, decimals: number = 2): string {
-  return `$${amount.toLocaleString("en-US", {
+  const isNegative = amount < 0;
+  const absFormatted = Math.abs(amount).toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  })}`;
+  });
+  return isNegative ? `-$${absFormatted}` : `$${absFormatted}`;
 }
 
 export function formatPercent(
@@ -21,7 +23,10 @@ export function formatPercent(
 }
 
 export function formatBillions(value: number, decimals: number = 1): string {
-  return `$${value.toFixed(decimals)}B`;
+  return `$${value.toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}B`;
 }
 
 /**

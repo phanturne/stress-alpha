@@ -10,13 +10,14 @@ import type { Locale } from "@/lib/i18n";
 
 export interface SnowflakeRadarProps {
   scoreResult: SnowflakeScoreResult;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "card";
   interactive?: boolean;
   activePillar?: SnowflakeAxisId | null;
   onSelectPillar?: (id: SnowflakeAxisId) => void;
   locale?: Locale;
   showLabels?: boolean;
   className?: string;
+  maxWidth?: number | string;
 }
 
 const AXIS_CONFIGS: {
@@ -42,6 +43,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
   locale = "en",
   showLabels = true,
   className = "",
+  maxWidth,
 }) => {
   const [hoveredPillar, setHoveredPillar] = useState<SnowflakeAxisId | null>(
     null
@@ -67,6 +69,15 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           radius: 125,
           labelOffset: 34,
           fontSize: 11,
+        };
+      case "card":
+        return {
+          viewBox: 340,
+          cx: 170,
+          cy: 170,
+          radius: 118,
+          labelOffset: 25,
+          fontSize: 10,
         };
       case "md":
       default:
@@ -169,7 +180,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
       <svg
         viewBox={`0 0 ${viewBox} ${viewBox}`}
         className="h-auto w-full overflow-visible transition-transform duration-300"
-        style={{ maxWidth: viewBox }}
+        style={{ maxWidth: maxWidth !== undefined ? maxWidth : viewBox }}
       >
         <defs>
           {/* Radial polygon fill gradient */}

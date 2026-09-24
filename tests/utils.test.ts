@@ -27,9 +27,9 @@ describe("Formatting & Class Utilities", () => {
       expect(formatCurrency(1000)).toBe("$1,000.00");
     });
 
-    it("formats currency with custom decimals", () => {
-      expect(formatCurrency(128.5, 0)).toBe("$129");
-      expect(formatCurrency(128.5, 1)).toBe("$128.5");
+    it("formats negative currency with leading minus sign before dollar sign", () => {
+      expect(formatCurrency(-0.24)).toBe("-$0.24");
+      expect(formatCurrency(-1500.5)).toBe("-$1,500.50");
     });
   });
 

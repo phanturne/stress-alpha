@@ -146,6 +146,8 @@ The **Snowflake Fundamental Radar** ([`src/lib/snowflake.ts`](file:///Users/krdi
 4. **Social Media Card Generation**:
    - Maintain institutional export cards via `html-to-image` ([`src/lib/social-card.ts`](file:///Users/krding/Projects/stress-alpha/src/lib/social-card.ts)).
    - Support 5 card templates (`valuation`, `earnings`, `thesis`, `summary`, `snowflake`) across 3 standard social aspect ratios (16:9, 1:1, 4:5).
+   - Enforce ticker-first hierarchy, full-width radar layout, verified SEC disclosures, and data availability gating (`isSectionAvailableForReport`) preventing cut-off sections.
+   - Official watermark domain: `https://stressalpha.vercel.app/`.
 
 ---
 

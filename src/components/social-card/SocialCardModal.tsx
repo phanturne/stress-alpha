@@ -30,6 +30,7 @@ import {
   TEMPLATE_SECTION_PRESETS,
   CARD_SECTIONS,
   findMatchingPreset,
+  isSectionAvailableForReport,
   generateSocialPostText,
   downloadDataUrl,
   exportSocialCardAsPng,
@@ -82,7 +83,14 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
   // Active scenario URL
-  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const currentUrl =
+    typeof window !== "undefined" &&
+    window.location.href &&
+    !window.location.href.includes("localhost")
+      ? window.location.href
+      : facts
+        ? `https://stressalpha.vercel.app/${facts.ticker.toLowerCase()}`
+        : "https://stressalpha.vercel.app/";
 
   // Active locale: user selection or default to initial
   const cardLocale = selectedLocale ?? initialLocale;
@@ -205,8 +213,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
 
   // Handle Copy Scenario Link
   const handleCopyLink = () => {
-    if (typeof window === "undefined") return;
-    const url = window.location.href;
+    const url = currentUrl;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -217,11 +224,20 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
       .catch(() => prompt("Copy scenario link:", url));
   };
 
-  // Select a preset template which sets the sections to the preset's defaults
-  const handleSelectPreset = useCallback((preset: CardTemplate) => {
-    setTemplate(preset);
-    setSelectedSections(TEMPLATE_SECTION_PRESETS[preset]);
-  }, []);
+  // Select a preset template which sets the sections to the preset's defaults (filtered by data availability)
+  const handleSelectPreset = useCallback(
+    (preset: CardTemplate) => {
+      setTemplate(preset);
+      const defaultSections = TEMPLATE_SECTION_PRESETS[preset];
+      const available = defaultSections.filter((sec) =>
+        isSectionAvailableForReport(sec, facts, reportData)
+      );
+      setSelectedSections(
+        available.length > 0 ? available : ["valuationHero", "regimes"]
+      );
+    },
+    [facts, reportData]
+  );
 
   // Toggle an individual section on/off (automatically syncs matching preset)
   const handleToggleSection = useCallback((section: CardSection) => {
@@ -468,26 +484,49 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                 <div className="mt-2 flex flex-col gap-1.5">
                   {ALL_SECTIONS.map((section) => {
                     const isChecked = selectedSections.includes(section);
+                    const isAvailable = isSectionAvailableForReport(
+                      section,
+                      facts,
+                      reportData
+                    );
                     return (
                       <label
                         key={section}
-                        className={`flex cursor-pointer items-center gap-2.5 rounded-xl border p-2 transition-all ${
-                          isChecked
-                            ? "border-accent/40 bg-accent/10"
-                            : "border-white/[0.06] bg-surface-2/50 hover:border-slate-500"
+                        className={`flex items-center gap-2.5 rounded-xl border p-2 transition-all ${
+                          !isAvailable
+                            ? "cursor-not-allowed border-white/[0.04] bg-surface-2/20 opacity-40"
+                            : isChecked
+                              ? "cursor-pointer border-accent/40 bg-accent/10"
+                              : "cursor-pointer border-white/[0.06] bg-surface-2/50 hover:border-slate-500"
                         }`}
                       >
                         <input
                           type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleToggleSection(section)}
-                          className="size-3.5 rounded border-slate-600 bg-surface-2 text-accent focus:ring-accent"
+                          checked={isChecked && isAvailable}
+                          disabled={!isAvailable}
+                          onChange={() =>
+                            isAvailable && handleToggleSection(section)
+                          }
+                          className="size-3.5 rounded border-slate-600 bg-surface-2 text-accent focus:ring-accent disabled:opacity-40"
                         />
                         <div className="min-w-0 flex-1">
-                          <div
-                            className={`text-xs font-bold ${isChecked ? "text-white" : "text-slate-400"}`}
-                          >
-                            {t.sections[section]}
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`text-xs font-bold ${
+                                !isAvailable
+                                  ? "text-slate-500"
+                                  : isChecked
+                                    ? "text-white"
+                                    : "text-slate-400"
+                              }`}
+                            >
+                              {t.sections[section]}
+                            </span>
+                            {!isAvailable && (
+                              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500">
+                                {t.labels.noDataAvailable}
+                              </span>
+                            )}
                           </div>
                           <div className="truncate text-[10px] text-slate-500">
                             {

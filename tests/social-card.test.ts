@@ -6,12 +6,13 @@ import {
   TEMPLATE_SECTION_PRESETS,
   CARD_SECTIONS,
   findMatchingPreset,
+  isSectionAvailableForReport,
   type CardAspectRatio,
   type CardTheme,
   type CardSection,
 } from "@/lib/social-card";
 import { getTranslations } from "@/lib/i18n";
-import type { Facts, Valuation, StressResult } from "@/lib/schemas";
+import type { Facts, Valuation, StressResult, ReportData } from "@/lib/schemas";
 
 describe("Social Media Card Feature", () => {
   const mockFacts: Facts = {
@@ -197,6 +198,26 @@ describe("Social Media Card Feature", () => {
         "⚠️ Custom Stress Shocks: NAND ASP: -15%, GM: -100bps"
       );
     });
+
+    it("uses production domain https://stressalpha.vercel.app and never stressalpha.ai", () => {
+      const enText = generateSocialPostText({
+        facts: mockFacts,
+        valuation: mockValuation,
+        stressResult: mockStressResult,
+        locale: "en",
+      });
+      expect(enText).toContain("https://stressalpha.vercel.app/sndk");
+      expect(enText).not.toContain("stressalpha.ai");
+
+      const zhText = generateSocialPostText({
+        facts: mockFacts,
+        valuation: mockValuation,
+        stressResult: mockStressResult,
+        locale: "zh",
+      });
+      expect(zhText).toContain("https://stressalpha.vercel.app/sndk");
+      expect(zhText).not.toContain("stressalpha.ai");
+    });
   });
 
   describe("i18n Translations Completeness", () => {
@@ -312,6 +333,79 @@ describe("Social Media Card Feature", () => {
         findMatchingPreset(["valuationHero", "regimes", "snowflake"])
       ).toBeNull();
       expect(findMatchingPreset([])).toBeNull();
+    });
+  });
+
+  describe("Data Availability & Section Filtering Guardrails", () => {
+    it("identifies core sections as always available", () => {
+      expect(isSectionAvailableForReport("valuationHero", mockFacts)).toBe(
+        true
+      );
+      expect(isSectionAvailableForReport("regimes", mockFacts)).toBe(true);
+      expect(isSectionAvailableForReport("earnings", mockFacts)).toBe(true);
+      expect(isSectionAvailableForReport("snowflake", mockFacts)).toBe(true);
+    });
+
+    it("correctly identifies availability of optional data sections based on ticker facts and report", () => {
+      // Segments available when facts.segments has items
+      expect(isSectionAvailableForReport("segments", mockFacts)).toBe(true);
+
+      const noSegmentsFacts: Facts = { ...mockFacts, segments: [] };
+      expect(isSectionAvailableForReport("segments", noSegmentsFacts)).toBe(
+        false
+      );
+
+      // Moat available when moatData exists
+      const reportWithMoat: ReportData = {
+        folderSlug: "SNDK",
+        folderName: "SanDisk Corporation",
+        facts: mockFacts,
+        scenarios: {
+          ticker: "SNDK",
+          basisYear: "FY2027",
+          currentPrice: mockFacts.currentPrice,
+          consensusTarget: 2125.09,
+          scenarios: [],
+        },
+        moat: {
+          ticker: "SNDK",
+          overallMoatRating: "Wide",
+          moatTrend: "Widening",
+          moatSources: [
+            {
+              source: "Intangible Assets",
+              strength: "Strong",
+              description: "BiCS8 3D NAND patents",
+              durabilityYears: 15,
+            },
+          ],
+          competitors: [],
+          competitiveDynamicsSummary: "Strong memory moat",
+          sources: [],
+        },
+      };
+      expect(
+        isSectionAvailableForReport("moat", mockFacts, reportWithMoat)
+      ).toBe(true);
+
+      const emptyReport: ReportData = {
+        folderSlug: "SNDK",
+        folderName: "SanDisk Corporation",
+        facts: mockFacts,
+        scenarios: {
+          ticker: "SNDK",
+          basisYear: "FY2027",
+          currentPrice: mockFacts.currentPrice,
+          consensusTarget: 2125.09,
+          scenarios: [],
+        },
+      };
+      expect(isSectionAvailableForReport("moat", mockFacts, emptyReport)).toBe(
+        false
+      );
+      expect(
+        isSectionAvailableForReport("catalysts", mockFacts, emptyReport)
+      ).toBe(false);
     });
   });
 });
