@@ -112,6 +112,17 @@ Scenario probabilities are calibrated in multinomial logit (softmax) space rathe
 - **Pillar 4: Market-Implied Reality Check**: Reverse-engineers market-priced-in disaster risk with a 20% Bayesian shrinkage anchor.
 - **Simplex Regularization**: Convex contraction ensuring probabilities strictly remain within $[0.05, 0.85]$ and sum precisely to $1.000$.
 
+### Event-Driven Fundamental Transmission & News Pipeline
+To factor in real-time news, product announcements, and cross-company supply chain updates without LLM price hallucinations:
+1. **Materiality & Junk Gating (`src/lib/news-filter.ts`)**:
+   - Deterministic regex & publisher blacklisting filters out ~95% of syndication clickbait before any LLM is invoked.
+   - Mandatory pass gates for Form 8-K filings, verified brokerage rating revisions, and statistical return anomalies ($|R| \ge 2.5\sigma$ or $\ge \pm 3.0\%$).
+2. **Deterministic Transmission Engine (`src/lib/news-transmission.ts`)**:
+   - Qualitative news is strictly mapped into typed transmission vectors (`driver_shock`, `catalyst_prob`, `qpce_skew`, `segment_growth`).
+   - Pure TypeScript calculates implied $\Delta \text{Revenue}$, $\Delta \text{EPS}$, and implied WFV impact directly via [`computeStressedValuation()`](file:///Users/krding/Projects/stress-alpha/src/lib/valuation.ts#L41) with zero LLM math.
+3. **Cross-Company Dependency Graph**:
+   - Captures supplier/customer ripples (e.g. TSMC CapEx $\to$ NVIDIA revenue) via `upstreamDependenciesTable`.
+
 ---
 
 ## 5. 5-Pillar Snowflake Radar Scoring

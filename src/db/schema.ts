@@ -21,6 +21,8 @@ import type {
   EarningsSentiment,
   FilingExtracts,
   Reactions,
+  MarketEvent,
+  TransmissionPayload,
 } from "@/lib/schemas";
 
 // ---------------------------------------------------------------------------
@@ -249,7 +251,81 @@ export const userWatchlistsTable = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// 5. Relations
+// 5. Market Events & News Intelligence Table
+// ---------------------------------------------------------------------------
+export const marketEventsTable = pgTable(
+  "market_events",
+  {
+    id: text("id").primaryKey(),
+    ticker: text("ticker")
+      .notNull()
+      .references(() => tickersTable.ticker, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    sourceUrl: text("source_url"),
+    publisher: text("publisher").notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull(),
+    eventType: text("event_type").notNull(), // 'upstream_earnings' | 'product_release' | 'analyst_rating' | 'sec_filing' | 'general_catalyst'
+    priceMovePct: numeric("price_move_pct", { precision: 6, scale: 2 }),
+    abnormalReturnSigma: numeric("abnormal_return_sigma", {
+      precision: 4,
+      scale: 2,
+    }),
+    transmissionType: text("transmission_type").default("none").notNull(),
+    transmissionPayload: jsonb("transmission_payload").$type<TransmissionPayload>(),
+    impliedWfvImpactPct: numeric("implied_wfv_impact_pct", {
+      precision: 6,
+      scale: 2,
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_market_events_ticker").on(table.ticker),
+    index("idx_market_events_published").on(table.publishedAt),
+    index("idx_market_events_type").on(table.eventType),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// 6. Cross-Company Upstream Dependency Graph
+// ---------------------------------------------------------------------------
+export const upstreamDependenciesTable = pgTable(
+  "upstream_dependencies",
+  {
+    id: text("id").primaryKey(),
+    sourceTicker: text("source_ticker")
+      .notNull()
+      .references(() => tickersTable.ticker, { onDelete: "cascade" }),
+    targetTicker: text("target_ticker")
+      .notNull()
+      .references(() => tickersTable.ticker, { onDelete: "cascade" }),
+    driverId: text("driver_id").notNull(),
+    driverName: text("driver_name"),
+    exposureShare: numeric("exposure_share", {
+      precision: 4,
+      scale: 2,
+    }).notNull(),
+    elasticity: numeric("elasticity", { precision: 4, scale: 2 }).notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_upstream_target").on(table.targetTicker),
+    index("idx_upstream_source").on(table.sourceTicker),
+    uniqueIndex("idx_upstream_pair_driver").on(
+      table.sourceTicker,
+      table.targetTicker,
+      table.driverId
+    ),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// 7. Relations
 // ---------------------------------------------------------------------------
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
@@ -288,3 +364,7 @@ export type AccountSelect = typeof account.$inferSelect;
 export type VerificationSelect = typeof verification.$inferSelect;
 export type UserWatchlistSelect = typeof userWatchlistsTable.$inferSelect;
 export type UserWatchlistInsert = typeof userWatchlistsTable.$inferInsert;
+export type MarketEventSelect = typeof marketEventsTable.$inferSelect;
+export type MarketEventInsert = typeof marketEventsTable.$inferInsert;
+export type UpstreamDependencySelect = typeof upstreamDependenciesTable.$inferSelect;
+export type UpstreamDependencyInsert = typeof upstreamDependenciesTable.$inferInsert;

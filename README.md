@@ -93,6 +93,13 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Slide-Over Navigation Drawer:** Full-featured touch-friendly drawer providing quick access to report history, quarter switching, Screener, language selection (EN/中文), and theme switcher.
 - **Responsive Workspace Tabs:** Tailored mobile card views for Wall Street Analyst Estimates (`EstimatesTab`) and Peer Benchmarking (`MoatTab`), avoiding horizontal clipping and table pinch-to-zoom.
 
+### 10. Event-Driven News & Supply Chain Transmission Pipeline
+- **Zero-Hallucination News Transmission:** Instead of letting AI speculate on price targets from news, headlines are converted into structured transmission vectors (Upstream Driver Shocks, Catalyst Probabilities, Consensus Skews) that feed deterministically into the financial engine.
+- **Deterministic Clickbait Filter:** High-speed regex & publisher blacklisting (`src/lib/news-filter.ts`) rejects ~95% of syndication spam and bot articles with 0 LLM cost.
+- **Free-Tier Ingestion Barbell:** Massive (Polygon) single-call grouped daily bars for 4,000-stock EOD pricing paired with Finnhub's 60 req/min free metadata endpoints (ticker-tagged news, recommendation trends, and 52W target ranges).
+- **Cross-Company Dependency Graph:** Directed Acyclic Graph (DAG) in Neon PostgreSQL (`upstreamDependenciesTable`) propagating supplier/customer earnings shocks (e.g. TSMC CapEx $\to$ NVIDIA revenue $\to$ Data Center power demand) without duplicating extractions.
+
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)

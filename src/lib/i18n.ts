@@ -182,6 +182,7 @@ export interface Translations {
     moat: string;
     segments: string;
     catalysts: string;
+    news?: string;
     audit: string;
     report: string;
     scenarios?: string;
@@ -200,6 +201,31 @@ export interface Translations {
     prevTab: string;
     allTabs: string;
     tabNumber: (current: number, total: number) => string;
+  };
+  newsTab?: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    latestPulse: string;
+    transmissionChannel: string;
+    simulateButton: string;
+    simulateTooltip: string;
+    viewSource: string;
+    wfvImpact: string;
+    priceReaction: string;
+    abnormalMove: string;
+    allFilter: string;
+    upstreamFilter: string;
+    productFilter: string;
+    analystFilter: string;
+    secFilter: string;
+    channels: {
+      driverShock: string;
+      catalystProb: string;
+      qpceSkew: string;
+      segmentGrowth: string;
+      none: string;
+    };
   };
   estimatesTab: {
     title: string;
@@ -911,6 +937,7 @@ export const translations: Record<Locale, Translations> = {
       moat: "Moat & Peers",
       segments: "Segments & Financials",
       catalysts: "Catalysts & Risks",
+      news: "News & Pulse",
       audit: "Earnings Audit",
       report: "Raw Filings & Notes",
       scenarios: "Valuation & Scenarios",
@@ -930,6 +957,32 @@ export const translations: Record<Locale, Translations> = {
       allTabs: "All Workspaces",
       tabNumber: (current: number, total: number) =>
         `Workspace ${current} of ${total}`,
+    },
+    newsTab: {
+      title: "Real-Time News & Catalyst Intelligence",
+      subtitle:
+        "Filtered market events and fundamental transmission vectors. Simulate implied price and multiple shifts directly in the Cockpit.",
+      empty: "No material market events recorded for this stock in the current window.",
+      latestPulse: "Latest Market Pulse",
+      transmissionChannel: "Transmission Channel",
+      simulateButton: "Simulate in Cockpit",
+      simulateTooltip: "Load implied shocks directly into Cockpit sliders",
+      viewSource: "View Source",
+      wfvImpact: "Implied WFV Impact",
+      priceReaction: "Price Move",
+      abnormalMove: "Abnormal Return",
+      allFilter: "All Events",
+      upstreamFilter: "Upstream & Supply Chain",
+      productFilter: "Product Releases",
+      analystFilter: "Analyst Actions",
+      secFilter: "SEC Filings",
+      channels: {
+        driverShock: "Upstream Driver Shock",
+        catalystProb: "Catalyst Probability Shift",
+        qpceSkew: "Wall Street Consensus Skew",
+        segmentGrowth: "Segment TAM Revision",
+        none: "Qualitative Context",
+      },
     },
     estimatesTab: {
       title: "Wall Street Analyst Consensus & Estimates",
@@ -1658,6 +1711,7 @@ export const translations: Record<Locale, Translations> = {
       moat: "护城河与竞品",
       segments: "分部业务与财务",
       catalysts: "催化剂与风险",
+      news: "即时动态与脉搏",
       audit: "业绩与披露审计",
       report: "原始底稿与披露",
       scenarios: "估值与情景",
@@ -1677,6 +1731,32 @@ export const translations: Record<Locale, Translations> = {
       allTabs: "全部工作台",
       tabNumber: (current: number, total: number) =>
         `工作台 ${current} / ${total}`,
+    },
+    newsTab: {
+      title: "即时动态与催化剂脉搏",
+      subtitle:
+        "过滤后的重要市场事件与基本面传导向量。可一键将隐含冲击推演带入驾驶舱测算。",
+      empty: "当前监控周期内该标的无重大市场异动或财报传导事件。",
+      latestPulse: "最新市场脉搏",
+      transmissionChannel: "传导机制",
+      simulateButton: "一键带入驾驶舱推演",
+      simulateTooltip: "将该事件隐含的参数冲击直接加载至驾驶舱滑块",
+      viewSource: "查看信息源",
+      wfvImpact: "隐含公允价值影响",
+      priceReaction: "股价变动",
+      abnormalMove: "超额异动",
+      allFilter: "全部事件",
+      upstreamFilter: "供应链与上下游",
+      productFilter: "产品与技术发布",
+      analystFilter: "投行评级与目标价",
+      secFilter: "SEC 官方披露",
+      channels: {
+        driverShock: "上下游驱动冲击",
+        catalystProb: "催化剂概率重构",
+        qpceSkew: "华尔街预期偏度",
+        segmentGrowth: "业务线增速修正",
+        none: "定性参考信息",
+      },
     },
     estimatesTab: {
       title: "华尔街分析师共识与目标价",

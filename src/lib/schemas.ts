@@ -508,6 +508,89 @@ export const AnalystEstimatesSchema = z.object({
 });
 export type AnalystEstimates = z.infer<typeof AnalystEstimatesSchema>;
 
+// --- Stage 5: Market Events & News Pipeline ---
+export const MarketEventTypeSchema = z.enum([
+  "upstream_earnings",
+  "product_release",
+  "analyst_rating",
+  "sec_filing",
+  "general_catalyst",
+]);
+export type MarketEventType = z.infer<typeof MarketEventTypeSchema>;
+
+export const TransmissionTypeSchema = z.enum([
+  "driver_shock",
+  "catalyst_prob",
+  "qpce_skew",
+  "segment_growth",
+  "none",
+]);
+export type TransmissionType = z.infer<typeof TransmissionTypeSchema>;
+
+export const TransmissionPayloadSchema = z.object({
+  driverId: z.string().optional(),
+  deltaShockPct: z.number().optional(),
+  catalystId: z.string().optional(),
+  newProbability: z.number().min(0).max(1).optional(),
+  analystAction: z
+    .object({
+      firm: z.string(),
+      action: z
+        .enum([
+          "Upgraded",
+          "Downgraded",
+          "TargetRaised",
+          "TargetLowered",
+          "Initiated",
+          "Reiterated",
+        ])
+        .or(z.string()),
+      priorTarget: z.number().optional().nullable(),
+      newTarget: z.number(),
+    })
+    .optional(),
+  segmentName: z.string().optional(),
+  segmentDeltaGrowthPct: z.number().optional(),
+  rationale: z.string().optional(),
+});
+export type TransmissionPayload = z.infer<typeof TransmissionPayloadSchema>;
+
+export const MarketEventSchema = z.object({
+  id: z.string(),
+  ticker: z.string(),
+  title: z.string(),
+  summary: z.string(),
+  sourceUrl: z.string().optional(),
+  publisher: z.string(),
+  publishedAt: z.string().describe("ISO date string"),
+  eventType: MarketEventTypeSchema,
+  priceMovePct: z.number().optional(),
+  abnormalReturnSigma: z.number().optional(),
+  transmissionType: TransmissionTypeSchema.default("none"),
+  transmissionPayload: TransmissionPayloadSchema.optional(),
+  impliedWfvImpactPct: z.number().optional(),
+  sources: z.array(SourceSchema).optional().default([]),
+});
+export type MarketEvent = z.infer<typeof MarketEventSchema>;
+
+export const MarketEventsSchema = z.object({
+  ticker: z.string(),
+  events: z.array(MarketEventSchema),
+});
+export type MarketEvents = z.infer<typeof MarketEventsSchema>;
+
+export const UpstreamDependencySchema = z.object({
+  id: z.string().optional(),
+  sourceTicker: z.string().describe("Upstream ticker e.g. TSM"),
+  targetTicker: z.string().describe("Downstream ticker e.g. NVDA"),
+  driverId: z.string().describe("Driver ID matching upstreamDrivers"),
+  driverName: z.string().optional(),
+  exposureShare: z.number().min(0).max(1),
+  elasticity: z.number(),
+  notes: z.string().optional(),
+});
+export type UpstreamDependency = z.infer<typeof UpstreamDependencySchema>;
+
 // --- Full Dataset Loaded in UI ---
 export interface ReportData {
   folderSlug: string;
@@ -524,6 +607,8 @@ export interface ReportData {
   moatZh?: MoatCompetitors;
   estimates?: AnalystEstimates;
   estimatesZh?: AnalystEstimates;
+  events?: MarketEvents;
+  eventsZh?: MarketEvents;
   factsZh?: Facts;
   catalystsZh?: Catalysts;
   scenariosZh?: Scenarios;
@@ -533,3 +618,4 @@ export interface ReportData {
   reportMarkdown?: string;
   reportMarkdownZh?: string;
 }
+
