@@ -6,19 +6,31 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
 
-const connectionString = process.env.DATABASE_URL;
-
-export const db = connectionString
-  ? drizzle(neon(connectionString), { schema })
-  : (null as unknown as ReturnType<typeof drizzle<typeof schema>>);
+let currentDb: ReturnType<typeof drizzle<typeof schema>> | null = null;
+let currentUrl: string | null = null;
 
 export function getDb() {
-  if (!process.env.DATABASE_URL) {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
     throw new Error(
       "DATABASE_URL environment variable is not configured. Please set it in .env.local or your environment."
     );
   }
-  return db;
+  if (!currentDb || currentUrl !== url) {
+    currentDb = drizzle(neon(url), { schema });
+    currentUrl = url;
+  }
+  return currentDb;
 }
+
+export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+  get(_target, prop) {
+    const activeDb = getDb();
+    const value = (activeDb as unknown as Record<string | symbol, unknown>)[
+      prop
+    ];
+    return typeof value === "function" ? value.bind(activeDb) : value;
+  },
+});
 
 export { schema };

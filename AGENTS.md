@@ -73,6 +73,12 @@ All data access is mediated through the **Repository Pattern** defined in [`src/
 2. **Factory Selection**:
    - Always use `getReportRepository()` which instantiates `DrizzleReportRepository` connected directly to Neon PostgreSQL.
    - **Never bypass repository interfaces** in API routes or extraction scripts.
+3. **Isolated Integration Testing via Neon Ephemeral Branching**:
+   - Automated via `tests/setup/neon-branch-global.ts` and `tests/helpers/neon-branch.ts`.
+   - When `NEON_API_KEY` and `NEON_PROJECT_ID` are configured, Vitest spins up an isolated copy-on-write database branch (`test-vitest-<timestamp>`) from `production` in ~1.0s.
+   - Tests run against this pristine replica with 100% cloud parity, executing read and write operations without corrupting production data.
+   - The ephemeral branch is automatically deleted upon test completion, with background reaping of stale branches (>30m) to prevent quota exhaustion.
+   - Tests assert **schema and contract invariants** (`toBeGreaterThan(0)`, `typeof x === 'number'`) rather than brittle magic numbers that drift when market prices or analyst targets update.
 
 ---
 

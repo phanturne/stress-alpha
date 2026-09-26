@@ -18,6 +18,8 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
 
     steps:
       - name: Checkout code
