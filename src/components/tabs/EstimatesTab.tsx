@@ -36,7 +36,6 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
   locale = "zh",
 }) => {
   const t = getTranslations(locale).estimatesTab;
-  const isZh = locale === "zh";
 
   const [searchTerm, setSearchTerm] = useState("");
   const [ratingFilter, setRatingFilter] = useState<string>("all");
@@ -340,21 +339,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
 
           <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
-            <span>
-              {isZh ? "华尔街卖方共识情绪" : "Wall Street Sentiment Momentum"}
-            </span>
+            <span>{t.sentimentMomentum}</span>
             <span className="font-medium text-slate-300">
               {consensus.bullishPct >= 70
-                ? isZh
-                  ? "🔥 极度看多 (High Conviction)"
-                  : "🔥 High Conviction Bullish"
+                ? t.highConvictionBullish
                 : consensus.bullishPct >= 50
-                  ? isZh
-                    ? "偏多共识 (Moderate Bull)"
-                    : "Moderate Bull"
-                  : isZh
-                    ? "观点分歧 (Divergent)"
-                    : "Divergent"}
+                  ? t.moderateBull
+                  : t.divergentSentiment}
             </span>
           </div>
         </div>
@@ -435,7 +426,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                     <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent shadow-[0_0_10px_rgba(56,189,248,0.7)]" />
                     <div className="absolute -top-7 flex flex-col items-center whitespace-nowrap">
                       <span className="rounded border border-accent/40 bg-accent/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
-                        {isZh ? "现价" : "Current"}: ${current.toFixed(2)}
+                        {t.currentPriceLabel}: ${current.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -477,13 +468,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
           <div className="mt-2 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
             <span>
-              {isZh
-                ? `共识目标中枢: $${average.toFixed(2)} (${avgUpsidePct >= 0 ? "+" : ""}${avgUpsidePct.toFixed(1)}%)`
-                : `Consensus Target Mean: $${average.toFixed(2)} (${avgUpsidePct >= 0 ? "+" : ""}${avgUpsidePct.toFixed(1)}%)`}
+              {t.consensusMean}: ${average.toFixed(2)} (
+              {avgUpsidePct >= 0 ? "+" : ""}
+              {avgUpsidePct.toFixed(1)}%)
             </span>
             <span className="font-mono text-slate-300">
-              {isZh ? "偏度比 (High/Low): " : "Spread: "}
-              {(high / (low || 1)).toFixed(2)}x
+              {t.spreadRatio}: {(high / (low || 1)).toFixed(2)}x
             </span>
           </div>
         </div>
@@ -511,9 +501,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder={
-                    isZh ? "搜索券商或分析师..." : "Search firm or analyst..."
-                  }
+                  placeholder={t.searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-36 rounded-lg border border-white/[0.08] bg-surface-2/80 py-1.5 pl-8 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-accent/50 focus:outline-none sm:w-44"
@@ -534,28 +522,122 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                     }`}
                   >
                     {mode === "all"
-                      ? isZh
-                        ? "全部"
-                        : "All"
+                      ? t.filterAll
                       : mode === "buy"
-                        ? isZh
-                          ? "看多"
-                          : "Buy"
+                        ? t.filterBuy
                         : mode === "hold"
-                          ? isZh
-                            ? "中性"
-                            : "Hold"
-                          : isZh
-                            ? "看空"
-                            : "Sell"}
+                          ? t.filterHold
+                          : t.filterSell}
                   </button>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Table Container */}
-          <div className="overflow-x-auto">
+          {/* Mobile View: Cards */}
+          <div className="divide-y divide-white/[0.06] md:hidden">
+            {filteredEstimates.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-500">
+                {t.emptySearch}
+              </div>
+            ) : (
+              filteredEstimates.map((item, idx) => {
+                const ratingStyle = getRatingBadge(item.rating);
+                const actionStyle = getActionBadge(item.action);
+
+                return (
+                  <div key={`${item.firm}-${idx}`} className="space-y-2.5 p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-1.5 font-semibold text-white">
+                          <a
+                            href={`https://www.google.com/search?q=${encodeURIComponent(`${item.firm} equity research`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm hover:text-accent hover:underline"
+                            title={t.searchGoogle(item.firm)}
+                          >
+                            <span>{item.firm}</span>
+                            <ExternalLink className="size-3 text-slate-500" />
+                          </a>
+                          {actionStyle && item.action && (
+                            <span
+                              className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-medium ${actionStyle.className}`}
+                            >
+                              <actionStyle.icon className="size-2.5" />
+                              {item.action}
+                            </span>
+                          )}
+                        </div>
+                        {item.analyst && (
+                          <span className="text-xs text-slate-400">
+                            {item.analyst}
+                          </span>
+                        )}
+                      </div>
+
+                      <span
+                        className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${ratingStyle.className}`}
+                      >
+                        {ratingStyle.label}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg bg-surface-0/60 p-2.5">
+                      <div>
+                        <div className="text-[10px] text-slate-400">
+                          {t.colTarget}
+                        </div>
+                        <div className="font-mono text-sm font-bold text-white">
+                          ${item.priceTarget.toFixed(2)}
+                          {item.priorPriceTarget && (
+                            <span className="ml-1 text-[10px] font-normal text-slate-500">
+                              ({t.fromPrior} ${item.priorPriceTarget.toFixed(2)}
+                              )
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-[10px] text-slate-400">
+                          {t.colUpside}
+                        </div>
+                        <span
+                          className={`inline-block rounded px-1.5 py-0.5 font-mono text-xs font-bold ${
+                            item.upsidePct >= 0
+                              ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                              : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
+                          }`}
+                        >
+                          {item.upsidePct >= 0 ? "+" : ""}
+                          {item.upsidePct.toFixed(1)}%
+                        </span>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-[10px] text-slate-400">
+                          {t.colDate}
+                        </div>
+                        <span className="font-mono text-xs text-slate-400">
+                          {item.date}
+                        </span>
+                      </div>
+                    </div>
+
+                    {item.notes && (
+                      <p className="border-l-2 border-accent/30 pl-2 text-[11px] italic text-slate-400">
+                        &quot;{item.notes}&quot;
+                      </p>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-surface-0/40 font-medium text-slate-400">
@@ -573,9 +655,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                       colSpan={5}
                       className="py-8 text-center text-xs text-slate-500"
                     >
-                      {isZh
-                        ? "未找到匹配的分析师评级记录"
-                        : "No matching analyst estimates found"}
+                      {t.emptySearch}
                     </td>
                   </tr>
                 ) : (
@@ -597,11 +677,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 hover:text-accent hover:underline"
-                                title={
-                                  isZh
-                                    ? `在 Google 搜索 ${item.firm} 研报`
-                                    : `Search ${item.firm} research on Google`
-                                }
+                                title={t.searchGoogle(item.firm)}
                               >
                                 <span>{item.firm}</span>
                                 <ExternalLink className="size-3 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />
@@ -701,13 +777,11 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             {/* Quick Synthesis Highlights */}
             <div className="mt-auto space-y-2.5 border-t border-white/[0.06] pt-4">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {isZh ? "共识核心特征" : "Consensus Anatomy"}
+                {t.consensusAnatomy}
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
-                <span className="text-slate-400">
-                  {isZh ? "最高目标券商" : "Street High"}
-                </span>
+                <span className="text-slate-400">{t.streetHigh}</span>
                 <span className="font-mono font-bold text-emerald-400">
                   ${high.toFixed(2)}{" "}
                   <span className="text-[10px] text-slate-500">
@@ -721,9 +795,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
-                <span className="text-slate-400">
-                  {isZh ? "最低目标券商" : "Street Low"}
-                </span>
+                <span className="text-slate-400">{t.streetLow}</span>
                 <span className="font-mono font-bold text-slate-300">
                   ${low.toFixed(2)}{" "}
                   <span className="text-[10px] text-slate-500">
@@ -737,9 +809,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
-                <span className="text-slate-400">
-                  {isZh ? "目标价跨度 (High - Low)" : "Target Spread"}
-                </span>
+                <span className="text-slate-400">{t.targetSpread}</span>
                 <span className="font-mono font-bold text-accent">
                   ${(high - low).toFixed(2)}
                 </span>

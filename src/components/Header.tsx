@@ -16,6 +16,10 @@ import {
   LogOut,
   Sun,
   Moon,
+  Menu,
+  X,
+  BarChart3,
+  Calendar,
 } from "lucide-react";
 import { AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
 import { useSession, signOut } from "@/lib/auth-client";
@@ -81,6 +85,18 @@ export const Header: React.FC<HeaderProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   const currentTicker = facts?.ticker;
   const siblingReports = React.useMemo(() => {
@@ -111,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="glass-panel sticky top-0 z-40 flex w-full flex-nowrap items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2.5 transition-all duration-200 sm:gap-4 sm:px-6">
+    <header className="glass-header sticky top-0 z-40 flex h-14 w-full flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Clickable Brand Logo -> Returns to Home (Screener) */}
@@ -154,23 +170,25 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Quarter Switcher for the active ticker */}
         {viewMode !== "screener" && facts?.quarter && (
-          <QuarterSwitcher
-            currentSlug={currentSlug ?? null}
-            currentQuarter={facts.quarter}
-            currentDate={facts.reportDate}
-            ticker={facts.ticker}
-            siblingReports={siblingReports}
-            onSelectReport={(slug) => {
-              onViewModeChange("cockpit");
-              onSelectReport(slug);
-            }}
-            locale={locale}
-          />
+          <div className="hidden sm:block">
+            <QuarterSwitcher
+              currentSlug={currentSlug ?? null}
+              currentQuarter={facts.quarter}
+              currentDate={facts.reportDate}
+              ticker={facts.ticker}
+              siblingReports={siblingReports}
+              onSelectReport={(slug) => {
+                onViewModeChange("cockpit");
+                onSelectReport(slug);
+              }}
+              locale={locale}
+            />
+          </div>
         )}
       </div>
 
-      {/* Right: View Modes, Share, and Settings & Resources Menu */}
-      <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2">
+      {/* Right Desktop: View Modes, Share, and Settings & Resources Menu */}
+      <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
         {/* View Mode Switcher: Cockpit & Memo available only when a report is selected */}
         {viewMode !== "screener" && (
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
@@ -464,6 +482,383 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
       </div>
+
+      {/* Right Mobile: Quick Actions & Hamburger Menu */}
+      <div className="flex shrink-0 items-center gap-1.5 md:hidden">
+        {/* Quick Share (when a report is open) */}
+        {onShare && viewMode !== "screener" && facts && (
+          <button
+            type="button"
+            onClick={onShare}
+            className="flex size-8 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent shadow-sm transition-all hover:bg-accent/20"
+            title={t.shareTooltip}
+            aria-label={t.share}
+          >
+            <Share2 className="size-3.5" />
+          </button>
+        )}
+
+        {/* Quick Theme Toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
+          title={t.toggleTheme}
+          aria-label={t.toggleTheme}
+        >
+          {theme === "light" ? (
+            <Sun className="size-3.5 text-amber-500" />
+          ) : (
+            <Moon className="size-3.5 text-sky-400" />
+          )}
+        </button>
+
+        {/* Hamburger Menu Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`flex size-8 items-center justify-center rounded-lg border shadow-sm transition-all ${
+            isMobileMenuOpen
+              ? "border-accent/50 bg-accent/15 text-accent ring-1 ring-accent/30"
+              : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2"
+          }`}
+          title={isMobileMenuOpen ? t.closeMenu : t.mobileMenu}
+          aria-label={isMobileMenuOpen ? t.closeMenu : t.mobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <X className="size-4" />
+          ) : (
+            <Menu className="size-4" />
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-200 animate-in fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Drawer Panel */}
+          <div className="glass-panel bg-surface-1/98 relative z-10 flex h-full w-full max-w-xs flex-col divide-y divide-white/[0.08] overflow-y-auto p-4 shadow-2xl backdrop-blur-2xl duration-200 animate-in slide-in-from-right">
+            {/* Drawer Top Bar */}
+            <div className="flex items-center justify-between pb-3">
+              <div className="flex items-center gap-2">
+                <div className="flex size-7 items-center justify-center rounded-lg border border-accent/40 bg-accent/15 font-mono text-xs font-black text-accent">
+                  S<span className="text-white">α</span>
+                </div>
+                <span className="font-mono text-sm font-bold text-white">
+                  Stress<span className="text-accent">Alpha</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-2 text-slate-400 hover:text-white"
+                aria-label={t.closeMenu}
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* User Profile / Auth Section */}
+            <div className="py-3">
+              {session?.user ? (
+                <div className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-0/60 p-2.5">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/20 font-mono text-xs font-bold text-accent">
+                      {session.user.name
+                        ? session.user.name.charAt(0).toUpperCase()
+                        : "A"}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate text-xs font-bold text-white">
+                        {session.user.name || tAuth.profile}
+                      </div>
+                      <div className="truncate font-mono text-[10px] text-slate-400">
+                        {session.user.email}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      await signOut();
+                    }}
+                    className="rounded-lg p-1.5 text-rose-400 hover:bg-rose-500/10"
+                    title={tAuth.signOut}
+                  >
+                    <LogOut className="size-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/10 py-2.5 text-xs font-bold text-accent transition-colors hover:bg-accent/20"
+                >
+                  <LogIn className="size-4" />
+                  <span>{tAuth.signIn}</span>
+                </button>
+              )}
+            </div>
+
+            {/* Navigation Workspaces */}
+            <div className="py-3">
+              <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                {t.navigation}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onViewModeChange("screener");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                    viewMode === "screener"
+                      ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                      : "text-slate-300 hover:bg-surface-2"
+                  }`}
+                >
+                  <BarChart3 className="size-4 text-accent" />
+                  <span>{t.screener}</span>
+                </button>
+
+                {currentSlug && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onViewModeChange("cockpit");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                        viewMode === "cockpit"
+                          ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                          : "text-slate-300 hover:bg-surface-2"
+                      }`}
+                    >
+                      <SlidersHorizontal className="size-4 text-accent" />
+                      <span>{t.cockpit}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onViewModeChange("memo");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                        viewMode === "memo"
+                          ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                          : "text-slate-300 hover:bg-surface-2"
+                      }`}
+                    >
+                      <FileText className="size-4 text-accent" />
+                      <span>{t.memo}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Historical Quarters (Mobile Drawer) */}
+            {viewMode !== "screener" && siblingReports.length > 1 && (
+              <div className="py-3">
+                <div className="mb-2 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="size-3 text-accent" />
+                    {t.quarterHistory}
+                  </span>
+                  <span className="font-mono text-accent">{facts?.ticker}</span>
+                </div>
+                <div className="max-h-36 space-y-1 overflow-y-auto">
+                  {siblingReports.map((r, idx) => {
+                    const isSelected = r.slug === currentSlug;
+                    const isLatest = idx === 0;
+                    return (
+                      <button
+                        key={r.slug}
+                        type="button"
+                        onClick={() => {
+                          onViewModeChange("cockpit");
+                          onSelectReport(r.slug);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                          isSelected
+                            ? "bg-accent/15 font-bold text-accent"
+                            : "text-slate-300 hover:bg-surface-2"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono">
+                            {r.quarter || r.slug}
+                          </span>
+                          <span
+                            className={`py-0.2 rounded px-1 font-mono text-[9px] font-bold ${
+                              isLatest
+                                ? "bg-emerald-500/15 text-emerald-400"
+                                : "bg-amber-500/20 text-amber-400"
+                            }`}
+                          >
+                            {isLatest ? t.latestBadge : t.historicalBadge}
+                          </span>
+                        </div>
+                        {r.weightedFairValue ? (
+                          <span className="font-mono text-[11px] text-slate-400">
+                            ${r.weightedFairValue}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Share CTA (Mobile) */}
+            {onShare && viewMode !== "screener" && facts && (
+              <div className="py-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onShare();
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/15 py-2 text-xs font-bold text-accent transition-colors hover:bg-accent/25"
+                >
+                  <Share2 className="size-3.5" />
+                  <span>{t.share}</span>
+                </button>
+              </div>
+            )}
+
+            {/* Language & Theme Controls */}
+            <div className="space-y-3 py-3">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Globe className="size-3.5 text-accent" />
+                  <span>{t.language}</span>
+                </div>
+                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => onToggleLocale("en")}
+                    className={`rounded-md px-2.5 py-1 text-xs font-bold ${
+                      locale === "en"
+                        ? "bg-accent font-extrabold text-slate-950"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onToggleLocale("zh")}
+                    className={`rounded-md px-2.5 py-1 text-xs font-bold ${
+                      locale === "zh"
+                        ? "bg-accent font-extrabold text-slate-950"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    中文
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-300">
+                  {theme === "light" ? (
+                    <Sun className="size-3.5 text-amber-500" />
+                  ) : (
+                    <Moon className="size-3.5 text-accent" />
+                  )}
+                  <span>{t.theme}</span>
+                </div>
+                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setTheme("cyber")}
+                    className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold ${
+                      theme === "cyber"
+                        ? "bg-accent font-extrabold text-slate-950"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    <Moon className="size-3" />
+                    <span>{t.themeCyberShort}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTheme("light")}
+                    className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold ${
+                      theme === "light"
+                        ? "bg-accent font-extrabold text-slate-950"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    <Sun className="size-3" />
+                    <span>{t.themeLightShort}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Links Section */}
+            <div className="space-y-1 py-3">
+              <Link
+                href="/methodology"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+              >
+                <div className="flex items-center gap-2">
+                  <BookOpen className="size-3.5 text-slate-400" />
+                  <span>{t.methodology}</span>
+                </div>
+                <ArrowUpRight className="size-3 text-slate-500" />
+              </Link>
+              {onOpenShortcutsModal && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onOpenShortcutsModal();
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <Keyboard className="size-3.5 text-slate-400" />
+                    <span>{t.shortcuts}</span>
+                  </div>
+                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                    ?
+                  </kbd>
+                </button>
+              )}
+              <a
+                href="https://github.com/phanturne/stress-alpha"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 hover:bg-surface-2 hover:text-slate-200"
+              >
+                <div className="flex items-center gap-2">
+                  <GithubIcon className="size-3.5 text-slate-400" />
+                  <span>{t.github}</span>
+                </div>
+                <ExternalLink className="size-3 text-slate-500" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AuthModal
         isOpen={isAuthModalOpen}

@@ -89,7 +89,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               key={m.label}
               className="flex items-center justify-between gap-4"
             >
-              <span className="w-44 shrink-0 text-xs font-semibold text-slate-300">
+              <span className="w-28 shrink-0 text-xs font-semibold text-slate-300 sm:w-44">
                 {m.label}
               </span>
               <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3/80">
@@ -115,7 +115,28 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               {t.qaFocus}
             </h4>
           </div>
-          <div className="custom-scrollbar overflow-x-auto">
+
+          {/* Mobile Cards View */}
+          <div className="divide-y divide-border/60 md:hidden">
+            {analystConcerns.topTopics.map((top) => (
+              <div key={top.topic} className="space-y-2 p-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-white">
+                    {top.topic}
+                  </span>
+                  <span className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 font-mono text-xs font-bold text-accent">
+                    {top.frequency}x {t.colMentions}
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  {top.managementResponse}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="custom-scrollbar hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border bg-surface-2/70 font-mono text-[10px] uppercase tracking-wider text-slate-400">

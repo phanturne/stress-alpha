@@ -43,6 +43,9 @@ export interface Translations {
     jumpToLatest: (quarter: string) => string;
     quartersAvailable: (count: number) => string;
     noEarlierQuarters: string;
+    mobileMenu: string;
+    closeMenu: string;
+    navigation: string;
   };
   selector: {
     selectReport: string;
@@ -120,6 +123,11 @@ export interface Translations {
       margins: string;
       all: string;
     };
+    mobileCockpitTab: string;
+    mobileWorkspacesTab: string;
+    exploreWorkspaces: string;
+    adjustShocks: string;
+    quickSummary: string;
   };
   shortcuts: {
     title: string;
@@ -132,6 +140,7 @@ export interface Translations {
     toggleScreener: string;
     toggleFavorite: string;
     close: string;
+    prevNextTab: string;
   };
   snowflake: {
     title: string;
@@ -180,6 +189,17 @@ export interface Translations {
     tone?: string;
     filing?: string;
     reactions?: string;
+    shortValuation: string;
+    shortEstimates: string;
+    shortMoat: string;
+    shortSegments: string;
+    shortCatalysts: string;
+    shortAudit: string;
+    shortReport: string;
+    nextTab: string;
+    prevTab: string;
+    allTabs: string;
+    tabNumber: (current: number, total: number) => string;
   };
   estimatesTab: {
     title: string;
@@ -212,6 +232,24 @@ export interface Translations {
     synthesisTitle: string;
     sourcesTitle: string;
     fromPrior: string;
+    filterAll: string;
+    filterBuy: string;
+    filterHold: string;
+    filterSell: string;
+    searchPlaceholder: string;
+    emptySearch: string;
+    currentPriceLabel: string;
+    searchGoogle: (firm: string) => string;
+    consensusMean: string;
+    spreadRatio: string;
+    sentimentMomentum: string;
+    highConvictionBullish: string;
+    moderateBull: string;
+    divergentSentiment: string;
+    consensusAnatomy: string;
+    streetHigh: string;
+    streetLow: string;
+    targetSpread: string;
   };
   auditTab: {
     title: string;
@@ -243,6 +281,17 @@ export interface Translations {
     colPricingPower: string;
     colAdvantage: string;
     colVulnerability: string;
+    wideMoat: string;
+    narrowMoat: string;
+    noMoat: string;
+    trendWidening: string;
+    trendNarrowing: string;
+    trendStable: string;
+    colProductComparison: string;
+    colAdvantageVulnerability: string;
+    viewYahoo: (ticker: string) => string;
+    durabilityYearsSuffix: string;
+    peersCountSuffix: string;
   };
   catalystsTab: {
     title: string;
@@ -442,6 +491,8 @@ export interface Translations {
     colRevenueGrowth: string;
     colValuationRange: string;
     colAction: string;
+    viewCards: string;
+    viewTable: string;
     openCockpit: string;
     openMemo: string;
     openCockpitTooltip: (ticker: string) => string;
@@ -714,6 +765,9 @@ export const translations: Record<Locale, Translations> = {
       quartersAvailable: (count: number) =>
         `${count} ${count === 1 ? "quarter" : "quarters"} available`,
       noEarlierQuarters: "No earlier quarterly reports in archive",
+      mobileMenu: "Menu",
+      closeMenu: "Close",
+      navigation: "Navigation",
     },
     selector: {
       selectReport: "Select Stock...",
@@ -796,6 +850,11 @@ export const translations: Record<Locale, Translations> = {
         margins: "Cost & Margins",
         all: "All Controls",
       },
+      mobileCockpitTab: "⚡ Cockpit",
+      mobileWorkspacesTab: "📊 Deep Dive",
+      exploreWorkspaces: "Explore 7 Intelligence Workspaces",
+      adjustShocks: "Adjust Stress Shocks",
+      quickSummary: "Live Valuation Snapshot",
     },
     shortcuts: {
       title: "Keyboard Shortcuts",
@@ -808,6 +867,7 @@ export const translations: Record<Locale, Translations> = {
       toggleScreener: "Toggle Stock Screener (S)",
       toggleFavorite: "Toggle Watchlist / Favorite (F)",
       close: "Close Dialog (Esc / ?)",
+      prevNextTab: "Prev / Next Workspace ([ / ])",
     },
     snowflake: {
       title: "Snowflake Analysis",
@@ -858,6 +918,18 @@ export const translations: Record<Locale, Translations> = {
       tone: "Management Tone",
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
+      shortValuation: "Valuation",
+      shortEstimates: "Estimates",
+      shortMoat: "Moat",
+      shortSegments: "Segments",
+      shortCatalysts: "Catalysts",
+      shortAudit: "Audit",
+      shortReport: "Notes",
+      nextTab: "Next Workspace",
+      prevTab: "Prev Workspace",
+      allTabs: "All Workspaces",
+      tabNumber: (current: number, total: number) =>
+        `Workspace ${current} of ${total}`,
     },
     estimatesTab: {
       title: "Wall Street Analyst Consensus & Estimates",
@@ -891,6 +963,24 @@ export const translations: Record<Locale, Translations> = {
       synthesisTitle: "Analyst Ratings Synthesis",
       sourcesTitle: "Open Web Research Reports & Sources",
       fromPrior: "from",
+      filterAll: "All",
+      filterBuy: "Buy",
+      filterHold: "Hold",
+      filterSell: "Sell",
+      searchPlaceholder: "Search firm or analyst...",
+      emptySearch: "No matching analyst estimates found",
+      currentPriceLabel: "Current",
+      searchGoogle: (firm: string) => `Search ${firm} research on Google`,
+      consensusMean: "Consensus Target Mean",
+      spreadRatio: "Spread (High/Low)",
+      sentimentMomentum: "Wall Street Sentiment Momentum",
+      highConvictionBullish: "🔥 High Conviction Bullish",
+      moderateBull: "Moderate Bull",
+      divergentSentiment: "Divergent",
+      consensusAnatomy: "Consensus Anatomy",
+      streetHigh: "Street High",
+      streetLow: "Street Low",
+      targetSpread: "Target Spread",
     },
     auditTab: {
       title: "Earnings Print & Filing Audit",
@@ -925,6 +1015,17 @@ export const translations: Record<Locale, Translations> = {
       colPricingPower: "Pricing Power",
       colAdvantage: "Key Advantage",
       colVulnerability: "Key Vulnerability",
+      wideMoat: "Wide Moat",
+      narrowMoat: "Narrow Moat",
+      noMoat: "No Moat",
+      trendWidening: "Widening",
+      trendNarrowing: "Narrowing",
+      trendStable: "Stable",
+      colProductComparison: "Product Comparison",
+      colAdvantageVulnerability: "Key Advantage / Vulnerability",
+      viewYahoo: (ticker: string) => `View ${ticker} on Yahoo Finance`,
+      durabilityYearsSuffix: "Years",
+      peersCountSuffix: "Peers",
     },
     catalystsTab: {
       title: "Qualitative Filing Catalysts & Probability Anchors",
@@ -1135,6 +1236,8 @@ export const translations: Record<Locale, Translations> = {
       colRevenueGrowth: "Rev Growth (YoY)",
       colValuationRange: "Stress Range",
       colAction: "Action",
+      viewCards: "Cards",
+      viewTable: "Table",
       openCockpit: "Cockpit",
       openMemo: "Memo",
       openCockpitTooltip: (ticker: string) => `Open ${ticker} Cockpit`,
@@ -1415,6 +1518,9 @@ export const translations: Record<Locale, Translations> = {
       jumpToLatest: (quarter: string) => `跳转至最新 (${quarter})`,
       quartersAvailable: (count: number) => `${count} 个季度研报可用`,
       noEarlierQuarters: "归档中暂无更早历史研报",
+      mobileMenu: "菜单",
+      closeMenu: "关闭",
+      navigation: "导航",
     },
     selector: {
       selectReport: "选择标的股票...",
@@ -1492,6 +1598,11 @@ export const translations: Record<Locale, Translations> = {
         margins: "成本与利润率",
         all: "全部控制项",
       },
+      mobileCockpitTab: "⚡ 驾驶舱",
+      mobileWorkspacesTab: "📊 深度研报",
+      exploreWorkspaces: "进入 7 大深度研报工作台",
+      adjustShocks: "调节压力冲击参数",
+      quickSummary: "实时估值概览",
     },
     shortcuts: {
       title: "快捷键指南",
@@ -1504,6 +1615,7 @@ export const translations: Record<Locale, Translations> = {
       toggleScreener: "打开/关闭股票筛选 (S)",
       toggleFavorite: "加入/移出自选标的 (F)",
       close: "关闭窗口 (Esc / ?)",
+      prevNextTab: "上一个 / 下一个工作台 ([ / ])",
     },
     snowflake: {
       title: "全景雪花图评分",
@@ -1553,6 +1665,18 @@ export const translations: Record<Locale, Translations> = {
       tone: "电话会情绪",
       filing: "10-Q 风险",
       reactions: "历史股价反应",
+      shortValuation: "估值",
+      shortEstimates: "共识",
+      shortMoat: "护城河",
+      shortSegments: "分部",
+      shortCatalysts: "催化",
+      shortAudit: "审计",
+      shortReport: "底稿",
+      nextTab: "下一工作台",
+      prevTab: "上一工作台",
+      allTabs: "全部工作台",
+      tabNumber: (current: number, total: number) =>
+        `工作台 ${current} / ${total}`,
     },
     estimatesTab: {
       title: "华尔街分析师共识与目标价",
@@ -1585,6 +1709,24 @@ export const translations: Record<Locale, Translations> = {
       synthesisTitle: "华尔街观点综合述评",
       sourcesTitle: "研报引用与数据来源",
       fromPrior: "前值",
+      filterAll: "全部",
+      filterBuy: "看多",
+      filterHold: "中性",
+      filterSell: "看空",
+      searchPlaceholder: "搜索券商或分析师...",
+      emptySearch: "未找到匹配的分析师评级记录",
+      currentPriceLabel: "现价",
+      searchGoogle: (firm: string) => `在 Google 搜索 ${firm} 研报`,
+      consensusMean: "共识目标中枢",
+      spreadRatio: "偏度比 (High/Low)",
+      sentimentMomentum: "华尔街卖方共识情绪",
+      highConvictionBullish: "🔥 极度看多 (High Conviction)",
+      moderateBull: "偏多共识 (Moderate Bull)",
+      divergentSentiment: "观点分歧 (Divergent)",
+      consensusAnatomy: "共识核心特征",
+      streetHigh: "最高目标券商",
+      streetLow: "最低目标券商",
+      targetSpread: "目标价跨度 (High - Low)",
     },
     auditTab: {
       title: "业绩发布与财报披露审计",
@@ -1617,6 +1759,17 @@ export const translations: Record<Locale, Translations> = {
       colPricingPower: "定价权",
       colAdvantage: "核心竞争优势",
       colVulnerability: "主要脆弱点",
+      wideMoat: "宽护城河 (Wide Moat)",
+      narrowMoat: "窄护城河 (Narrow Moat)",
+      noMoat: "无护城河 (No Moat)",
+      trendWidening: "持续扩宽 (Widening)",
+      trendNarrowing: "正在收窄 (Narrowing)",
+      trendStable: "保持稳固 (Stable)",
+      colProductComparison: "产品管线对比",
+      colAdvantageVulnerability: "核心优势/脆弱点",
+      viewYahoo: (ticker: string) => `在 Yahoo Finance 查看 ${ticker}`,
+      durabilityYearsSuffix: "年壁垒期",
+      peersCountSuffix: "家核心竞品",
     },
     catalystsTab: {
       title: "定性财报催化剂与发生概率锚定",
@@ -1823,6 +1976,8 @@ export const translations: Record<Locale, Translations> = {
       colRevenueGrowth: "营收增速 (YoY)",
       colValuationRange: "压力估值区间",
       colAction: "操作",
+      viewCards: "卡片",
+      viewTable: "表格",
       openCockpit: "驾驶舱",
       openMemo: "研报备忘",
       openCockpitTooltip: (ticker: string) => `进入 ${ticker} 驾驶舱`,

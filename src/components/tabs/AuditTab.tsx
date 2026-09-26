@@ -67,7 +67,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
         </div>
 
         {/* Sub-Pills Switcher */}
-        <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-0/80 p-1 text-xs">
+        <div className="custom-scrollbar flex max-w-full items-center overflow-x-auto rounded-xl border border-white/[0.08] bg-surface-0/80 p-1 text-xs">
           {subNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = subTab === item.id;

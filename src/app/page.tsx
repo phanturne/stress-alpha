@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useRouter } from "next/navigation";
 import {
   FolderOpen,
@@ -14,7 +20,13 @@ import {
   Target,
   Keyboard,
   X,
+  Sliders,
+  ArrowRight,
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { formatCurrency, formatPercent } from "@/lib/utils";
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
 import { CockpitSkeleton } from "@/components/CockpitSkeleton";
@@ -57,11 +69,16 @@ export default function HomePage() {
     "cockpit"
   );
   const [activeTab, setActiveTab] = useState<string>("valuation");
+  const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
+    "cockpit"
+  );
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
   const [isSnowflakeOpen, setIsSnowflakeOpen] = useState<boolean>(false);
+  const tabScrollRef = useRef<HTMLDivElement>(null);
+  const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const { isFavorite, toggleFavorite, isAuthenticated } = useWatchlist();
 
@@ -515,6 +532,7 @@ export default function HomePage() {
         id: "valuation",
         shortcut: "1",
         label: t.tabs.valuation,
+        shortLabel: t.tabs.shortValuation,
         icon: TrendingUp,
         count: displayScenarios?.scenarios.length,
       },
@@ -522,6 +540,7 @@ export default function HomePage() {
         id: "estimates",
         shortcut: "2",
         label: t.tabs.estimates || "Estimates",
+        shortLabel: t.tabs.shortEstimates,
         icon: Target,
         count: displayEstimates?.estimates?.length,
       },
@@ -529,6 +548,7 @@ export default function HomePage() {
         id: "moat",
         shortcut: "3",
         label: t.tabs.moat,
+        shortLabel: t.tabs.shortMoat,
         icon: ShieldCheck,
         count: displayMoat?.competitors?.length,
       },
@@ -536,6 +556,7 @@ export default function HomePage() {
         id: "segments",
         shortcut: "4",
         label: t.tabs.segments,
+        shortLabel: t.tabs.shortSegments,
         icon: Layers,
         count: displayFacts?.segments.length,
       },
@@ -543,6 +564,7 @@ export default function HomePage() {
         id: "catalysts",
         shortcut: "5",
         label: t.tabs.catalysts,
+        shortLabel: t.tabs.shortCatalysts,
         icon: Sparkles,
         count: displayCatalysts?.catalysts?.length,
       },
@@ -550,12 +572,19 @@ export default function HomePage() {
         id: "audit",
         shortcut: "6",
         label: t.tabs.audit,
+        shortLabel: t.tabs.shortAudit,
         icon: FileSearch,
         count:
           (displayFiling?.newRiskFactors?.length ?? 0) +
           (displayReactions?.events?.length ?? 0),
       },
-      { id: "report", shortcut: "7", label: t.tabs.report, icon: FileText },
+      {
+        id: "report",
+        shortcut: "7",
+        label: t.tabs.report,
+        shortLabel: t.tabs.shortReport,
+        icon: FileText,
+      },
     ],
     [
       t,
@@ -569,7 +598,34 @@ export default function HomePage() {
     ]
   );
 
-  // Global Keyboard Shortcuts (1-9 for tabs, R for reset, M for memo, L for lang, ? for help)
+  const currentTabIndex = useMemo(() => {
+    const idx = tabItems.findIndex((tab) => tab.id === activeTab);
+    return idx >= 0 ? idx : 0;
+  }, [tabItems, activeTab]);
+
+  const prevTab = currentTabIndex > 0 ? tabItems[currentTabIndex - 1] : null;
+  const nextTab =
+    currentTabIndex < tabItems.length - 1
+      ? tabItems[currentTabIndex + 1]
+      : null;
+
+  // Auto-scroll active tab into view smoothly whenever activeTab changes
+  useEffect(() => {
+    const activeBtn = tabButtonRefs.current[activeTab];
+    const container = tabScrollRef.current;
+    if (activeBtn && container) {
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      const scrollOffset =
+        btnRect.left -
+        containerRect.left -
+        containerRect.width / 2 +
+        btnRect.width / 2;
+      container.scrollBy({ left: scrollOffset, behavior: "smooth" });
+    }
+  }, [activeTab]);
+
+  // Global Keyboard Shortcuts (1-7 for tabs, [ / ] for prev/next, R for reset, M for memo, L for lang, ? for help)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Never intercept browser-native shortcuts (Cmd+R, Ctrl+R, Cmd+W, etc.)
@@ -590,6 +646,25 @@ export default function HomePage() {
       if (num >= 1 && num <= tabItems.length) {
         e.preventDefault();
         setActiveTab(tabItems[num - 1].id);
+        setMobileSection("workspaces");
+        return;
+      }
+
+      if (e.key === "[" || e.key === "PageUp") {
+        e.preventDefault();
+        if (currentTabIndex > 0) {
+          setActiveTab(tabItems[currentTabIndex - 1].id);
+          setMobileSection("workspaces");
+        }
+        return;
+      }
+
+      if (e.key === "]" || e.key === "PageDown") {
+        e.preventDefault();
+        if (currentTabIndex < tabItems.length - 1) {
+          setActiveTab(tabItems[currentTabIndex + 1].id);
+          setMobileSection("workspaces");
+        }
         return;
       }
 
@@ -671,6 +746,7 @@ export default function HomePage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     tabItems,
+    currentTabIndex,
     locale,
     t,
     reportData?.facts?.ticker,
@@ -782,79 +858,207 @@ export default function HomePage() {
           />
         ) : (
           <div className="flex flex-col items-start gap-5 lg:flex-row xl:gap-6">
+            {/* Mobile Segmented View Switcher: [ Cockpit ] [ Deep Dive (7) ] */}
+            <div className="-mx-3 mb-1 flex w-[calc(100%+24px)] items-center justify-between px-3 py-1 lg:hidden">
+              <div className="grid w-full grid-cols-2 gap-1 rounded-xl border border-white/[0.06] bg-surface-1 p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileSection("cockpit");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
+                    mobileSection === "cockpit"
+                      ? "bg-accent text-slate-950 shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Sliders className="size-3.5" />
+                  <span>{t.cockpit.mobileCockpitTab}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileSection("workspaces");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
+                    mobileSection === "workspaces"
+                      ? "bg-accent text-slate-950 shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <BarChart3 className="size-3.5" />
+                  <span>{t.cockpit.mobileWorkspacesTab}</span>
+                  <span
+                    className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                      mobileSection === "workspaces"
+                        ? "bg-slate-950/20 font-extrabold text-slate-950"
+                        : "bg-surface-3 text-slate-400"
+                    }`}
+                  >
+                    7
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Left Sticky Cockpit (~400px responsive) */}
-            <Cockpit
-              baseline={reportData.baseline!}
-              facts={displayFacts!}
-              stressParams={stressParams}
-              stressResult={stressResult}
-              valuation={dynamicValuation ?? reportData.valuation}
-              snowflakeScore={snowflakeScore}
-              reportData={{
-                ...reportData,
-                facts: displayFacts!,
-                catalysts: displayCatalysts,
-                scenarios: displayScenarios!,
-                moat: displayMoat,
-                estimates: displayEstimates,
-                filing: displayFiling,
-                valuation: dynamicValuation ?? reportData.valuation,
-              }}
-              latestSlug={latestReport?.slug}
-              latestQuarter={latestReport?.quarter}
-              isHistorical={isViewingHistorical}
-              onSelectReport={handleSelectReport}
-              onDriverShockChange={handleDriverShockChange}
-              onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
-              onFixedOpexShiftChange={handleFixedOpexShiftChange}
-              onResetDefaults={handleResetDefaults}
-              onOpenSnowflake={() => setIsSnowflakeOpen(true)}
-              locale={locale}
-            />
+            <div
+              className={`w-full lg:w-auto ${mobileSection === "cockpit" ? "block" : "hidden lg:block"}`}
+            >
+              <Cockpit
+                baseline={reportData.baseline!}
+                facts={displayFacts!}
+                stressParams={stressParams}
+                stressResult={stressResult}
+                valuation={dynamicValuation ?? reportData.valuation}
+                snowflakeScore={snowflakeScore}
+                reportData={{
+                  ...reportData,
+                  facts: displayFacts!,
+                  catalysts: displayCatalysts,
+                  scenarios: displayScenarios!,
+                  moat: displayMoat,
+                  estimates: displayEstimates,
+                  filing: displayFiling,
+                  valuation: dynamicValuation ?? reportData.valuation,
+                }}
+                latestSlug={latestReport?.slug}
+                latestQuarter={latestReport?.quarter}
+                isHistorical={isViewingHistorical}
+                onSelectReport={handleSelectReport}
+                onDriverShockChange={handleDriverShockChange}
+                onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
+                onFixedOpexShiftChange={handleFixedOpexShiftChange}
+                onResetDefaults={handleResetDefaults}
+                onOpenSnowflake={() => setIsSnowflakeOpen(true)}
+                locale={locale}
+              />
+              {/* Mobile CTA: Explore 7 Intelligence Workspaces */}
+              <div className="mt-4 block lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileSection("workspaces");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/15 py-3 text-xs font-bold text-accent shadow-sm transition-all hover:bg-accent/25 active:scale-[0.99]"
+                >
+                  <span>{t.cockpit.exploreWorkspaces}</span>
+                  <ArrowRight className="size-4" />
+                </button>
+              </div>
+            </div>
 
             {/* Right Tabbed Intelligence Workspace (min-w-0 prevents blowout) */}
-            <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
-              {/* Tab Navigation Ribbon */}
-              <div className="custom-scrollbar flex items-center gap-1.5 overflow-x-auto scroll-smooth border-b border-white/[0.08] pb-2">
-                {tabItems.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`group flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 sm:px-3.5 ${
-                        isActive
-                          ? "border border-accent/40 bg-accent/15 font-bold text-accent shadow-glow"
-                          : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
-                      }`}
-                    >
-                      <Icon className="size-3.5 shrink-0" />
-                      <span>{tab.label}</span>
-                      {tab.count !== undefined && (
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
-                            isActive
-                              ? "bg-accent/25 font-bold text-accent"
-                              : "bg-surface-3 text-slate-400"
-                          }`}
-                        >
-                          {tab.count}
-                        </span>
-                      )}
+            <div
+              className={`flex w-full min-w-0 flex-1 flex-col gap-4 ${mobileSection === "workspaces" ? "flex" : "hidden lg:flex"}`}
+            >
+              {/* Mobile Live Valuation Bar when viewing tabs */}
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-1/90 px-3.5 py-2.5 backdrop-blur-md lg:hidden">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      {displayFacts?.ticker} {displayFacts?.quarter}
+                    </div>
+                    <div className="flex items-baseline gap-2 font-mono text-sm font-bold text-slate-100">
+                      <span>
+                        {formatCurrency(
+                          dynamicValuation?.weightedFairValue ??
+                            reportData.valuation?.weightedFairValue ??
+                            0
+                        )}
+                      </span>
                       <span
-                        className={`hidden font-mono text-[10px] transition-opacity sm:inline ${
-                          isActive
-                            ? "font-bold text-accent/70"
-                            : "text-slate-600 group-hover:text-slate-400"
+                        className={`text-xs ${
+                          (dynamicValuation?.upsidePct ??
+                            reportData.valuation?.upsidePct ??
+                            0) >= 0
+                            ? "text-emerald-400"
+                            : "text-rose-400"
                         }`}
                       >
-                        [{tab.shortcut}]
+                        {(dynamicValuation?.upsidePct ??
+                          reportData.valuation?.upsidePct ??
+                          0) >= 0
+                          ? "+"
+                          : ""}
+                        {formatPercent(
+                          dynamicValuation?.upsidePct ??
+                            reportData.valuation?.upsidePct ??
+                            0
+                        )}
                       </span>
-                    </button>
-                  );
-                })}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileSection("cockpit");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-2.5 py-1.5 text-[11px] font-bold text-accent transition-all hover:bg-accent/25 active:scale-95"
+                >
+                  <Sliders className="size-3" />
+                  <span>{t.cockpit.adjustShocks}</span>
+                </button>
+              </div>
+
+              {/* Sticky Tab Navigation Ribbon (Matches Header Opacity & Heavy Glass Blur) */}
+              <div className="glass-header sticky top-14 z-30 -mx-3 px-3 py-1.5 sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
+                <div
+                  ref={tabScrollRef}
+                  className="custom-scrollbar flex items-center gap-1.5 overflow-x-auto scroll-smooth py-0.5"
+                >
+                  {tabItems.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        ref={(el) => {
+                          tabButtonRefs.current[tab.id] = el;
+                        }}
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(tab.id);
+                          setMobileSection("workspaces");
+                        }}
+                        className={`group flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:gap-2 sm:px-3 sm:py-2 ${
+                          isActive
+                            ? "border border-accent/40 bg-accent/15 font-bold text-accent shadow-glow"
+                            : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
+                        }`}
+                      >
+                        <Icon className="size-3.5 shrink-0" />
+                        <span className="sm:hidden">{tab.shortLabel}</span>
+                        <span className="hidden sm:inline">{tab.label}</span>
+                        {tab.count !== undefined && (
+                          <span
+                            className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
+                              isActive
+                                ? "bg-accent/25 font-bold text-accent"
+                                : "bg-surface-3 text-slate-400"
+                            }`}
+                          >
+                            {tab.count}
+                          </span>
+                        )}
+                        <span
+                          className={`hidden font-mono text-[10px] transition-opacity md:inline ${
+                            isActive
+                              ? "font-bold text-accent/70"
+                              : "text-slate-600 group-hover:text-slate-400"
+                          }`}
+                        >
+                          [{tab.shortcut}]
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Tab Contents */}
@@ -992,6 +1196,93 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
+
+              {/* Sequential Bottom Workspace Pager (Unified Glass Capsule) */}
+              <div className="mt-8 flex items-center justify-center border-t border-border/40 pb-8 pt-5">
+                <div className="flex w-full max-w-2xl items-center justify-between rounded-2xl border border-border/60 bg-surface-1/80 p-1.5 shadow-xl backdrop-blur-md sm:p-2">
+                  {/* Left: Previous Workspace */}
+                  <div className="min-w-0">
+                    {prevTab ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(prevTab.id);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="group flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-foreground/80 transition-all hover:bg-surface-2 hover:text-foreground active:scale-95 sm:gap-2 sm:px-3 sm:py-2"
+                      >
+                        <ChevronLeft className="size-3.5 shrink-0 text-foreground/50 transition-transform group-hover:-translate-x-0.5 group-hover:text-foreground sm:size-4" />
+                        <span className="hidden font-normal text-foreground/50 md:inline">
+                          {t.tabs.prevTab}:
+                        </span>
+                        <span className="truncate font-bold text-foreground/90 group-hover:text-foreground md:hidden">
+                          {prevTab.shortLabel}
+                        </span>
+                        <span className="hidden truncate font-bold text-foreground/90 group-hover:text-foreground md:inline">
+                          {prevTab.label}
+                        </span>
+                      </button>
+                    ) : (
+                      <div className="w-14 sm:w-24" />
+                    )}
+                  </div>
+
+                  {/* Center: Step Indicator Dots */}
+                  <div className="flex items-center gap-1.5 px-1 sm:gap-2">
+                    <div className="flex items-center gap-1">
+                      {tabItems.map((tab, idx) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(tab.id);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          title={tab.label}
+                          className={`rounded-full transition-all ${
+                            idx === currentTabIndex
+                              ? "h-1.5 w-4 bg-accent shadow-glow sm:w-5"
+                              : "size-1.5 bg-surface-3 hover:bg-foreground/40"
+                          }`}
+                          aria-label={`Jump to ${tab.label}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="font-mono text-[10px] font-semibold tabular-nums text-foreground/60 sm:text-[11px]">
+                      {currentTabIndex + 1}{" "}
+                      <span className="text-foreground/30">/</span>{" "}
+                      {tabItems.length}
+                    </span>
+                  </div>
+
+                  {/* Right: Next Workspace */}
+                  <div className="min-w-0">
+                    {nextTab ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(nextTab.id);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="hover:text-accent-bright group flex items-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-semibold text-accent shadow-sm transition-all hover:border-accent/50 hover:bg-accent/20 active:scale-95 sm:gap-2 sm:px-3 sm:py-2"
+                      >
+                        <span className="hidden font-normal text-accent/70 md:inline">
+                          {t.tabs.nextTab}:
+                        </span>
+                        <span className="group-hover:text-accent-bright truncate font-bold text-accent md:hidden">
+                          {nextTab.shortLabel}
+                        </span>
+                        <span className="group-hover:text-accent-bright hidden truncate font-bold text-accent md:inline">
+                          {nextTab.label}
+                        </span>
+                        <ChevronRight className="size-3.5 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 sm:size-4" />
+                      </button>
+                    ) : (
+                      <div className="w-14 sm:w-24" />
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1038,6 +1329,21 @@ export default function HomePage() {
                   <span className="text-[10px] text-slate-500">–</span>
                   <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
                     7
+                  </kbd>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-0/60 px-3 py-2">
+                <span className="text-xs text-slate-300">
+                  {t.shortcuts.prevNextTab}
+                </span>
+                <div className="flex items-center gap-1">
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                    [
+                  </kbd>
+                  <span className="text-[10px] text-slate-500">/</span>
+                  <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
+                    ]
                   </kbd>
                 </div>
               </div>

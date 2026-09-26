@@ -28,7 +28,6 @@ export const MoatTab: React.FC<MoatTabProps> = ({
   locale = "zh",
 }) => {
   const t = getTranslations(locale).moatTab;
-  const isZh = locale === "zh";
 
   if (!moatData) {
     return (
@@ -43,17 +42,17 @@ export const MoatTab: React.FC<MoatTabProps> = ({
       case "wide":
         return {
           bg: "bg-fintech-greenGlow/20 text-fintech-green border-fintech-green/40",
-          label: isZh ? "宽护城河 (Wide Moat)" : "Wide Moat",
+          label: t.wideMoat,
         };
       case "narrow":
         return {
           bg: "bg-fintech-amberGlow/20 text-fintech-amber border-fintech-amber/40",
-          label: isZh ? "窄护城河 (Narrow Moat)" : "Narrow Moat",
+          label: t.narrowMoat,
         };
       default:
         return {
           bg: "bg-surface-2 text-slate-400 border-border",
-          label: isZh ? "无护城河 (No Moat)" : "No Moat",
+          label: t.noMoat,
         };
     }
   };
@@ -65,19 +64,19 @@ export const MoatTab: React.FC<MoatTabProps> = ({
           icon: TrendingUp,
           color:
             "text-fintech-green bg-fintech-greenGlow/15 border-fintech-green/30",
-          label: isZh ? "护城河持续扩宽 (Widening)" : "Widening",
+          label: t.trendWidening,
         };
       case "narrowing":
         return {
           icon: TrendingDown,
           color: "text-fintech-red bg-fintech-redGlow/15 border-fintech-red/30",
-          label: isZh ? "护城河正在收窄 (Narrowing)" : "Narrowing",
+          label: t.trendNarrowing,
         };
       default:
         return {
           icon: Minus,
           color: "text-slate-300 bg-surface-2 border-border",
-          label: isZh ? "护城河保持稳固 (Stable)" : "Stable",
+          label: t.trendStable,
         };
     }
   };
@@ -207,7 +206,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                     <div className="flex items-center justify-between border-t border-border/60 pt-2 font-mono text-[11px]">
                       <span className="text-slate-400">{t.durability}:</span>
                       <span className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 font-semibold text-accent">
-                        {source.durabilityYears} {isZh ? "年壁垒期" : "Years"}
+                        {source.durabilityYears} {t.durabilityYearsSuffix}
                       </span>
                     </div>
                   )}
@@ -226,11 +225,149 @@ export const MoatTab: React.FC<MoatTabProps> = ({
               {t.peersTitle}
             </h4>
             <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-              {moatData.competitors.length} {isZh ? "家核心竞品" : "Peers"}
+              {moatData.competitors.length} {t.peersCountSuffix}
             </span>
           </div>
 
-          <div className="glass-panel overflow-hidden rounded-xl border border-border/80 shadow-lg">
+          {/* Mobile Competitor Cards View */}
+          <div className="grid grid-cols-1 gap-3 md:hidden">
+            {moatData.competitors.map((peer, idx) => {
+              const pricingClass = getPricingPowerBadge(peer.pricingPower);
+              return (
+                <div
+                  key={idx}
+                  className="glass-panel space-y-3 rounded-xl border border-border/80 p-4"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5 font-bold">
+                        <a
+                          href={`https://finance.yahoo.com/quote/${peer.ticker}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-mono text-base text-accent hover:underline"
+                          title={t.viewYahoo(peer.ticker)}
+                        >
+                          <span>{peer.ticker}</span>
+                          <ExternalLink className="size-3 text-slate-400" />
+                        </a>
+                      </div>
+                      <p className="text-xs font-medium text-slate-300">
+                        {peer.name}
+                      </p>
+                    </div>
+
+                    {peer.marketCapBillions !== undefined && (
+                      <span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-xs font-bold text-white">
+                        ${peer.marketCapBillions.toFixed(1)}B
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Financials Grid */}
+                  <div className="grid grid-cols-3 gap-2 rounded-lg bg-surface-0/60 p-2.5 text-center font-mono">
+                    <div>
+                      <div className="text-[10px] text-slate-400">
+                        {t.colRevenue}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-200">
+                        {peer.revenueBillions !== undefined
+                          ? `$${peer.revenueBillions.toFixed(1)}B`
+                          : "—"}
+                      </div>
+                      {peer.revenueGrowthPct !== undefined && (
+                        <div
+                          className={`text-[10px] ${
+                            peer.revenueGrowthPct >= 0
+                              ? "text-fintech-green"
+                              : "text-fintech-red"
+                          }`}
+                        >
+                          {peer.revenueGrowthPct >= 0 ? "+" : ""}
+                          {peer.revenueGrowthPct.toFixed(1)}%
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] text-slate-400">
+                        {t.colOperatingMargin}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-200">
+                        {peer.operatingMarginPct !== undefined
+                          ? `${peer.operatingMarginPct.toFixed(1)}%`
+                          : "—"}
+                      </div>
+                      {peer.grossMarginPct !== undefined && (
+                        <div className="text-[10px] text-slate-400">
+                          GM: {peer.grossMarginPct.toFixed(0)}%
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] text-slate-400">
+                        {t.colFwdPe}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-200">
+                        {peer.forwardPe !== undefined
+                          ? `${peer.forwardPe.toFixed(1)}x`
+                          : "—"}
+                      </div>
+                      {peer.marketSharePct !== undefined && (
+                        <div className="text-[10px] text-accent">
+                          {peer.marketSharePct.toFixed(0)}% Share
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Qualitative info */}
+                  {(peer.pricingPower ||
+                    peer.productComparison ||
+                    peer.keyAdvantageOrVulnerability) && (
+                    <div className="space-y-2 border-t border-border/40 pt-2.5 text-xs">
+                      {peer.pricingPower && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] uppercase tracking-wider text-slate-400">
+                            {t.colPricingPower}:
+                          </span>
+                          <span
+                            className={`rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${pricingClass}`}
+                          >
+                            {peer.pricingPower}
+                          </span>
+                        </div>
+                      )}
+                      {peer.productComparison && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase text-slate-400">
+                            {t.colProductComparison}:{" "}
+                          </span>
+                          <span className="text-[11px] leading-relaxed text-slate-300">
+                            {peer.productComparison}
+                          </span>
+                        </div>
+                      )}
+                      {peer.keyAdvantageOrVulnerability && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase text-slate-400">
+                            {t.colAdvantageVulnerability}:{" "}
+                          </span>
+                          <span className="text-[11px] leading-relaxed text-slate-300">
+                            {peer.keyAdvantageOrVulnerability}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="glass-panel hidden overflow-hidden rounded-xl border border-border/80 shadow-lg md:block">
             <div className="custom-scrollbar overflow-x-auto">
               <table className="w-full border-collapse text-left text-xs">
                 <thead>
@@ -261,10 +398,10 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                     </th>
                     <th className="p-3 font-semibold">{t.colPricingPower}</th>
                     <th className="p-3 font-semibold">
-                      {isZh ? "产品管线对比" : "Product Comparison"}
+                      {t.colProductComparison}
                     </th>
                     <th className="p-3 font-semibold">
-                      {isZh ? "核心优势/脆弱点" : "Advantage / Vulnerability"}
+                      {t.colAdvantageVulnerability}
                     </th>
                   </tr>
                 </thead>
@@ -284,11 +421,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 hover:text-accent hover:underline"
-                            title={
-                              isZh
-                                ? `在 Yahoo Finance 查看 ${peer.ticker}`
-                                : `View ${peer.ticker} on Yahoo Finance`
-                            }
+                            title={t.viewYahoo(peer.ticker)}
                           >
                             <span>{peer.ticker}</span>
                             <ExternalLink className="size-2.5 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />

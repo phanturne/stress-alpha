@@ -26,7 +26,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
   const getPositionPct = (val: number) => {
     if (maxM === minM) return 50;
     const pct = ((val - minM) / (maxM - minM)) * 100;
-    return Math.max(6, Math.min(94, pct));
+    return Math.max(8, Math.min(92, pct));
   };
 
   const currentPct = getPositionPct(currentPrice);

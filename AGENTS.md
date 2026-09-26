@@ -146,8 +146,18 @@ The **Snowflake Fundamental Radar** ([`src/lib/snowflake.ts`](file:///Users/krdi
 4. **Social Media Card Generation**:
    - Maintain institutional export cards via `html-to-image` ([`src/lib/social-card.ts`](file:///Users/krding/Projects/stress-alpha/src/lib/social-card.ts)).
    - Support 5 card templates (`valuation`, `earnings`, `thesis`, `summary`, `snowflake`) across 3 standard social aspect ratios (16:9, 1:1, 4:5).
-   - Enforce ticker-first hierarchy, full-width radar layout, verified SEC disclosures, and data availability gating (`isSectionAvailableForReport`) preventing cut-off sections.
    - Official watermark domain: `https://stressalpha.vercel.app/`.
+5. **Mobile-First Responsive Hierarchy & Workspace Navigation**:
+   - Zero horizontal overflow on mobile viewports (`max-w-[calc(100vw-24px)]` on dropdowns and drawers).
+   - Sticky mobile segmented switcher (`[⚡ Cockpit] [📊 Deep Dive (7)]`) separating the flow-through cockpit from the 7 intelligence tabs to eliminate vertical scroll fatigue.
+   - Dual-view Screener (`viewMode: "cards" | "table"`): Defaults to adaptive cards on mobile (`< md`), rendering mini Snowflake radars, moat status, and price spectrum bars without horizontal table truncation.
+   - Responsive Workspace tab layouts: Dedicated card views for multi-column tables (`EstimatesTab`, `MoatTab`, `ToneTab`) on screens `< md`.
+   - **Clutter-Free Deep Dive Navigation**:
+     - **Sticky Navigation Ribbon** (`sticky top-14 z-30 glass-header`): Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text and sitting flush against Header with 0px gap.
+     - **Responsive Short Labels**: Displays condensed labels on mobile (`sm:hidden`, e.g. "Valuation", "Estimates", "Moat") allowing 3.5–4 tabs to fit cleanly without swiping; displays full labels on desktop (`hidden sm:inline`).
+     - **Auto-Centering Active Tab**: Smoothly scrolls the active button to center in the horizontal container upon tab switch.
+     - **Sequential Bottom Workspace Pager**: Connects workspaces in analytical reading order (`← Prev Workspace` | dots indicator | `Next Workspace →`), scrolling smoothly to the top of the next workspace.
+     - **Keyboard Navigation**: Instant switching via numeric keys `1-7` and brackets `[` / `]` for previous/next workspace.
 
 ---
 

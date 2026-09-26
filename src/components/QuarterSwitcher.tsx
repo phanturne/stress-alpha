@@ -97,7 +97,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="glass-panel absolute left-0 z-50 mt-2 w-72 divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-80">
+          <div className="glass-panel absolute left-0 z-50 mt-2 w-72 max-w-[calc(100vw-24px)] divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-80">
             <div className="flex items-center justify-between bg-surface-0/70 px-3.5 py-2.5 text-xs font-semibold text-slate-300">
               <span className="flex items-center gap-1.5">
                 <History className="size-3.5 text-accent" />

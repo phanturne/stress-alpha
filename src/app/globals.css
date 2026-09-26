@@ -43,6 +43,7 @@
     --amber: #f59e0b;
 
     --glass-bg: rgba(19, 25, 34, 0.78);
+    --glass-header-bg: rgba(13, 17, 23, 0.9);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-subtle-bg: rgba(13, 17, 23, 0.65);
     --glass-subtle-border: rgba(255, 255, 255, 0.05);
@@ -92,6 +93,7 @@
     --amber: #d97706;
 
     --glass-bg: rgba(255, 255, 255, 0.88);
+    --glass-header-bg: rgba(255, 255, 255, 0.92);
     --glass-border: rgba(15, 23, 42, 0.08);
     --glass-subtle-bg: rgba(241, 245, 249, 0.82);
     --glass-subtle-border: rgba(15, 23, 42, 0.05);
@@ -127,6 +129,13 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
+}
+
+.glass-header {
+  background: var(--glass-header-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .glass-panel-subtle {

@@ -81,6 +81,18 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Institutional Light:** High-contrast FactSet/WSJ day mode designed for daytime research and committee review, featuring clean white/light slate surfaces (`#ffffff` / `#f8fafc`), high-contrast slate-900 typography (`#0f172a`), deep sky accent (`#0284c7`), and crisp financial borders.
 - **Instant 1-Click Toggle:** Quick Sun/Moon switch in the top header and detailed switcher in Settings menu, with zero-flash (`0ms FOUC`) SSR persistence in `localStorage`.
 
+### 9. Mobile-First Institutional Cockpit & Universe Screener
+- **Mobile Segmented Switcher (`[⚡ Cockpit] [📊 Deep Dive (7)]`):** Eliminates 1800px vertical scroll fatigue on mobile screens, enabling 1-tap switching between stress test controls and the 7 fundamental workspaces.
+- **Clutter-Free Workspace Navigation:**
+  - **Sticky Frosted Glass Navigation Ribbon:** Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text and sitting flush against Header with 0px gap.
+  - **Auto-Centering Active Tab:** Automatically centers the active tab button in the horizontal scroll ribbon whenever switched.
+  - **Responsive Short Labels:** Displays concise labels on mobile (`Valuation`, `Estimates`, `Moat`, `Segments`, `Catalysts`, `Audit`, `Notes`) so 3.5–4 tabs fit simultaneously without swiping.
+  - **Sequential Bottom Workspace Pager:** Connects intelligence workspaces in reading order (`← Prev Workspace` | dots indicator | `Next Workspace →`) and scrolls smoothly to the top of the next workspace.
+  - **Non-Intrusive Shortcuts:** Fast switching with `[` (previous) and `]` (next) as well as numeric keys `1-7`.
+- **Adaptive Screener Cards:** Replaces cramped 11-column horizontal tables with high-legibility stock cards on mobile, complete with mini Snowflake radars, moat badges, base-to-bull price spectrum tracks, and 1-tap navigation to Cockpit or Memo.
+- **Slide-Over Navigation Drawer:** Full-featured touch-friendly drawer providing quick access to report history, quarter switching, Screener, language selection (EN/中文), and theme switcher.
+- **Responsive Workspace Tabs:** Tailored mobile card views for Wall Street Analyst Estimates (`EstimatesTab`) and Peer Benchmarking (`MoatTab`), avoiding horizontal clipping and table pinch-to-zoom.
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)

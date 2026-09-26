@@ -69,8 +69,7 @@ export default function MethodologyPage() {
 
   return (
     <div className="min-h-screen bg-background text-slate-100 selection:bg-accent/20 selection:text-accent">
-      {/* Sticky Header Navigation */}
-      <header className="glass-panel sticky top-0 z-40 flex w-full items-center justify-between gap-4 border-b border-white/[0.08] px-4 py-3 sm:px-8">
+      <header className="glass-header sticky top-0 z-40 flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-8">
         <div className="flex items-center gap-3">
           <Link
             href="/"

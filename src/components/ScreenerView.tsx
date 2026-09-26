@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Search,
   TrendingUp,
@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   RotateCcw,
   Star,
+  LayoutGrid,
+  Table,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
@@ -151,6 +153,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
   const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(min-width: 768px)");
+    if (mql.matches) {
+      const frame = requestAnimationFrame(() => setViewMode("table"));
+      return () => cancelAnimationFrame(frame);
+    }
+  }, []);
 
   // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
   const stats = useMemo(() => {
@@ -322,6 +334,327 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     }
     return (
       <ArrowUpDown className="size-3 shrink-0 text-slate-500 opacity-30 transition-opacity group-hover/th:opacity-100" />
+    );
+  };
+
+  const renderCardsView = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="glass-panel space-y-3.5 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="size-8 rounded-lg" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-3 w-28" />
+                  </div>
+                </div>
+                <Skeleton className="h-5 w-14 rounded-full" />
+              </div>
+              <div className="grid grid-cols-3 gap-2 rounded-lg bg-surface-0/60 p-2.5">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+              <Skeleton className="h-2 w-full rounded-full" />
+              <div className="flex justify-between">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (filteredReports.length === 0) {
+      return (
+        <div className="glass-panel rounded-xl px-4 py-16 text-center text-slate-400">
+          {watchlistOnly ? (
+            <div className="flex flex-col items-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
+                <Star className="size-6 fill-amber-400" />
+              </div>
+              <h3 className="mt-3 text-base font-bold text-white">
+                {ts.watchlistEmptyTitle}
+              </h3>
+              <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
+                {ts.watchlistEmptyDesc}
+              </p>
+              <button
+                type="button"
+                onClick={() => setWatchlistOnly(false)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+              >
+                {ts.viewAllReports}
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm font-medium">{ts.noResults}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setMoatFilter("all");
+                  setUpsideFilter("all");
+                  setWatchlistOnly(false);
+                }}
+                className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
+              >
+                {ts.resetFilters}
+              </button>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredReports.map((report) => {
+          const upside = report.upsidePct ?? 0;
+          const isPositive = upside >= 0;
+          const price = report.currentPrice ?? 0;
+          const wfv = report.weightedFairValue ?? 0;
+          const baseFv = report.baseFairValue ?? 0;
+          const baseUpside = report.baseUpsidePct ?? 0;
+          const bear = report.bearFairValue ?? price * 0.7;
+          const bull = report.bullFairValue ?? price * 1.4;
+
+          const rangeSpan = Math.max(bull - bear, 1);
+          const pricePos = Math.min(
+            100,
+            Math.max(0, ((price - bear) / rangeSpan) * 100)
+          );
+          const basePos = Math.min(
+            100,
+            Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
+          );
+
+          return (
+            <div
+              key={report.slug}
+              onClick={() => onSelectReport(report.slug, "cockpit")}
+              className="glass-panel group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-all duration-200 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
+            >
+              {/* Top Row: Ticker, Company, Favorite Star, Moat, Snowflake */}
+              <div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(report.ticker || report.slug);
+                      }}
+                      className="-ml-1 shrink-0 p-1 text-slate-500 transition-colors hover:text-amber-400"
+                      title={
+                        isFavorite(report.ticker || report.slug)
+                          ? t.header.removeFromWatchlist
+                          : t.header.addToWatchlist
+                      }
+                      aria-label={
+                        isFavorite(report.ticker || report.slug)
+                          ? t.header.removeFromWatchlist
+                          : t.header.addToWatchlist
+                      }
+                    >
+                      <Star
+                        className={`size-4 ${
+                          isFavorite(report.ticker || report.slug)
+                            ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                            : "text-slate-600 group-hover:text-slate-400"
+                        }`}
+                      />
+                    </button>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-base font-black tracking-tight text-white group-hover:text-accent">
+                          {report.ticker || report.slug.split("-")[0]}
+                        </span>
+                        {report.quarter && (
+                          <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                            {report.quarter}
+                          </span>
+                        )}
+                      </div>
+                      <p className="max-w-[150px] truncate text-xs text-slate-400 sm:max-w-[180px]">
+                        {report.company || report.slug}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Badges: Moat & Snowflake */}
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {report.moatRating && (
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          report.moatRating.toLowerCase() === "wide"
+                            ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
+                            : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
+                        }`}
+                      >
+                        <Shield className="size-2.5" />
+                        <span>{report.moatRating}</span>
+                        {report.moatTrend && (
+                          <span className="font-mono text-[9px]">
+                            {report.moatTrend === "Widening"
+                              ? "↗"
+                              : report.moatTrend === "Narrowing"
+                                ? "↘"
+                                : "→"}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    {report.snowflakeScore !== undefined && (
+                      <div className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-surface-0/60 px-1.5 py-1">
+                        <MiniSnowflakeRadar
+                          score={report.snowflakeScore}
+                          tier={report.snowflakeTier}
+                          pillars={report.snowflakePillars}
+                          size={22}
+                        />
+                        <span className="font-mono text-xs font-bold text-white">
+                          {report.snowflakeScore}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pricing Grid */}
+                <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-lg border border-white/[0.05] bg-surface-0/60 p-2.5">
+                  <div>
+                    <div className="text-[10px] font-medium text-slate-400">
+                      {ts.colPrice}
+                    </div>
+                    <div className="font-mono text-xs font-bold text-slate-200">
+                      {price > 0 ? formatCurrency(price) : "—"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-medium text-slate-400">
+                      {ts.colBaseFairValue}
+                    </div>
+                    <div className="font-mono text-xs font-semibold text-slate-300">
+                      {baseFv > 0 ? formatCurrency(baseFv) : "—"}
+                    </div>
+                    {baseFv > 0 && (
+                      <div
+                        className={`font-mono text-[10px] ${
+                          baseUpside >= 0 ? "text-emerald-400" : "text-rose-400"
+                        }`}
+                      >
+                        {baseUpside >= 0 ? "+" : ""}
+                        {baseUpside.toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-accent">
+                      {ts.colWeightedFairValue}
+                    </div>
+                    <div className="font-mono text-xs font-extrabold text-white">
+                      {wfv > 0 ? formatCurrency(wfv) : "—"}
+                    </div>
+                    {wfv > 0 && (
+                      <div
+                        className={`py-0.2 inline-flex items-center gap-0.5 rounded px-1 font-mono text-[10px] font-bold ${
+                          isPositive ? "text-green-400" : "text-rose-400"
+                        }`}
+                      >
+                        {isPositive ? (
+                          <ArrowUpRight className="size-2.5" />
+                        ) : (
+                          <ArrowDownRight className="size-2.5" />
+                        )}
+                        {isPositive ? "+" : ""}
+                        {upside.toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Valuation Range Spectrum Bar */}
+                {price > 0 && bull > bear && (
+                  <div className="mt-3 space-y-1">
+                    <div className="relative h-1.5 w-full rounded-full bg-surface-3">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
+                      <div
+                        style={{ left: `${basePos}%` }}
+                        className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
+                        title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+                      />
+                      <div
+                        style={{ left: `${pricePos}%` }}
+                        className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                        title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between font-mono text-[9px] tabular-nums text-slate-500">
+                      <span>${Math.round(bear)}</span>
+                      <span className="flex items-center gap-1 text-slate-400">
+                        <span className="size-1.5 rounded-full bg-sky-400" />$
+                        {Math.round(baseFv)}
+                      </span>
+                      <span>${Math.round(bull)}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Secondary stats & quick actions footer */}
+              <div className="mt-3 flex items-center justify-between border-t border-white/[0.06] pt-2.5 text-[11px]">
+                <div className="flex items-center gap-2.5 font-mono text-[10px] text-slate-400">
+                  {report.operatingMarginPct !== undefined && (
+                    <span>
+                      OpM:{" "}
+                      <strong className="font-bold text-slate-200">
+                        {report.operatingMarginPct.toFixed(0)}%
+                      </strong>
+                    </span>
+                  )}
+                  {report.analystTarget && report.analystTarget > 0 && (
+                    <span>
+                      Target:{" "}
+                      <strong className="font-bold text-slate-200">
+                        ${Math.round(report.analystTarget)}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectReport(report.slug, "memo");
+                    }}
+                    className="rounded px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+                  >
+                    {ts.openMemo}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectReport(report.slug, "cockpit");
+                    }}
+                    className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[10px] font-bold text-accent transition-colors hover:bg-accent/25"
+                  >
+                    {ts.openCockpit}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
@@ -626,6 +959,36 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </button>
           </div>
 
+          {/* View Mode Toggle: Cards vs Table */}
+          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setViewMode("cards")}
+              className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                viewMode === "cards"
+                  ? "bg-accent/20 font-bold text-accent"
+                  : "text-slate-400 hover:text-white"
+              }`}
+              title={ts.viewCards}
+            >
+              <LayoutGrid className="size-3.5" />
+              <span>{ts.viewCards}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("table")}
+              className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                viewMode === "table"
+                  ? "bg-accent/20 font-bold text-accent"
+                  : "text-slate-400 hover:text-white"
+              }`}
+              title={ts.viewTable}
+            >
+              <Table className="size-3.5" />
+              <span>{ts.viewTable}</span>
+            </button>
+          </div>
+
           {/* Results count and active reset */}
           <div className="flex items-center gap-2">
             <span className="font-mono text-[11px] text-slate-500">
@@ -654,614 +1017,620 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         </div>
       </div>
 
-      {/* Main Screener Table */}
-      <div className="glass-panel overflow-hidden rounded-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-white/[0.08] bg-surface-2/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {/* Watchlist Star */}
-                <th
-                  className="w-10 whitespace-nowrap py-3 pl-3 pr-1 text-center"
-                  title={ts.colFavorite}
-                >
-                  <Star className="mx-auto size-3.5 text-slate-400" />
-                </th>
-
-                {/* Ticker & Company */}
-                <th
-                  onClick={() => handleSort("ticker")}
-                  className="group/th cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>{ts.colTicker}</span>
-                    {renderSortIcon("ticker")}
-                  </div>
-                </th>
-
-                {/* Moat */}
-                <th
-                  onClick={() => handleSort("moat")}
-                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>{ts.colMoat}</span>
-                    {renderSortIcon("moat")}
-                  </div>
-                </th>
-
-                {/* Snowflake 30-Point Audit Radar */}
-                <th
-                  onClick={() => handleSort("snowflake")}
-                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>{ts.colSnowflake}</span>
-                    {renderSortIcon("snowflake")}
-                  </div>
-                </th>
-
-                {/* Price */}
-                <th
-                  onClick={() => handleSort("price")}
-                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colPrice}</span>
-                    {renderSortIcon("price")}
-                  </div>
-                </th>
-
-                {/* Analyst Consensus Target */}
-                <th
-                  onClick={() => handleSort("analystTarget")}
-                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colAnalystTarget}</span>
-                    {renderSortIcon("analystTarget")}
-                  </div>
-                </th>
-
-                {/* Base Fair Value */}
-                <th
-                  onClick={() => handleSort("baseUpside")}
-                  className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colBaseFairValue}</span>
-                    {renderSortIcon("baseUpside")}
-                  </div>
-                </th>
-
-                {/* Weighted Fair Value & Upside */}
-                <th
-                  onClick={() => handleSort("upside")}
-                  className="group/th cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colWeightedFairValue}</span>
-                    {renderSortIcon("upside")}
-                  </div>
-                </th>
-
-                {/* Valuation Spectrum / Stress Range */}
-                <th
-                  className="hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
-                  title={ts.rangeTooltip}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>{ts.colValuationRange}</span>
-                    <span className="hidden font-mono text-[9px] font-normal lowercase tracking-normal text-slate-500 xl:inline">
-                      {ts.rangeBearBullHint}
-                    </span>
-                  </div>
-                </th>
-
-                {/* Operating Margin */}
-                <th
-                  onClick={() => handleSort("opMargin")}
-                  className="group/th hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colOperatingMargin}</span>
-                    {renderSortIcon("opMargin")}
-                  </div>
-                </th>
-
-                {/* Revenue Growth */}
-                <th
-                  onClick={() => handleSort("revGrowth")}
-                  className="group/th hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>{ts.colRevenueGrowth}</span>
-                    {renderSortIcon("revGrowth")}
-                  </div>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-white/[0.05]">
-              {isLoading ? (
-                <>
-                  {SKELETON_ROWS.map((row, idx) => (
-                    <tr
-                      key={`skeleton-${idx}`}
-                      className="border-b border-white/[0.03]"
-                    >
-                      {/* Watchlist Star Skeleton */}
-                      <td className="w-10 py-2.5 pl-3 pr-1 text-center">
-                        <Skeleton className="mx-auto size-4 rounded" />
-                      </td>
-
-                      {/* Ticker & Company */}
-                      <td className="py-2.5 pl-2 pr-3">
-                        <div className="flex items-center gap-2.5">
-                          <Skeleton className="size-7 shrink-0 rounded-lg" />
-                          <div className="space-y-1.5">
-                            <Skeleton className={`h-3.5 ${row.tickerW}`} />
-                            <Skeleton className={`h-2.5 ${row.nameW}`} />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Moat */}
-                      <td className="whitespace-nowrap p-2.5">
-                        <Skeleton className={`h-5 ${row.moatW} rounded-full`} />
-                      </td>
-
-                      {/* Snowflake */}
-                      <td className="whitespace-nowrap p-2.5">
-                        <div className="flex items-center gap-2">
-                          <Skeleton className="size-7 shrink-0 rounded-full" />
-                          <div className="space-y-1">
-                            <Skeleton className="h-3 w-8" />
-                            <Skeleton className="h-2 w-10" />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Price */}
-                      <td className="whitespace-nowrap p-2.5 text-right">
-                        <Skeleton className="ml-auto h-4 w-14" />
-                      </td>
-
-                      {/* Analyst Target */}
-                      <td className="whitespace-nowrap p-2.5 text-right">
-                        <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
-                      </td>
-
-                      {/* Base Fair Value */}
-                      <td className="whitespace-nowrap p-2.5 text-right">
-                        <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
-                      </td>
-
-                      {/* Weighted Fair Value & Upside */}
-                      <td className="whitespace-nowrap px-3 py-2.5 text-right">
-                        <div className="ml-auto space-y-1">
-                          <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
-                          <Skeleton className="ml-auto h-3 w-12 rounded-full" />
-                        </div>
-                      </td>
-
-                      {/* Valuation Spectrum / Stress Range */}
-                      <td className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell">
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between">
-                            <Skeleton className="h-2 w-8" />
-                            <Skeleton className="h-2 w-8" />
-                          </div>
-                          <Skeleton className="h-1.5 w-full rounded-full" />
-                        </div>
-                      </td>
-
-                      {/* Operating Margin */}
-                      <td className="hidden whitespace-nowrap p-2.5 text-right xl:table-cell">
-                        <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
-                      </td>
-
-                      {/* Revenue Growth */}
-                      <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right xl:table-cell">
-                        <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              ) : filteredReports.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={11}
-                    className="px-4 py-16 text-center text-slate-400"
+      {/* Main Content: Cards or Table */}
+      {viewMode === "cards" ? (
+        renderCardsView()
+      ) : (
+        <div className="glass-panel overflow-hidden rounded-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead>
+                <tr className="border-b border-white/[0.08] bg-surface-2/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {/* Watchlist Star */}
+                  <th
+                    className="w-10 whitespace-nowrap py-3 pl-3 pr-1 text-center"
+                    title={ts.colFavorite}
                   >
-                    {watchlistOnly ? (
-                      <div className="flex flex-col items-center">
-                        <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
-                          <Star className="size-6 fill-amber-400" />
-                        </div>
-                        <h3 className="mt-3 text-base font-bold text-white">
-                          {ts.watchlistEmptyTitle}
-                        </h3>
-                        <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
-                          {ts.watchlistEmptyDesc}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setWatchlistOnly(false)}
-                          className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
-                        >
-                          {ts.viewAllReports}
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <p className="text-sm font-medium">{ts.noResults}</p>
-                        <button
-                          onClick={() => {
-                            setSearchQuery("");
-                            setMoatFilter("all");
-                            setUpsideFilter("all");
-                            setWatchlistOnly(false);
-                          }}
-                          className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
-                        >
-                          {ts.resetFilters}
-                        </button>
-                      </>
-                    )}
-                  </td>
+                    <Star className="mx-auto size-3.5 text-slate-400" />
+                  </th>
+
+                  {/* Ticker & Company */}
+                  <th
+                    onClick={() => handleSort("ticker")}
+                    className="group/th cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{ts.colTicker}</span>
+                      {renderSortIcon("ticker")}
+                    </div>
+                  </th>
+
+                  {/* Moat */}
+                  <th
+                    onClick={() => handleSort("moat")}
+                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{ts.colMoat}</span>
+                      {renderSortIcon("moat")}
+                    </div>
+                  </th>
+
+                  {/* Snowflake 30-Point Audit Radar */}
+                  <th
+                    onClick={() => handleSort("snowflake")}
+                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{ts.colSnowflake}</span>
+                      {renderSortIcon("snowflake")}
+                    </div>
+                  </th>
+
+                  {/* Price */}
+                  <th
+                    onClick={() => handleSort("price")}
+                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colPrice}</span>
+                      {renderSortIcon("price")}
+                    </div>
+                  </th>
+
+                  {/* Analyst Consensus Target */}
+                  <th
+                    onClick={() => handleSort("analystTarget")}
+                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colAnalystTarget}</span>
+                      {renderSortIcon("analystTarget")}
+                    </div>
+                  </th>
+
+                  {/* Base Fair Value */}
+                  <th
+                    onClick={() => handleSort("baseUpside")}
+                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colBaseFairValue}</span>
+                      {renderSortIcon("baseUpside")}
+                    </div>
+                  </th>
+
+                  {/* Weighted Fair Value & Upside */}
+                  <th
+                    onClick={() => handleSort("upside")}
+                    className="group/th cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colWeightedFairValue}</span>
+                      {renderSortIcon("upside")}
+                    </div>
+                  </th>
+
+                  {/* Valuation Spectrum / Stress Range */}
+                  <th
+                    className="hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
+                    title={ts.rangeTooltip}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{ts.colValuationRange}</span>
+                      <span className="hidden font-mono text-[9px] font-normal lowercase tracking-normal text-slate-500 xl:inline">
+                        {ts.rangeBearBullHint}
+                      </span>
+                    </div>
+                  </th>
+
+                  {/* Operating Margin */}
+                  <th
+                    onClick={() => handleSort("opMargin")}
+                    className="group/th hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colOperatingMargin}</span>
+                      {renderSortIcon("opMargin")}
+                    </div>
+                  </th>
+
+                  {/* Revenue Growth */}
+                  <th
+                    onClick={() => handleSort("revGrowth")}
+                    className="group/th hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
+                  >
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span>{ts.colRevenueGrowth}</span>
+                      {renderSortIcon("revGrowth")}
+                    </div>
+                  </th>
                 </tr>
-              ) : (
-                filteredReports.map((report) => {
-                  const upside = report.upsidePct ?? 0;
-                  const isPositive = upside >= 0;
-                  const price = report.currentPrice ?? 0;
-                  const wfv = report.weightedFairValue ?? 0;
-                  const baseFv = report.baseFairValue ?? 0;
-                  const baseUpside = report.baseUpsidePct ?? 0;
-                  const bear = report.bearFairValue ?? price * 0.7;
-                  const bull = report.bullFairValue ?? price * 1.4;
+              </thead>
 
-                  // Compute normalized price position between Bear and Bull (0% to 100%)
-                  const rangeSpan = Math.max(bull - bear, 1);
-                  const pricePos = Math.min(
-                    100,
-                    Math.max(0, ((price - bear) / rangeSpan) * 100)
-                  );
-                  const basePos = Math.min(
-                    100,
-                    Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-                  );
-
-                  return (
-                    <tr
-                      key={report.slug}
-                      className="group cursor-pointer transition-colors hover:bg-surface-2/70"
-                      onClick={() => onSelectReport(report.slug, "cockpit")}
-                    >
-                      {/* Watchlist Star Toggle */}
-                      <td
-                        className="w-10 py-2.5 pl-3 pr-1 text-center"
-                        onClick={(e) => e.stopPropagation()}
+              <tbody className="divide-y divide-white/[0.05]">
+                {isLoading ? (
+                  <>
+                    {SKELETON_ROWS.map((row, idx) => (
+                      <tr
+                        key={`skeleton-${idx}`}
+                        className="border-b border-white/[0.03]"
                       >
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(report.ticker || report.slug);
-                          }}
-                          className="group/star inline-flex items-center justify-center rounded p-1 transition-transform hover:scale-125 active:scale-95"
-                          title={
-                            isFavorite(report.ticker || report.slug)
-                              ? t.header.removeFromWatchlist
-                              : t.header.addToWatchlist
-                          }
-                          aria-label={
-                            isFavorite(report.ticker || report.slug)
-                              ? t.header.removeFromWatchlist
-                              : t.header.addToWatchlist
-                          }
-                        >
-                          <Star
-                            className={`size-4 transition-colors ${
-                              isFavorite(report.ticker || report.slug)
-                                ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
-                                : "text-slate-600 hover:text-amber-400"
-                            }`}
-                          />
-                        </button>
-                      </td>
+                        {/* Watchlist Star Skeleton */}
+                        <td className="w-10 py-2.5 pl-3 pr-1 text-center">
+                          <Skeleton className="mx-auto size-4 rounded" />
+                        </td>
 
-                      {/* Ticker & Company */}
-                      <td className="py-2.5 pl-2 pr-3">
-                        <div className="flex items-center gap-2.5">
-                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-surface-1 font-mono text-[11px] font-black tracking-tight text-white shadow-sm group-hover:border-accent/50 group-hover:text-accent">
-                            {report.ticker || report.slug.split("-")[0]}
-                          </span>
-                          <div className="min-w-0">
+                        {/* Ticker & Company */}
+                        <td className="py-2.5 pl-2 pr-3">
+                          <div className="flex items-center gap-2.5">
+                            <Skeleton className="size-7 shrink-0 rounded-lg" />
+                            <div className="space-y-1.5">
+                              <Skeleton className={`h-3.5 ${row.tickerW}`} />
+                              <Skeleton className={`h-2.5 ${row.nameW}`} />
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Moat */}
+                        <td className="whitespace-nowrap p-2.5">
+                          <Skeleton
+                            className={`h-5 ${row.moatW} rounded-full`}
+                          />
+                        </td>
+
+                        {/* Snowflake */}
+                        <td className="whitespace-nowrap p-2.5">
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="size-7 shrink-0 rounded-full" />
+                            <div className="space-y-1">
+                              <Skeleton className="h-3 w-8" />
+                              <Skeleton className="h-2 w-10" />
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Price */}
+                        <td className="whitespace-nowrap p-2.5 text-right">
+                          <Skeleton className="ml-auto h-4 w-14" />
+                        </td>
+
+                        {/* Analyst Target */}
+                        <td className="whitespace-nowrap p-2.5 text-right">
+                          <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
+                        </td>
+
+                        {/* Base Fair Value */}
+                        <td className="whitespace-nowrap p-2.5 text-right">
+                          <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
+                        </td>
+
+                        {/* Weighted Fair Value & Upside */}
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right">
+                          <div className="ml-auto space-y-1">
+                            <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
+                            <Skeleton className="ml-auto h-3 w-12 rounded-full" />
+                          </div>
+                        </td>
+
+                        {/* Valuation Spectrum / Stress Range */}
+                        <td className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell">
+                          <div className="space-y-1.5">
+                            <div className="flex justify-between">
+                              <Skeleton className="h-2 w-8" />
+                              <Skeleton className="h-2 w-8" />
+                            </div>
+                            <Skeleton className="h-1.5 w-full rounded-full" />
+                          </div>
+                        </td>
+
+                        {/* Operating Margin */}
+                        <td className="hidden whitespace-nowrap p-2.5 text-right xl:table-cell">
+                          <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
+                        </td>
+
+                        {/* Revenue Growth */}
+                        <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right xl:table-cell">
+                          <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                ) : filteredReports.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={11}
+                      className="px-4 py-16 text-center text-slate-400"
+                    >
+                      {watchlistOnly ? (
+                        <div className="flex flex-col items-center">
+                          <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
+                            <Star className="size-6 fill-amber-400" />
+                          </div>
+                          <h3 className="mt-3 text-base font-bold text-white">
+                            {ts.watchlistEmptyTitle}
+                          </h3>
+                          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
+                            {ts.watchlistEmptyDesc}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setWatchlistOnly(false)}
+                            className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                          >
+                            {ts.viewAllReports}
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm font-medium">{ts.noResults}</p>
+                          <button
+                            onClick={() => {
+                              setSearchQuery("");
+                              setMoatFilter("all");
+                              setUpsideFilter("all");
+                              setWatchlistOnly(false);
+                            }}
+                            className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
+                          >
+                            {ts.resetFilters}
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredReports.map((report) => {
+                    const upside = report.upsidePct ?? 0;
+                    const isPositive = upside >= 0;
+                    const price = report.currentPrice ?? 0;
+                    const wfv = report.weightedFairValue ?? 0;
+                    const baseFv = report.baseFairValue ?? 0;
+                    const baseUpside = report.baseUpsidePct ?? 0;
+                    const bear = report.bearFairValue ?? price * 0.7;
+                    const bull = report.bullFairValue ?? price * 1.4;
+
+                    // Compute normalized price position between Bear and Bull (0% to 100%)
+                    const rangeSpan = Math.max(bull - bear, 1);
+                    const pricePos = Math.min(
+                      100,
+                      Math.max(0, ((price - bear) / rangeSpan) * 100)
+                    );
+                    const basePos = Math.min(
+                      100,
+                      Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
+                    );
+
+                    return (
+                      <tr
+                        key={report.slug}
+                        className="group cursor-pointer transition-colors hover:bg-surface-2/70"
+                        onClick={() => onSelectReport(report.slug, "cockpit")}
+                      >
+                        {/* Watchlist Star Toggle */}
+                        <td
+                          className="w-10 py-2.5 pl-3 pr-1 text-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(report.ticker || report.slug);
+                            }}
+                            className="group/star inline-flex items-center justify-center rounded p-1 transition-transform hover:scale-125 active:scale-95"
+                            title={
+                              isFavorite(report.ticker || report.slug)
+                                ? t.header.removeFromWatchlist
+                                : t.header.addToWatchlist
+                            }
+                            aria-label={
+                              isFavorite(report.ticker || report.slug)
+                                ? t.header.removeFromWatchlist
+                                : t.header.addToWatchlist
+                            }
+                          >
+                            <Star
+                              className={`size-4 transition-colors ${
+                                isFavorite(report.ticker || report.slug)
+                                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
+                                  : "text-slate-600 hover:text-amber-400"
+                              }`}
+                            />
+                          </button>
+                        </td>
+
+                        {/* Ticker & Company */}
+                        <td className="py-2.5 pl-2 pr-3">
+                          <div className="flex items-center gap-2.5">
+                            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-surface-1 font-mono text-[11px] font-black tracking-tight text-white shadow-sm group-hover:border-accent/50 group-hover:text-accent">
+                              {report.ticker || report.slug.split("-")[0]}
+                            </span>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-white group-hover:text-accent">
+                                  {report.ticker || report.slug}
+                                </span>
+                                {report.quarter && (
+                                  <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                                    {report.quarter}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[180px] xl:max-w-[220px]">
+                                {report.company || report.slug}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Economic Moat */}
+                        <td className="whitespace-nowrap p-2.5">
+                          {report.moatRating ? (
                             <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-white group-hover:text-accent">
-                                {report.ticker || report.slug}
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[11px] ${
+                                  report.moatRating.toLowerCase() === "wide"
+                                    ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
+                                    : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
+                                }`}
+                              >
+                                <Shield className="size-2.5" />
+                                {report.moatRating}
                               </span>
-                              {report.quarter && (
-                                <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
-                                  {report.quarter}
+                              {report.moatTrend && (
+                                <span
+                                  className={`hidden font-mono text-[10px] font-bold sm:inline ${
+                                    report.moatTrend === "Widening"
+                                      ? "text-emerald-400"
+                                      : report.moatTrend === "Narrowing"
+                                        ? "text-rose-400"
+                                        : "text-slate-500"
+                                  }`}
+                                  title={`${report.moatTrend} Moat Trend`}
+                                >
+                                  {report.moatTrend === "Widening"
+                                    ? "↗"
+                                    : report.moatTrend === "Narrowing"
+                                      ? "↘"
+                                      : "→"}
                                 </span>
                               )}
                             </div>
-                            <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[180px] xl:max-w-[220px]">
-                              {report.company || report.slug}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
+                          ) : (
+                            <span className="text-xs text-slate-600">—</span>
+                          )}
+                        </td>
 
-                      {/* Economic Moat */}
-                      <td className="whitespace-nowrap p-2.5">
-                        {report.moatRating ? (
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[11px] ${
-                                report.moatRating.toLowerCase() === "wide"
-                                  ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
-                                  : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
-                              }`}
+                        {/* Snowflake Fundamental Radar & Score */}
+                        <td className="whitespace-nowrap p-2.5">
+                          {report.snowflakeScore !== undefined ? (
+                            <div
+                              className="flex items-center gap-2"
+                              title={
+                                report.snowflakePillars
+                                  ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
+                                  : `${report.snowflakeScore}/30 Snowflake Radar`
+                              }
                             >
-                              <Shield className="size-2.5" />
-                              {report.moatRating}
-                            </span>
-                            {report.moatTrend && (
-                              <span
-                                className={`hidden font-mono text-[10px] font-bold sm:inline ${
-                                  report.moatTrend === "Widening"
-                                    ? "text-emerald-400"
-                                    : report.moatTrend === "Narrowing"
-                                      ? "text-rose-400"
-                                      : "text-slate-500"
-                                }`}
-                                title={`${report.moatTrend} Moat Trend`}
-                              >
-                                {report.moatTrend === "Widening"
-                                  ? "↗"
-                                  : report.moatTrend === "Narrowing"
-                                    ? "↘"
-                                    : "→"}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-600">—</span>
-                        )}
-                      </td>
-
-                      {/* Snowflake Fundamental Radar & Score */}
-                      <td className="whitespace-nowrap p-2.5">
-                        {report.snowflakeScore !== undefined ? (
-                          <div
-                            className="flex items-center gap-2"
-                            title={
-                              report.snowflakePillars
-                                ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
-                                : `${report.snowflakeScore}/30 Snowflake Radar`
-                            }
-                          >
-                            <MiniSnowflakeRadar
-                              score={report.snowflakeScore}
-                              tier={report.snowflakeTier}
-                              pillars={report.snowflakePillars}
-                              size={28}
-                            />
-                            <div className="flex flex-col">
-                              <div className="flex items-baseline gap-0.5">
-                                <span className="font-mono text-xs font-bold text-white">
-                                  {report.snowflakeScore}
-                                </span>
-                                <span className="font-mono text-[9px] text-slate-500">
-                                  /30
+                              <MiniSnowflakeRadar
+                                score={report.snowflakeScore}
+                                tier={report.snowflakeTier}
+                                pillars={report.snowflakePillars}
+                                size={28}
+                              />
+                              <div className="flex flex-col">
+                                <div className="flex items-baseline gap-0.5">
+                                  <span className="font-mono text-xs font-bold text-white">
+                                    {report.snowflakeScore}
+                                  </span>
+                                  <span className="font-mono text-[9px] text-slate-500">
+                                    /30
+                                  </span>
+                                </div>
+                                <span
+                                  className={`font-mono text-[9px] font-semibold uppercase tracking-wider ${
+                                    report.snowflakeScore >= 24
+                                      ? "text-emerald-400"
+                                      : report.snowflakeScore >= 18
+                                        ? "text-cyan-400"
+                                        : report.snowflakeScore >= 12
+                                          ? "text-amber-400"
+                                          : "text-rose-400"
+                                  }`}
+                                >
+                                  {report.snowflakeTier ?? "balanced"}
                                 </span>
                               </div>
-                              <span
-                                className={`font-mono text-[9px] font-semibold uppercase tracking-wider ${
-                                  report.snowflakeScore >= 24
+                            </div>
+                          ) : (
+                            <span className="text-xs text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Current Stock Price */}
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-white sm:text-sm">
+                          {price > 0 ? formatCurrency(price) : "—"}
+                        </td>
+
+                        {/* Analyst Consensus Target */}
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono">
+                          {report.analystTarget && report.analystTarget > 0 ? (
+                            <div
+                              title={
+                                report.analystCount
+                                  ? `${report.analystCount} ${ts.analystsLabel}${
+                                      report.analystRating
+                                        ? ` · ${report.analystRating}`
+                                        : ""
+                                    }`
+                                  : undefined
+                              }
+                            >
+                              <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
+                                {formatCurrency(report.analystTarget)}
+                              </div>
+                              <div className="flex items-center justify-end gap-1 font-mono text-[10px] tabular-nums sm:text-[11px]">
+                                {report.analystUpsidePct !== undefined && (
+                                  <span
+                                    className={
+                                      report.analystUpsidePct >= 0
+                                        ? "font-medium text-emerald-400"
+                                        : "font-medium text-rose-400"
+                                    }
+                                  >
+                                    {report.analystUpsidePct >= 0 ? "+" : ""}
+                                    {report.analystUpsidePct.toFixed(1)}%
+                                  </span>
+                                )}
+                                {report.analystRating && (
+                                  <span className="hidden text-[9px] text-slate-500 sm:inline">
+                                    • {report.analystRating}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Base Fair Value & Upside */}
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono">
+                          {baseFv > 0 ? (
+                            <div>
+                              <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
+                                {formatCurrency(baseFv)}
+                              </div>
+                              <div
+                                className={`font-mono text-[10px] font-medium tabular-nums sm:text-[11px] ${
+                                  baseUpside >= 0
                                     ? "text-emerald-400"
-                                    : report.snowflakeScore >= 18
-                                      ? "text-cyan-400"
-                                      : report.snowflakeScore >= 12
-                                        ? "text-amber-400"
-                                        : "text-rose-400"
+                                    : "text-rose-400"
                                 }`}
                               >
-                                {report.snowflakeTier ?? "balanced"}
+                                {baseUpside >= 0 ? "+" : ""}
+                                {baseUpside.toFixed(1)}%
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Weighted Fair Value & Upside */}
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono">
+                          {wfv > 0 ? (
+                            <div>
+                              <div className="font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+                                {formatCurrency(wfv)}
+                              </div>
+                              <span
+                                className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums sm:text-[11px] ${
+                                  isPositive
+                                    ? "border border-green-500/30 bg-green-500/10 text-green-400"
+                                    : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+                                }`}
+                              >
+                                {isPositive ? (
+                                  <ArrowUpRight className="size-2.5" />
+                                ) : (
+                                  <ArrowDownRight className="size-2.5" />
+                                )}
+                                {isPositive ? "+" : ""}
+                                {upside.toFixed(1)}%
                               </span>
                             </div>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-600">—</span>
-                        )}
-                      </td>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
 
-                      {/* Current Stock Price */}
-                      <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-white sm:text-sm">
-                        {price > 0 ? formatCurrency(price) : "—"}
-                      </td>
+                        {/* Stress Range Bar */}
+                        <td
+                          className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell"
+                          title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
+                        >
+                          {price > 0 && bull > bear ? (
+                            <div className="space-y-1">
+                              <div className="relative h-1.5 w-full rounded-full bg-surface-3">
+                                {/* Range track from Bear to Bull */}
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
 
-                      {/* Analyst Consensus Target */}
-                      <td className="whitespace-nowrap p-2.5 text-right font-mono">
-                        {report.analystTarget && report.analystTarget > 0 ? (
-                          <div
-                            title={
-                              report.analystCount
-                                ? `${report.analystCount} ${ts.analystsLabel}${
-                                    report.analystRating
-                                      ? ` · ${report.analystRating}`
-                                      : ""
-                                  }`
-                                : undefined
-                            }
-                          >
-                            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
-                              {formatCurrency(report.analystTarget)}
-                            </div>
-                            <div className="flex items-center justify-end gap-1 font-mono text-[10px] tabular-nums sm:text-[11px]">
-                              {report.analystUpsidePct !== undefined && (
+                                {/* Base FV Marker */}
+                                <div
+                                  style={{ left: `${basePos}%` }}
+                                  className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
+                                  title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+                                />
+
+                                {/* Current Price Marker */}
+                                <div
+                                  style={{ left: `${pricePos}%` }}
+                                  className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                                  title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
+                                />
+                              </div>
+                              <div className="flex items-center justify-between font-mono text-[10px] tabular-nums text-slate-500">
                                 <span
-                                  className={
-                                    report.analystUpsidePct >= 0
-                                      ? "font-medium text-emerald-400"
-                                      : "font-medium text-rose-400"
-                                  }
+                                  title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
                                 >
-                                  {report.analystUpsidePct >= 0 ? "+" : ""}
-                                  {report.analystUpsidePct.toFixed(1)}%
+                                  ${Math.round(bear)}
                                 </span>
-                              )}
-                              {report.analystRating && (
-                                <span className="hidden text-[9px] text-slate-500 sm:inline">
-                                  • {report.analystRating}
+                                <span
+                                  className="flex items-center gap-1 font-mono text-[9px] text-slate-400"
+                                  title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+                                >
+                                  <span className="size-1.5 rounded-full bg-sky-400" />
+                                  ${Math.round(baseFv)}
                                 </span>
-                              )}
+                                <span
+                                  title={`${ts.bullLabel}: ${formatCurrency(bull)}`}
+                                >
+                                  ${Math.round(bull)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
 
-                      {/* Base Fair Value & Upside */}
-                      <td className="whitespace-nowrap p-2.5 text-right font-mono">
-                        {baseFv > 0 ? (
-                          <div>
-                            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
-                              {formatCurrency(baseFv)}
-                            </div>
-                            <div
-                              className={`font-mono text-[10px] font-medium tabular-nums sm:text-[11px] ${
-                                baseUpside >= 0
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
-                              }`}
-                            >
-                              {baseUpside >= 0 ? "+" : ""}
-                              {baseUpside.toFixed(1)}%
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
+                        {/* Operating Margin */}
+                        <td className="hidden whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm xl:table-cell">
+                          {report.operatingMarginPct !== undefined ? (
+                            <span>{report.operatingMarginPct.toFixed(1)}%</span>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
 
-                      {/* Weighted Fair Value & Upside */}
-                      <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono">
-                        {wfv > 0 ? (
-                          <div>
-                            <div className="font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
-                              {formatCurrency(wfv)}
-                            </div>
+                        {/* Revenue Growth */}
+                        <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm xl:table-cell">
+                          {report.revenueGrowthPct !== undefined ? (
                             <span
-                              className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums sm:text-[11px] ${
-                                isPositive
-                                  ? "border border-green-500/30 bg-green-500/10 text-green-400"
-                                  : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
-                              }`}
+                              className={
+                                report.revenueGrowthPct >= 0
+                                  ? "text-slate-200"
+                                  : "text-rose-400"
+                              }
                             >
-                              {isPositive ? (
-                                <ArrowUpRight className="size-2.5" />
-                              ) : (
-                                <ArrowDownRight className="size-2.5" />
-                              )}
-                              {isPositive ? "+" : ""}
-                              {upside.toFixed(1)}%
+                              {report.revenueGrowthPct >= 0 ? "+" : ""}
+                              {report.revenueGrowthPct.toFixed(1)}%
                             </span>
-                          </div>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
-
-                      {/* Stress Range Bar */}
-                      <td
-                        className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell"
-                        title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
-                      >
-                        {price > 0 && bull > bear ? (
-                          <div className="space-y-1">
-                            <div className="relative h-1.5 w-full rounded-full bg-surface-3">
-                              {/* Range track from Bear to Bull */}
-                              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
-
-                              {/* Base FV Marker */}
-                              <div
-                                style={{ left: `${basePos}%` }}
-                                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
-                                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
-                              />
-
-                              {/* Current Price Marker */}
-                              <div
-                                style={{ left: `${pricePos}%` }}
-                                className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
-                                title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
-                              />
-                            </div>
-                            <div className="flex items-center justify-between font-mono text-[10px] tabular-nums text-slate-500">
-                              <span
-                                title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
-                              >
-                                ${Math.round(bear)}
-                              </span>
-                              <span
-                                className="flex items-center gap-1 font-mono text-[9px] text-slate-400"
-                                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
-                              >
-                                <span className="size-1.5 rounded-full bg-sky-400" />
-                                ${Math.round(baseFv)}
-                              </span>
-                              <span
-                                title={`${ts.bullLabel}: ${formatCurrency(bull)}`}
-                              >
-                                ${Math.round(bull)}
-                              </span>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
-
-                      {/* Operating Margin */}
-                      <td className="hidden whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm xl:table-cell">
-                        {report.operatingMarginPct !== undefined ? (
-                          <span>{report.operatingMarginPct.toFixed(1)}%</span>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
-
-                      {/* Revenue Growth */}
-                      <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm xl:table-cell">
-                        {report.revenueGrowthPct !== undefined ? (
-                          <span
-                            className={
-                              report.revenueGrowthPct >= 0
-                                ? "text-slate-200"
-                                : "text-rose-400"
-                            }
-                          >
-                            {report.revenueGrowthPct >= 0 ? "+" : ""}
-                            {report.revenueGrowthPct.toFixed(1)}%
-                          </span>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
