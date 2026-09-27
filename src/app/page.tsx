@@ -286,9 +286,13 @@ export default function HomePage() {
   // View mode navigation with browser history push
   const handleViewModeChange = useCallback(
     (
-      mode: "cockpit" | "memo" | "screener",
+      mode: "cockpit" | "memo" | "screener" | "watchlist",
       options?: { watchlistOnly?: boolean }
     ) => {
+      if (mode === "watchlist") {
+        router.push("/watchlist");
+        return;
+      }
       if (mode === "screener") {
         const query = options?.watchlistOnly ? "?watchlist=true" : "";
         router.push(`/screener${query}`);

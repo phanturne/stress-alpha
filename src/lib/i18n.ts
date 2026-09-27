@@ -567,6 +567,52 @@ export interface Translations {
     sortPrompt: string;
     loading: string;
   };
+  watchlistPage: {
+    title: string;
+    subtitle: string;
+    statsTracked: string;
+    statsAvgUpside: string;
+    statsConvictionLeader: string;
+    statsWideMoat: string;
+    statsAvgSnowflake: string;
+    searchPlaceholder: string;
+    emptyTitle: string;
+    emptyDesc: string;
+    exploreScreenerBtn: string;
+    quickAddSuggestions: string;
+    viewCards: string;
+    viewTable: string;
+    regimeSpectrum: string;
+    consensusDivergence: string;
+    snowflakeBreakdown: string;
+    operationalMomentum: string;
+    quarterlyHistory: string;
+    removeFromWatchlist: string;
+    openCockpit: string;
+    openMemo: string;
+    colMoat: string;
+    colPrice: string;
+    colWfv: string;
+    colBaseFv: string;
+    colConsensus: string;
+    colDivergence: string;
+    colGrowthMargin: string;
+    colSnowflake: string;
+    colActions: string;
+    divergenceTiers: {
+      in_line: string;
+      moderate_alpha: string;
+      high_conviction_alpha: string;
+      extreme_divergence: string;
+    };
+    pillarLabels: {
+      valuation: string;
+      future: string;
+      earnings: string;
+      moat: string;
+      resilience: string;
+    };
+  };
   socialCard: {
     modalTitle: string;
     modalSubtitle: string;
@@ -1364,6 +1410,54 @@ export const translations: Record<Locale, Translations> = {
       sortPrompt: "Sort By",
       loading: "Loading stock reports...",
     },
+    watchlistPage: {
+      title: "Institutional Watchlist",
+      subtitle:
+        "Real-time tracking of valuation spreads, 5-pillar snowflake health, and sell-side consensus divergence for your core equity coverage.",
+      statsTracked: "Tracked Equities",
+      statsAvgUpside: "Avg Fair Value Upside",
+      statsConvictionLeader: "Conviction Leader",
+      statsWideMoat: "Wide Moat Share",
+      statsAvgSnowflake: "Avg Snowflake Health",
+      searchPlaceholder: "Filter watchlist by ticker, company, or tier...",
+      emptyTitle: "No Equities in Your Watchlist",
+      emptyDesc:
+        "Star companies in the Screener or report selector to monitor their real-time valuation spreads, 4-regime stress test boundaries, and Wall Street divergence.",
+      exploreScreenerBtn: "Explore Screener Universe",
+      quickAddSuggestions: "Popular Equities to Track",
+      viewCards: "Deep Dive Cards",
+      viewTable: "Matrix Table",
+      regimeSpectrum: "4-Regime Valuation Bounds",
+      consensusDivergence: "Sell-Side Variant Perception",
+      snowflakeBreakdown: "30-Point Snowflake Health",
+      operationalMomentum: "Growth & Margin Velocity",
+      quarterlyHistory: "Historical Quarters",
+      removeFromWatchlist: "Remove from Watchlist",
+      openCockpit: "Stress Cockpit",
+      openMemo: "Research Memo",
+      colMoat: "Moat",
+      colPrice: "Current Price",
+      colWfv: "Weighted Fair Value",
+      colBaseFv: "Base Fair Value",
+      colConsensus: "Consensus Target",
+      colDivergence: "Consensus Spread",
+      colGrowthMargin: "Growth & Margin",
+      colSnowflake: "Snowflake Health",
+      colActions: "Actions",
+      divergenceTiers: {
+        in_line: "In Line",
+        moderate_alpha: "Moderate Alpha",
+        high_conviction_alpha: "High Conviction Alpha",
+        extreme_divergence: "Extreme Divergence",
+      },
+      pillarLabels: {
+        valuation: "Valuation & Safety",
+        future: "Growth & Catalysts",
+        earnings: "Earnings Quality",
+        moat: "Economic Moat",
+        resilience: "Downside Floor",
+      },
+    },
     socialCard: {
       modalTitle: "Share Analysis & Export Cards",
       modalSubtitle:
@@ -2151,6 +2245,54 @@ export const translations: Record<Locale, Translations> = {
       rangeBearBullHint: "(悲观 ↔ 乐观)",
       sortPrompt: "排序依据",
       loading: "正在加载股票研报数据...",
+    },
+    watchlistPage: {
+      title: "机构自选关注",
+      subtitle:
+        "实时追踪核心自选标的的压力估值折溢价、30项全景雪花图健康度与华尔街卖方预期差。",
+      statsTracked: "已关注标的",
+      statsAvgUpside: "平均公允价值上行",
+      statsConvictionLeader: "最高置信标的",
+      statsWideMoat: "护城河占比",
+      statsAvgSnowflake: "平均雪花健康度",
+      searchPlaceholder: "在自选列表中搜索代码、公司或预期差评级...",
+      emptyTitle: "自选列表暂无标的",
+      emptyDesc:
+        "在全景选股器或分析报告中点击星标，即可在此集中追踪标的的4层情景估值边界、雪花审计图与卖方预期差。",
+      exploreScreenerBtn: "浏览全景选股器",
+      quickAddSuggestions: "热门关注标的推荐",
+      viewCards: "全景深度卡片",
+      viewTable: "机构矩阵表格",
+      regimeSpectrum: "4层压力估值区间",
+      consensusDivergence: "卖方预期差与置信等级",
+      snowflakeBreakdown: "30项雪花图细项审计",
+      operationalMomentum: "营收与利润率动能",
+      quarterlyHistory: "覆盖财季历史",
+      removeFromWatchlist: "移出自选",
+      openCockpit: "进入压力驾驶舱",
+      openMemo: "投资研报",
+      colMoat: "护城河",
+      colPrice: "现价",
+      colWfv: "加权公允价值",
+      colBaseFv: "基准情景价值",
+      colConsensus: "华尔街目标价",
+      colDivergence: "预期差溢价",
+      colGrowthMargin: "成长与利润率",
+      colSnowflake: "雪花图评分",
+      colActions: "操作",
+      divergenceTiers: {
+        in_line: "与共识一致",
+        moderate_alpha: "温和阿尔法",
+        high_conviction_alpha: "高置信阿尔法",
+        extreme_divergence: "极大预期差",
+      },
+      pillarLabels: {
+        valuation: "估值与安全边际",
+        future: "未来成长与催化剂",
+        earnings: "盈利质量与利润率",
+        moat: "护城河与对标",
+        resilience: "下行安全底与抗风险",
+      },
     },
     socialCard: {
       modalTitle: "分享研报与导出社媒卡片",

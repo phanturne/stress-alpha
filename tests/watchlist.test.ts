@@ -306,6 +306,144 @@ describe("Watchlist Utility & Database Store", () => {
       expect(zh.auth.signUp).toBeTruthy();
       expect(en.auth.cloudSyncActive).toBeTruthy();
       expect(zh.auth.cloudSyncActive).toBeTruthy();
+
+      // Watchlist Dedicated Page keys
+      expect(en.watchlistPage.title).toBeTruthy();
+      expect(zh.watchlistPage.title).toBeTruthy();
+      expect(en.watchlistPage.subtitle).toBeTruthy();
+      expect(zh.watchlistPage.subtitle).toBeTruthy();
+      expect(en.watchlistPage.statsTracked).toBeTruthy();
+      expect(zh.watchlistPage.statsAvgUpside).toBeTruthy();
+      expect(en.watchlistPage.statsConvictionLeader).toBeTruthy();
+      expect(en.watchlistPage.statsWideMoat).toBeTruthy();
+      expect(en.watchlistPage.statsAvgSnowflake).toBeTruthy();
+      expect(en.watchlistPage.emptyTitle).toBeTruthy();
+      expect(zh.watchlistPage.emptyTitle).toBeTruthy();
+      expect(en.watchlistPage.exploreScreenerBtn).toBeTruthy();
+      expect(zh.watchlistPage.exploreScreenerBtn).toBeTruthy();
+      expect(en.watchlistPage.quickAddSuggestions).toBeTruthy();
+      expect(zh.watchlistPage.quickAddSuggestions).toBeTruthy();
+      expect(en.watchlistPage.regimeSpectrum).toBeTruthy();
+      expect(zh.watchlistPage.regimeSpectrum).toBeTruthy();
+      expect(en.watchlistPage.consensusDivergence).toBeTruthy();
+      expect(zh.watchlistPage.consensusDivergence).toBeTruthy();
+      expect(en.watchlistPage.snowflakeBreakdown).toBeTruthy();
+      expect(zh.watchlistPage.snowflakeBreakdown).toBeTruthy();
+      expect(en.watchlistPage.quarterlyHistory).toBeTruthy();
+      expect(zh.watchlistPage.quarterlyHistory).toBeTruthy();
+
+      // Divergence Tiers parity
+      expect(en.watchlistPage.divergenceTiers.extreme_divergence).toBeTruthy();
+      expect(zh.watchlistPage.divergenceTiers.extreme_divergence).toBeTruthy();
+      expect(
+        en.watchlistPage.divergenceTiers.high_conviction_alpha
+      ).toBeTruthy();
+      expect(
+        zh.watchlistPage.divergenceTiers.high_conviction_alpha
+      ).toBeTruthy();
+      expect(en.watchlistPage.divergenceTiers.moderate_alpha).toBeTruthy();
+      expect(zh.watchlistPage.divergenceTiers.moderate_alpha).toBeTruthy();
+      expect(en.watchlistPage.divergenceTiers.in_line).toBeTruthy();
+      expect(zh.watchlistPage.divergenceTiers.in_line).toBeTruthy();
+
+      // Snowflake Pillar labels parity
+      expect(en.watchlistPage.pillarLabels.valuation).toBeTruthy();
+      expect(zh.watchlistPage.pillarLabels.valuation).toBeTruthy();
+      expect(en.watchlistPage.pillarLabels.future).toBeTruthy();
+      expect(zh.watchlistPage.pillarLabels.future).toBeTruthy();
+      expect(en.watchlistPage.pillarLabels.earnings).toBeTruthy();
+      expect(zh.watchlistPage.pillarLabels.earnings).toBeTruthy();
+      expect(en.watchlistPage.pillarLabels.moat).toBeTruthy();
+      expect(zh.watchlistPage.pillarLabels.moat).toBeTruthy();
+      expect(en.watchlistPage.pillarLabels.resilience).toBeTruthy();
+      expect(zh.watchlistPage.pillarLabels.resilience).toBeTruthy();
+    });
+  });
+
+  describe("Watchlist Multi-Quarter Grouping & Portfolio Analytics", () => {
+    it("groups multi-quarter reports by ticker with latest quarter first", () => {
+      const mockReports = [
+        {
+          slug: "NVDA-Q2-2027-analysis",
+          name: "NVIDIA Corp",
+          ticker: "NVDA",
+          quarter: "Q2 2027",
+          reportDate: "2027-08-20",
+          upsidePct: 35.0,
+          snowflakeScore: 26,
+          moatRating: "Wide",
+          hasFacts: true,
+          hasScenarios: true,
+          hasValuation: true,
+          hasBaseline: true,
+          hasSentiment: true,
+          hasFiling: true,
+          hasCatalysts: true,
+          hasReactions: true,
+          hasEstimates: true,
+        },
+        {
+          slug: "NVDA-Q1-2027-analysis",
+          name: "NVIDIA Corp",
+          ticker: "NVDA",
+          quarter: "Q1 2027",
+          reportDate: "2027-05-20",
+          upsidePct: 28.0,
+          snowflakeScore: 25,
+          moatRating: "Wide",
+          hasFacts: true,
+          hasScenarios: true,
+          hasValuation: true,
+          hasBaseline: true,
+          hasSentiment: true,
+          hasFiling: true,
+          hasCatalysts: true,
+          hasReactions: true,
+          hasEstimates: true,
+        },
+        {
+          slug: "AMZN-Q2-2025-analysis",
+          name: "Amazon.com Inc",
+          ticker: "AMZN",
+          quarter: "Q2 2025",
+          reportDate: "2025-07-30",
+          upsidePct: 15.0,
+          snowflakeScore: 21,
+          moatRating: "Wide",
+          hasFacts: true,
+          hasScenarios: true,
+          hasValuation: true,
+          hasBaseline: true,
+          hasSentiment: true,
+          hasFiling: true,
+          hasCatalysts: true,
+          hasReactions: true,
+          hasEstimates: true,
+        },
+      ];
+
+      const watchlist = ["NVDA", "AMZN"];
+      const favorited = mockReports.filter((r) =>
+        isTickerInWatchlist(watchlist, r.ticker)
+      );
+
+      const groupMap = new Map<string, typeof mockReports>();
+      for (const r of favorited) {
+        const symbol = normalizeTicker(r.ticker);
+        const existing = groupMap.get(symbol) || [];
+        existing.push(r);
+        groupMap.set(symbol, existing);
+      }
+
+      expect(groupMap.size).toBe(2);
+      expect(groupMap.get("NVDA")?.length).toBe(2);
+      expect(groupMap.get("AMZN")?.length).toBe(1);
+
+      // Latest quarter for NVDA should be Q2 2027
+      const nvdaReports = groupMap.get("NVDA")!;
+      nvdaReports.sort((a, b) => b.quarter.localeCompare(a.quarter));
+      expect(nvdaReports[0].quarter).toBe("Q2 2027");
+      expect(nvdaReports[1].quarter).toBe("Q1 2027");
     });
   });
 });

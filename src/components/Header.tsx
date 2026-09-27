@@ -54,10 +54,10 @@ interface HeaderProps {
   currentSlug?: string | null;
   reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
-  viewMode: "cockpit" | "memo" | "screener";
+  viewMode: "cockpit" | "memo" | "screener" | "watchlist";
   isWatchlistActive?: boolean;
   onViewModeChange: (
-    mode: "cockpit" | "memo" | "screener",
+    mode: "cockpit" | "memo" | "screener" | "watchlist",
     options?: { watchlistOnly?: boolean }
   ) => void;
   onOpenShortcutsModal?: () => void;
@@ -197,9 +197,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button
           type="button"
-          onClick={() => onViewModeChange("screener", { watchlistOnly: true })}
+          onClick={() => onViewModeChange("watchlist")}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "screener" && isWatchlistActive
+            viewMode === "watchlist" ||
+            (viewMode === "screener" && isWatchlistActive)
               ? "bg-amber-500/15 font-bold text-amber-300 shadow-sm ring-1 ring-amber-500/30"
               : "text-slate-400 hover:text-white"
           }`}
@@ -207,7 +208,8 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Star
             className={`size-3.5 ${
-              viewMode === "screener" && isWatchlistActive
+              viewMode === "watchlist" ||
+              (viewMode === "screener" && isWatchlistActive)
                 ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
                 : "text-slate-400"
             }`}
@@ -216,7 +218,8 @@ export const Header: React.FC<HeaderProps> = ({
           {watchlistCount > 0 && (
             <span
               className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold ${
-                viewMode === "screener" && isWatchlistActive
+                viewMode === "watchlist" ||
+                (viewMode === "screener" && isWatchlistActive)
                   ? "bg-amber-400 text-slate-950"
                   : "bg-surface-3 text-slate-400"
               }`}
@@ -230,17 +233,20 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Right Desktop: Share, Theme, and Settings & Resources Menu */}
       <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
         {/* Unified Share & Export Button - available when a report is selected */}
-        {onShare && viewMode !== "screener" && facts && (
-          <button
-            type="button"
-            onClick={onShare}
-            className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
-            title={t.shareTooltip}
-          >
-            <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
-            <span className="hidden sm:inline">{t.share}</span>
-          </button>
-        )}
+        {onShare &&
+          viewMode !== "screener" &&
+          viewMode !== "watchlist" &&
+          facts && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
+              title={t.shareTooltip}
+            >
+              <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
+              <span className="hidden sm:inline">{t.share}</span>
+            </button>
+          )}
 
         {/* Quick Theme Toggle Button (Moon: Cyber Obsidian / Sun: Institutional Light) */}
         <button
@@ -643,11 +649,12 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    onViewModeChange("screener", { watchlistOnly: true });
+                    onViewModeChange("watchlist");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                    viewMode === "screener" && isWatchlistActive
+                    viewMode === "watchlist" ||
+                    (viewMode === "screener" && isWatchlistActive)
                       ? "border border-amber-500/30 bg-amber-500/15 text-amber-300 shadow-sm"
                       : "text-slate-300 hover:bg-surface-2"
                   }`}
@@ -655,7 +662,8 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="flex items-center gap-2.5">
                     <Star
                       className={`size-4 ${
-                        viewMode === "screener" && isWatchlistActive
+                        viewMode === "watchlist" ||
+                        (viewMode === "screener" && isWatchlistActive)
                           ? "fill-amber-400 text-amber-400"
                           : "text-amber-400"
                       }`}

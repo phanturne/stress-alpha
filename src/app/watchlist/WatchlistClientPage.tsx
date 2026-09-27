@@ -3,18 +3,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
-import { ScreenerView } from "@/components/ScreenerView";
-import type { ReportSummary } from "@/app/api/reports/route";
+import { WatchlistView } from "@/components/WatchlistView";
+import type { ReportSummary } from "@/lib/repository";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { Keyboard, X } from "lucide-react";
 
-interface ScreenerClientPageProps {
+interface WatchlistClientPageProps {
   initialReports?: ReportSummary[];
 }
 
-export function ScreenerClientPage({
+export function WatchlistClientPage({
   initialReports = [],
-}: ScreenerClientPageProps) {
+}: WatchlistClientPageProps) {
   const router = useRouter();
   const [reports, setReports] = useState<ReportSummary[]>(initialReports);
   const [isLoading, setIsLoading] = useState<boolean>(
@@ -22,13 +22,6 @@ export function ScreenerClientPage({
   );
   const [locale, setLocale] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("watchlist") === "true";
-    }
-    return false;
-  });
 
   // Restore saved language preference on mount
   useEffect(() => {
@@ -68,7 +61,7 @@ export function ScreenerClientPage({
         }
       })
       .catch((err) => {
-        console.error("Failed to load reports for screener:", err);
+        console.error("Failed to load reports for watchlist:", err);
         if (!ignore) setIsLoading(false);
       });
     return () => {
@@ -108,6 +101,12 @@ export function ScreenerClientPage({
         return;
       }
 
+      if (e.key === "s" || e.key === "S") {
+        e.preventDefault();
+        router.push("/screener");
+        return;
+      }
+
       if (e.key === "?" || (e.shiftKey && e.key === "/")) {
         e.preventDefault();
         setIsShortcutsOpen((prev) => !prev);
@@ -124,30 +123,21 @@ export function ScreenerClientPage({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [locale, isShortcutsOpen, handleToggleLocale]);
+  }, [locale, isShortcutsOpen, handleToggleLocale, router]);
 
   const t = getTranslations(locale);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-slate-100">
-      {/* Top Navigation - No specific report associated */}
+      {/* Top Navigation */}
       <Header
         currentSlug={null}
         onSelectReport={handleSelectReport}
-        viewMode="screener"
-        isWatchlistActive={watchlistOnly}
-        onViewModeChange={(mode, options) => {
-          if (mode === "watchlist") {
-            router.push("/watchlist");
-          } else if (mode === "screener") {
-            const nextWatchlist = Boolean(options?.watchlistOnly);
-            setWatchlistOnly(nextWatchlist);
-            if (typeof window !== "undefined") {
-              const url = nextWatchlist
-                ? "/screener?watchlist=true"
-                : "/screener";
-              window.history.replaceState(null, "", url);
-            }
+        viewMode="watchlist"
+        isWatchlistActive={true}
+        onViewModeChange={(mode) => {
+          if (mode === "screener") {
+            router.push("/screener");
           } else if (mode === "cockpit" || mode === "memo") {
             router.push("/");
           }
@@ -157,21 +147,13 @@ export function ScreenerClientPage({
         onToggleLocale={handleToggleLocale}
       />
 
-      {/* Main Screener View */}
+      {/* Main Watchlist View */}
       <main className="mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6">
-        <ScreenerView
+        <WatchlistView
           reports={reports}
           onSelectReport={handleSelectReport}
           locale={locale}
           isLoading={isLoading}
-          initialWatchlistOnly={watchlistOnly}
-          onWatchlistFilterChange={(active) => {
-            setWatchlistOnly(active);
-            if (typeof window !== "undefined") {
-              const url = active ? "/screener?watchlist=true" : "/screener";
-              window.history.replaceState(null, "", url);
-            }
-          }}
         />
       </main>
 
@@ -180,45 +162,50 @@ export function ScreenerClientPage({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-md">
           <div className="glass-panel w-full max-w-md rounded-2xl border border-white/[0.12] p-6 shadow-2xl animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-white">
                 <Keyboard className="size-5 text-accent" />
-                <h3 className="font-bold text-white">{t.header.shortcuts}</h3>
+                <h3 className="font-mono text-base font-bold">
+                  {t.header.shortcuts}
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsShortcutsOpen(false)}
                 className="rounded-lg p-1 text-slate-400 hover:bg-surface-2 hover:text-white"
               >
-                <X className="size-5" />
+                <X className="size-4" />
               </button>
             </div>
+
             <div className="mt-4 space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.language}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
                   L
                 </kbd>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-slate-400">{t.header.screener}</span>
+                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                  S
+                </kbd>
+              </div>
+              <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.shortcuts}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
                   ?
                 </kbd>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">
-                  {t.shortcuts.toggleFavorite}
-                </span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
-                  F
-                </kbd>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">{t.shortcuts.close}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-slate-300">
-                  ESC
-                </kbd>
-              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsShortcutsOpen(false)}
+                className="rounded-xl bg-accent px-4 py-2 font-mono text-xs font-bold text-slate-950 transition-colors hover:bg-accent/90"
+              >
+                {t.shortcuts.close}
+              </button>
             </div>
           </div>
         </div>
