@@ -3,7 +3,8 @@
  * Seed 5 temporary historical reports for NVDA into Neon PostgreSQL.
  *
  * Usage:
- *   npx tsx scripts/seed_nvda_historical.ts
+ *   npx tsx scripts/seed_nvda_historical.ts           # Seed mock quarters
+ *   npx tsx scripts/seed_nvda_historical.ts --clean   # Remove mock quarters
  */
 
 import * as dotenv from "dotenv";
@@ -109,7 +110,23 @@ async function main() {
     process.exit(1);
   }
 
+  const isCleanup =
+    process.argv.includes("--clean") || process.argv.includes("--cleanup");
   const db = getDb();
+
+  if (isCleanup) {
+    console.log(
+      "Cleaning up mock historical quarters for NVDA from database..."
+    );
+    const slugsToDelete = HISTORICAL_QUARTERS.map((h) => h.slug);
+    for (const slug of slugsToDelete) {
+      await db.delete(reportsTable).where(eq(reportsTable.slug, slug));
+      console.log(`  ✓ Deleted ${slug}`);
+    }
+    console.log("\n✅ Successfully cleaned up 5 historical quarters for NVDA!");
+    return;
+  }
+
   console.log("Fetching base report 'NVDA-Q2-2027-analysis' from database...");
 
   const baseRows = await db
