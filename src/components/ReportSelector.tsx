@@ -54,6 +54,17 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const [internalReports, setInternalReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedTickers, setExpandedTickers] = useState<
+    Record<string, boolean>
+  >({});
+
+  const toggleTickerExpanded = (ticker: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedTickers((prev) => ({
+      ...prev,
+      [ticker]: !prev[ticker],
+    }));
+  };
 
   useEffect(() => {
     if (externalReports && externalReports.length > 0) return;
@@ -240,27 +251,84 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       return renderSingleReportItem(g.reports[0]);
     }
 
+    const latestReport = g.reports[0];
+    const activeReportInGroup = g.reports.find((r) => r.slug === currentSlug);
+    const featuredReport = activeReportInGroup || latestReport;
+    const isSelected = Boolean(activeReportInGroup);
+    const isExpanded = Boolean(searchQuery.trim() || expandedTickers[g.ticker]);
+
     return (
       <div
         key={g.ticker}
         className="border-b border-white/[0.04] last:border-b-0"
       >
-        {/* Group Header */}
-        <div className="flex items-center justify-between bg-surface-0/40 px-3 py-1.5 text-xs">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="font-mono font-bold text-white" title={g.company}>
-              {g.ticker}
-            </span>
-            {g.company && (
-              <span className="truncate text-[11px] text-slate-500">
-                {g.company}
+        {/* Compact Single-Row Ticker Item */}
+        <div
+          className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+            isSelected
+              ? "bg-accent/10 font-semibold text-accent"
+              : "text-slate-300 hover:bg-surface-2 hover:text-white"
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              onSelectReport(featuredReport.slug);
+              setIsOpen(false);
+              setSearchQuery("");
+            }}
+            className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left"
+            title={g.company || g.ticker}
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="font-mono font-bold text-white">{g.ticker}</span>
+              <span className="font-mono text-[11px] text-slate-400">
+                {featuredReport.quarter || ""}
               </span>
-            )}
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-bold text-slate-400">
-              {t.quartersCount(g.reports.length)}
-            </span>
+              {g.company && (
+                <span className="truncate text-[11px] text-slate-500">
+                  {g.company}
+                </span>
+              )}
+            </div>
+            {featuredReport.weightedFairValue ? (
+              <span className="font-mono text-[11px] text-slate-400">
+                ${featuredReport.weightedFairValue}
+              </span>
+            ) : null}
+          </button>
+
+          {/* Action cluster: Quarters expander pill + Checkmark + Star */}
+          <div className="ml-2 flex shrink-0 items-center gap-1.5">
+            {isSelected && <Check className="size-3.5 shrink-0 text-accent" />}
+
+            {/* Expandable Quarters Badge (Clicking this toggles past quarters without selecting) */}
+            <button
+              type="button"
+              onClick={(e) => toggleTickerExpanded(g.ticker, e)}
+              className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold transition-all ${
+                isExpanded
+                  ? "border border-accent/40 bg-accent/20 text-accent"
+                  : "border border-white/[0.08] bg-surface-2 text-slate-400 hover:border-white/20 hover:bg-surface-3 hover:text-slate-200"
+              }`}
+              title={
+                isExpanded
+                  ? locale === "zh"
+                    ? "收起历史季度"
+                    : "Collapse quarters"
+                  : locale === "zh"
+                    ? `展开全部 ${g.reports.length} 个季度`
+                    : `View all ${g.reports.length} quarters`
+              }
+            >
+              <span>{g.reports.length}Q</span>
+              <ChevronDown
+                className={`size-2.5 transition-transform duration-150 ${
+                  isExpanded ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
             <button
               type="button"
               onClick={(e) => {
@@ -282,38 +350,42 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           </div>
         </div>
 
-        {/* Indented Sub-quarters */}
-        <div className="ml-2 border-l border-white/[0.08] py-0.5 pl-1.5">
-          {g.reports.map((r, idx) => {
-            const isSelected = r.slug === currentSlug;
-            const isQuarterLatest = idx === 0;
-            return (
-              <div
-                key={r.slug}
-                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors ${
-                  isSelected
-                    ? "bg-accent/10 font-semibold text-accent"
-                    : "text-slate-300 hover:bg-surface-2 hover:text-white"
-                }`}
-              >
+        {/* Indented Sub-quarters: ONLY visible when expanded */}
+        {isExpanded && (
+          <div className="border-t border-white/[0.04] bg-surface-0/30 py-1 pl-6 pr-3 duration-150 animate-in fade-in">
+            {g.reports.map((r, idx) => {
+              const isQuarterSelected = r.slug === currentSlug;
+              const isQuarterLatest = idx === 0;
+              return (
                 <button
+                  key={r.slug}
                   type="button"
                   onClick={() => {
                     onSelectReport(r.slug);
                     setIsOpen(false);
                     setSearchQuery("");
                   }}
-                  className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
+                  className={`flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-xs transition-colors ${
+                    isQuarterSelected
+                      ? "bg-accent/15 font-semibold text-accent"
+                      : "text-slate-400 hover:bg-surface-2 hover:text-white"
+                  }`}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-semibold text-slate-200">
+                  <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <span
+                      className={
+                        isQuarterSelected
+                          ? "font-bold text-accent"
+                          : "text-slate-300"
+                      }
+                    >
                       {r.quarter || r.slug}
                     </span>
                     <span
-                      className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold ${
+                      className={`rounded px-1 font-mono text-[8px] font-bold ${
                         isQuarterLatest
-                          ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
-                          : "border border-amber-500/30 bg-amber-500/20 text-amber-400"
+                          ? "bg-emerald-500/20 text-emerald-400"
+                          : "bg-amber-500/20 text-amber-400"
                       }`}
                     >
                       {isQuarterLatest
@@ -321,24 +393,26 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                         : tHeader.historicalBadge}
                     </span>
                     {r.reportDate && (
-                      <span className="font-mono text-[10px] text-slate-500">
+                      <span className="text-[10px] text-slate-500">
                         {r.reportDate}
                       </span>
                     )}
                   </div>
-                  {r.weightedFairValue ? (
-                    <span className="font-mono text-[11px] text-slate-400">
-                      ${r.weightedFairValue}
-                    </span>
-                  ) : null}
+                  <div className="flex items-center gap-2">
+                    {r.weightedFairValue ? (
+                      <span className="font-mono text-[11px] text-slate-400">
+                        ${r.weightedFairValue}
+                      </span>
+                    ) : null}
+                    {isQuarterSelected && (
+                      <Check className="size-3 text-accent" />
+                    )}
+                  </div>
                 </button>
-                {isSelected && (
-                  <Check className="ml-2 size-3.5 shrink-0 text-accent" />
-                )}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   };
@@ -428,21 +502,14 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               </div>
             </div>
 
-            {/* Quick Quarter Switcher Bar for Current Stock */}
+            {/* Quick Quarter Switcher Bar for Current Stock (Ultra-compact single horizontal line) */}
             {activeSiblingReports.length > 1 && !searchQuery && (
-              <div className="border-b border-white/[0.06] bg-surface-0/50 p-2.5">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-slate-200">
-                    <Calendar className="size-3 text-accent" />
-                    <span>
-                      {displayTicker} {tHeader.quarterHistory}
-                    </span>
-                  </div>
-                  <span className="font-mono text-[10px] text-slate-500">
-                    {tHeader.quartersAvailable(activeSiblingReports.length)}
-                  </span>
+              <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-surface-0/60 px-3 py-1.5 text-xs">
+                <div className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-slate-400">
+                  <Calendar className="size-3 text-accent" />
+                  <span>{displayTicker}:</span>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto py-0.5">
                   {activeSiblingReports.map((r, idx) => {
                     const isCurrent = r.slug === currentSlug;
                     const isQuarterLatest = idx === 0;
@@ -455,25 +522,26 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                           setIsOpen(false);
                           setSearchQuery("");
                         }}
-                        className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
+                        className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold transition-all ${
                           isCurrent
-                            ? "border-accent/60 bg-accent/20 text-accent shadow-sm shadow-accent/20"
-                            : "border-white/[0.08] bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                            ? "border border-accent/60 bg-accent/25 font-bold text-accent shadow-sm"
+                            : "border border-white/[0.08] bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
                         }`}
+                        title={`${r.quarter}${r.reportDate ? ` (${r.reportDate})` : ""}`}
                       >
-                        <span>{r.quarter || r.slug}</span>
-                        <span
-                          className={`rounded px-1 py-0.5 font-mono text-[8px] font-bold ${
-                            isQuarterLatest
-                              ? "bg-emerald-500/20 text-emerald-400"
-                              : "bg-amber-500/20 text-amber-400"
-                          }`}
-                        >
-                          {isQuarterLatest
-                            ? tHeader.latestBadge
-                            : tHeader.historicalBadge}
-                        </span>
-                        {isCurrent && <Check className="size-3 text-accent" />}
+                        <span>{r.quarter}</span>
+                        {isQuarterLatest && (
+                          <span
+                            className={`ml-1 font-mono text-[8px] font-bold ${
+                              isCurrent ? "text-accent" : "text-emerald-400"
+                            }`}
+                          >
+                            ★
+                          </span>
+                        )}
+                        {isCurrent && (
+                          <Check className="ml-1 inline size-3 text-accent" />
+                        )}
                       </button>
                     );
                   })}
@@ -482,7 +550,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
             )}
 
             {/* Available Reports / Universe List */}
-            <div className="custom-scrollbar max-h-72 overflow-y-auto py-1">
+            <div className="custom-scrollbar max-h-80 overflow-y-auto py-1">
               {filteredReports.length === 0 ? (
                 <div className="px-3 py-6 text-center text-xs text-slate-500">
                   {t.noReportsFound}
