@@ -285,9 +285,13 @@ export default function HomePage() {
 
   // View mode navigation with browser history push
   const handleViewModeChange = useCallback(
-    (mode: "cockpit" | "memo" | "screener") => {
+    (
+      mode: "cockpit" | "memo" | "screener",
+      options?: { watchlistOnly?: boolean }
+    ) => {
       if (mode === "screener") {
-        router.push("/screener");
+        const query = options?.watchlistOnly ? "?watchlist=true" : "";
+        router.push(`/screener${query}`);
         return;
       }
       setViewMode(mode);
@@ -1170,6 +1174,21 @@ export default function HomePage() {
                     aria-label="Next Workspace"
                   >
                     <ChevronRight className="size-4" />
+                  </button>
+
+                  {/* Research Memo Action Button docked next to chevrons */}
+                  <div className="mx-1 hidden h-4 w-px bg-white/[0.08] lg:block" />
+                  <button
+                    type="button"
+                    onClick={() => handleViewModeChange("memo")}
+                    className="hidden shrink-0 items-center gap-1.5 rounded-xl border border-white/[0.08] bg-surface-2/60 px-2.5 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white active:scale-95 lg:flex xl:px-3"
+                    title={`${t.header.memo} (M)`}
+                  >
+                    <FileText className="size-3.5 text-accent" />
+                    <span className="hidden xl:inline">{t.header.memo}</span>
+                    <span className="font-mono text-[10px] text-slate-500">
+                      [M]
+                    </span>
                   </button>
                 </div>
               </div>

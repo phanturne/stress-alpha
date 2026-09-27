@@ -30,6 +30,8 @@ interface ScreenerViewProps {
   onSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
   locale?: Locale;
   isLoading?: boolean;
+  initialWatchlistOnly?: boolean;
+  onWatchlistFilterChange?: (watchlistOnly: boolean) => void;
 }
 
 type MoatFilter = "all" | "wide" | "narrow";
@@ -142,13 +144,28 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
   onSelectReport,
   locale = "en",
   isLoading = false,
+  initialWatchlistOnly = false,
+  onWatchlistFilterChange,
 }) => {
   const t = getTranslations(locale);
   const ts = t.screener;
 
   const { isFavorite, toggleFavorite, count: watchlistCount } = useWatchlist();
   const [searchQuery, setSearchQuery] = useState("");
-  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(false);
+  const [watchlistOnly, setWatchlistOnly] =
+    useState<boolean>(initialWatchlistOnly);
+  const [prevInitialWatchlist, setPrevInitialWatchlist] =
+    useState<boolean>(initialWatchlistOnly);
+
+  if (prevInitialWatchlist !== initialWatchlistOnly) {
+    setPrevInitialWatchlist(initialWatchlistOnly);
+    setWatchlistOnly(initialWatchlistOnly);
+  }
+
+  const handleToggleWatchlistOnly = (val: boolean) => {
+    setWatchlistOnly(val);
+    onWatchlistFilterChange?.(val);
+  };
   const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
   const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
@@ -385,7 +402,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               </p>
               <button
                 type="button"
-                onClick={() => setWatchlistOnly(false)}
+                onClick={() => handleToggleWatchlistOnly(false)}
                 className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
               >
                 {ts.viewAllReports}
@@ -400,7 +417,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   setSearchQuery("");
                   setMoatFilter("all");
                   setUpsideFilter("all");
-                  setWatchlistOnly(false);
+                  handleToggleWatchlistOnly(false);
                 }}
                 className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
               >
@@ -856,7 +873,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           {/* Watchlist Filter Pill */}
           <button
             type="button"
-            onClick={() => setWatchlistOnly(!watchlistOnly)}
+            onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
             className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
               watchlistOnly
                 ? "border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-sm ring-1 ring-amber-500/30"
@@ -1004,7 +1021,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   setSearchQuery("");
                   setMoatFilter("all");
                   setUpsideFilter("all");
-                  setWatchlistOnly(false);
+                  handleToggleWatchlistOnly(false);
                 }}
                 className="inline-flex items-center gap-1 rounded bg-surface-2 px-2 py-1 font-mono text-[11px] text-accent transition-colors hover:bg-surface-3"
                 title={ts.resetFilters}
@@ -1255,7 +1272,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                           </p>
                           <button
                             type="button"
-                            onClick={() => setWatchlistOnly(false)}
+                            onClick={() => handleToggleWatchlistOnly(false)}
                             className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
                           >
                             {ts.viewAllReports}
@@ -1269,7 +1286,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               setSearchQuery("");
                               setMoatFilter("all");
                               setUpsideFilter("all");
-                              setWatchlistOnly(false);
+                              handleToggleWatchlistOnly(false);
                             }}
                             className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
                           >

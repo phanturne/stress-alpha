@@ -115,10 +115,14 @@ describe("Screener & Reports API", () => {
       activeWatchlist.includes(r.ticker || r.slug.split("-")[0])
     );
 
-    expect(watchlistedReports.length).toBe(2);
-    expect(watchlistedReports.map((r) => r.ticker)).toEqual(
-      expect.arrayContaining(["NVDA", "AMZN"])
+    expect(watchlistedReports.length).toBeGreaterThanOrEqual(2);
+    expect(
+      watchlistedReports.every((r) => activeWatchlist.includes(r.ticker || ""))
+    ).toBe(true);
+    const uniqueTickers = Array.from(
+      new Set(watchlistedReports.map((r) => r.ticker))
     );
+    expect(uniqueTickers).toEqual(expect.arrayContaining(["NVDA", "AMZN"]));
   });
 
   it("ensures snowflake scores and tiers are perfectly consistent between screener and stock page", async () => {

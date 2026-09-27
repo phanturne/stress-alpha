@@ -22,8 +22,15 @@ export function ScreenerClientPage({
   );
   const [locale, setLocale] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("watchlist") === "true";
+    }
+    return false;
+  });
 
-  // Restore saved language preference from localStorage on mount
+  // Restore saved language preference on mount
   useEffect(() => {
     try {
       const savedLocale = localStorage.getItem(
@@ -128,8 +135,18 @@ export function ScreenerClientPage({
         currentSlug={null}
         onSelectReport={handleSelectReport}
         viewMode="screener"
-        onViewModeChange={(mode) => {
-          if (mode === "cockpit" || mode === "memo") {
+        isWatchlistActive={watchlistOnly}
+        onViewModeChange={(mode, options) => {
+          if (mode === "screener") {
+            const nextWatchlist = Boolean(options?.watchlistOnly);
+            setWatchlistOnly(nextWatchlist);
+            if (typeof window !== "undefined") {
+              const url = nextWatchlist
+                ? "/screener?watchlist=true"
+                : "/screener";
+              window.history.replaceState(null, "", url);
+            }
+          } else if (mode === "cockpit" || mode === "memo") {
             router.push("/");
           }
         }}
@@ -145,6 +162,14 @@ export function ScreenerClientPage({
           onSelectReport={handleSelectReport}
           locale={locale}
           isLoading={isLoading}
+          initialWatchlistOnly={watchlistOnly}
+          onWatchlistFilterChange={(active) => {
+            setWatchlistOnly(active);
+            if (typeof window !== "undefined") {
+              const url = active ? "/screener?watchlist=true" : "/screener";
+              window.history.replaceState(null, "", url);
+            }
+          }}
         />
       </main>
 

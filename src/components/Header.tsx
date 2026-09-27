@@ -20,8 +20,9 @@ import {
   X,
   BarChart3,
   Calendar,
+  Star,
 } from "lucide-react";
-import { AUTH_REQUIRED_EVENT } from "@/lib/watchlist";
+import { AUTH_REQUIRED_EVENT, useWatchlist } from "@/lib/watchlist";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthModal } from "./AuthModal";
@@ -54,7 +55,11 @@ interface HeaderProps {
   reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
   viewMode: "cockpit" | "memo" | "screener";
-  onViewModeChange: (mode: "cockpit" | "memo" | "screener") => void;
+  isWatchlistActive?: boolean;
+  onViewModeChange: (
+    mode: "cockpit" | "memo" | "screener",
+    options?: { watchlistOnly?: boolean }
+  ) => void;
   onOpenShortcutsModal?: () => void;
   onShare?: () => void;
   onOpenSnowflake?: () => void;
@@ -69,6 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
   reports = [],
   onSelectReport,
   viewMode,
+  isWatchlistActive = false,
   onViewModeChange,
   onOpenShortcutsModal,
   onShare,
@@ -80,6 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
   const t = translations.header;
   const tAuth = translations.auth;
   const { data: session } = useSession();
+  const { count: watchlistCount } = useWatchlist();
   const { theme, setTheme, toggleTheme } = useTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -172,46 +179,56 @@ export const Header: React.FC<HeaderProps> = ({
         />
       </div>
 
-      {/* Center Nav: Direct text link without button outline */}
-      <nav className="hidden items-center justify-center md:flex">
+      {/* Center Nav: Segmented Primary Navigation Bar (Screener + Watchlist) */}
+      <nav className="hidden items-center justify-center gap-1 rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm md:flex">
         <button
           type="button"
-          onClick={() => onViewModeChange("screener")}
-          className={`relative px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
-            viewMode === "screener"
-              ? "font-bold text-accent"
+          onClick={() => onViewModeChange("screener", { watchlistOnly: false })}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+            viewMode === "screener" && !isWatchlistActive
+              ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
               : "text-slate-400 hover:text-white"
           }`}
           title={`${t.screener} (S)`}
         >
+          <BarChart3 className="size-3.5" />
           <span>{t.screener}</span>
-          {viewMode === "screener" && (
-            <span className="absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-accent shadow-glow" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onViewModeChange("screener", { watchlistOnly: true })}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+            viewMode === "screener" && isWatchlistActive
+              ? "bg-amber-500/15 font-bold text-amber-300 shadow-sm ring-1 ring-amber-500/30"
+              : "text-slate-400 hover:text-white"
+          }`}
+          title={`${t.watchlist} (${watchlistCount})`}
+        >
+          <Star
+            className={`size-3.5 ${
+              viewMode === "screener" && isWatchlistActive
+                ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                : "text-slate-400"
+            }`}
+          />
+          <span>{t.watchlist}</span>
+          {watchlistCount > 0 && (
+            <span
+              className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                viewMode === "screener" && isWatchlistActive
+                  ? "bg-amber-400 text-slate-950"
+                  : "bg-surface-3 text-slate-400"
+              }`}
+            >
+              {watchlistCount}
+            </span>
           )}
         </button>
       </nav>
 
-      {/* Right Desktop: View Modes, Share, and Settings & Resources Menu */}
+      {/* Right Desktop: Share, Theme, and Settings & Resources Menu */}
       <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
-        {/* Compact Memo / Cockpit Reader Mode Toggle (32px) */}
-        {viewMode !== "screener" && (
-          <button
-            type="button"
-            onClick={() =>
-              onViewModeChange(viewMode === "memo" ? "cockpit" : "memo")
-            }
-            className={`flex size-8 items-center justify-center rounded-lg border shadow-sm transition-all ${
-              viewMode === "memo"
-                ? "border-accent/40 bg-surface-2 text-accent shadow-glow ring-1 ring-accent/30"
-                : "border-white/[0.08] bg-surface-1/90 text-slate-400 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
-            }`}
-            title={viewMode === "memo" ? t.cockpit : `${t.memo} (M)`}
-            aria-label={viewMode === "memo" ? t.cockpit : t.memo}
-          >
-            <FileText className="size-3.5" />
-          </button>
-        )}
-
         {/* Unified Share & Export Button - available when a report is selected */}
         {onShare && viewMode !== "screener" && facts && (
           <button
@@ -610,17 +627,46 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    onViewModeChange("screener");
+                    onViewModeChange("screener", { watchlistOnly: false });
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                    viewMode === "screener"
+                    viewMode === "screener" && !isWatchlistActive
                       ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
                       : "text-slate-300 hover:bg-surface-2"
                   }`}
                 >
                   <BarChart3 className="size-4 text-accent" />
                   <span>{t.screener}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onViewModeChange("screener", { watchlistOnly: true });
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                    viewMode === "screener" && isWatchlistActive
+                      ? "border border-amber-500/30 bg-amber-500/15 text-amber-300 shadow-sm"
+                      : "text-slate-300 hover:bg-surface-2"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Star
+                      className={`size-4 ${
+                        viewMode === "screener" && isWatchlistActive
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-amber-400"
+                      }`}
+                    />
+                    <span>{t.watchlist}</span>
+                  </div>
+                  {watchlistCount > 0 && (
+                    <span className="rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                      {watchlistCount}
+                    </span>
+                  )}
                 </button>
 
                 {currentSlug && (
