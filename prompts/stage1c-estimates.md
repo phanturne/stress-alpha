@@ -6,11 +6,18 @@ Extract and synthesize sell-side Wall Street analyst estimates, price target rev
 
 ## Fast Automated Extraction (Recommended)
 
-Run the dedicated Yahoo Finance extraction script to automatically pull live Street consensus, price target statistics, and all covering brokerages:
-```bash
-python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py {TICKER} reports/{TICKER}-{QUARTER}-{YEAR}-analysis --price {CURRENT_PRICE}
-```
-This automatically queries Yahoo Finance API via `yfinance`, extracts the full Wall Street consensus breakdown, calculates 52-week price target statistics (Low, Mean, Median, High), aggregates covering brokerages/analysts with prior target adjustments, generates an institutional synthesis narrative, and writes both `analyst-estimates.json` and `analyst-estimates_zh.json` conforming to `AnalystEstimatesSchema`.
+1. **Finnhub Estimates API** ([Finnhub Pricing](https://finnhub.io/pricing)):
+   - Query `/stock/price-target?symbol={TICKER}` for Low, Mean, Median, High targets and covering analyst count.
+   - Query `/stock/recommendation?symbol={TICKER}` for Strong Buy, Buy, Hold, Sell, Strong Sell distribution.
+   - Query `/stock/upgrade-downgrade?symbol={TICKER}` for covering brokerages and recent rating revisions.
+2. **Massive Benzinga Partner Feed** ([Massive Pricing](https://massive.com/pricing)):
+   - Real-time analyst ratings revisions and consensus telemetry ($99/mo).
+3. **Local Python Extractor (Zero-Key Fallback)**:
+   Run the dedicated extraction script to automatically pull live Street consensus, price target statistics, and all covering brokerages via Yahoo Finance:
+   ```bash
+   python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py {TICKER} reports/{TICKER}-{QUARTER}-{YEAR}-analysis --price {CURRENT_PRICE}
+   ```
+   This extracts the full Wall Street consensus breakdown, calculates 52-week price target statistics (Low, Mean, Median, High), aggregates covering brokerages/analysts with prior target adjustments, generates an institutional synthesis narrative, and writes both `analyst-estimates.json` and `analyst-estimates_zh.json` conforming to `AnalystEstimatesSchema`.
 
 ## Manual Search Strategy (Fallback or Supplemental)
 

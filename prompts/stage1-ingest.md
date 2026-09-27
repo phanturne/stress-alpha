@@ -4,12 +4,16 @@
 
 Extract structured financial facts from the most recent quarterly earnings for **{TICKER}**.
 
-## Search Strategy
+## Retrieval Strategy
 
-Run at minimum:
-1. `"{COMPANY} {QUARTER} earnings results revenue operating income EPS"`
-2. `"{TICKER} {QUARTER} guidance outlook analyst estimates"`
-3. `"{TICKER} stock price today"`
+1. **Massive Company Financials & Ratios API** ([Massive Pricing](https://massive.com/pricing)):
+   - Query `/stocks/financials/v1/income-statements?ticker={TICKER}&timeframe=quarterly`
+   - Query `/stocks/financials/v1/balance-sheets?ticker={TICKER}&timeframe=quarterly`
+   - Query `/stocks/financials/v1/cash-flow-statements?ticker={TICKER}&timeframe=quarterly`
+   - Query `/stocks/financials/v1/ratios?ticker={TICKER}`
+2. `"{COMPANY} {QUARTER} earnings results revenue operating income EPS"`
+3. `"{TICKER} {QUARTER} guidance outlook analyst estimates"`
+4. `"{TICKER} stock price today"`
 
 ## Extraction Checklist
 

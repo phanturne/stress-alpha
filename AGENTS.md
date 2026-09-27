@@ -11,8 +11,8 @@ This document defines the architectural conventions, data modeling rules, intern
 1. **Zero LLM Math Hallucinations**:
    - The LLM must **never** calculate, invent, or guess weighted fair values (WFV), target prices, upside percentages, P/E multiple spreads, or snowflake scores in prompts or raw markdown text.
    - All financial mathematics, operating leverage flows, and risk/reward asymmetries are strictly calculated by deterministic TypeScript engines (`src/lib/valuation.ts`, `src/lib/snowflake.ts`).
-2. **Audited SEC Data Extraction**:
-   - Extract facts directly from SEC 10-K / 10-Q filings, press releases, and earnings call transcripts.
+2. **Audited SEC Data Extraction & Institutional Feeds**:
+   - Extract facts directly from SEC 10-K / 10-Q filings, press releases, and earnings call transcripts via **Massive.com** ([pricing](https://massive.com/pricing)) for point-in-time statements & ratios, and **Finnhub.io** ([pricing](https://finnhub.io/pricing)) for audio transcripts, SEC filings, and sell-side estimates.
    - Enforce the **Income Quality Guardrail**: Identify non-operating, mark-to-market, or one-off items (e.g., ASU 2016-01 equity adjustments) and isolate normalized `epsOperating` to prevent valuation base inflation.
 
 ---

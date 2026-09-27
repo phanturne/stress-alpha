@@ -97,9 +97,10 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 
 ## 🤖 AI Skill Integration (`stress-alpha`)
 
-StressAlpha includes a dedicated AI Skill installed at:
-- Project level: [`.agents/skills/stress-alpha/SKILL.md`](./.agents/skills/stress-alpha/SKILL.md)
+StressAlpha includes dedicated AI Skills for end-to-end fundamental and earnings audits:
+- Project level: [`.agents/skills/stress-alpha/SKILL.md`](./.agents/skills/stress-alpha/SKILL.md) and [`.agents/skills/earnings/SKILL.md`](./.agents/skills/earnings/SKILL.md)
 - Global level: `~/.agents/skills/stress-alpha/SKILL.md`
+- **Institutional Feeds**: Seamlessly integrates with [Massive.com](https://massive.com/pricing) (for SEC point-in-time financial statements, ratios, and aggregates) and [Finnhub.io](https://finnhub.io/pricing) (for earnings call audio transcripts, SEC filings, and sell-side price targets/recommendations).
 
 ### Running the Complete Flow with 1 Command:
 ```bash

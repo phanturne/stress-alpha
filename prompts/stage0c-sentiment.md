@@ -6,9 +6,10 @@ Extract sentiment signals from **{TICKER}**'s most recent earnings call transcri
 
 ## Retrieval
 
-1. Search: `"{COMPANY} earnings call transcript {QUARTER} {YEAR}"`
-2. Search: `"{COMPANY} earnings call highlights analyst questions {QUARTER} {YEAR}"`
-3. Search: `"{TICKER} CEO comments guidance confidence {QUARTER}"`
+1. **Finnhub Earnings Call Transcripts API** ([Finnhub Pricing](https://finnhub.io/pricing)): Query `/stock/transcripts/list?symbol={TICKER}` and `/stock/transcripts?id={TRANSCRIPT_ID}` for full audio transcript text, executive remarks, and Q&A session.
+2. Search: `"{COMPANY} earnings call transcript {QUARTER} {YEAR}"`
+3. Search: `"{COMPANY} earnings call highlights analyst questions {QUARTER} {YEAR}"`
+4. Search: `"{TICKER} CEO comments guidance confidence {QUARTER}"`
 
 ## Extraction Framework
 

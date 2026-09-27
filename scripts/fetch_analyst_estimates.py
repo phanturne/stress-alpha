@@ -27,6 +27,43 @@ except ImportError:
     sys.exit(1)
 
 
+def load_env():
+    for env_file in [".env.local", ".env"]:
+        env_path = os.path.join(os.path.dirname(__file__), "..", env_file)
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k not in os.environ:
+                            os.environ[k] = v
+
+load_env()
+
+
+def fetch_finnhub_recommendations(ticker_symbol: str, api_key: str):
+    import urllib.request
+    import ssl
+    try:
+        import certifi
+        ctx = ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        ctx = ssl._create_unverified_context()
+
+    url = f"https://finnhub.io/api/v1/stock/recommendation?symbol={ticker_symbol}&token={api_key}"
+    try:
+        req = urllib.request.urlopen(url, context=ctx, timeout=5)
+        data = json.loads(req.read().decode())
+        if data and isinstance(data, list) and len(data) > 0:
+            return data[0]
+    except Exception as e:
+        print(f"Warning fetching Finnhub recommendation: {e}", file=sys.stderr)
+    return None
+
+
 RATING_ZH_MAP = {
     "strong buy": "强烈推荐买入 (Strong Buy)",
     "buy": "买入 (Buy)",
@@ -68,25 +105,40 @@ def fetch_analyst_estimates(ticker_symbol: str, limit: int = 30, benchmark_price
     high = info.get("targetHighPrice") or 0.0
     currency = info.get("currency", "USD")
 
-    # 2. Consensus Distribution from recommendations_summary
-    rec_sum = ticker.recommendations_summary
+    # 2. Consensus Distribution from Finnhub or Yahoo Finance
     consensus_raw = info.get("recommendationKey", "buy").replace("_", " ").title()
-    
     bullish_count = 0
     neutral_count = 0
     bearish_count = 0
+    used_finnhub = False
 
-    if rec_sum is not None and not rec_sum.empty:
-        latest = rec_sum.iloc[0]
-        strong_buy = int(latest.get("strongBuy", 0))
-        buy = int(latest.get("buy", 0))
-        hold = int(latest.get("hold", 0))
-        sell = int(latest.get("sell", 0))
-        strong_sell = int(latest.get("strongSell", 0))
-        
-        bullish_count = strong_buy + buy
-        neutral_count = hold
-        bearish_count = sell + strong_sell
+    finnhub_key = os.environ.get("FINNHUB_API_KEY")
+    if finnhub_key:
+        fh_rec = fetch_finnhub_recommendations(ticker_symbol, finnhub_key)
+        if fh_rec:
+            strong_buy = int(fh_rec.get("strongBuy", 0))
+            buy = int(fh_rec.get("buy", 0))
+            hold = int(fh_rec.get("hold", 0))
+            sell = int(fh_rec.get("sell", 0))
+            strong_sell = int(fh_rec.get("strongSell", 0))
+            bullish_count = strong_buy + buy
+            neutral_count = hold
+            bearish_count = sell + strong_sell
+            used_finnhub = True
+
+    if not used_finnhub:
+        rec_sum = ticker.recommendations_summary
+        if rec_sum is not None and not rec_sum.empty:
+            latest = rec_sum.iloc[0]
+            strong_buy = int(latest.get("strongBuy", 0))
+            buy = int(latest.get("buy", 0))
+            hold = int(latest.get("hold", 0))
+            sell = int(latest.get("sell", 0))
+            strong_sell = int(latest.get("strongSell", 0))
+            
+            bullish_count = strong_buy + buy
+            neutral_count = hold
+            bearish_count = sell + strong_sell
 
     total_analysts = bullish_count + neutral_count + bearish_count
     if total_analysts == 0:
@@ -212,6 +264,14 @@ def fetch_analyst_estimates(ticker_symbol: str, limit: int = 30, benchmark_price
             "date": datetime.now().strftime("%Y-%m-%d")
         }
     ]
+
+    if used_finnhub:
+        sources.insert(0, {
+            "title": f"Finnhub Institutional Recommendation Trends ({ticker_symbol})",
+            "publisher": "Finnhub Financial API",
+            "url": f"https://finnhub.io/api/v1/stock/recommendation?symbol={ticker_symbol}",
+            "date": datetime.now().strftime("%Y-%m-%d")
+        })
 
     price_targets = {
         "currentPrice": round(float(current_price), 2),

@@ -26,31 +26,46 @@ Example: `/Users/krding/Projects/stress-alpha/reports/NVDA-Q2-2027-analysis`
 
 ### Step 2: Extract & Ingest Artifacts
 
-Run fundamental profile extractor:
+#### Institutional Data Feeds & Pricing Matrix
+StressAlpha leverages two primary institutional financial data APIs for report ingestion:
+
+| Artifact | Primary Provider & Endpoint | Pricing Tier ([Massive Pricing](https://massive.com/pricing) / [Finnhub Pricing](https://finnhub.io/pricing)) | Zero-Key Fallback |
+| :--- | :--- | :--- | :--- |
+| `facts.json` | **Massive**: `/stocks/financials/v1/*` (income, balance, cashflow, ratios) | Massive Stocks Advanced / Financials Expansion | `fetch_fundamental_profile.py` (yfinance / EDGAR) |
+| `moat-competitors.json` | **Massive**: `/stocks/financials/v1/ratios` & peer statements | Massive Stocks Developer / Advanced | EDGAR 10-K / Web peer filings |
+| `analyst-estimates.json` | **Finnhub**: `/stock/price-target`, `/stock/recommendation`, `/stock/upgrade-downgrade` | Finnhub Estimates Tier ($75–$200/mo) or Free (60 req/min) | `fetch_analyst_estimates.py` |
+| `earnings-sentiment.json` | **Finnhub**: `/stock/transcripts` (list & audio text) | Finnhub Fundamentals Tier ($50–$200/mo) | Press release Q&A search |
+| `filing-extracts.json` | **Finnhub**: `/stock/filings?symbol={TICKER}` | Finnhub Fundamentals Tier ($50–$200/mo) or Free | SEC EDGAR full-text search |
+| `reactions.json` | **Massive**: `/v2/aggs/ticker/{TICKER}/range/1/day/*` | Massive Stocks Starter ($29/mo) / Developer | Yahoo Finance historical quotes |
+
+#### Zero-Config Local Extractor
+If `MASSIVE_API_KEY` or `FINNHUB_API_KEY` are not configured in your environment, run the local fundamental extractor:
 ```bash
 python3 /Users/krding/Projects/stress-alpha/scripts/fetch_fundamental_profile.py <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis
 ```
 
-Generate the following structured JSON artifacts inside the staging folder using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
+Generate the structured JSON artifacts inside the staging folder using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 
 1. `facts.json` (Required):
+   - **Data Source**: Massive Company Financials API (`/stocks/financials/v1/income-statements`, `/stocks/financials/v1/balance-sheets`, `/stocks/financials/v1/cash-flow-statements`, `/stocks/financials/v1/ratios`) or `fetch_fundamental_profile.py`.
    - Ingest headline earnings, segments, and guidance.
    - **Income Quality Guardrail:** Identify any non-operating one-time gains/losses (e.g. ASU 2016-01 equity marks) and isolate clean `epsOperating`.
    - **Forensic Governance & Accounting Audit (QPCE Anchor):** Audit for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, restatements, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
+   - **Valuation Archetype & Capital Runway:** Classify archetype (`compounder` | `operating_scaler` | `venture_hypergrowth`), gross margin %, and Net Liquid Runway months.
 2. `scenarios.json` (Required):
    - Formulate 3-4 scenarios (Bull, Base, Panic/Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0 (these act as initial raw priors `rawProbability` to be deterministically calibrated by QPCE into `calibratedProbability`).
 3. `moat-competitors.json` (Recommended):
    - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
-   - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
+   - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability) using Massive Financials & Ratios.
    - **Durability Calibration:** Durability years assessed per pillar, calibrated for sector velocity (e.g., 4-8 years for high-velocity AI/hardware cycles vs. 10-15 years for patent-protected biopharma or physical infrastructure).
 4. `analyst-estimates.json` & `analyst-estimates_zh.json` (Recommended):
-   - **Automated Extraction via Yahoo Finance API (Preferred):**
-     Execute the automated extractor script to pull real-time consensus distributions, 52W price targets (Low, Mean, Median, High), and covering sell-side firm revisions directly:
-     ```bash
-     python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
-     ```
-     *(Note: If `--price` is omitted, the script automatically fetches the latest market price from Yahoo Finance).*
-     This directly generates schema-valid `analyst-estimates.json` and `analyst-estimates_zh.json` in ~1.5s with zero external API keys required.
+   - **Automated Extraction via Finnhub or Yahoo Finance Script:**
+     - Query Finnhub `/stock/price-target` for Low, Mean, Median, High targets and `/stock/recommendation` for consensus distribution.
+     - Or execute the automated script:
+       ```bash
+       python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
+       ```
+       *(Note: If `--price` is omitted, the script automatically fetches the latest market price).*
    - **Perplexity Finance Style Structure:** Wall Street analyst consensus rating (e.g. Strong Buy), total covering analysts, bullish/neutral/bearish breakdown, 52-week price target track (Low, Mean, Median, High), sell-side brokerages roster (with prior target diffs and revision badges), and executive ratings synthesis.
    - For manual web research or custom prompt fallback, refer to [prompts/stage1c-estimates.md](/Users/krding/Projects/stress-alpha/prompts/stage1c-estimates.md).
 5. `stress-baseline.json` (Recommended):
@@ -58,10 +73,13 @@ Generate the following structured JSON artifacts inside the staging folder using
 6. `catalysts.json` (Optional):
    - Catalysts with probability anchors, horizons, and documented evidence.
 7. `earnings-sentiment.json` (Optional):
+   - **Data Source**: Finnhub Earnings Call Transcripts API (`/stock/transcripts`) or earnings call recording transcripts.
    - Management tone scorecard across 5 dimensions, analyst Q&A topics, and key executive quotes.
 8. `filing-extracts.json` & `filing-extracts_zh.json` (Optional):
+   - **Data Source**: Finnhub SEC Filings API (`/stock/filings?symbol={TICKER}`) or SEC EDGAR.
    - 10-Q Item 1A risk disclosure diffs and novel findings in English and institutional Chinese.
 9. `reactions.json` (Optional):
+   - **Data Source**: Massive Daily Aggregates API (`/v2/aggs/ticker/{TICKER}/range/1/day/{from}/{to}`).
    - Historical post-earnings day-1 moves and conditional reaction framing.
 
 ### Step 3: Run the Deterministic Valuation Engine & Save to Neon Database

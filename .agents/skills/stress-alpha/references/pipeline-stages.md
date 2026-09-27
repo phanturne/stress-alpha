@@ -5,17 +5,25 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 ## Stage 0b: 10-Q Filing Audit (`prompts/stage0b-filing.md`)
 * Extracts newly added or escalated risk disclosures in Item 1A.
 * Identifies accounting changes, revenue recognition nuances, or novel commitments.
+* **Institutional Feeds**:
+  - **Finnhub SEC Filings API** (`/stock/filings?symbol={TICKER}` - Fundamentals Tier, [Finnhub Pricing](https://finnhub.io/pricing)): Direct structured access to recent 10-Q/10-K filings.
+  - SEC EDGAR RSS feed / search fallback.
 * Output: `filing-extracts.json`
 
 ## Stage 0c: Earnings Call Tone & Sentiment (`prompts/stage0c-sentiment.md`)
 * Audits management voice across 5 dimensions (Specificity, Forward Confidence, CapEx Justification, Competitive Positioning, Risk Acknowledgment).
 * Aggregates analyst concern frequencies and captures high-conviction quotes.
+* **Institutional Feeds**:
+  - **Finnhub Earnings Call Transcripts API** (`/stock/transcripts?id=...` - Fundamentals Tier, [Finnhub Pricing](https://finnhub.io/pricing)): Full participant lists, prepared remarks, and analyst Q&A transcript audio/text.
 * Output: `earnings-sentiment.json`
 
 ## Stage 1: Ingest & Income Quality Audit (`prompts/stage1-ingest.md`)
 * Ingests headline revenues, operating margins, segment data, and forward guidance.
 * **Core Rule (Income Quality Guardrail):** Identifies non-operating or transitory items (e.g. unrealized mark-to-market equity gains/losses under ASU 2016-01) and calculates true **Operating EPS**.
 * **Forensic Governance Audit (QPCE Anchor):** Audits for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
+* **Institutional Feeds**:
+  - **Massive Company Financials API** (`/stocks/financials/v1/*` - Stocks Advanced / Financials expansion, [Massive Pricing](https://massive.com/pricing)): Standardized point-in-time SEC income statements, balance sheets, cash flows, and ratios (`/income-statements`, `/balance-sheets`, `/cash-flow-statements`, `/ratios`).
+  - Fallback: `fetch_fundamental_profile.py` (yfinance / EDGAR).
 * Output: `facts.json`
 
 ## Stage 1b: Economic Moat & Competitor Benchmarking (`prompts/stage1b-moat.md`)
@@ -27,14 +35,22 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
   - *Regulated Biopharma & Therapeutics:* 10–15 years (composition-of-matter patent protection bounded by IRA price negotiation).
   - *Physical Distribution & Scaled Hubs:* 15–20+ years (densified robotics and logistics grids).
 * **Multi-Metric Peer Matrix:** Benchmark 3–5 direct peers across Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power (`Superior` | `Parity` | `Inferior`), Product Comparison, and Advantage/Vulnerability.
+* **Institutional Feeds**:
+  - **Massive Ratios & Financials API** (`/stocks/financials/v1/ratios?ticker={PEER}`): Multi-peer automated margin and ratio benchmarking.
 * Output: `moat-competitors.json` and `moat-competitors_zh.json`
 
 ## Stage 1c: Wall Street Analyst Consensus & Price Targets (`prompts/stage1c-estimates.md`)
 * **Perplexity Finance Style:** Fetches and synthesizes sell-side Wall Street analyst consensus, price target distributions, and revision momentum.
-* **Automated Extraction Command:**
-  ```bash
-  python3 scripts/fetch_analyst_estimates.py <TICKER> reports/<folder> --price <CURRENT_PRICE>
-  ```
+* **Institutional Feeds**:
+  - **Finnhub Estimates Tier** ([Finnhub Pricing](https://finnhub.io/pricing)):
+    - `/stock/price-target`: Low, Mean, Median, High 52W target range and covering analyst count.
+    - `/stock/recommendation`: Strong Buy, Buy, Hold, Sell breakdown over time.
+    - `/stock/upgrade-downgrade`: Bank-specific actions, previous and new ratings.
+  - **Massive Benzinga Partner Feed**: Real-time analyst ratings revisions ($99/mo).
+  - **Automated Fallback Command:**
+    ```bash
+    python3 scripts/fetch_analyst_estimates.py <TICKER> reports/<folder> --price <CURRENT_PRICE>
+    ```
 * **Consensus Distribution:** Consensus Rating (`Strong Buy`, `Buy`, `Hold`, `Sell`), total covering analysts, bullish/neutral/bearish counts & percentages.
 * **52-Week Target Slider:** Reference trading price, Street low, Street consensus average/mean, median, and Street high targets.
 * **Individual Bank Notes Table:** Lists covering investment banks/brokerages with named analyst, rating, 52W target price (with prior target diffs), upside %, note date, revision action (`Raised`, `Lowered`, `Reiterated`), and focus notes.
@@ -52,6 +68,8 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 
 ## Stage 4: Historical Reaction Framing (`prompts/stage4-reactions.md`)
 * Gathers historical 1-day post-earnings price reactions and synthesizes the conditional market reaction rule.
+* **Institutional Feeds**:
+  - **Massive Historical Daily Aggregates API** (`/v2/aggs/ticker/{TICKER}/range/1/day/{from}/{to}` - [Massive Pricing](https://massive.com/pricing)): Exact unadjusted/split-adjusted earnings release date percentage moves.
 * Output: `reactions.json`
 
 ## Stage 5: Deterministic Computation & Display

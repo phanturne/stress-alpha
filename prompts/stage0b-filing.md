@@ -6,9 +6,10 @@ Download and extract structured insights from **{TICKER}**'s most recent 10-Q fi
 
 ## Retrieval
 
-1. Search: `"{COMPANY} 10-Q {QUARTER} {YEAR} SEC filing site:sec.gov"`
-2. Alternative: `"{TICKER} 10-Q {QUARTER} {YEAR} EDGAR"`
-3. If direct EDGAR access unavailable, use search to find the filing summary or analyst breakdowns of specific sections.
+1. **Finnhub SEC Filings API** ([Finnhub Pricing](https://finnhub.io/pricing)): Query `/stock/filings?symbol={TICKER}` to get structured links and filings list for recent 10-Q/10-K.
+2. Search: `"{COMPANY} 10-Q {QUARTER} {YEAR} SEC filing site:sec.gov"`
+3. Alternative: `"{TICKER} 10-Q {QUARTER} {YEAR} EDGAR"`
+4. If direct EDGAR access unavailable, use search to find the filing summary or analyst breakdowns of specific sections.
 
 ## Sections to Extract (in priority order)
 

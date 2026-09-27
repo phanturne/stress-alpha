@@ -4,14 +4,15 @@
 
 Audit the structural defensibility (Economic Moat) of **{TICKER}** and benchmark it head-to-head against 3–5 primary direct competitors and market challengers.
 
-## Search Strategy
+## Retrieval Strategy
 
-Run at minimum:
-1. `"{COMPANY} economic moat competitive advantage rating"`
-2. `"{COMPANY} top competitors market share peer comparison {YEAR}"`
-3. `"{COMPANY} gross margin vs competitors pricing power"`
-4. `"{COMPANY} patents IP pipeline regulatory barrier to entry"`
-5. `"{TICKER} vs {PEER_1_TICKER} {PEER_2_TICKER} valuation multiple growth margin"`
+1. **Massive Financials & Ratios API** ([Massive Pricing](https://massive.com/pricing)):
+   - Query `/stocks/financials/v1/ratios?ticker={PEER}` for direct competitor margins, P/E multiples, and capital structure benchmarking.
+2. `"{COMPANY} economic moat competitive advantage rating"`
+3. `"{COMPANY} top competitors market share peer comparison {YEAR}"`
+4. `"{COMPANY} gross margin vs competitors pricing power"`
+5. `"{COMPANY} patents IP pipeline regulatory barrier to entry"`
+6. `"{TICKER} vs {PEER_1_TICKER} {PEER_2_TICKER} valuation multiple growth margin"`
 
 ## Moat Rating Criteria & Sector-Calibrated Timelines
 

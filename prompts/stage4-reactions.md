@@ -4,11 +4,13 @@
 
 Gather historical earnings-reaction data for **{TICKER}** to provide conditional framing. This stage is OPTIONAL — skip if insufficient data is found.
 
-## Search Strategy
+## Search & Retrieval Strategy
 
-1. `"{TICKER} earnings stock reaction history"`
-2. `"{TICKER} after hours move earnings {YEAR-1} {YEAR-2}"`
-3. `"{TICKER} stock drop capex guidance"` (or other known catalyst)
+1. **Massive Historical Daily Aggregates API** ([Massive Pricing](https://massive.com/pricing)):
+   - Query `/v2/aggs/ticker/{TICKER}/range/1/day/{earningsDate-2}/{earningsDate+2}` to accurately extract exact post-earnings day-1 percentage price moves.
+2. `"{TICKER} earnings stock reaction history"`
+3. `"{TICKER} after hours move earnings {YEAR-1} {YEAR-2}"`
+4. `"{TICKER} stock drop capex guidance"` (or other known catalyst)
 
 ## Rules
 
