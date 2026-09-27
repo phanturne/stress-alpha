@@ -55,6 +55,35 @@ function renderReportEnglish(input: ReportInput): string {
   lines.push(`| Verdict | ${valuation.verdictVsConsensus} |`);
   lines.push("");
 
+  // Institutional Variant Perception & Audit Box
+  if (valuation.sanityAudit) {
+    const audit = valuation.sanityAudit;
+    lines.push("## Institutional Variant Perception & Audit");
+    lines.push("");
+    lines.push(`| Audit Dimension | Value / Assessment |`);
+    lines.push(`|-----------------|--------------------|`);
+    lines.push(
+      `| Data Completeness | ${audit.dataCompletenessScore}% (${audit.populatedModulesCount}/${audit.totalModulesCount} modules verified) |`
+    );
+    if (audit.consensusAttribution) {
+      const ca = audit.consensusAttribution;
+      const sign = ca.divergencePct > 0 ? "+" : "";
+      lines.push(
+        `| Consensus Spread | **${sign}${ca.divergencePct}%** vs Street ($${ca.consensusTarget}) |`
+      );
+      if (ca.baseFairValue !== undefined) {
+        lines.push(`| Base Scenario FV | $${ca.baseFairValue} |`);
+      }
+      if (ca.regimeStressHaircutPct !== undefined) {
+        lines.push(
+          `| Regime Stress Impact | ${ca.regimeStressHaircutPct > 0 ? "+" : ""}${ca.regimeStressHaircutPct}% (Downside safety haircut) |`
+        );
+      }
+      lines.push(`| Analytical Stance | ${ca.rationaleComment} |`);
+    }
+    lines.push("");
+  }
+
   // Income quality callout
   if (facts.oneTimeItems && facts.oneTimeItems.length > 0) {
     lines.push("## ⚠️ Income Quality Adjustment");
@@ -315,6 +344,37 @@ function renderReportChinese(input: ReportInput): string {
     `| 一致预期偏离评价 | ${translateVerdict(valuation.verdictVsConsensus)} | 决策倾向 |`
   );
   lines.push("");
+
+  // 机构预期差与审计看板
+  if (valuation.sanityAudit) {
+    const audit = valuation.sanityAudit;
+    lines.push(
+      "## 二、 🛡️ 机构预期差审计与数据完备性 (Variant Perception & Audit)"
+    );
+    lines.push("");
+    lines.push(`| 审计维度 | 测算数值 / 分析研判 | 机构基准 |`);
+    lines.push(`|----------|-------------------|----------|`);
+    lines.push(
+      `| 数据完备度得分 | **${audit.dataCompletenessScore}%** (${audit.populatedModulesCount}/${audit.totalModulesCount} 核心模块已审计) | 点对点 SEC 财报回溯 |`
+    );
+    if (audit.consensusAttribution) {
+      const ca = audit.consensusAttribution;
+      const sign = ca.divergencePct > 0 ? "+" : "";
+      lines.push(
+        `| 一致预期偏差 (Spread) | **${sign}${ca.divergencePct}%** (卖方均价 $${ca.consensusTarget}) | 买方预期差测算 |`
+      );
+      if (ca.baseFairValue !== undefined) {
+        lines.push(`| 基准情景目标价 | $${ca.baseFairValue} | 单一基准执行 |`);
+      }
+      if (ca.regimeStressHaircutPct !== undefined) {
+        lines.push(
+          `| 动态压力缓冲折价 | ${ca.regimeStressHaircutPct > 0 ? "+" : ""}${ca.regimeStressHaircutPct}% | 恐慌底板风险对冲 |`
+        );
+      }
+      lines.push(`| 研判立场 | ${ca.rationaleComment} | 核心投资论点 |`);
+    }
+    lines.push("");
+  }
 
   // 收益质量防线
   if (facts.oneTimeItems && facts.oneTimeItems.length > 0) {

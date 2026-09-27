@@ -33,6 +33,7 @@ import {
   deriveEffectiveBaseline,
 } from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
+import { formatSanityCliBanner } from "../src/lib/sanity.js";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
@@ -225,8 +226,26 @@ async function main() {
     baseline,
     moat,
     estimates,
+    filing,
+    sentiment,
+    reactions,
+    catalysts,
   });
   const validatedValuation = ValuationSchema.parse(valuation);
+
+  // Institutional Data Integrity & Variant Perception Audit Banner
+  if (validatedValuation.sanityAudit) {
+    console.log(
+      formatSanityCliBanner(validatedValuation.sanityAudit, facts.ticker)
+    );
+
+    if (!validatedValuation.sanityAudit.passed) {
+      console.error(
+        `\n🚨 [FATAL ERROR] Data integrity audit failed for ${facts.ticker}. Halting execution before DB write.\n`
+      );
+      process.exit(1);
+    }
+  }
 
   const valuationPath = path.join(absRunDir, "valuation.json");
   fs.writeFileSync(valuationPath, JSON.stringify(validatedValuation, null, 2));

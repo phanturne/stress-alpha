@@ -61,10 +61,7 @@ describe("News & Catalyst Pipeline", () => {
   describe("Clickbait & Materiality Filtering (Deterministic)", () => {
     it("rejects algorithmic junk and clickbait syndicators", () => {
       expect(
-        isClickbaitOrJunk(
-          "3 Tech Stocks to Buy Instead of Meta",
-          "Motley Fool"
-        )
+        isClickbaitOrJunk("3 Tech Stocks to Buy Instead of Meta", "Motley Fool")
       ).toBe(true);
 
       expect(
@@ -222,9 +219,30 @@ describe("News & Catalyst Pipeline", () => {
       currentPrice: 125,
       consensusTarget: 145,
       scenarios: [
-        { name: "Bull", forwardEps: 4.5, multiple: 35, probability: 0.35, assumptions: [], keyDrivers: [] },
-        { name: "Base", forwardEps: 3.8, multiple: 28, probability: 0.5, assumptions: [], keyDrivers: [] },
-        { name: "Bear", forwardEps: 2.8, multiple: 20, probability: 0.15, assumptions: [], keyDrivers: [] },
+        {
+          name: "Bull",
+          forwardEps: 4.5,
+          multiple: 35,
+          probability: 0.35,
+          assumptions: [],
+          keyDrivers: [],
+        },
+        {
+          name: "Base",
+          forwardEps: 3.8,
+          multiple: 28,
+          probability: 0.5,
+          assumptions: [],
+          keyDrivers: [],
+        },
+        {
+          name: "Bear",
+          forwardEps: 2.8,
+          multiple: 20,
+          probability: 0.15,
+          assumptions: [],
+          keyDrivers: [],
+        },
       ],
     };
 
@@ -265,7 +283,8 @@ describe("News & Catalyst Pipeline", () => {
         id: "evt-ms-upgrade",
         ticker: "NVDA",
         title: "Morgan Stanley Raises Price Target to $165",
-        summary: "Analyst raised target from $140 to $165 on datacenter demand.",
+        summary:
+          "Analyst raised target from $140 to $165 on datacenter demand.",
         publisher: "Morgan Stanley Research",
         publishedAt: "2026-09-22T10:00:00Z",
         eventType: "analyst_rating",
@@ -289,7 +308,9 @@ describe("News & Catalyst Pipeline", () => {
       });
 
       expect(result.impliedWfvDeltaPct).toBeGreaterThan(0);
-      expect(result.transmissionSummary).toContain("Morgan Stanley TargetRaised");
+      expect(result.transmissionSummary).toContain(
+        "Morgan Stanley TargetRaised"
+      );
     });
   });
 });

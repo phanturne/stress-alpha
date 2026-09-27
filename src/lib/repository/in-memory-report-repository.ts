@@ -83,6 +83,30 @@ export class InMemoryReportRepository implements IReportRepository {
       // ignore
     }
 
+    const wfv = report.valuation?.weightedFairValue;
+    let consensusSpreadPct: number | undefined;
+    let divergenceClassification:
+      | "in_line"
+      | "moderate_alpha"
+      | "high_conviction_alpha"
+      | "extreme_divergence"
+      | undefined;
+    if (analystTarget !== undefined && analystTarget > 0 && wfv !== undefined) {
+      consensusSpreadPct = Number(
+        (((wfv - analystTarget) / analystTarget) * 100).toFixed(2)
+      );
+      const absSpread = Math.abs(consensusSpreadPct);
+      if (absSpread >= 30) {
+        divergenceClassification = "extreme_divergence";
+      } else if (absSpread >= 15) {
+        divergenceClassification = "high_conviction_alpha";
+      } else if (absSpread >= 5) {
+        divergenceClassification = "moderate_alpha";
+      } else {
+        divergenceClassification = "in_line";
+      }
+    }
+
     const baseSummary: ReportSummary = {
       slug,
       name: report.folderName || slug,
@@ -101,6 +125,8 @@ export class InMemoryReportRepository implements IReportRepository {
       analystUpsidePct,
       analystRating,
       analystCount,
+      consensusSpreadPct,
+      divergenceClassification,
       snowflakeScore,
       snowflakeTier,
       snowflakePillars,

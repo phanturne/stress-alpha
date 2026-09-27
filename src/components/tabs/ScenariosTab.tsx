@@ -10,6 +10,7 @@ import {
   Activity,
   LayoutGrid,
   Table as TableIcon,
+  ShieldCheck,
 } from "lucide-react";
 import type {
   Scenarios,
@@ -19,6 +20,7 @@ import type {
 } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { VariantPerceptionModal } from "@/components/VariantPerceptionModal";
 
 interface ScenariosTabProps {
   scenariosData: Scenarios;
@@ -38,6 +40,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   locale = "en",
 }) => {
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const t = getTranslations(locale).scenariosTab;
   const { scenarios, basisYear, consensusTarget } = scenariosData;
 
@@ -169,9 +172,32 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         </div>
 
         <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-4 shadow-md">
-          <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
-            {t.alphaConsensus}
-          </span>
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
+              {t.alphaConsensus}
+            </span>
+            {valuation?.sanityAudit && (
+              <button
+                type="button"
+                onClick={() => setIsAuditModalOpen(true)}
+                className="group/audit inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/20"
+                title={t.variantPerceptionTitle}
+              >
+                <ShieldCheck className="size-3 text-accent" />
+                <span>
+                  {valuation.sanityAudit.consensusAttribution
+                    ? t.divergenceLabels[
+                        valuation.sanityAudit.consensusAttribution
+                          .divergenceClassification
+                      ]
+                    : `${valuation.sanityAudit.dataCompletenessScore}%`}
+                </span>
+                <span className="text-[9px] text-accent/70 group-hover/audit:text-accent">
+                  ↗
+                </span>
+              </button>
+            )}
+          </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span
               className={`font-mono text-2xl font-black tabular-nums tracking-tight sm:text-3xl ${
@@ -623,6 +649,16 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
             })}
           </div>
         </div>
+      )}
+
+      {valuation?.sanityAudit && (
+        <VariantPerceptionModal
+          isOpen={isAuditModalOpen}
+          onClose={() => setIsAuditModalOpen(false)}
+          sanityAudit={valuation.sanityAudit}
+          ticker={scenariosData.ticker}
+          locale={locale}
+        />
       )}
     </div>
   );

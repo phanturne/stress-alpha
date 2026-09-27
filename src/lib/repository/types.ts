@@ -22,6 +22,12 @@ export interface ReportSummary {
   analystUpsidePct?: number;
   analystRating?: string;
   analystCount?: number;
+  consensusSpreadPct?: number;
+  divergenceClassification?:
+    | "in_line"
+    | "moderate_alpha"
+    | "high_conviction_alpha"
+    | "extreme_divergence";
   snowflakeScore?: number;
   snowflakeTier?: "exceptional" | "strong" | "balanced" | "cautious";
   snowflakePillars?: {

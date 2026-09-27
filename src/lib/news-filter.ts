@@ -82,7 +82,10 @@ export function isMaterialMarketEvent(
   params: MaterialityEvaluationParams
 ): boolean {
   // If it's pure clickbait, reject immediately unless backed by verified SEC filing
-  if (!params.isSecFiling && isClickbaitOrJunk(params.title, params.publisher)) {
+  if (
+    !params.isSecFiling &&
+    isClickbaitOrJunk(params.title, params.publisher)
+  ) {
     return false;
   }
 
@@ -104,7 +107,10 @@ export function isMaterialMarketEvent(
     return true;
   }
 
-  if (params.priceMovePct !== undefined && Math.abs(params.priceMovePct) >= 3.0) {
+  if (
+    params.priceMovePct !== undefined &&
+    Math.abs(params.priceMovePct) >= 3.0
+  ) {
     return true;
   }
 

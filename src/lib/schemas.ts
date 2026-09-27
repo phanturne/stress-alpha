@@ -407,6 +407,54 @@ export const CalibrationAuditSchema = z.object({
 });
 export type CalibrationAudit = z.infer<typeof CalibrationAuditSchema>;
 
+// --- Sanity & Variant Perception Audit Schema ---
+export const SanitySeveritySchema = z.enum(["critical", "warning", "info"]);
+export type SanitySeverity = z.infer<typeof SanitySeveritySchema>;
+
+export const DivergenceClassificationSchema = z.enum([
+  "in_line",
+  "moderate_alpha",
+  "high_conviction_alpha",
+  "extreme_divergence",
+]);
+export type DivergenceClassification = z.infer<
+  typeof DivergenceClassificationSchema
+>;
+
+export const SanityIssueSchema = z.object({
+  severity: SanitySeveritySchema,
+  code: z.string(),
+  field: z.string().optional(),
+  message: z.string(),
+});
+export type SanityIssue = z.infer<typeof SanityIssueSchema>;
+
+export const ConsensusAttributionSchema = z.object({
+  consensusTarget: z.number(),
+  weightedFairValue: z.number(),
+  divergencePct: z.number(),
+  divergenceClassification: DivergenceClassificationSchema,
+  multipleDeltaPct: z.number().optional(),
+  earningsDeltaPct: z.number().optional(),
+  regimeStressHaircutPct: z.number().optional(),
+  baseFairValue: z.number().optional(),
+  rationaleComment: z.string(),
+});
+export type ConsensusAttribution = z.infer<typeof ConsensusAttributionSchema>;
+
+export const SanityAuditSchema = z.object({
+  passed: z.boolean(),
+  status: z.enum(["pass", "warn", "fail"]),
+  dataCompletenessScore: z.number(),
+  populatedModulesCount: z.number(),
+  totalModulesCount: z.number(),
+  missingModules: z.array(z.string()),
+  issues: z.array(SanityIssueSchema),
+  consensusAttribution: ConsensusAttributionSchema.optional(),
+  summary: z.string(),
+});
+export type SanityAudit = z.infer<typeof SanityAuditSchema>;
+
 export const ValuationSchema = z.object({
   ticker: z.string(),
   analysisDate: z.string().optional(),
@@ -420,6 +468,7 @@ export const ValuationSchema = z.object({
   baseline: FinancialModelBaselineSchema.optional(),
   stressTest: StressResultSchema.optional(),
   calibrationAudit: CalibrationAuditSchema.optional(),
+  sanityAudit: SanityAuditSchema.optional(),
 });
 export type Valuation = z.infer<typeof ValuationSchema>;
 
@@ -618,4 +667,3 @@ export interface ReportData {
   reportMarkdown?: string;
   reportMarkdownZh?: string;
 }
-

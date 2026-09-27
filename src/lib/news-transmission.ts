@@ -45,12 +45,16 @@ export function calculateEventTransmissionImpact(params: {
   const payload: TransmissionPayload | undefined = event.transmissionPayload;
 
   // 1. Upstream Driver Shock Flow-Through
-  if (event.transmissionType === "driver_shock" && payload?.driverId && baseline) {
+  if (
+    event.transmissionType === "driver_shock" &&
+    payload?.driverId &&
+    baseline
+  ) {
     const shockPct = payload.deltaShockPct ?? 0;
-    
+
     // Baseline unperturbed stress valuation
     const unperturbed = computeStressedValuation(baseline, currentPrice);
-    
+
     // Perturbed stress valuation with the event shock applied
     const perturbed = computeStressedValuation(baseline, currentPrice, {
       driverShocks: {
@@ -62,7 +66,7 @@ export function calculateEventTransmissionImpact(params: {
       perturbed.stressRevenueBillions - unperturbed.stressRevenueBillions
     );
     const epsDelta = round2(perturbed.stressEps - unperturbed.stressEps);
-    
+
     // Implied base regime fair value change
     const targetBase = perturbed.valuationBands.base.targetPrice;
     const unperturbedBase = unperturbed.valuationBands.base.targetPrice;
@@ -82,9 +86,12 @@ export function calculateEventTransmissionImpact(params: {
   }
 
   // 2. Catalyst Activation Probability Shift
-  if (event.transmissionType === "catalyst_prob" && payload?.newProbability !== undefined) {
+  if (
+    event.transmissionType === "catalyst_prob" &&
+    payload?.newProbability !== undefined
+  ) {
     const newProb = payload.newProbability;
-    
+
     // Re-evaluate valuation with shifted scenario weight
     // A high catalyst activation probability elevates Bull scenario weight by up to +15%
     const probDelta = (newProb - 0.5) * 0.2; // Range: -0.10 to +0.10
@@ -103,7 +110,9 @@ export function calculateEventTransmissionImpact(params: {
     const action = payload.analystAction;
     const targetDeltaPct =
       action.priorTarget && action.priorTarget > 0
-        ? round2(((action.newTarget - action.priorTarget) / action.priorTarget) * 100)
+        ? round2(
+            ((action.newTarget - action.priorTarget) / action.priorTarget) * 100
+          )
         : round2(((action.newTarget - currentPrice) / currentPrice) * 100);
 
     // Institutional upgrade/downgrade multiple pull
@@ -128,6 +137,7 @@ export function calculateEventTransmissionImpact(params: {
   return {
     impliedWfv: baseWfv,
     impliedWfvDeltaPct: 0,
-    transmissionSummary: "Qualitative market context archived without direct valuation perturbation.",
+    transmissionSummary:
+      "Qualitative market context archived without direct valuation perturbation.",
   };
 }

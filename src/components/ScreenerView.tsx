@@ -1540,6 +1540,28 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 {isPositive ? "+" : ""}
                                 {upside.toFixed(1)}%
                               </span>
+                              {report.consensusSpreadPct !== undefined && (
+                                <div className="mt-0.5 flex justify-end">
+                                  <span
+                                    className={`rounded px-1 py-0.5 font-mono text-[9px] font-semibold tabular-nums ${
+                                      report.consensusSpreadPct >= 15
+                                        ? "bg-emerald-500/15 text-emerald-300"
+                                        : report.consensusSpreadPct >= 5
+                                          ? "bg-sky-500/15 text-sky-300"
+                                          : report.consensusSpreadPct <= -15
+                                            ? "bg-rose-500/15 text-rose-300"
+                                            : "bg-surface-3 text-slate-400"
+                                    }`}
+                                    title={`${ts.colConsensusSpread}: ${
+                                      report.consensusSpreadPct >= 0 ? "+" : ""
+                                    }${report.consensusSpreadPct.toFixed(1)}%`}
+                                  >
+                                    {report.consensusSpreadPct >= 0 ? "+" : ""}
+                                    {report.consensusSpreadPct.toFixed(1)}% vs
+                                    street
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="text-slate-600">—</span>

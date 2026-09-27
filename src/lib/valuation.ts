@@ -12,7 +12,13 @@ import type {
   CalibrationAudit,
   CalibrationStep,
   ValuationArchetype,
+  FilingExtracts,
+  EarningsSentiment,
+  Reactions,
+  Catalysts,
 } from "./schemas";
+import type { Locale } from "./i18n";
+import { auditReportData } from "./sanity";
 
 export interface StressTestParams {
   driverShocks?: Record<string, number>; // driverId -> shock percentage (e.g. -20 for -20%)
@@ -27,6 +33,11 @@ export interface ValuationInput {
   stressParams?: StressTestParams;
   moat?: MoatCompetitors;
   estimates?: AnalystEstimates;
+  filing?: FilingExtracts;
+  sentiment?: EarningsSentiment;
+  reactions?: Reactions;
+  catalysts?: Catalysts;
+  locale?: Locale;
   disableAutoCalibration?: boolean;
 }
 
@@ -888,6 +899,21 @@ export function computeValuation(input: ValuationInput): Valuation {
     }
   }
 
+  // Deterministic Sanity & Variant Perception Audit
+  const sanityAudit = auditReportData({
+    facts,
+    scenarios,
+    baseline,
+    moat: input.moat,
+    estimates: input.estimates,
+    filing: input.filing,
+    sentiment: input.sentiment,
+    reactions: input.reactions,
+    catalysts: input.catalysts,
+    weightedFairValue,
+    locale: input.locale,
+  });
+
   return {
     ticker: facts.ticker,
     analysisDate: facts.analysisDate,
@@ -901,6 +927,7 @@ export function computeValuation(input: ValuationInput): Valuation {
     baseline,
     stressTest,
     calibrationAudit,
+    sanityAudit,
   };
 }
 

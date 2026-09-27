@@ -361,6 +361,25 @@ export interface Translations {
     colFairValue: string;
     colUpside: string;
     colAssumptions: string;
+    variantPerceptionTitle: string;
+    variantPerceptionSubtitle: string;
+    dataCompletenessBadge: (
+      score: number,
+      populated: number,
+      total: number
+    ) => string;
+    divergenceLabels: {
+      in_line: string;
+      moderate_alpha: string;
+      high_conviction_alpha: string;
+      extreme_divergence: string;
+    };
+    divergenceAttributionTitle: string;
+    baseMultipleVsStreet: string;
+    regimeStressImpact: string;
+    modelStanceTitle: string;
+    dataNotesTitle: string;
+    closeModal: string;
   };
   segmentsTab: {
     title: string;
@@ -510,6 +529,7 @@ export interface Translations {
     colMoat: string;
     colPrice: string;
     colAnalystTarget: string;
+    colConsensusSpread: string;
     colBaseFairValue: string;
     colWeightedFairValue: string;
     colUpside: string;
@@ -962,7 +982,8 @@ export const translations: Record<Locale, Translations> = {
       title: "Real-Time News & Catalyst Intelligence",
       subtitle:
         "Filtered market events and fundamental transmission vectors. Simulate implied price and multiple shifts directly in the Cockpit.",
-      empty: "No material market events recorded for this stock in the current window.",
+      empty:
+        "No material market events recorded for this stock in the current window.",
       latestPulse: "Latest Market Pulse",
       transmissionChannel: "Transmission Channel",
       simulateButton: "Simulate in Cockpit",
@@ -1126,6 +1147,26 @@ export const translations: Record<Locale, Translations> = {
       colFairValue: "Fair Value Target",
       colUpside: "Upside",
       colAssumptions: "Key Assumptions",
+      variantPerceptionTitle: "Variant Perception & Consensus Audit",
+      variantPerceptionSubtitle:
+        "Institutional decomposition of why StressAlpha WFV diverges from Wall Street consensus price targets.",
+      dataCompletenessBadge: (
+        score: number,
+        populated: number,
+        total: number
+      ) => `${score}% Audited (${populated}/${total} Modules)`,
+      divergenceLabels: {
+        in_line: "In-Line with Consensus",
+        moderate_alpha: "Moderate Variant Perception",
+        high_conviction_alpha: "High-Conviction Alpha Opportunity",
+        extreme_divergence: "Extreme Consensus Divergence",
+      },
+      divergenceAttributionTitle: "Divergence Decomposition",
+      baseMultipleVsStreet: "Base Multiple vs Street",
+      regimeStressImpact: "Regime Stress Impact",
+      modelStanceTitle: "Institutional Analytical Stance",
+      dataNotesTitle: "Data Quality & Invariant Notes",
+      closeModal: "Close",
     },
     segmentsTab: {
       title: "Operational Segments & Management Guidance",
@@ -1282,6 +1323,7 @@ export const translations: Record<Locale, Translations> = {
       colMoat: "Moat",
       colPrice: "Price",
       colAnalystTarget: "Analyst Target",
+      colConsensusSpread: "Consensus Spread",
       colBaseFairValue: "Base Target",
       colWeightedFairValue: "Weighted FV",
       colUpside: "Implied Upside",
@@ -1895,6 +1937,26 @@ export const translations: Record<Locale, Translations> = {
       colFairValue: "目标公允价",
       colUpside: "较现价空间",
       colAssumptions: "核心假设与驱动依据",
+      variantPerceptionTitle: "机构预期差审计看板 (Variant Perception)",
+      variantPerceptionSubtitle:
+        "定量解构 StressAlpha 加权估值与华尔街卖方一致预期的偏离归因与安全边际来源。",
+      dataCompletenessBadge: (
+        score: number,
+        populated: number,
+        total: number
+      ) => `${score}% 完备 (${populated}/${total} 核心模块已审计)`,
+      divergenceLabels: {
+        in_line: "与一致预期吻合",
+        moderate_alpha: "适度预期差",
+        high_conviction_alpha: "高确信度 Alpha 机会",
+        extreme_divergence: "显著预期差警示",
+      },
+      divergenceAttributionTitle: "偏差构成定量解构",
+      baseMultipleVsStreet: "基准估值倍数偏离",
+      regimeStressImpact: "动态压力缓冲折价",
+      modelStanceTitle: "核心买方研判立场",
+      dataNotesTitle: "数据质量与审计提示",
+      closeModal: "关闭",
     },
     segmentsTab: {
       title: "分部业务运营数据与管理层业绩指引",
@@ -2049,6 +2111,7 @@ export const translations: Record<Locale, Translations> = {
       colMoat: "护城河",
       colPrice: "现价",
       colAnalystTarget: "分析师目标价",
+      colConsensusSpread: "一致预期偏离",
       colBaseFairValue: "基准估值",
       colWeightedFairValue: "加权估值 (WFV)",
       colUpside: "估值空间",

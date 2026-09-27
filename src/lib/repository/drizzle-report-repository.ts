@@ -97,6 +97,32 @@ export class DrizzleReportRepository implements IReportRepository {
         analystCount = report.estimates.consensus.totalAnalysts;
       }
 
+      let consensusSpreadPct: number | undefined;
+      let divergenceClassification:
+        | "in_line"
+        | "moderate_alpha"
+        | "high_conviction_alpha"
+        | "extreme_divergence"
+        | undefined;
+
+      if (analystTarget && analystTarget > 0 && weightedFairValue) {
+        consensusSpreadPct = Number(
+          (((weightedFairValue - analystTarget) / analystTarget) * 100).toFixed(
+            2
+          )
+        );
+        const absSpread = Math.abs(consensusSpreadPct);
+        if (absSpread >= 30) {
+          divergenceClassification = "extreme_divergence";
+        } else if (absSpread >= 15) {
+          divergenceClassification = "high_conviction_alpha";
+        } else if (absSpread >= 5) {
+          divergenceClassification = "moderate_alpha";
+        } else {
+          divergenceClassification = "in_line";
+        }
+      }
+
       let snowflakeScore: number | undefined;
       let snowflakeTier:
         "exceptional" | "strong" | "balanced" | "cautious" | undefined;
@@ -192,6 +218,8 @@ export class DrizzleReportRepository implements IReportRepository {
         analystUpsidePct,
         analystRating,
         analystCount,
+        consensusSpreadPct,
+        divergenceClassification,
         snowflakeScore,
         snowflakeTier,
         snowflakePillars,

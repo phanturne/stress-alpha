@@ -123,6 +123,21 @@ To factor in real-time news, product announcements, and cross-company supply cha
 3. **Cross-Company Dependency Graph**:
    - Captures supplier/customer ripples (e.g. TSMC CapEx $\to$ NVIDIA revenue) via `upstreamDependenciesTable`.
 
+### Deterministic Sanity & Variant Perception Audit Engine (`src/lib/sanity.ts`)
+To safeguard database integrity and quantify buy-side variant perception against Wall Street sell-side consensus:
+1. **Defensive Data Integrity Gatekeeper**:
+   - Audits 8 quarterly modules (`facts`, `scenarios`, `baseline`, `moat`, `estimates`, `filing`, `sentiment`, `catalysts`) to compute a deterministic Data Completeness Score ($0-100\%$).
+   - Enforces hard failure gates on ticker mismatch, non-positive stock price, non-positive operating EPS, share count validity, and probability simplex sum ($1.00 \pm 0.05$), aborting before corrupt records can be written to Neon DB.
+2. **Offensive Variant Perception & Consensus Divergence**:
+   - Quantifies the divergence spread $\Delta = (\text{WFV} - T_{\text{cons}}) / T_{\text{cons}} \times 100\%$.
+   - Classifies spread into 4 institutional tiers:
+     - `in_line` ($|\Delta| < 5\%$)
+     - `moderate_alpha` ($5\% \le |\Delta| < 15\%$)
+     - `high_conviction_alpha` ($15\% \le |\Delta| < 30\%$)
+     - `extreme_divergence` ($|\Delta| \ge 30\%$)
+   - Decomposes the spread into Base Scenario multiple delta, earnings delta, and dynamic regime stress haircut (Bear/Panic drag on Base).
+   - Generates pre-localized institutional commentary in English and Chinese attached directly to `ValuationSchema.sanityAudit`.
+
 ---
 
 ## 5. 5-Pillar Snowflake Radar Scoring

@@ -272,7 +272,9 @@ export const marketEventsTable = pgTable(
       scale: 2,
     }),
     transmissionType: text("transmission_type").default("none").notNull(),
-    transmissionPayload: jsonb("transmission_payload").$type<TransmissionPayload>(),
+    transmissionPayload: jsonb(
+      "transmission_payload"
+    ).$type<TransmissionPayload>(),
     impliedWfvImpactPct: numeric("implied_wfv_impact_pct", {
       precision: 6,
       scale: 2,
@@ -366,5 +368,7 @@ export type UserWatchlistSelect = typeof userWatchlistsTable.$inferSelect;
 export type UserWatchlistInsert = typeof userWatchlistsTable.$inferInsert;
 export type MarketEventSelect = typeof marketEventsTable.$inferSelect;
 export type MarketEventInsert = typeof marketEventsTable.$inferInsert;
-export type UpstreamDependencySelect = typeof upstreamDependenciesTable.$inferSelect;
-export type UpstreamDependencyInsert = typeof upstreamDependenciesTable.$inferInsert;
+export type UpstreamDependencySelect =
+  typeof upstreamDependenciesTable.$inferSelect;
+export type UpstreamDependencyInsert =
+  typeof upstreamDependenciesTable.$inferInsert;
