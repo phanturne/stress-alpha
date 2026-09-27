@@ -184,12 +184,18 @@ The **Snowflake Fundamental Radar** ([`src/lib/snowflake.ts`](file:///Users/krdi
    - Sticky mobile segmented switcher (`[⚡ Cockpit] [📊 Deep Dive (7)]`) separating the flow-through cockpit from the 7 intelligence tabs to eliminate vertical scroll fatigue.
    - Dual-view Screener (`viewMode: "cards" | "table"`): Defaults to adaptive cards on mobile (`< md`), rendering mini Snowflake radars, moat status, and price spectrum bars without horizontal table truncation.
    - Responsive Workspace tab layouts: Dedicated card views for multi-column tables (`EstimatesTab`, `MoatTab`, `ToneTab`) on screens `< md`.
+   - **Desktop Dual-Pane Independent Scroll Architecture (`lg:h-[calc(100vh-3.5rem)] lg:overflow-hidden`)**:
+     - Global window scroll is completely locked on desktop; eliminates double scrollbars, height jumping, and scroll chaining.
+     - **Left Pane (Cockpit)**: Dedicated full-height vertical scroll container (`lg:h-full lg:overflow-y-auto custom-scrollbar`). Model sliders, shock presets, and valuation telemetry stay permanently anchored on the left.
+     - **Right Pane (Intelligence Workspaces)**: Dedicated scroll container (`flex-1 overflow-y-auto custom-scrollbar`) with the workspace navigation ribbon docked statically above. Deep analyst tables, 10-Q risk factors, and raw notes scroll smoothly with 0% visual impact on the left Cockpit.
+     - **Information Architecture Separation**: Global `Screener` navigation is a distinct top-level header destination; `[ Cockpit ] [ Memo ]` is dedicated strictly to switching view modes for the selected stock.
    - **Clutter-Free Deep Dive Navigation**:
-     - **Sticky Navigation Ribbon** (`sticky top-14 z-30 glass-header`): Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text and sitting flush against Header with 0px gap.
-     - **Responsive Short Labels**: Displays condensed labels on mobile (`sm:hidden`, e.g. "Valuation", "Estimates", "Moat") allowing 3.5–4 tabs to fit cleanly without swiping; displays full labels on desktop (`hidden sm:inline`).
+     - **Sticky Navigation Ribbon** (`sticky top-14 z-30 glass-header` on mobile, static on desktop): Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text and sitting flush against Header with 0px gap.
+     - **Desktop Zero-Scroll Responsive Capsule**: On desktop (`lg:` to `2xl:`), pre-localized concise labels (`tab.shortLabel`, e.g. "Valuation", "Estimates", "Moat" / "估值", "共识", "护城河") ensure all 7 workspaces fit simultaneously in a single segmented row without manual horizontal scrolling; full titles activate on `2xl:`. Includes desktop step chevrons (`<` and `>`), mouse wheel horizontal scroll translation (`onWheel`), and automatic scroll-to-top on workspace change.
      - **Auto-Centering Active Tab**: Smoothly scrolls the active button to center in the horizontal container upon tab switch.
-     - **Sequential Bottom Workspace Pager**: Connects workspaces in analytical reading order (`← Prev Workspace` | dots indicator | `Next Workspace →`), scrolling smoothly to the top of the next workspace.
-     - **Keyboard Navigation**: Instant switching via numeric keys `1-7` and brackets `[` / `]` for previous/next workspace.
+     - **Mobile-Only Bottom Workspace Pager** (`lg:hidden`): Sequential bottom pager (`← Prev Workspace` | dots indicator | `Next Workspace →`) is reserved for mobile screens, eliminating vertical clutter on desktop.
+     - **Floating Desktop "Back to Top" Action**: Seamlessly appears when vertical scroll exceeds 350px in the workspace container (`lg:flex`), returning to top with smooth animation.
+     - **Keyboard Ergonomics**: Instant switching via numeric keys `1-7` and brackets `[` / `]` for previous/next workspace.
 
 ---
 

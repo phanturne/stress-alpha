@@ -147,7 +147,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   };
 
   return (
-    <aside className="custom-scrollbar flex w-full shrink-0 flex-col gap-4 lg:sticky lg:top-[66px] lg:max-h-[calc(100vh-82px)] lg:w-[380px] lg:overflow-y-auto lg:pr-1 xl:w-[415px] 2xl:w-[440px]">
+    <aside className="custom-scrollbar flex h-full min-h-0 w-full shrink-0 flex-col gap-4 lg:overflow-y-auto lg:pr-1.5">
       {/* Historical Quarter Notice Banner */}
       {isHistorical && latestSlug && onSelectReport && (
         <div className="flex items-center justify-between gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-200 shadow-sm">

@@ -127,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="glass-header sticky top-0 z-40 flex h-14 w-full flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
+    <header className="glass-header sticky top-0 z-40 flex h-14 w-full shrink-0 flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Clickable Brand Logo -> Returns to Home (Screener) */}
@@ -187,9 +187,28 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </div>
 
+      {/* Center Nav: Direct text link without button outline */}
+      <nav className="hidden items-center justify-center md:flex">
+        <button
+          type="button"
+          onClick={() => onViewModeChange("screener")}
+          className={`relative px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+            viewMode === "screener"
+              ? "font-bold text-accent"
+              : "text-slate-400 hover:text-white"
+          }`}
+          title={`${t.screener} (S)`}
+        >
+          <span>{t.screener}</span>
+          {viewMode === "screener" && (
+            <span className="absolute -bottom-2.5 left-2 right-2 h-0.5 rounded-full bg-accent shadow-glow" />
+          )}
+        </button>
+      </nav>
+
       {/* Right Desktop: View Modes, Share, and Settings & Resources Menu */}
       <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
-        {/* View Mode Switcher: Cockpit & Memo available only when a report is selected */}
+        {/* Report View Mode Switcher: Cockpit & Memo (active only when a report is loaded) */}
         {viewMode !== "screener" && (
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
             <button
@@ -213,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                   ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
                   : "text-slate-400 hover:text-white"
               }`}
-              title={t.memo}
+              title={`${t.memo} (M)`}
             >
               <FileText className="size-3.5" />
               <span className="hidden sm:inline">{t.memo}</span>

@@ -83,12 +83,16 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 
 ### 9. Mobile-First Institutional Cockpit & Universe Screener
 - **Mobile Segmented Switcher (`[⚡ Cockpit] [📊 Deep Dive (7)]`):** Eliminates 1800px vertical scroll fatigue on mobile screens, enabling 1-tap switching between stress test controls and the 7 fundamental workspaces.
+- **Desktop Dual-Pane Independent Scroll Architecture:** Fixed viewport height on desktop (`h-[calc(100vh-3.5rem)]`) isolates the left stress testing Cockpit and right intelligence workspaces into dedicated scroll viewports, completely eliminating global window scrollbars, height jumping, and scroll chaining.
+- **Clear Information Architecture:** Global `Screener` navigation is a prominent top-level nav item in the header bar; `[ Cockpit ] [ Memo ]` is strictly dedicated to switching view modes for the selected stock.
 - **Clutter-Free Workspace Navigation:**
-  - **Sticky Frosted Glass Navigation Ribbon:** Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text and sitting flush against Header with 0px gap.
-  - **Auto-Centering Active Tab:** Automatically centers the active tab button in the horizontal scroll ribbon whenever switched.
-  - **Responsive Short Labels:** Displays concise labels on mobile (`Valuation`, `Estimates`, `Moat`, `Segments`, `Catalysts`, `Audit`, `Notes`) so 3.5–4 tabs fit simultaneously without swiping.
-  - **Sequential Bottom Workspace Pager:** Connects intelligence workspaces in reading order (`← Prev Workspace` | dots indicator | `Next Workspace →`) and scrolls smoothly to the top of the next workspace.
-  - **Non-Intrusive Shortcuts:** Fast switching with `[` (previous) and `]` (next) as well as numeric keys `1-7`.
+  - **Sticky Frosted Glass Navigation Ribbon:** Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text on mobile and docking statically above workspaces on desktop.
+  - **Desktop Zero-Scroll Segmented Capsule:** Displays high-signal concise labels (`Valuation`, `Estimates`, `Moat`, `Segments`, `Catalysts`, `Audit`, `Notes` / `估值`, `共识`, `护城河`, etc.) on desktop screens (`lg:` to `2xl:`) so all 7 intelligence workspaces fit cleanly in a single row without horizontal scrollbars; full titles display on `2xl:`.
+  - **Desktop Step Chevrons (`<` and `>`):** 1-click workspace paging right from the sticky top navigation bar, complete with shortcut hints (`[` and `]`).
+  - **Mouse Wheel Horizontal Translation:** Scrolling vertically over the navigation ribbon smoothly moves tabs horizontally if viewport narrows, eliminating tiny scrollbar dragging.
+  - **Mobile-Only Bottom Workspace Pager (`lg:hidden`):** Sequential bottom pager (`← Prev Workspace` | dots indicator | `Next Workspace →`) scoped strictly to mobile screens, avoiding redundant clutter on desktop.
+  - **Desktop Floating "Back to Top" Action:** Automatically fades in when reading deep filing transcripts or analyst tables, smoothly returning to workspace top in 1 click.
+  - **Instant Workspace Scroll-to-Top:** Automatically positions the new workspace at the top whenever navigating via tabs, chevrons, or keyboard shortcuts (`1-7`, `[`, `]`).
 - **Adaptive Screener Cards:** Replaces cramped 11-column horizontal tables with high-legibility stock cards on mobile, complete with mini Snowflake radars, moat badges, base-to-bull price spectrum tracks, and 1-tap navigation to Cockpit or Memo.
 - **Slide-Over Navigation Drawer:** Full-featured touch-friendly drawer providing quick access to report history, quarter switching, Screener, language selection (EN/中文), and theme switcher.
 - **Responsive Workspace Tabs:** Tailored mobile card views for Wall Street Analyst Estimates (`EstimatesTab`) and Peer Benchmarking (`MoatTab`), avoiding horizontal clipping and table pinch-to-zoom.

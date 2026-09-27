@@ -5,9 +5,9 @@ import { Skeleton } from "./ui/Skeleton";
 
 export const CockpitSkeleton: React.FC = () => {
   return (
-    <div className="flex flex-col items-start gap-5 lg:flex-row xl:gap-6">
+    <div className="flex h-full min-h-0 w-full flex-col gap-5 lg:flex-row lg:items-stretch xl:gap-6">
       {/* Left Sticky Cockpit Column (~400px responsive) */}
-      <aside className="custom-scrollbar flex w-full shrink-0 flex-col gap-4 lg:sticky lg:top-[66px] lg:max-h-[calc(100vh-82px)] lg:w-[380px] lg:overflow-y-auto lg:pr-1 xl:w-[415px] 2xl:w-[440px]">
+      <aside className="custom-scrollbar flex h-full min-h-0 w-full shrink-0 flex-col gap-4 lg:w-[380px] lg:overflow-y-auto lg:pr-1.5 xl:w-[415px] 2xl:w-[440px]">
         {/* Card 1: Header, Presets & Live P&L Strip */}
         <div className="glass-panel flex flex-col gap-3.5 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
           {/* Header */}
@@ -114,21 +114,21 @@ export const CockpitSkeleton: React.FC = () => {
       </aside>
 
       {/* Right Tabbed Workspace Skeleton */}
-      <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
+      <div className="custom-scrollbar flex w-full min-w-0 flex-1 flex-col gap-4 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5">
         {/* Tab Ribbon Skeleton */}
-        <div className="custom-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-white/[0.08] pb-2">
+        <div className="custom-scrollbar flex items-center gap-1 overflow-x-auto lg:rounded-2xl lg:border lg:border-white/[0.08] lg:bg-surface-1/90 lg:p-1.5">
           {[
-            { w: "w-24", c: "w-4" },
-            { w: "w-24", c: "w-4" },
-            { w: "w-20", c: "w-4" },
-            { w: "w-24", c: "w-4" },
-            { w: "w-22", c: "w-4" },
-            { w: "w-20", c: "w-4" },
-            { w: "w-24", c: "w-4" },
+            { w: "w-16 xl:w-20", c: "w-4" },
+            { w: "w-16 xl:w-20", c: "w-4" },
+            { w: "w-12 xl:w-16", c: "w-4" },
+            { w: "w-16 xl:w-20", c: "w-4" },
+            { w: "w-16 xl:w-18", c: "w-4" },
+            { w: "w-12 xl:w-16", c: "w-4" },
+            { w: "w-12 xl:w-16", c: "w-4" },
           ].map((tab, idx) => (
             <div
               key={idx}
-              className={`flex items-center gap-2 rounded-xl px-3 py-2 ${
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 xl:px-2.5 xl:py-2 ${
                 idx === 0
                   ? "border border-accent/20 bg-accent/[0.07]"
                   : "border border-transparent bg-surface-1/40"
