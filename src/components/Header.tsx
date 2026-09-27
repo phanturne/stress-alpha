@@ -43,7 +43,6 @@ function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   );
 }
 import { ReportSelector } from "./ReportSelector";
-import { QuarterSwitcher } from "./QuarterSwitcher";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { Facts, Valuation } from "@/lib/schemas";
@@ -156,9 +155,13 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="mx-0.5 hidden h-4 w-px bg-white/[0.08] sm:block" />
 
-        {/* Direct Report Selection from database */}
+        {/* Unified Ticker · Quarter Financial Capsule */}
         <ReportSelector
           currentSlug={currentSlug ?? null}
+          currentTicker={currentTicker}
+          currentQuarter={facts?.quarter}
+          currentDate={facts?.reportDate}
+          siblingReports={siblingReports}
           reports={reports}
           onSelectReport={(slug) => {
             onViewModeChange("cockpit");
@@ -167,24 +170,6 @@ export const Header: React.FC<HeaderProps> = ({
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
-
-        {/* Quarter Switcher for the active ticker */}
-        {viewMode !== "screener" && facts?.quarter && (
-          <div className="hidden sm:block">
-            <QuarterSwitcher
-              currentSlug={currentSlug ?? null}
-              currentQuarter={facts.quarter}
-              currentDate={facts.reportDate}
-              ticker={facts.ticker}
-              siblingReports={siblingReports}
-              onSelectReport={(slug) => {
-                onViewModeChange("cockpit");
-                onSelectReport(slug);
-              }}
-              locale={locale}
-            />
-          </div>
-        )}
       </div>
 
       {/* Center Nav: Direct text link without button outline */}
@@ -201,43 +186,30 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <span>{t.screener}</span>
           {viewMode === "screener" && (
-            <span className="absolute -bottom-2.5 left-2 right-2 h-0.5 rounded-full bg-accent shadow-glow" />
+            <span className="absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-accent shadow-glow" />
           )}
         </button>
       </nav>
 
       {/* Right Desktop: View Modes, Share, and Settings & Resources Menu */}
       <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
-        {/* Report View Mode Switcher: Cockpit & Memo (active only when a report is loaded) */}
+        {/* Compact Memo / Cockpit Reader Mode Toggle (32px) */}
         {viewMode !== "screener" && (
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => onViewModeChange("cockpit")}
-              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
-                viewMode === "cockpit"
-                  ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={t.cockpit}
-            >
-              <SlidersHorizontal className="size-3.5" />
-              <span className="hidden sm:inline">{t.cockpit}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onViewModeChange("memo")}
-              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all ${
-                viewMode === "memo"
-                  ? "bg-surface-3 font-semibold text-accent shadow-sm ring-1 ring-white/10"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={`${t.memo} (M)`}
-            >
-              <FileText className="size-3.5" />
-              <span className="hidden sm:inline">{t.memo}</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              onViewModeChange(viewMode === "memo" ? "cockpit" : "memo")
+            }
+            className={`flex size-8 items-center justify-center rounded-lg border shadow-sm transition-all ${
+              viewMode === "memo"
+                ? "border-accent/40 bg-surface-2 text-accent shadow-glow ring-1 ring-accent/30"
+                : "border-white/[0.08] bg-surface-1/90 text-slate-400 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+            }`}
+            title={viewMode === "memo" ? t.cockpit : `${t.memo} (M)`}
+            aria-label={viewMode === "memo" ? t.cockpit : t.memo}
+          >
+            <FileText className="size-3.5" />
+          </button>
         )}
 
         {/* Unified Share & Export Button - available when a report is selected */}
