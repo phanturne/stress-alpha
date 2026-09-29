@@ -188,7 +188,7 @@ input[type="number"].no-spinners {
   background: #38bdf8;
 }
 
-/* Custom range sliders for financial cockpit */
+/* Custom range sliders for financial stress model */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -312,7 +312,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* =========================================================================
-   Light Mode Institutional Theme Adjustments
+   Light Mode Theme Adjustments
    ========================================================================= */
 .light,
 [data-theme="light"] {

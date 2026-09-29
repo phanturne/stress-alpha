@@ -55,10 +55,10 @@ function renderReportEnglish(input: ReportInput): string {
   lines.push(`| Verdict | ${valuation.verdictVsConsensus} |`);
   lines.push("");
 
-  // Institutional Variant Perception & Audit Box
+  // Variant Perception & Audit Box
   if (valuation.sanityAudit) {
     const audit = valuation.sanityAudit;
-    lines.push("## Institutional Variant Perception & Audit");
+    lines.push("## Variant Perception & Audit");
     lines.push("");
     lines.push(`| Audit Dimension | Value / Assessment |`);
     lines.push(`|-----------------|--------------------|`);
@@ -345,14 +345,14 @@ function renderReportChinese(input: ReportInput): string {
   );
   lines.push("");
 
-  // 机构预期差与审计看板
+  // 预期差与审计看板
   if (valuation.sanityAudit) {
     const audit = valuation.sanityAudit;
     lines.push(
-      "## 二、 🛡️ 机构预期差审计与数据完备性 (Variant Perception & Audit)"
+      "## 二、 🛡️ 预期差审计与数据完备性 (Variant Perception & Audit)"
     );
     lines.push("");
-    lines.push(`| 审计维度 | 测算数值 / 分析研判 | 机构基准 |`);
+    lines.push(`| 审计维度 | 测算数值 / 分析研判 | 参考基准 |`);
     lines.push(`|----------|-------------------|----------|`);
     lines.push(
       `| 数据完备度得分 | **${audit.dataCompletenessScore}%** (${audit.populatedModulesCount}/${audit.totalModulesCount} 核心模块已审计) | 点对点 SEC 财报回溯 |`

@@ -248,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-        {/* Quick Theme Toggle Button (Moon: Cyber Obsidian / Sun: Institutional Light) */}
+        {/* Quick Theme Toggle Button (Moon: Cyber Obsidian / Sun: Clean Light) */}
         <button
           type="button"
           onClick={toggleTheme}

@@ -285,7 +285,7 @@ export function generateSocialPostText(
 
   lines.push(
     ``,
-    `Interactive institutional scenario simulation: https://stressalpha.vercel.app/${ticker.toLowerCase()} via StressAlpha`,
+    `Interactive scenario simulation: https://stressalpha.vercel.app/${ticker.toLowerCase()} via StressAlpha`,
     `#${ticker} #stocks #earnings #investing #valuation #StressAlpha`
   );
 

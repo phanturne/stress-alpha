@@ -189,7 +189,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
             </div>
           )}
 
-          {/* Institutional Analytical Stance */}
+          {/* Model Analytical Stance */}
           {ca?.rationaleComment && (
             <div className="rounded-xl border border-accent/25 bg-accent/[0.07] p-4 shadow-sm">
               <div className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-accent">

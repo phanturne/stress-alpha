@@ -76,7 +76,7 @@ export default function MethodologyPage() {
             className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
           >
             <ArrowLeft className="size-3.5" />
-            <span>{isZh ? "返回驾驶舱" : "Back to Cockpit"}</span>
+            <span>{isZh ? "返回模型" : "Back to Model"}</span>
           </Link>
 
           <div className="hidden h-4 w-px bg-white/[0.08] sm:block" />
@@ -419,7 +419,7 @@ export default function MethodologyPage() {
             <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "投资决策不是预测一个孤立的价格点，而是评估不同市场情境下的盈亏不对称性。系统将经受压力测试后的预期 EPS 映射到三个市场周期估值倍数中："
-                : "Institutional equity investing is not about predicting a single target point; it is about quantifying risk/reward asymmetry across multiple market regimes:"}
+                : "Disciplined equity investing is not about predicting a single target point; it is about quantifying risk/reward asymmetry across multiple market regimes:"}
             </p>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -476,7 +476,7 @@ export default function MethodologyPage() {
               <p className="mt-1 text-xs text-slate-400">
                 {isZh
                   ? "衡量向上乐观空间与向下极端恐慌回撤的倍数关系。比率大于 2.0x 意味着潜在收益显著高于下行风险，具备极高配置安全边际。"
-                  : "Measures the ratio of upside gain potential in the Bull regime versus drawdown exposure to the Panic Floor. A skew above 2.0x indicates an institutional margin of safety."}
+                  : "Measures the ratio of upside gain potential in the Bull regime versus drawdown exposure to the Panic Floor. A skew above 2.0x indicates an attractive margin of safety."}
               </p>
               <div className="mt-3 font-mono text-xs font-bold text-accent">
                 Asymmetry_Skew = | Upside_to_Bull_% | / | Downside_to_Panic_% |
@@ -499,7 +499,7 @@ export default function MethodologyPage() {
             <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "这是股票筛选器（Screener）与估值模型中最核心的两个指标："
-                : "These are the two anchor valuation figures featured in the Stock Screener and Cockpit:"}
+                : "These are the two anchor valuation figures featured in the Stock Screener and Valuation Model:"}
             </p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -566,7 +566,7 @@ export default function MethodologyPage() {
             <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "纯财务数据只能反映过去一个季度的结果，唯有经济护城河才能决定高超额利润（ROIC > WACC）的持久性。StressAlpha 遵循晨星（Morningstar）与巴菲特护城河标准，从五个维度量化评估竞争壁垒与其演进趋势："
-                : "Financial figures only record backward-looking quarterly performance. Economic moats determine how long a firm can defend excess returns (ROIC > WACC). StressAlpha evaluates moats across five institutional pillars:"}
+                : "Financial figures only record backward-looking quarterly performance. Economic moats determine how long a firm can defend excess returns (ROIC > WACC). StressAlpha evaluates moats across five structural pillars:"}
             </p>
 
             <div className="grid grid-cols-1 gap-2.5 text-xs sm:grid-cols-5">
@@ -673,7 +673,7 @@ export default function MethodologyPage() {
                 <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
                   {isZh
                     ? "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，施加非线性对数惩罚（Panic +1.8，Bull -1.2），并触发硬性字典序否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利缓冲），杜绝 Wirecard/Enron 陷阱。"
-                    : "Severe governance flags or forensic accounting probes trigger a non-linear logit shift (+1.8 Panic, -1.2 Bull) and an institutional lexicographic veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled), preventing the Wirecard/Enron trap."}
+                    : "Severe governance flags or forensic accounting probes trigger a non-linear logit shift (+1.8 Panic, -1.2 Bull) and a lexicographic veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled), preventing the Wirecard/Enron trap."}
                 </p>
               </div>
 
@@ -701,7 +701,7 @@ export default function MethodologyPage() {
                 <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
                   {isZh
                     ? "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 70% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.60，则对称提升极端情景权重，反映市场认知巨大分歧。"
-                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture institutional disagreement."}
+                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture market disagreement."}
                 </p>
               </div>
 
@@ -795,7 +795,7 @@ export default function MethodologyPage() {
                   href="/"
                   className="rounded-lg border border-white/[0.1] bg-surface-2 px-4 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-surface-3 hover:text-white"
                 >
-                  {isZh ? "返回驾驶舱" : "Open Cockpit"}
+                  {isZh ? "返回测算模型" : "Open Model"}
                 </Link>
 
                 <a

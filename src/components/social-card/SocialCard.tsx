@@ -2066,7 +2066,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           style={{ background: themeConfig.accentGlow }}
         />
 
-        {/* Micro Grid Overlay for High-Tech Institutional Feel */}
+        {/* Micro Grid Overlay for High-Tech Feel */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
@@ -2115,7 +2115,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </div>
           </div>
 
-          {/* Minimal, Sleek StressAlpha Institutional Brand Mark */}
+          {/* Minimal, Sleek StressAlpha Brand Mark */}
           <div className="flex items-center gap-2.5">
             <div
               className="flex items-center gap-2 rounded-xl border px-3 py-1.5 shadow-sm"
@@ -2270,7 +2270,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </div>
           )}
 
-          {/* Institutional Watermark Strip */}
+          {/* Watermark Strip */}
           {effectiveShowWatermark && (
             <div
               className="flex shrink-0 items-center justify-between border-t pt-2 font-mono text-[11px] text-slate-400"

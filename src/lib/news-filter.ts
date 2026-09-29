@@ -75,7 +75,7 @@ export interface MaterialityEvaluationParams {
 }
 
 /**
- * Determines if a market headline meets the institutional materiality threshold
+ * Determines if a market headline meets the materiality threshold
  * to justify structured transmission extraction.
  */
 export function isMaterialMarketEvent(

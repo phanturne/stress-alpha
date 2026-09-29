@@ -151,7 +151,7 @@ export class DrizzleReportRepository implements IReportRepository {
           };
           const baseline = report.baseline ?? undefined;
 
-          // Compute dynamic valuation matching cockpit's default unperturbed state
+          // Compute dynamic valuation matching model's default unperturbed state
           const dynamicValuation = computeValuation({
             facts,
             scenarios,

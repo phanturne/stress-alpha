@@ -79,7 +79,7 @@ describe("News & Catalyst Pipeline", () => {
       ).toBe(true);
     });
 
-    it("approves genuine institutional catalysts and press releases", () => {
+    it("approves genuine market catalysts and press releases", () => {
       expect(
         isClickbaitOrJunk(
           "TSMC Approves $15B Advanced Packaging CapEx Expansion",

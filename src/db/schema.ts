@@ -227,7 +227,7 @@ export const accountsTable = account;
 export const verificationsTable = verification;
 
 // ---------------------------------------------------------------------------
-// 4. User Watchlist Table (Cloud synchronization for institutional watchlists)
+// 4. User Watchlist Table (Cloud synchronization for user watchlists)
 // ---------------------------------------------------------------------------
 export const userWatchlistsTable = pgTable(
   "user_watchlists",

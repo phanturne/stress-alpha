@@ -82,7 +82,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         const res = await signUp.email({
           email: email.trim(),
           password,
-          name: name.trim() || email.split("@")[0] || "Analyst",
+          name: name.trim() || email.split("@")[0] || "User",
         });
 
         if (res?.error) {
@@ -113,7 +113,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         aria-hidden="true"
       />
 
-      {/* Institutional Dialog Card */}
+      {/* Dialog Card */}
       <div className="glass-panel relative w-full max-w-md overflow-hidden rounded-2xl border border-white/[0.12] bg-surface-1/95 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in zoom-in-95">
         {/* Close Button */}
         <button

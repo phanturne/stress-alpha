@@ -115,7 +115,7 @@ export function calculateEventTransmissionImpact(params: {
           )
         : round2(((action.newTarget - currentPrice) / currentPrice) * 100);
 
-    // Institutional upgrade/downgrade multiple pull
+    // Brokerage upgrade/downgrade multiple pull
     const multipleSensitivity =
       action.action === "Upgraded" || action.action === "TargetRaised"
         ? 0.35

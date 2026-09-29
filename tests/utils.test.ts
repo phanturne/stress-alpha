@@ -67,18 +67,18 @@ describe("Formatting & Class Utilities", () => {
 describe("i18n Translation Dictionary", () => {
   it("returns English translations by default", () => {
     const t = getTranslations("en");
-    expect(t.header.cockpit).toBe("Cockpit");
+    expect(t.header.cockpit).toBe("Model");
     expect(t.header.memo).toBe("Memo");
   });
 
   it("returns Chinese translations when requested", () => {
     const t = getTranslations("zh");
-    expect(t.header.cockpit).toBe("驾驶舱");
+    expect(t.header.cockpit).toBe("模型");
     expect(t.header.memo).toBe("备忘录");
   });
 
   it("falls back to English for unknown locales", () => {
     const t = getTranslations("fr" as any);
-    expect(t.header.cockpit).toBe("Cockpit");
+    expect(t.header.cockpit).toBe("Model");
   });
 });

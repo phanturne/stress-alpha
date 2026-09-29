@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { THEME_STORAGE_KEY } from "@/context/ThemeContext";
 import { getTranslations } from "@/lib/i18n";
 
-describe("Global Theme Architecture (Cyber Obsidian & Institutional Light)", () => {
+describe("Global Theme Architecture (Cyber Obsidian & Clean Light)", () => {
   const store: Record<string, string> = {};
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe("Global Theme Architecture (Cyber Obsidian & Institutional Light)", () 
 
     expect(en.theme).toBe("Visual Theme");
     expect(en.themeCyber).toBe("Cyber Obsidian");
-    expect(en.themeLight).toBe("Institutional Light");
+    expect(en.themeLight).toBe("Clean Light");
     expect(en.themeCyberShort).toBe("Cyber");
     expect(en.themeLightShort).toBe("Light");
     expect(en.toggleTheme).toContain("Cyber Obsidian");

@@ -3,7 +3,7 @@
 A forward-looking financial decision and scenario-simulation platform for fundamental equity analysts, tech investors, and quant researchers. Built as a high-performance **Next.js 16 App Router** application (powered by **React 19** and **Turbopack**) with pure client-side deterministic arithmetic, dynamic valuation bands, and an autonomous AI pipeline skill.
 
 <p align="center">
-  <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Cockpit Preview" width="100%" />
+  <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Model Preview" width="100%" />
 </p>
 
 ---
@@ -14,7 +14,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Market-Wide Valuation Radar:** Cross-ticker table comparing all covered companies (NVDA, AMZN, GOOGL, BABA, GEV, LLY, MU, LITE) side-by-side.
 - **Valuation Spectrum Bars:** Visual Bear $\leftrightarrow$ Market Price $\leftrightarrow$ Base $\leftrightarrow$ Bull spread bars showing which stocks trade at deep discounts to Base Case fair value.
 - **Fundamental Screening:** Real-time search and filter by Economic Moat (*Wide / Narrow*), valuation discount (*Undervalued / High Upside >20%*), margins, and growth.
-- **1-Click Navigation:** Launch directly into any ticker's cockpit or memorandum from the table or by pressing the **`S`** hotkey.
+- **1-Click Navigation:** Launch directly into any ticker's model or memorandum from the table or by pressing the **`S`** hotkey.
 
 <p align="center">
   <img src="./docs/images/screener-preview.png" alt="Universe Screener Preview" width="100%" />
@@ -27,18 +27,18 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - Live API endpoints:
   - `GET /api/reports`: Queries summaries, live stock prices, snowflake scores, and dynamic valuation metrics.
   - `GET /api/reports/[slug]`: Serves the complete artifact bundle for a selected report.
-- URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=cockpit`, dedicated Screener `http://localhost:3000/screener`, and dedicated Institutional Watchlist `http://localhost:3000/watchlist`.
+- URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=cockpit`, dedicated Screener `http://localhost:3000/screener`, and dedicated Watchlist `http://localhost:3000/watchlist`.
 
-### 3. Dedicated Institutional Watchlist & Portfolio Analytics
+### 3. Dedicated Watchlist & Portfolio Analytics
 - **Core Coverage Tracking:** Dedicated standalone route (`/watchlist`) accessible from the top header segmented navigation bar `[ ★ Watchlist (count) ]` with live dynamic count badge.
 - **Top Portfolio Telemetry Strip:** Real-time aggregate KPI metrics across your tracked universe (Tracked Equities, Avg Fair Value Upside %, Conviction Leader, Wide Moat Share %, Avg Snowflake Health / 30).
 - **Multi-Quarter Grouping:** Automatically groups historical coverage quarters under each tracked ticker, featuring the latest quarter's valuation while offering 1-click pills to jump to past quarters (`Q2 27 [Latest] · Q1 27 · Q4 26 ...`).
 - **4-Regime Valuation Bounds:** Visualizes Panic Floor / Bear $\leftrightarrow$ Base $\leftrightarrow$ Bull valuation spreads alongside real-time current price pin and weighted fair value (WFV) metrics.
-- **Sell-Side Variant Perception:** Highlights Wall Street consensus targets and calculates consensus divergence spreads with institutional conviction tier badges (*Extreme Divergence*, *High Conviction Alpha*, *Moderate Alpha*, *In Line*).
+- **Sell-Side Variant Perception:** Highlights Wall Street consensus targets and calculates consensus divergence spreads with conviction tier badges (*Extreme Divergence*, *High Conviction Alpha*, *Moderate Alpha*, *In Line*).
 - **5-Pillar Snowflake Breakdown:** Displays both the circular 30-point radar chart and individual breakdown bars for Valuation & Safety, Future Growth & Catalysts, Earnings Quality & Margins, Economic Moat, and Downside Floor.
-- **Dual View Modes:** Seamlessly toggle between Deep-Dive Cards and Institutional Matrix Table views.
+- **Dual View Modes:** Seamlessly toggle between Deep-Dive Cards and Matrix Table views.
 
-### 4. Sticky Flow-Through Cockpit
+### 4. Interactive Flow-Through Stress Model
 - **Live P&L Strip:** Stressed Revenue, Gross Profit, Operating Income, Net Income, and Stressed Diluted EPS.
 - **Valuation Outcome Regimes:**
   - 🐂 **Bull Regime:** Multiple expansion / enterprise acceleration scenario.
@@ -52,7 +52,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 
 ### 5. Quantitative Probability Calibration Engine (QPCE)
 - **Logit-Space Bayesian Calibration:** Replaces naive symmetrical priors (e.g. 25/50/25) with deterministic multinomial log-odds calibration ($z_i = \ln(p_i) + \Delta z_i$) and temperature-controlled Softmax, bounded by $\epsilon = 0.05$ simplex contraction ($p_i \in [0.05, 0.85], \sum p_i \equiv 1.000$).
-- **Forensic & Governance Veto (Pillar 1):** Severe governance risk, auditor resignations, or DOJ investigations trigger an institutional lexicographic override capping Bull ($\le 8\%$) and flooring Panic ($\ge 45\%$), preventing high gross margins from masking accounting fraud (Wirecard/Enron guardrail).
+- **Forensic & Governance Veto (Pillar 1):** Severe governance risk, auditor resignations, or DOJ investigations trigger a lexicographic override capping Bull ($\le 8\%$) and flooring Panic ($\ge 45\%$), preventing high gross margins from masking accounting fraud (Wirecard/Enron guardrail).
 - **Archetype-Aware Calibration & Cash Runway (Pillar 2):**
   - **Archetype A (`compounder`):** Mature cash cows with operating margins $>30\%$ rewarded; $<15\%$ penalized unless protected by durable Wide Moat (`Costco Compounder Exemption`).
   - **Archetype B (`operating_scaler`):** Fast growers ($\ge 25\%$) with gross margins $\ge 60\%$ rewarded for operating leverage acceleration (e.g. RDDT, NOW, PLTR).
@@ -85,14 +85,14 @@ A forward-looking financial decision and scenario-simulation platform for fundam
   <img src="./docs/images/methodology-preview.png" alt="Valuation Methodology Preview" width="100%" />
 </p>
 
-### 9. Global Dual-Theme Engine: Cyber Obsidian & Institutional Light
+### 9. Global Dual-Theme Engine: Cyber Obsidian & Clean Light
 - **Cyber Obsidian (Default Dark):** Signature dark terminal aesthetic featuring deep obsidian (`#07090e`), layered dark glassmorphic panels, cyan (`#38bdf8`) accent glow, and calibrated neon telemetry.
-- **Institutional Light:** High-contrast FactSet/WSJ day mode designed for daytime research and committee review, featuring clean white/light slate surfaces (`#ffffff` / `#f8fafc`), high-contrast slate-900 typography (`#0f172a`), deep sky accent (`#0284c7`), and crisp financial borders.
+- **Clean Light:** High-contrast FactSet/WSJ day mode designed for daytime research and review, featuring clean white/light slate surfaces (`#ffffff` / `#f8fafc`), high-contrast slate-900 typography (`#0f172a`), deep sky accent (`#0284c7`), and crisp financial borders.
 - **Instant 1-Click Toggle:** Quick Sun/Moon switch in the top header and detailed switcher in Settings menu, with zero-flash (`0ms FOUC`) SSR persistence in `localStorage`.
 
-### 10. Mobile-First Institutional Cockpit & Universe Screener
-- **Mobile Segmented Switcher (`[⚡ Cockpit] [📊 Deep Dive (7)]`):** Eliminates 1800px vertical scroll fatigue on mobile screens, enabling 1-tap switching between stress test controls and the 7 fundamental workspaces.
-- **Desktop Dual-Pane Independent Scroll Architecture:** Fixed viewport height on desktop (`h-[calc(100vh-3.5rem)]`) isolates the left stress testing Cockpit and right intelligence workspaces into dedicated scroll viewports, completely eliminating global window scrollbars, height jumping, and scroll chaining.
+### 10. Mobile-First Model & Universe Screener
+- **Mobile Segmented Switcher (`[⚡ Model] [📊 Deep Dive (7)]`):** Eliminates 1800px vertical scroll fatigue on mobile screens, enabling 1-tap switching between stress test controls and the 7 fundamental workspaces.
+- **Desktop Dual-Pane Independent Scroll Architecture:** Fixed viewport height on desktop (`h-[calc(100vh-3.5rem)]`) isolates the left stress testing Model and right intelligence workspaces into dedicated scroll viewports, completely eliminating global window scrollbars, height jumping, and scroll chaining.
 - **Clear Information Architecture:** Primary header navigation features a Segmented Navigation Bar in the center (`[ ⚡ Screener ]` and `[ ★ Watchlist (count) ]` with live dynamic count badge); ticker and report quarter are unified into a single financial capsule (`ReportSelector`) with quick-switch quarter chips, multi-quarter history, and search; Research Memo is a clearly labeled `[ 📄 Research Memo [M] ]` action button docked at the right end of the workspace navigation ribbon.
 - **Clutter-Free Workspace Navigation:**
   - **Sticky Frosted Glass Navigation Ribbon:** Matches the main Header's opacity (`0.90` dark / `0.92` light), heavy frosted glass blur (`backdrop-filter: blur(24px) saturate(180%)`), and border tokens, completely obscuring underlying scrolled text on mobile and docking statically above workspaces on desktop.
@@ -102,7 +102,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
   - **Mobile-Only Bottom Workspace Pager (`lg:hidden`):** Sequential bottom pager (`← Prev Workspace` | dots indicator | `Next Workspace →`) scoped strictly to mobile screens, avoiding redundant clutter on desktop.
   - **Desktop Floating "Back to Top" Action:** Automatically fades in when reading deep filing transcripts or analyst tables, smoothly returning to workspace top in 1 click.
   - **Instant Workspace Scroll-to-Top:** Automatically positions the new workspace at the top whenever navigating via tabs, chevrons, or keyboard shortcuts (`1-7`, `[`, `]`).
-- **Adaptive Screener Cards:** Replaces cramped 11-column horizontal tables with high-legibility stock cards on mobile, complete with mini Snowflake radars, moat badges, base-to-bull price spectrum tracks, and 1-tap navigation to Cockpit or Memo.
+- **Adaptive Screener Cards:** Replaces cramped 11-column horizontal tables with high-legibility stock cards on mobile, complete with mini Snowflake radars, moat badges, base-to-bull price spectrum tracks, and 1-tap navigation to Model or Memo.
 - **Slide-Over Navigation Drawer:** Full-featured touch-friendly drawer providing quick access to report history, quarter switching, Screener, language selection (EN/中文), and theme switcher.
 - **Responsive Workspace Tabs:** Tailored mobile card views for Wall Street Analyst Estimates (`EstimatesTab`) and Peer Benchmarking (`MoatTab`), avoiding horizontal clipping and table pinch-to-zoom.
 
@@ -111,10 +111,10 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Deterministic Clickbait Filter:** High-speed regex & publisher blacklisting (`src/lib/news-filter.ts`) rejects ~95% of syndication spam and bot articles with 0 LLM cost.
 - **Cross-Company Dependency Graph:** Directed Acyclic Graph (DAG) in Neon PostgreSQL (`upstreamDependenciesTable`) propagating supplier/customer earnings shocks (e.g. TSMC CapEx $\to$ NVIDIA revenue $\to$ Data Center power demand) without duplicating extractions.
 
-### 12. Data Completeness & Institutional Variant Perception Audit
+### 12. Data Completeness & Variant Perception Audit
 - **Defensive Data Integrity Gatekeeper:** Audits 8 quarterly modules (`facts`, `scenarios`, `baseline`, `moat`, `estimates`, `filing`, `sentiment`, `catalysts`) to compute a deterministic Data Completeness Score ($0-100\%$) and validate fatal invariants (ticker mismatch, non-positive price, undefined operating EPS, share count validity, probability simplex closure) before persisting to Neon DB.
-- **Offensive Variant Perception Decomposition:** Quantifies consensus divergence ($\Delta = (\text{WFV} - T_{\text{cons}}) / T_{\text{cons}} \times 100\%$) into 4 institutional tiers (`in_line`, `moderate_alpha`, `high_conviction_alpha`, `extreme_divergence`). Decomposes alpha into Base Scenario multiple delta, earnings delta, and dynamic regime stress haircut.
-- **On-Demand Inspection Modal:** Clean trigger badge in the cockpit scenario cards opening a comprehensive attribution modal (`VariantPerceptionModal.tsx`) with zero layout clutter.
+- **Offensive Variant Perception Decomposition:** Quantifies consensus divergence ($\Delta = (\text{WFV} - T_{\text{cons}}) / T_{\text{cons}} \times 100\%$) into 4 analytical tiers (`in_line`, `moderate_alpha`, `high_conviction_alpha`, `extreme_divergence`). Decomposes alpha into Base Scenario multiple delta, earnings delta, and dynamic regime stress haircut.
+- **On-Demand Inspection Modal:** Clean trigger badge in the model scenario cards opening a comprehensive attribution modal (`VariantPerceptionModal.tsx`) with zero layout clutter.
 
 ---
 
@@ -123,7 +123,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 StressAlpha includes dedicated AI Skills for end-to-end fundamental and earnings audits:
 - Project level: [`.agents/skills/stress-alpha/SKILL.md`](./.agents/skills/stress-alpha/SKILL.md) and [`.agents/skills/earnings/SKILL.md`](./.agents/skills/earnings/SKILL.md)
 - Global level: `~/.agents/skills/stress-alpha/SKILL.md`
-- **Institutional Feeds**: Seamlessly integrates with [Massive.com](https://massive.com/pricing) (for SEC point-in-time financial statements, ratios, and aggregates) and [Finnhub.io](https://finnhub.io/pricing) (for earnings call audio transcripts, SEC filings, and sell-side price targets/recommendations).
+- **Audited Financial Feeds**: Seamlessly integrates with [Massive.com](https://massive.com/pricing) (for SEC point-in-time financial statements, ratios, and aggregates) and [Finnhub.io](https://finnhub.io/pricing) (for earnings call audio transcripts, SEC filings, and sell-side price targets/recommendations).
 
 ### Running the Complete Flow with 1 Command:
 ```bash
@@ -169,7 +169,7 @@ stress-alpha/
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx                # App layout (next/font/google)
-│   │   ├── page.tsx                  # Main dashboard (Cockpit + Intelligence Workspaces)
+│   │   ├── page.tsx                  # Main dashboard (Model + Intelligence Workspaces)
 │   │   ├── screener/                 # Dedicated standalone screener route (/screener)
 │   │   ├── watchlist/                # Dedicated standalone watchlist route (/watchlist)
 │   │   ├── globals.css               # Theme & styles
@@ -182,14 +182,14 @@ stress-alpha/
 │   │   ├── Header.tsx                # Navigation, mode toggle & quick actions
 │   │   ├── Cockpit.tsx               # Sticky left flow-through simulator
 │   │   ├── ScreenerView.tsx          # Multi-ticker universe screener with live prices
-│   │   ├── WatchlistView.tsx         # Dedicated institutional watchlist with deep metrics
+│   │   ├── WatchlistView.tsx         # Dedicated watchlist with deep metrics
 │   │   ├── ReportSelector.tsx        # Streamlined ticker selector
 │   │   ├── QuarterSwitcher.tsx       # Multi-quarter history navigation pill
 │   │   ├── PriceMeter.tsx            # Visual price range meter
-│   │   ├── MemoView.tsx              # Committee memorandum mode
+│   │   ├── MemoView.tsx              # Research memorandum mode
 │   │   ├── AuthModal.tsx             # Better Auth sign-in / sign-up modal
 │   │   ├── snowflake/                # 5-Pillar Snowflake Radar chart & modal
-│   │   ├── social-card/              # Institutional social media card generator
+│   │   ├── social-card/              # Social media card generator
 │   │   └── tabs/                     # 7 Focused intelligence workspaces
 │   ├── db/
 │   │   ├── schema.ts                 # Drizzle PostgreSQL schema (tickers, reports, auth)

@@ -245,7 +245,7 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
   }
 
   // -------------------------------------------------------------------------
-  // 3. Institutional Warnings (Non-fatal sanity & bounds checks)
+  // 3. Model Warnings (Non-fatal sanity & bounds checks)
   // -------------------------------------------------------------------------
 
   // Check price divergence between facts and analyst estimates
@@ -268,7 +268,7 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
     }
   }
 
-  // Missing optional institutional modules
+  // Missing optional modules
   if (!estimates) {
     issues.push({
       severity: "info",
@@ -353,7 +353,7 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
           severity: "warning",
           code: "EXTREME_CONSENSUS_DIVERGENCE",
           field: "consensusTarget",
-          message: `StressAlpha WFV ($${effectiveWfv}) diverges from consensus target ($${consensusTarget}) by ${divergencePct > 0 ? "+" : ""}${divergencePct}%. Requires institutional attribution.`,
+          message: `StressAlpha WFV ($${effectiveWfv}) diverges from consensus target ($${consensusTarget}) by ${divergencePct > 0 ? "+" : ""}${divergencePct}%. Requires analytical attribution.`,
         });
       }
 
@@ -402,7 +402,7 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
         }
       }
 
-      const rationaleComment = buildInstitutionalCommentary({
+      const rationaleComment = buildAnalyticalCommentary({
         ticker: primaryTicker,
         divergencePct,
         classification,
@@ -475,9 +475,9 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
 }
 
 /**
- * Builds pre-localized institutional commentary explaining the consensus divergence.
+ * Builds pre-localized analytical commentary explaining the consensus divergence.
  */
-function buildInstitutionalCommentary(params: {
+function buildAnalyticalCommentary(params: {
   ticker: string;
   divergencePct: number;
   classification: DivergenceClassification;

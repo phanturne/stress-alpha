@@ -90,8 +90,9 @@ function computeValuationCriteria(
       id: "val_margin_safety",
       name: "High Margin of Safety (≥ 15%)",
       nameZh: "充足安全边际 (≥ 15%)",
-      description: "Upside to fair value provides institutional buffer ≥ 15%",
-      descriptionZh: "上行空间提供 ≥ 15% 的机构级安全边际缓冲",
+      description:
+        "Upside to fair value provides margin of safety buffer ≥ 15%",
+      descriptionZh: "上行空间提供 ≥ 15% 的安全边际缓冲",
       passed: upsidePct >= 15,
       valueDisplay: `${upsidePct > 0 ? "+" : ""}${upsidePct}%`,
       benchmarkDisplay: "≥ 15%",
@@ -772,7 +773,7 @@ export function computeSnowflakeScore(
   const percentage = Math.round((totalScore / maxScore) * 100);
 
   let ratingTier: SnowflakeScoreResult["ratingTier"] = "balanced";
-  let ratingLabelEn = "Balanced Institutional Setup";
+  let ratingLabelEn = "Balanced Valuation Setup";
   let ratingLabelZh = "均衡稳健型配置";
 
   if (totalScore >= 24) {

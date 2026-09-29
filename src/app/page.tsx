@@ -535,7 +535,7 @@ export default function HomePage() {
     locale,
   ]);
 
-  // 7 Focused Institutional Intelligence Workspaces
+  // 7 Focused Intelligence Workspaces
   const tabItems = useMemo(
     () => [
       {

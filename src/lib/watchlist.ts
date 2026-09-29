@@ -279,7 +279,7 @@ export interface WatchlistHook {
 }
 
 /**
- * React hook for accessing and modifying the institutional stock watchlist.
+ * React hook for accessing and modifying the stock watchlist.
  * Directly reads from and writes to the Neon PostgreSQL database via Better Auth.
  */
 export function useWatchlist(): WatchlistHook {
