@@ -13,8 +13,30 @@ export const WATCHLIST_CHANGE_EVENT = "stress_alpha_watchlist_changed";
 export const AUTH_REQUIRED_EVENT = "stress_alpha_auth_required";
 export const WATCHLIST_STORAGE_KEY = "stress_alpha_watchlist";
 
-// Database-backed reactive in-memory snapshot
-let dbWatchlistSnapshot: string[] = [];
+function areArraysEqual(a: string[], b: string[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+function loadInitialSnapshot(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return Array.from(new Set(parsed.map(normalizeTicker).filter(Boolean)));
+    }
+  } catch {}
+  return [];
+}
+
+// Database-backed reactive in-memory snapshot initialized from local client cache if available
+let dbWatchlistSnapshot: string[] = loadInitialSnapshot();
 let listeners: Array<() => void> = [];
 
 function subscribe(callback: () => void): () => void {
@@ -39,11 +61,23 @@ function getServerSnapshot(): string[] {
   return SERVER_SNAPSHOT;
 }
 
-function setWatchlistSnapshot(tickers: string[]): void {
+function setWatchlistSnapshot(tickers: string[], forceNotify = false): void {
   const normalized = Array.from(
     new Set(tickers.map(normalizeTicker).filter(Boolean))
   );
+  if (!forceNotify && areArraysEqual(dbWatchlistSnapshot, normalized)) {
+    return;
+  }
   dbWatchlistSnapshot = normalized;
+  if (typeof window !== "undefined") {
+    try {
+      if (normalized.length > 0) {
+        localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(normalized));
+      } else {
+        localStorage.removeItem(WATCHLIST_STORAGE_KEY);
+      }
+    } catch {}
+  }
   for (const callback of listeners) {
     try {
       callback();
@@ -150,7 +184,7 @@ export function getStoredWatchlist(): string[] {
  * Sets in-memory snapshot and broadcasts event. Provided for backwards compatibility with tests.
  */
 export function saveStoredWatchlist(tickers: string[]): void {
-  setWatchlistSnapshot(tickers);
+  setWatchlistSnapshot(tickers, true);
 }
 
 /**
@@ -289,15 +323,21 @@ export function useWatchlist(): WatchlistHook {
     getServerSnapshot
   );
 
-  const { data: session } = useSession();
+  const { data: session, isPending: isSessionPending } = useSession();
   const userId = session?.user?.id;
   const isAuthenticated = !!session?.user;
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isDbFetching, setIsDbFetching] = useState(false);
+  const isSyncing = isSessionPending || isDbFetching;
   const activeUserRef = useRef<string | null>(null);
 
   // Directly fetch watchlist from Neon PostgreSQL database on session change
   useEffect(() => {
     let isMounted = true;
+
+    // While session determination is in-flight, preserve cached watchlist to avoid flicker
+    if (isSessionPending) {
+      return;
+    }
 
     if (!userId) {
       activeUserRef.current = null;
@@ -308,21 +348,8 @@ export function useWatchlist(): WatchlistHook {
     if (activeUserRef.current === userId) return;
     activeUserRef.current = userId;
 
-    setIsSyncing(true);
-
-    // Check for any legacy localStorage items to migrate once into the database
-    const legacy = migrateLegacyStorageOnce();
-
     const load = async () => {
-      if (legacy.length > 0) {
-        const res = await mutateDbWatchlist("sync", legacy);
-        if (isMounted && res?.watchlist) {
-          setWatchlistSnapshot(res.watchlist);
-          setIsSyncing(false);
-          return;
-        }
-      }
-
+      setIsDbFetching(true);
       // Fetch directly from Neon PostgreSQL database
       const dbResult = await fetchWatchlistFromDb();
       if (isMounted) {
@@ -331,7 +358,7 @@ export function useWatchlist(): WatchlistHook {
         } else {
           setWatchlistSnapshot([]);
         }
-        setIsSyncing(false);
+        setIsDbFetching(false);
       }
     };
 
@@ -340,7 +367,7 @@ export function useWatchlist(): WatchlistHook {
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [userId, isSessionPending]);
 
   const isFavorite = useCallback(
     (tickerOrSlug?: string | null): boolean => {
@@ -438,10 +465,10 @@ export function useWatchlist(): WatchlistHook {
     }
 
     const previous = getSnapshot();
-    setWatchlistSnapshot([]);
+    setWatchlistSnapshot([], true);
     clearDbWatchlist().then((ok) => {
       if (!ok) {
-        setWatchlistSnapshot(previous);
+        setWatchlistSnapshot(previous, true);
       }
     });
   }, [isAuthenticated]);

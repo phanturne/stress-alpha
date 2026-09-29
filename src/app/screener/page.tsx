@@ -1,7 +1,7 @@
 import { getReportRepository, type ReportSummary } from "@/lib/repository";
 import { ScreenerClientPage } from "./ScreenerClientPage";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ScreenerPage() {
   let initialReports: ReportSummary[] = [];

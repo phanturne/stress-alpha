@@ -102,23 +102,6 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = ({
       className={`shrink-0 overflow-visible ${className}`}
       aria-hidden="true"
     >
-      <defs>
-        <filter
-          id={`mini-glow-${effectiveTier}`}
-          x="-20%"
-          y="-20%"
-          width="140%"
-          height="140%"
-        >
-          <feDropShadow
-            dx="0"
-            dy="0"
-            stdDeviation="1.5"
-            floodColor={tierColor.glow}
-          />
-        </filter>
-      </defs>
-
       {/* Subtle Background Guideline Circles */}
       {ringRatios.map((ratio, idx) => (
         <circle
@@ -158,7 +141,9 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = ({
         stroke={tierColor.stroke}
         strokeWidth="1.2"
         strokeLinejoin="round"
-        filter={`url(#mini-glow-${effectiveTier})`}
+        style={{
+          filter: `drop-shadow(0 0 2px ${tierColor.glow})`,
+        }}
       />
 
       {/* Vertex Dots */}

@@ -74,24 +74,34 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
   const t = getTranslations(locale);
   const tw = t.watchlistPage;
 
-  const { isFavorite, toggleFavorite, count: watchlistCount } = useWatchlist();
+  const {
+    isFavorite,
+    toggleFavorite,
+    count: watchlistCount,
+    isSyncing,
+  } = useWatchlist();
   const [searchQuery, setSearchQuery] = useState("");
   const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
   const [divergenceFilter, setDivergenceFilter] =
     useState<DivergenceFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
-
-  // Adaptive default view mode for desktop vs mobile
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mql = window.matchMedia("(min-width: 1024px)");
-    if (mql.matches) {
-      const frame = requestAnimationFrame(() => setViewMode("cards"));
-      return () => cancelAnimationFrame(frame);
+  const [viewMode, setViewMode] = useState<"cards" | "table">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("stress_alpha_watchlist_view_mode");
+      if (saved === "cards" || saved === "table") return saved;
     }
-  }, []);
+    return "cards";
+  });
+
+  const handleSetViewMode = (mode: "cards" | "table") => {
+    setViewMode(mode);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("stress_alpha_watchlist_view_mode", mode);
+      } catch {}
+    }
+  };
 
   // Group all favorited reports by ticker symbol
   const tickerGroups = useMemo<WatchlistTickerGroup[]>(() => {
@@ -360,7 +370,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
           <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm">
             <button
               type="button"
-              onClick={() => setViewMode("cards")}
+              onClick={() => handleSetViewMode("cards")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                 viewMode === "cards"
                   ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
@@ -373,7 +383,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setViewMode("table")}
+              onClick={() => handleSetViewMode("table")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                 viewMode === "table"
                   ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
@@ -556,7 +566,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
       )}
 
       {/* Loading Skeleton */}
-      {isLoading && (
+      {(isLoading || (isSyncing && tickerGroups.length === 0)) && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div
@@ -575,7 +585,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
       )}
 
       {/* Empty State Experience (0 items in watchlist) */}
-      {!isLoading && tickerGroups.length === 0 && (
+      {!isLoading && !isSyncing && tickerGroups.length === 0 && (
         <div className="glass-panel mx-auto my-8 flex max-w-2xl flex-col items-center gap-6 rounded-3xl border border-white/[0.08] p-8 text-center shadow-2xl sm:p-12">
           <div className="flex size-16 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
             <Star className="size-8 fill-amber-400 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]" />
@@ -701,7 +711,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
             return (
               <div
                 key={group.ticker}
-                className="glass-panel group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 shadow-lg transition-all duration-200 hover:border-amber-500/40 hover:bg-surface-2/60"
+                className="glass-panel group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 shadow-lg transition-[border-color,background-color] duration-150 hover:border-amber-500/40 hover:bg-surface-2/60"
               >
                 <div>
                   {/* Card Header: Ticker, Company, Moat, Divergence Badge, Star */}

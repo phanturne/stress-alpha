@@ -170,16 +170,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
   const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mql = window.matchMedia("(min-width: 768px)");
-    if (mql.matches) {
-      const frame = requestAnimationFrame(() => setViewMode("table"));
-      return () => cancelAnimationFrame(frame);
+  const [viewMode, setViewMode] = useState<"cards" | "table">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("stress_alpha_screener_view_mode");
+      if (saved === "cards" || saved === "table") return saved;
+      return window.innerWidth >= 768 ? "table" : "cards";
     }
-  }, []);
+    return "table";
+  });
+
+  const handleSetViewMode = (mode: "cards" | "table") => {
+    setViewMode(mode);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("stress_alpha_screener_view_mode", mode);
+      } catch {}
+    }
+  };
 
   // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
   const stats = useMemo(() => {
@@ -455,7 +462,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             <div
               key={report.slug}
               onClick={() => onSelectReport(report.slug, "cockpit")}
-              className="glass-panel group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-all duration-200 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
+              className="glass-panel group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-[border-color,background-color] duration-150 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
             >
               {/* Top Row: Ticker, Company, Favorite Star, Moat, Snowflake */}
               <div>
@@ -980,7 +987,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
             <button
               type="button"
-              onClick={() => setViewMode("cards")}
+              onClick={() => handleSetViewMode("cards")}
               className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
                 viewMode === "cards"
                   ? "bg-accent/20 font-bold text-accent"
@@ -993,7 +1000,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setViewMode("table")}
+              onClick={() => handleSetViewMode("table")}
               className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
                 viewMode === "table"
                   ? "bg-accent/20 font-bold text-accent"

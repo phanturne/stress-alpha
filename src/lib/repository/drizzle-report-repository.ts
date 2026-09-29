@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { reportsTable, tickersTable } from "@/db/schema";
 import type { IReportRepository, ReportSummary } from "./types";
@@ -13,6 +13,20 @@ export class DrizzleReportRepository implements IReportRepository {
   private cachedReports = new Map<
     string,
     { data: ReportData; timestamp: number }
+  >();
+  private snowflakeCache = new Map<
+    string,
+    {
+      score: number;
+      tier: "exceptional" | "strong" | "balanced" | "cautious";
+      pillars: {
+        valuation: number;
+        future: number;
+        earnings: number;
+        moat: number;
+        resilience: number;
+      };
+    }
   >();
 
   async hasReport(slug: string): Promise<boolean> {
@@ -36,10 +50,41 @@ export class DrizzleReportRepository implements IReportRepository {
 
     const db = getDb();
 
+    // Select ONLY columns needed for ReportSummary and Snowflake computation.
+    // Avoid transferring megabytes of raw 10-Q filing text, transcripts, and markdown reports.
     const rows = await db
       .select({
-        report: reportsTable,
-        tickerInfo: tickersTable,
+        slug: reportsTable.slug,
+        ticker: reportsTable.ticker,
+        quarter: reportsTable.quarter,
+        reportDate: reportsTable.reportDate,
+        reportPrice: reportsTable.reportPrice,
+        weightedFairValue: reportsTable.weightedFairValue,
+        baseFairValue: reportsTable.baseFairValue,
+        bullFairValue: reportsTable.bullFairValue,
+        bearFairValue: reportsTable.bearFairValue,
+        moatRating: reportsTable.moatRating,
+        moatTrend: reportsTable.moatTrend,
+        operatingMarginPct: reportsTable.operatingMarginPct,
+        revenueGrowthPct: reportsTable.revenueGrowthPct,
+        publishedAt: reportsTable.publishedAt,
+        estimates: reportsTable.estimates,
+        facts: reportsTable.facts,
+        scenarios: reportsTable.scenarios,
+        baseline: reportsTable.baseline,
+        moat: reportsTable.moat,
+        catalysts: reportsTable.catalysts,
+        hasFacts: sql<boolean>`(${reportsTable.facts} IS NOT NULL)`,
+        hasScenarios: sql<boolean>`(${reportsTable.scenarios} IS NOT NULL)`,
+        hasValuation: sql<boolean>`(${reportsTable.valuation} IS NOT NULL)`,
+        hasBaseline: sql<boolean>`(${reportsTable.baseline} IS NOT NULL)`,
+        hasSentiment: sql<boolean>`(${reportsTable.sentiment} IS NOT NULL)`,
+        hasFiling: sql<boolean>`(${reportsTable.filing} IS NOT NULL)`,
+        hasCatalysts: sql<boolean>`(${reportsTable.catalysts} IS NOT NULL)`,
+        hasReactions: sql<boolean>`(${reportsTable.reactions} IS NOT NULL)`,
+        hasEstimates: sql<boolean>`(${reportsTable.estimates} IS NOT NULL)`,
+        tickerPrice: tickersTable.currentPrice,
+        tickerCompany: tickersTable.company,
       })
       .from(reportsTable)
       .leftJoin(tickersTable, eq(reportsTable.ticker, tickersTable.ticker))
@@ -47,14 +92,12 @@ export class DrizzleReportRepository implements IReportRepository {
 
     const summaries: ReportSummary[] = [];
 
-    for (const { report, tickerInfo } of rows) {
-      const effectivePrice = Number(
-        tickerInfo?.currentPrice ?? report.reportPrice
-      );
-      const weightedFairValue = Number(report.weightedFairValue);
-      const baseFairValue = Number(report.baseFairValue);
-      const bullFairValue = Number(report.bullFairValue);
-      const bearFairValue = Number(report.bearFairValue);
+    for (const row of rows) {
+      const effectivePrice = Number(row.tickerPrice ?? row.reportPrice);
+      const weightedFairValue = Number(row.weightedFairValue);
+      const baseFairValue = Number(row.baseFairValue);
+      const bullFairValue = Number(row.bullFairValue);
+      const bearFairValue = Number(row.bearFairValue);
 
       const upsidePct =
         effectivePrice > 0
@@ -82,8 +125,8 @@ export class DrizzleReportRepository implements IReportRepository {
       let analystRating: string | undefined;
       let analystCount: number | undefined;
 
-      if (report.estimates?.priceTargets?.average) {
-        analystTarget = report.estimates.priceTargets.average;
+      if (row.estimates?.priceTargets?.average) {
+        analystTarget = row.estimates.priceTargets.average;
         if (effectivePrice > 0) {
           analystUpsidePct = Number(
             (((analystTarget - effectivePrice) / effectivePrice) * 100).toFixed(
@@ -92,9 +135,9 @@ export class DrizzleReportRepository implements IReportRepository {
           );
         }
       }
-      if (report.estimates?.consensus) {
-        analystRating = report.estimates.consensus.consensus;
-        analystCount = report.estimates.consensus.totalAnalysts;
+      if (row.estimates?.consensus) {
+        analystRating = row.estimates.consensus.consensus;
+        analystCount = row.estimates.consensus.totalAnalysts;
       }
 
       let consensusSpreadPct: number | undefined;
@@ -135,29 +178,35 @@ export class DrizzleReportRepository implements IReportRepository {
             resilience: number;
           }
         | undefined;
-      if (report.facts && report.scenarios) {
+
+      const snowflakeCacheKey = `${row.slug}:${effectivePrice}`;
+      const cachedSnowflake = this.snowflakeCache.get(snowflakeCacheKey);
+
+      if (cachedSnowflake) {
+        snowflakeScore = cachedSnowflake.score;
+        snowflakeTier = cachedSnowflake.tier;
+        snowflakePillars = cachedSnowflake.pillars;
+      } else if (row.facts && row.scenarios) {
         try {
           const facts: Facts = {
-            ...report.facts,
+            ...row.facts,
             currentPrice:
-              effectivePrice > 0 ? effectivePrice : report.facts.currentPrice,
+              effectivePrice > 0 ? effectivePrice : row.facts.currentPrice,
           };
           const scenarios: Scenarios = {
-            ...report.scenarios,
+            ...row.scenarios,
             currentPrice:
-              effectivePrice > 0
-                ? effectivePrice
-                : report.scenarios.currentPrice,
+              effectivePrice > 0 ? effectivePrice : row.scenarios.currentPrice,
           };
-          const baseline = report.baseline ?? undefined;
+          const baseline = row.baseline ?? undefined;
 
           // Compute dynamic valuation matching model's default unperturbed state
           const dynamicValuation = computeValuation({
             facts,
             scenarios,
             baseline,
-            moat: report.moat ?? undefined,
-            estimates: report.estimates ?? undefined,
+            moat: row.moat ?? undefined,
+            estimates: row.estimates ?? undefined,
           });
 
           const stressResult =
@@ -166,16 +215,15 @@ export class DrizzleReportRepository implements IReportRepository {
               : undefined;
 
           const reportPayload: ReportData = {
-            folderSlug: report.slug,
-            folderName: report.slug,
+            folderSlug: row.slug,
+            folderName: row.slug,
             facts,
             valuation: dynamicValuation,
             scenarios,
             baseline,
-            moat: report.moat ?? undefined,
-            catalysts: report.catalysts ?? undefined,
-            estimates: report.estimates ?? undefined,
-            filing: report.filing ?? undefined,
+            moat: row.moat ?? undefined,
+            catalysts: row.catalysts ?? undefined,
+            estimates: row.estimates ?? undefined,
           };
           const res = computeSnowflakeScore(reportPayload, stressResult);
           snowflakeScore = res.totalScore;
@@ -187,18 +235,24 @@ export class DrizzleReportRepository implements IReportRepository {
             moat: res.pillars.moat.score,
             resilience: res.pillars.resilience.score,
           };
+
+          this.snowflakeCache.set(snowflakeCacheKey, {
+            score: snowflakeScore,
+            tier: snowflakeTier,
+            pillars: snowflakePillars,
+          });
         } catch {
           // ignore snowflake computation error in summary listing
         }
       }
 
       summaries.push({
-        slug: report.slug,
-        name: report.slug,
-        ticker: report.ticker,
-        company: tickerInfo?.company ?? report.facts?.company,
-        quarter: report.quarter,
-        reportDate: report.reportDate,
+        slug: row.slug,
+        name: row.slug,
+        ticker: row.ticker,
+        company: row.tickerCompany ?? row.facts?.company,
+        quarter: row.quarter,
+        reportDate: row.reportDate,
         currentPrice: effectivePrice,
         weightedFairValue,
         upsidePct,
@@ -206,14 +260,14 @@ export class DrizzleReportRepository implements IReportRepository {
         baseUpsidePct,
         bullFairValue,
         bearFairValue,
-        moatRating: report.moatRating ?? report.moat?.overallMoatRating,
-        moatTrend: report.moatTrend ?? report.moat?.moatTrend,
-        operatingMarginPct: report.operatingMarginPct
-          ? Number(report.operatingMarginPct)
-          : report.facts?.operatingMarginPct,
-        revenueGrowthPct: report.revenueGrowthPct
-          ? Number(report.revenueGrowthPct)
-          : report.facts?.revenueGrowthPct,
+        moatRating: row.moatRating ?? row.moat?.overallMoatRating,
+        moatTrend: row.moatTrend ?? row.moat?.moatTrend,
+        operatingMarginPct: row.operatingMarginPct
+          ? Number(row.operatingMarginPct)
+          : row.facts?.operatingMarginPct,
+        revenueGrowthPct: row.revenueGrowthPct
+          ? Number(row.revenueGrowthPct)
+          : row.facts?.revenueGrowthPct,
         analystTarget,
         analystUpsidePct,
         analystRating,
@@ -223,15 +277,15 @@ export class DrizzleReportRepository implements IReportRepository {
         snowflakeScore,
         snowflakeTier,
         snowflakePillars,
-        hasFacts: !!report.facts,
-        hasScenarios: !!report.scenarios,
-        hasValuation: !!report.valuation,
-        hasBaseline: !!report.baseline,
-        hasSentiment: !!report.sentiment,
-        hasFiling: !!report.filing,
-        hasCatalysts: !!report.catalysts,
-        hasReactions: !!report.reactions,
-        hasEstimates: !!report.estimates,
+        hasFacts: Boolean(row.hasFacts),
+        hasScenarios: Boolean(row.hasScenarios),
+        hasValuation: Boolean(row.hasValuation),
+        hasBaseline: Boolean(row.hasBaseline),
+        hasSentiment: Boolean(row.hasSentiment),
+        hasFiling: Boolean(row.hasFiling),
+        hasCatalysts: Boolean(row.hasCatalysts),
+        hasReactions: Boolean(row.hasReactions),
+        hasEstimates: Boolean(row.hasEstimates),
       });
     }
 
