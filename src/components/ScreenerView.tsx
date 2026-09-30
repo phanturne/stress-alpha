@@ -188,6 +188,20 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     }
   };
 
+  const hasActiveFilters = Boolean(
+    searchQuery ||
+    moatFilter !== "all" ||
+    upsideFilter !== "all" ||
+    watchlistOnly
+  );
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setMoatFilter("all");
+    setUpsideFilter("all");
+    handleToggleWatchlistOnly(false);
+  };
+
   // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
   const stats = useMemo(() => {
     const baseList = watchlistOnly
@@ -420,12 +434,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               <p className="text-sm font-medium">{ts.noResults}</p>
               <button
                 type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setMoatFilter("all");
-                  setUpsideFilter("all");
-                  handleToggleWatchlistOnly(false);
-                }}
+                onClick={handleResetFilters}
                 className="mt-3 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
               >
                 {ts.resetFilters}
@@ -520,11 +529,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                             ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
                             : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
                         }`}
+                        title={ts.colMoatTooltip}
                       >
                         <Shield className="size-2.5" />
                         <span>{report.moatRating}</span>
                         {report.moatTrend && (
-                          <span className="font-mono text-[9px]">
+                          <span
+                            className="font-mono text-[9px]"
+                            title={`${report.moatTrend} Moat Trend`}
+                          >
                             {report.moatTrend === "Widening"
                               ? "↗"
                               : report.moatTrend === "Narrowing"
@@ -535,7 +548,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </span>
                     )}
                     {report.snowflakeScore !== undefined && (
-                      <div className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-surface-0/60 px-1.5 py-1">
+                      <div
+                        className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-surface-0/60 px-1.5 py-1"
+                        title={ts.colSnowflakeTooltip}
+                      >
                         <MiniSnowflakeRadar
                           score={report.snowflakeScore}
                           tier={report.snowflakeTier}
@@ -552,7 +568,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                 {/* Pricing Grid */}
                 <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-lg border border-white/[0.05] bg-surface-0/60 p-2.5">
-                  <div>
+                  <div title={ts.colPriceTooltip}>
                     <div className="text-[10px] font-medium text-slate-400">
                       {ts.colPrice}
                     </div>
@@ -560,7 +576,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       {price > 0 ? formatCurrency(price) : "—"}
                     </div>
                   </div>
-                  <div>
+                  <div title={ts.colBaseFairValueTooltip}>
                     <div className="text-[10px] font-medium text-slate-400">
                       {ts.colBaseFairValue}
                     </div>
@@ -578,7 +594,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       </div>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div
+                    className="text-right"
+                    title={ts.colWeightedFairValueTooltip}
+                  >
                     <div className="text-[10px] font-bold text-accent">
                       {ts.colWeightedFairValue}
                     </div>
@@ -854,16 +873,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="glass-panel flex flex-col gap-3 rounded-xl p-3 sm:p-4 md:flex-row md:items-center md:justify-between">
+      <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
         {/* Search input */}
-        <div className="relative flex-1 md:max-w-md">
+        <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={ts.searchPlaceholder}
-            className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-2 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
+            className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
           />
           {searchQuery && (
             <button
@@ -875,8 +894,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           )}
         </div>
 
-        {/* Filter Pills & Result Counter */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2">
           {/* Watchlist Filter Pill */}
           <button
             type="button"
@@ -910,7 +929,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           </button>
 
           {/* Moat Filter */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
+          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
             <button
               type="button"
               onClick={() => setMoatFilter("all")}
@@ -919,6 +938,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   ? "bg-accent/20 font-semibold text-accent"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.allMoatsTooltip}
             >
               {ts.allMoats}
             </button>
@@ -927,9 +947,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               onClick={() => setMoatFilter("wide")}
               className={`rounded px-2.5 py-1 transition-colors ${
                 moatFilter === "wide"
-                  ? "bg-purple-500/20 font-semibold text-purple-300"
+                  ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.wideMoatTooltip}
             >
               {ts.wideMoat}
             </button>
@@ -938,16 +959,17 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               onClick={() => setMoatFilter("narrow")}
               className={`rounded px-2.5 py-1 transition-colors ${
                 moatFilter === "narrow"
-                  ? "bg-sky-500/20 font-semibold text-sky-300"
+                  ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.narrowMoatTooltip}
             >
               {ts.narrowMoat}
             </button>
           </div>
 
           {/* Upside Filter */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
+          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
             <button
               type="button"
               onClick={() => setUpsideFilter("all")}
@@ -956,6 +978,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   ? "bg-accent/20 font-semibold text-accent"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.filterAllTooltip}
             >
               {ts.filterAll}
             </button>
@@ -964,9 +987,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               onClick={() => setUpsideFilter("undervalued")}
               className={`rounded px-2.5 py-1 transition-colors ${
                 upsideFilter === "undervalued"
-                  ? "bg-green-500/20 font-semibold text-green-300"
+                  ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.filterUndervaluedTooltip}
             >
               {ts.filterUndervalued}
             </button>
@@ -975,16 +999,20 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               onClick={() => setUpsideFilter("high-upside")}
               className={`rounded px-2.5 py-1 transition-colors ${
                 upsideFilter === "high-upside"
-                  ? "bg-amber-500/20 font-semibold text-amber-300"
+                  ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
                   : "text-slate-400 hover:text-white"
               }`}
+              title={ts.filterHighUpsideTooltip}
             >
               {ts.filterHighUpside}
             </button>
           </div>
+        </div>
 
+        {/* View Mode Toggle & Result Counter & Reset */}
+        <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
           {/* View Mode Toggle: Cards vs Table */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-1 text-xs">
+          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
             <button
               type="button"
               onClick={() => handleSetViewMode("cards")}
@@ -1013,24 +1041,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             </button>
           </div>
 
-          {/* Results count and active reset */}
+          <div className="hidden h-4 w-px bg-white/10 sm:block" />
+
+          {/* Results count & Reset */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] text-slate-500">
+            <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-500">
               {ts.resultsCount(filteredReports.length, reports.length)}
             </span>
-            {(searchQuery ||
-              moatFilter !== "all" ||
-              upsideFilter !== "all" ||
-              watchlistOnly) && (
+            {hasActiveFilters && (
               <button
                 type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setMoatFilter("all");
-                  setUpsideFilter("all");
-                  handleToggleWatchlistOnly(false);
-                }}
-                className="inline-flex items-center gap-1 rounded bg-surface-2 px-2 py-1 font-mono text-[11px] text-accent transition-colors hover:bg-surface-3"
+                onClick={handleResetFilters}
+                className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
                 title={ts.resetFilters}
               >
                 <RotateCcw className="size-2.5" />
@@ -1061,83 +1083,146 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Ticker & Company */}
                   <th
                     onClick={() => handleSort("ticker")}
-                    className="group/th cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
+                    title={ts.colTickerTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colTicker}</span>
                       {renderSortIcon("ticker")}
+                    </div>
+                    <div className="pointer-events-none absolute left-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colTicker}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colTickerTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Moat */}
                   <th
                     onClick={() => handleSort("moat")}
-                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    title={ts.colMoatTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colMoat}</span>
                       {renderSortIcon("moat")}
+                    </div>
+                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colMoat}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colMoatTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Snowflake 30-Point Audit Radar */}
                   <th
                     onClick={() => handleSort("snowflake")}
-                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    title={ts.colSnowflakeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colSnowflake}</span>
                       {renderSortIcon("snowflake")}
+                    </div>
+                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colSnowflake}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colSnowflakeTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Price */}
                   <th
                     onClick={() => handleSort("price")}
-                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    title={ts.colPriceTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colPrice}</span>
                       {renderSortIcon("price")}
+                    </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-52 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colPrice}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colPriceTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Analyst Consensus Target */}
                   <th
                     onClick={() => handleSort("analystTarget")}
-                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    title={ts.colAnalystTargetTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colAnalystTarget}</span>
                       {renderSortIcon("analystTarget")}
+                    </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colAnalystTarget}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colAnalystTargetTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Base Fair Value */}
                   <th
                     onClick={() => handleSort("baseUpside")}
-                    className="group/th cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    title={ts.colBaseFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colBaseFairValue}</span>
                       {renderSortIcon("baseUpside")}
+                    </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colBaseFairValue}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colBaseFairValueTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Weighted Fair Value & Upside */}
                   <th
                     onClick={() => handleSort("upside")}
-                    className="group/th cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
+                    title={ts.colWeightedFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colWeightedFairValue}</span>
                       {renderSortIcon("upside")}
                     </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-64 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colWeightedFairValue}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colWeightedFairValueTooltip}
+                      </p>
+                    </div>
                   </th>
 
                   {/* Valuation Spectrum / Stress Range */}
                   <th
-                    className="hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
+                    className="group/th relative hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
                     title={ts.rangeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
@@ -1146,27 +1231,53 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         {ts.rangeBearBullHint}
                       </span>
                     </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colValuationRange}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.rangeTooltip}
+                      </p>
+                    </div>
                   </th>
 
                   {/* Operating Margin */}
                   <th
                     onClick={() => handleSort("opMargin")}
-                    className="group/th hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
+                    className="group/th relative hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
+                    title={ts.colOperatingMarginTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colOperatingMargin}</span>
                       {renderSortIcon("opMargin")}
+                    </div>
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colOperatingMargin}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colOperatingMarginTooltip}
+                      </p>
                     </div>
                   </th>
 
                   {/* Revenue Growth */}
                   <th
                     onClick={() => handleSort("revGrowth")}
-                    className="group/th hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
+                    className="group/th relative hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
+                    title={ts.colRevenueGrowthTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colRevenueGrowth}</span>
                       {renderSortIcon("revGrowth")}
+                    </div>
+                    <div className="pointer-events-none absolute right-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-white/10 bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-white">
+                        {ts.colRevenueGrowth}
+                      </div>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                        {ts.colRevenueGrowthTooltip}
+                      </p>
                     </div>
                   </th>
                 </tr>
@@ -1564,28 +1675,6 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 {isPositive ? "+" : ""}
                                 {upside.toFixed(1)}%
                               </span>
-                              {report.consensusSpreadPct !== undefined && (
-                                <div className="mt-0.5 flex justify-end">
-                                  <span
-                                    className={`rounded px-1 py-0.5 font-mono text-[9px] font-semibold tabular-nums ${
-                                      report.consensusSpreadPct >= 15
-                                        ? "bg-emerald-500/15 text-emerald-300"
-                                        : report.consensusSpreadPct >= 5
-                                          ? "bg-sky-500/15 text-sky-300"
-                                          : report.consensusSpreadPct <= -15
-                                            ? "bg-rose-500/15 text-rose-300"
-                                            : "bg-surface-3 text-slate-400"
-                                    }`}
-                                    title={`${ts.colConsensusSpread}: ${
-                                      report.consensusSpreadPct >= 0 ? "+" : ""
-                                    }${report.consensusSpreadPct.toFixed(1)}%`}
-                                  >
-                                    {report.consensusSpreadPct >= 0 ? "+" : ""}
-                                    {report.consensusSpreadPct.toFixed(1)}% vs
-                                    street
-                                  </span>
-                                </div>
-                              )}
                             </div>
                           ) : (
                             <span className="text-slate-600">—</span>

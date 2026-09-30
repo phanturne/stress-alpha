@@ -8,8 +8,6 @@ import {
   TrendingDown,
   Scale,
   Activity,
-  LayoutGrid,
-  Table as TableIcon,
   ShieldCheck,
 } from "lucide-react";
 import type {
@@ -39,7 +37,6 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   onScenarioChange,
   locale = "en",
 }) => {
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const t = getTranslations(locale).scenariosTab;
   const { scenarios, basisYear, consensusTarget } = scenariosData;
@@ -74,7 +71,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header & Status & View Mode Switch */}
+      {/* Header & Status */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
@@ -96,36 +93,6 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               {t.probValid}
             </div>
           )}
-
-          {/* View Toggle: Columns / Table */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => setViewMode("cards")}
-              className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-semibold transition-all ${
-                viewMode === "cards"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm ring-1 ring-accent/30"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={t.viewCards}
-            >
-              <LayoutGrid className="size-3" />
-              <span className="hidden sm:inline">{t.viewCards}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-semibold transition-all ${
-                viewMode === "table"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm ring-1 ring-accent/30"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={t.viewTable}
-            >
-              <TableIcon className="size-3" />
-              <span className="hidden sm:inline">{t.viewTable}</span>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -222,330 +189,198 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         </div>
       </div>
 
-      {/* Primary Scenarios: Side-by-Side Horizontal Comparison Columns (Default) */}
-      {viewMode === "cards" ? (
-        <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3 xl:gap-5">
-          {scenarios.map((scenario, idx) => {
-            const res = valuation?.scenarioResults?.[idx];
-            const fairValue =
-              res?.fairValue ?? scenario.forwardEps * scenario.multiple;
-            const upside =
-              res?.upsideFromCurrent ??
-              (currentPrice > 0
-                ? ((fairValue - currentPrice) / currentPrice) * 100
-                : 0);
+      {/* Primary Scenarios: Side-by-Side Horizontal Comparison Columns */}
+      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3 xl:gap-5">
+        {scenarios.map((scenario, idx) => {
+          const res = valuation?.scenarioResults?.[idx];
+          const fairValue =
+            res?.fairValue ?? scenario.forwardEps * scenario.multiple;
+          const upside =
+            res?.upsideFromCurrent ??
+            (currentPrice > 0
+              ? ((fairValue - currentPrice) / currentPrice) * 100
+              : 0);
 
-            const nameLower = scenario.name.toLowerCase();
-            const isBull =
-              nameLower.includes("bull") || nameLower.includes("牛");
-            const isBear =
-              nameLower.includes("bear") || nameLower.includes("熊");
+          const nameLower = scenario.name.toLowerCase();
+          const isBull = nameLower.includes("bull") || nameLower.includes("牛");
+          const isBear = nameLower.includes("bear") || nameLower.includes("熊");
 
-            const cardBorderCls = isBull
-              ? "border-emerald-500/35 hover:border-emerald-400/60 bg-gradient-to-b from-emerald-950/20 via-surface-1/95 to-surface-1/90 shadow-emerald-950/20"
-              : isBear
-                ? "border-rose-500/35 hover:border-rose-400/60 bg-gradient-to-b from-rose-950/20 via-surface-1/95 to-surface-1/90 shadow-rose-950/20"
-                : "border-sky-500/35 hover:border-sky-400/60 bg-gradient-to-b from-sky-950/20 via-surface-1/95 to-surface-1/90 shadow-sky-950/20";
+          const cardBorderCls = isBull
+            ? "border-emerald-500/35 hover:border-emerald-400/60 bg-gradient-to-b from-emerald-950/20 via-surface-1/95 to-surface-1/90 shadow-emerald-950/20"
+            : isBear
+              ? "border-rose-500/35 hover:border-rose-400/60 bg-gradient-to-b from-rose-950/20 via-surface-1/95 to-surface-1/90 shadow-rose-950/20"
+              : "border-sky-500/35 hover:border-sky-400/60 bg-gradient-to-b from-sky-950/20 via-surface-1/95 to-surface-1/90 shadow-sky-950/20";
 
-            const badgeCls = isBull
-              ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
-              : isBear
-                ? "bg-rose-500/15 border-rose-500/30 text-rose-400"
-                : "bg-sky-500/15 border-sky-500/30 text-sky-400";
+          const badgeCls = isBull
+            ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+            : isBear
+              ? "bg-rose-500/15 border-rose-500/30 text-rose-400"
+              : "bg-sky-500/15 border-sky-500/30 text-sky-400";
 
-            const priceTextCls = isBull
-              ? "text-emerald-300"
-              : isBear
-                ? "text-rose-300"
-                : "text-sky-200";
+          const priceTextCls = isBull
+            ? "text-emerald-300"
+            : isBear
+              ? "text-rose-300"
+              : "text-sky-200";
 
-            const Icon = isBull ? TrendingUp : isBear ? TrendingDown : Scale;
+          const Icon = isBull ? TrendingUp : isBear ? TrendingDown : Scale;
 
-            return (
-              <div
-                key={scenario.name || idx}
-                className={`glass-panel flex flex-col justify-between gap-4 rounded-2xl border p-5 shadow-xl transition-all duration-200 ${cardBorderCls}`}
-              >
-                {/* Card Header: Name & Upside Pill */}
-                <div className="flex items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`flex items-center justify-center rounded-lg border p-1.5 ${badgeCls}`}
-                    >
-                      <Icon className="size-4" />
-                    </div>
-                    <span className="text-sm font-extrabold tracking-wide text-white">
-                      {scenario.name}
-                    </span>
-                  </div>
-
-                  <span
-                    className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold tabular-nums ${
-                      upside >= 0
-                        ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
-                        : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
-                    }`}
+          return (
+            <div
+              key={scenario.name || idx}
+              className={`glass-panel flex flex-col justify-between gap-4 rounded-2xl border p-5 shadow-xl transition-all duration-200 ${cardBorderCls}`}
+            >
+              {/* Card Header: Name & Upside Pill */}
+              <div className="flex items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex items-center justify-center rounded-lg border p-1.5 ${badgeCls}`}
                   >
-                    {formatPercent(upside)}
+                    <Icon className="size-4" />
+                  </div>
+                  <span className="text-sm font-extrabold tracking-wide text-white">
+                    {scenario.name}
                   </span>
                 </div>
 
-                {/* Hero Target Price */}
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
-                    {t.targetPrice}
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold tabular-nums ${
+                    upside >= 0
+                      ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                      : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
+                  }`}
+                >
+                  {formatPercent(upside)}
+                </span>
+              </div>
+
+              {/* Hero Target Price */}
+              <div className="flex flex-col gap-0.5">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                  {t.targetPrice}
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className={`font-mono text-3xl font-black tabular-nums tracking-tight xl:text-4xl ${priceTextCls}`}
+                  >
+                    {formatCurrency(fairValue, 2)}
                   </span>
-                  <div className="flex items-baseline gap-2">
-                    <span
-                      className={`font-mono text-3xl font-black tabular-nums tracking-tight xl:text-4xl ${priceTextCls}`}
-                    >
-                      {formatCurrency(fairValue, 2)}
-                    </span>
-                    <span className="font-mono text-[11px] tabular-nums text-slate-400">
-                      ({formatCurrency(scenario.forwardEps, 2)} ×{" "}
-                      {scenario.multiple}x)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Interactive Sliders & Inputs Container */}
-                <div className="flex flex-col gap-3">
-                  {/* Probability Slider & Numeric Input */}
-                  <div className="flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-surface-0/80 p-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-400">
-                        {t.weight}
-                      </span>
-                      <div className="flex items-center gap-1 font-mono">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="1"
-                          value={Math.round(scenario.probability * 100)}
-                          onChange={(e) =>
-                            onScenarioChange(idx, {
-                              probability:
-                                (parseFloat(e.target.value) || 0) / 100,
-                            })
-                          }
-                          className="w-14 rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
-                        />
-                        <span className="text-xs text-slate-400">%</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      step="1"
-                      value={Math.round(scenario.probability * 100)}
-                      onChange={(e) =>
-                        onScenarioChange(idx, {
-                          probability: (parseFloat(e.target.value) || 0) / 100,
-                        })
-                      }
-                      className="h-1.5 w-full cursor-pointer rounded-lg bg-surface-2 accent-accent"
-                    />
-                  </div>
-
-                  {/* 2-Column EPS & Multiple Inline Inputs */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
-                      <span className="font-mono text-[10px] uppercase text-slate-400">
-                        {t.fwdEps}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="font-mono text-xs text-slate-400">
-                          $
-                        </span>
-                        <input
-                          type="number"
-                          step="0.05"
-                          value={scenario.forwardEps}
-                          onChange={(e) =>
-                            onScenarioChange(idx, {
-                              forwardEps: parseFloat(e.target.value) || 0,
-                            })
-                          }
-                          className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
-                      <span className="font-mono text-[10px] uppercase text-slate-400">
-                        {t.exitPe}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          step="0.5"
-                          value={scenario.multiple}
-                          onChange={(e) =>
-                            onScenarioChange(idx, {
-                              multiple: parseFloat(e.target.value) || 0,
-                            })
-                          }
-                          className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
-                        />
-                        <span className="font-mono text-xs text-slate-400">
-                          x
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Key Qualitative Assumptions Bullet List */}
-                <div className="flex flex-1 flex-col gap-2 border-t border-white/[0.06] pt-2">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                    {t.assumptionsTitle}
+                  <span className="font-mono text-[11px] tabular-nums text-slate-400">
+                    ({formatCurrency(scenario.forwardEps, 2)} ×{" "}
+                    {scenario.multiple}x)
                   </span>
-                  <ul className="space-y-1.5 text-xs leading-relaxed text-slate-300">
-                    {scenario.assumptions?.map((assump, aIdx) => (
-                      <li key={aIdx} className="flex items-start gap-2">
-                        <span className="mt-0.5 select-none font-mono text-slate-500">
-                          •
-                        </span>
-                        <span>{assump}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        /* Alternative Dense Interactive Table View */
-        <div className="glass-panel overflow-hidden rounded-2xl border border-white/[0.08] shadow-xl">
-          <div className="custom-scrollbar overflow-x-auto">
-            <table className="w-full border-collapse text-left text-xs">
-              <thead>
-                <tr className="border-b border-white/[0.08] bg-surface-0/90 font-mono text-[11px] uppercase text-slate-400 backdrop-blur-md">
-                  <th className="sticky left-0 z-20 bg-surface-0/95 p-3.5 font-semibold">
-                    {t.colScenario}
-                  </th>
-                  <th className="p-3.5 text-right font-semibold">
-                    {t.colProbability}
-                  </th>
-                  <th className="p-3.5 text-right font-semibold">
-                    {t.colFwdEps}
-                  </th>
-                  <th className="p-3.5 text-right font-semibold">
-                    {t.colExitPe}
-                  </th>
-                  <th className="p-3.5 text-right font-semibold">
-                    {t.colFairValue}
-                  </th>
-                  <th className="p-3.5 text-right font-semibold">
-                    {t.colUpside}
-                  </th>
-                  <th className="min-w-[200px] p-3.5 font-semibold">
-                    {t.colAssumptions}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {scenarios.map((scenario, idx) => {
-                  const res = valuation?.scenarioResults?.[idx];
-                  const fairValue =
-                    res?.fairValue ?? scenario.forwardEps * scenario.multiple;
-                  const upside =
-                    res?.upsideFromCurrent ??
-                    (currentPrice > 0
-                      ? ((fairValue - currentPrice) / currentPrice) * 100
-                      : 0);
 
-                  return (
-                    <tr
-                      key={scenario.name || idx}
-                      className="group transition-colors hover:bg-accent/5"
-                    >
-                      <td className="sticky left-0 z-10 whitespace-nowrap border-r border-white/[0.05] bg-surface-1/95 p-3.5 text-sm font-bold text-white backdrop-blur-sm">
-                        {scenario.name}
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <div className="inline-flex items-center justify-end gap-1">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value={Math.round(scenario.probability * 100)}
-                            onChange={(e) =>
-                              onScenarioChange(idx, {
-                                probability:
-                                  (parseFloat(e.target.value) || 0) / 100,
-                              })
-                            }
-                            className="no-spinners w-16 rounded-lg border border-white/[0.1] bg-surface-0/90 px-2 py-1 text-right font-mono font-bold tabular-nums text-slate-100 transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
-                          />
-                          <span className="font-mono text-xs text-slate-400">
-                            %
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <div className="inline-flex items-center justify-end gap-1">
-                          <span className="font-mono text-xs text-slate-400">
-                            $
-                          </span>
-                          <input
-                            type="number"
-                            step="0.05"
-                            value={scenario.forwardEps}
-                            onChange={(e) =>
-                              onScenarioChange(idx, {
-                                forwardEps: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                            className="no-spinners w-20 rounded-lg border border-white/[0.1] bg-surface-0/90 px-2 py-1 text-right font-mono font-bold tabular-nums text-slate-100 transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
-                          />
-                        </div>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <div className="inline-flex items-center justify-end gap-1">
-                          <input
-                            type="number"
-                            step="0.5"
-                            value={scenario.multiple}
-                            onChange={(e) =>
-                              onScenarioChange(idx, {
-                                multiple: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                            className="no-spinners w-16 rounded-lg border border-white/[0.1] bg-surface-0/90 px-2 py-1 text-right font-mono font-bold tabular-nums text-slate-100 transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
-                          />
-                          <span className="font-mono text-xs text-slate-400">
-                            x
-                          </span>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap p-3.5 text-right font-mono text-sm font-bold tabular-nums text-white">
-                        {formatCurrency(fairValue, 2)}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap p-3.5 text-right font-mono text-sm font-bold tabular-nums ${
-                          upside >= 0
-                            ? "text-fintech-green"
-                            : "text-fintech-red"
-                        }`}
-                      >
-                        {formatPercent(upside)}
-                      </td>
-                      <td className="max-w-sm p-3.5 text-xs leading-relaxed text-slate-300">
-                        {scenario.assumptions?.join("; ") || "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+              {/* Interactive Sliders & Inputs Container */}
+              <div className="flex flex-col gap-3">
+                {/* Probability Slider & Numeric Input */}
+                <div className="flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-surface-0/80 p-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-slate-400">
+                      {t.weight}
+                    </span>
+                    <div className="flex items-center gap-1 font-mono">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={Math.round(scenario.probability * 100)}
+                        onChange={(e) =>
+                          onScenarioChange(idx, {
+                            probability:
+                              (parseFloat(e.target.value) || 0) / 100,
+                          })
+                        }
+                        className="w-14 rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                      />
+                      <span className="text-xs text-slate-400">%</span>
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={Math.round(scenario.probability * 100)}
+                    onChange={(e) =>
+                      onScenarioChange(idx, {
+                        probability: (parseFloat(e.target.value) || 0) / 100,
+                      })
+                    }
+                    className="h-1.5 w-full cursor-pointer rounded-lg bg-surface-2 accent-accent"
+                  />
+                </div>
+
+                {/* 2-Column EPS & Multiple Inline Inputs */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
+                    <span className="font-mono text-[10px] uppercase text-slate-400">
+                      {t.fwdEps}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-mono text-xs text-slate-400">
+                        $
+                      </span>
+                      <input
+                        type="number"
+                        step="0.05"
+                        value={scenario.forwardEps}
+                        onChange={(e) =>
+                          onScenarioChange(idx, {
+                            forwardEps: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                        className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
+                    <span className="font-mono text-[10px] uppercase text-slate-400">
+                      {t.exitPe}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={scenario.multiple}
+                        onChange={(e) =>
+                          onScenarioChange(idx, {
+                            multiple: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                        className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                      />
+                      <span className="font-mono text-xs text-slate-400">
+                        x
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Qualitative Assumptions Bullet List */}
+              <div className="flex flex-1 flex-col gap-2 border-t border-white/[0.06] pt-2">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  {t.assumptionsTitle}
+                </span>
+                <ul className="space-y-1.5 text-xs leading-relaxed text-slate-300">
+                  {scenario.assumptions?.map((assump, aIdx) => (
+                    <li key={aIdx} className="flex items-start gap-2">
+                      <span className="mt-0.5 select-none font-mono text-slate-500">
+                        •
+                      </span>
+                      <span>{assump}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       {/* Integrated Sensitivity Analysis Section */}
       {sensitivityData && sensitivityData.length > 0 && (

@@ -759,7 +759,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           <Shield className="size-2.5" />
                           <span>{report.moatRating} Moat</span>
                           {report.moatTrend && (
-                            <span className="font-mono text-[9px]">
+                            <span
+                              className="font-mono text-[9px]"
+                              title={`${report.moatTrend} Moat Trend`}
+                            >
                               {report.moatTrend === "Widening"
                                 ? "↗"
                                 : report.moatTrend === "Narrowing"
@@ -1122,7 +1125,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
             <table className="w-full border-collapse text-left font-mono text-xs">
               <thead>
                 <tr className="border-b border-white/[0.08] bg-surface-1/90 text-[11px] font-semibold text-slate-400">
-                  <th className="py-3 pl-4 pr-2">
+                  <th
+                    className="py-3 pl-4 pr-2"
+                    title={t.screener.colTickerTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("ticker")}
@@ -1132,8 +1138,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-500" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">{tw.colMoat}</th>
-                  <th className="px-2 py-3">
+                  <th className="px-2 py-3" title={t.screener.colMoatTooltip}>
+                    {tw.colMoat}
+                  </th>
+                  <th className="px-2 py-3" title={t.screener.colPriceTooltip}>
                     <button
                       type="button"
                       onClick={() => handleSort("price")}
@@ -1143,7 +1151,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-500" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colBaseFairValueTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("baseUpside")}
@@ -1153,7 +1164,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-500" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colWeightedFairValueTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("upside")}
@@ -1163,8 +1177,16 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-accent" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">{tw.colConsensus}</th>
-                  <th className="px-2 py-3">
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colAnalystTargetTooltip}
+                  >
+                    {tw.colConsensus}
+                  </th>
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colConsensusSpread}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("divergence")}
@@ -1174,7 +1196,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-500" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colOperatingMarginTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("opMargin")}
@@ -1184,7 +1209,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-500" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">
+                  <th
+                    className="px-2 py-3"
+                    title={t.screener.colSnowflakeTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("snowflake")}
@@ -1247,8 +1275,15 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           >
                             {report.moatRating}
                             {report.moatTrend && (
-                              <span className="text-[9px]">
-                                {report.moatTrend === "Widening" ? "↗" : "→"}
+                              <span
+                                className="font-mono text-[9px]"
+                                title={`${report.moatTrend} Moat Trend`}
+                              >
+                                {report.moatTrend === "Widening"
+                                  ? "↗"
+                                  : report.moatTrend === "Narrowing"
+                                    ? "↘"
+                                    : "→"}
                               </span>
                             )}
                           </span>

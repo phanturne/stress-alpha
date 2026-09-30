@@ -518,23 +518,38 @@ export interface Translations {
     subtitle: string;
     searchPlaceholder: string;
     filterAll: string;
+    filterAllTooltip: string;
     filterUndervalued: string;
+    filterUndervaluedTooltip: string;
     filterHighUpside: string;
+    filterHighUpsideTooltip: string;
     allMoats: string;
+    allMoatsTooltip: string;
     wideMoat: string;
+    wideMoatTooltip: string;
     narrowMoat: string;
+    narrowMoatTooltip: string;
     colTicker: string;
+    colTickerTooltip: string;
     colCompany: string;
     colSnowflake: string;
+    colSnowflakeTooltip: string;
     colMoat: string;
+    colMoatTooltip: string;
     colPrice: string;
+    colPriceTooltip: string;
     colAnalystTarget: string;
+    colAnalystTargetTooltip: string;
     colConsensusSpread: string;
     colBaseFairValue: string;
+    colBaseFairValueTooltip: string;
     colWeightedFairValue: string;
+    colWeightedFairValueTooltip: string;
     colUpside: string;
     colOperatingMargin: string;
+    colOperatingMarginTooltip: string;
     colRevenueGrowth: string;
+    colRevenueGrowthTooltip: string;
     colValuationRange: string;
     colAction: string;
     viewCards: string;
@@ -1357,24 +1372,50 @@ export const translations: Record<Locale, Translations> = {
       subtitle:
         "Compare fundamentals, valuation upside, and moat ratings across covered stocks",
       searchPlaceholder: "Search ticker or company name...",
-      filterAll: "All Tickers",
-      filterUndervalued: "Undervalued (>0% Upside)",
-      filterHighUpside: "High Upside (>20%)",
+      filterAll: "All",
+      filterAllTooltip: "Show all covered stocks without valuation filter",
+      filterUndervalued: "Undervalued",
+      filterUndervaluedTooltip:
+        "Filter for undervalued stocks with implied upside > 0%",
+      filterHighUpside: ">20% Upside",
+      filterHighUpsideTooltip:
+        "Filter for high-conviction alpha opportunities with upside > 20%",
       allMoats: "All Moats",
+      allMoatsTooltip: "Show all economic moat ratings",
       wideMoat: "Wide Moat",
-      narrowMoat: "Narrow Moat",
+      wideMoatTooltip:
+        "Filter for Wide Economic Moat companies (durable competitive advantages)",
+      narrowMoat: "Narrow",
+      narrowMoatTooltip: "Filter for Narrow Economic Moat companies",
       colTicker: "Ticker",
+      colTickerTooltip:
+        "Company ticker symbol and legal entity name. Click to sort.",
       colCompany: "Company",
       colSnowflake: "Snowflake",
+      colSnowflakeTooltip:
+        "30-point Snowflake Fundamental Health Score (0-30) across Valuation, Growth, Quality, Moat, and Resilience. Click to sort.",
       colMoat: "Moat",
+      colMoatTooltip:
+        "Economic Moat rating (Wide, Narrow, None) and dynamic trend (↗ Widening, → Stable, ↘ Narrowing) indicating competitive trajectory. Click to sort.",
       colPrice: "Price",
+      colPriceTooltip: "Latest traded market stock price. Click to sort.",
       colAnalystTarget: "Analyst Target",
+      colAnalystTargetTooltip:
+        "Wall Street sell-side consensus 12-month target price and implied upside. Click to sort.",
       colConsensusSpread: "Consensus Spread",
       colBaseFairValue: "Base Target",
+      colBaseFairValueTooltip:
+        "Base Case fair value under normalized guidance execution. Click to sort.",
       colWeightedFairValue: "Weighted FV",
+      colWeightedFairValueTooltip:
+        "Probability-weighted fair value (WFV) across Bull, Base, Bear, and Panic stress regimes. Click to sort.",
       colUpside: "Implied Upside",
       colOperatingMargin: "Op. Margin",
+      colOperatingMarginTooltip:
+        "Normalized operating profit margin (Operating Income / Revenue). Click to sort.",
       colRevenueGrowth: "Rev Growth (YoY)",
+      colRevenueGrowthTooltip:
+        "Quarterly year-over-year revenue growth velocity. Click to sort.",
       colValuationRange: "Stress Range",
       colAction: "Action",
       viewCards: "Cards",
@@ -2193,24 +2234,45 @@ export const translations: Record<Locale, Translations> = {
       title: "股票筛选与估值比对",
       subtitle: "横向对比覆盖股票的基本面指标、估值空间与护城河竞争壁垒",
       searchPlaceholder: "搜索股票代码或公司全称...",
-      filterAll: "全部标的",
-      filterUndervalued: "估值折价 (>0% 空间)",
-      filterHighUpside: "高弹性标的 (>20%)",
+      filterAll: "全部",
+      filterAllTooltip: "显示所有覆盖标的（不限估值空间）",
+      filterUndervalued: "估值折价",
+      filterUndervaluedTooltip: "筛选加权估值空间大于 0% 的折价标的",
+      filterHighUpside: ">20% 空间",
+      filterHighUpsideTooltip: "筛选加权估值空间大于 20% 的高弹性机会",
       allMoats: "全部护城河",
+      allMoatsTooltip: "显示所有护城河评级标的",
       wideMoat: "宽护城河",
+      wideMoatTooltip: "筛选具备宽护城河（长期持久定价权）的优质标的",
       narrowMoat: "窄护城河",
+      narrowMoatTooltip: "筛选具备窄护城河的标的",
       colTicker: "代码",
+      colTickerTooltip: "公司股票代码与全称。点击进行排序。",
       colCompany: "公司",
       colSnowflake: "雪花评分",
+      colSnowflakeTooltip:
+        "雪花图 30 项基本面健康审计总分（0-30分），涵盖估值、成长、盈利质量、护城河与抗风险韧性。点击排序。",
       colMoat: "护城河",
+      colMoatTooltip:
+        "经济护城河评级（宽、窄、无）与动态演变趋势（↗ 持续扩宽、→ 保持稳定、↘ 逐渐收窄）。点击排序。",
       colPrice: "现价",
+      colPriceTooltip: "股票最新市场交易价格。点击排序。",
       colAnalystTarget: "分析师目标价",
+      colAnalystTargetTooltip:
+        "华尔街卖方 12 个月一致预期目标价及较现价空间。点击排序。",
       colConsensusSpread: "一致预期偏离",
       colBaseFairValue: "基准估值",
+      colBaseFairValueTooltip:
+        "基准情景公允价值（管理层业绩指引中枢执行假设）。点击排序。",
       colWeightedFairValue: "加权估值 (WFV)",
+      colWeightedFairValueTooltip:
+        "加权公允价值（WFV），综合牛市、基准、熊市与恐慌四重压力测试情景概率推导。点击排序。",
       colUpside: "估值空间",
       colOperatingMargin: "营业利润率",
+      colOperatingMarginTooltip:
+        "标准化营业利润率（营业利润 / 总营收），衡量主营业务核心盈利能力。点击排序。",
       colRevenueGrowth: "营收增速 (YoY)",
+      colRevenueGrowthTooltip: "最新季度营业收入同比增长率 (YoY)。点击排序。",
       colValuationRange: "压力估值区间",
       colAction: "操作",
       viewCards: "卡片",
