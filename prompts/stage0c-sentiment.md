@@ -15,7 +15,7 @@ Extract sentiment signals from **{TICKER}**'s most recent earnings call transcri
 
 ### A. Management Tone (Prepared Remarks)
 
-Score each dimension 1–5 (1=defensive/evasive, 5=confident/specific):
+Score each dimension 1–10 (1=defensive/evasive, 10=confident/specific):
 
 | Dimension | Score | Evidence |
 |-----------|-------|----------|
@@ -63,12 +63,12 @@ Write `earnings-sentiment.json` to the run directory:
   "callDate": "YYYY-MM-DD",
   
   "managementTone": {
-    "specificity": 4,
-    "forwardConfidence": 4,
-    "capexJustification": 5,
-    "competitivePositioning": 3,
-    "riskAcknowledgment": 3,
-    "overallConfidence": 7,
+    "specificity": 8,
+    "forwardConfidence": 8,
+    "capexJustification": 9,
+    "competitivePositioning": 7,
+    "riskAcknowledgment": 6,
+    "overallConfidence": 8,
     "evidenceNotes": "Jassy provided granular AWS ROI data but deflected FTC questions"
   },
   

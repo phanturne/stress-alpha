@@ -39,6 +39,7 @@ export interface ValuationInput {
   catalysts?: Catalysts;
   locale?: Locale;
   disableAutoCalibration?: boolean;
+  calibrationAudit?: CalibrationAudit;
 }
 
 export function round2(n: number): number {
@@ -785,7 +786,7 @@ export function computeValuation(input: ValuationInput): Valuation {
   }
 
   // Determine scenario probabilities (QPCE Calibrated vs Manual/Raw)
-  let calibrationAudit: CalibrationAudit | undefined;
+  let calibrationAudit: CalibrationAudit | undefined = input.calibrationAudit;
   let scenarioProbabilities = scenarios.scenarios.map((s) => s.probability);
 
   if (!input.disableAutoCalibration) {

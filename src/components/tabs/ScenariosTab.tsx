@@ -290,7 +290,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         onChange={(e) =>
                           onScenarioChange(idx, {
                             probability:
-                              (parseFloat(e.target.value) || 0) / 100,
+                              Math.round(parseFloat(e.target.value) || 0) / 100,
                           })
                         }
                         className="w-14 rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
@@ -306,7 +306,8 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                     value={Math.round(scenario.probability * 100)}
                     onChange={(e) =>
                       onScenarioChange(idx, {
-                        probability: (parseFloat(e.target.value) || 0) / 100,
+                        probability:
+                          Math.round(parseFloat(e.target.value) || 0) / 100,
                       })
                     }
                     className="h-1.5 w-full cursor-pointer rounded-lg bg-surface-2 accent-accent"

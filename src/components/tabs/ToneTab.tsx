@@ -95,11 +95,13 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3/80">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-accent/80 to-accent shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all duration-500"
-                  style={{ width: `${(m.val / 5) * 100}%` }}
+                  style={{
+                    width: `${Math.min(100, Math.max(0, (m.val / 10) * 100))}%`,
+                  }}
                 />
               </div>
-              <span className="w-12 text-right font-mono text-xs font-bold tabular-nums text-accent">
-                {m.val}/5
+              <span className="w-14 text-right font-mono text-xs font-bold tabular-nums text-accent">
+                {m.val}/10
               </span>
             </div>
           ))}

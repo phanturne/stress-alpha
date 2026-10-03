@@ -99,23 +99,26 @@ export async function cleanupStaleTestBranches(
     const now = Date.now();
     const staleThresholdMs = maxStaleAgeMinutes * 60 * 1000;
 
-    for (const branch of res.data.branches) {
+    const staleBranches = res.data.branches.filter((branch) => {
       if (
         branch.name.startsWith("test-vitest-") ||
         branch.name.startsWith("test-ephemeral-")
       ) {
         const createdAt = new Date(branch.created_at).getTime();
-        if (now - createdAt > staleThresholdMs) {
-          try {
-            await client.deleteProjectBranch({
-              projectId,
-              branchId: branch.id,
-            });
-          } catch {
-            // Ignore deletion failures of already-deleted branches
-          }
-        }
+        return now - createdAt > staleThresholdMs;
       }
+      return false;
+    });
+
+    if (staleBranches.length > 0) {
+      await Promise.allSettled(
+        staleBranches.map((b) =>
+          client.deleteProjectBranch({
+            projectId,
+            branchId: b.id,
+          })
+        )
+      );
     }
   } catch {
     // Non-critical background cleanup failure should not block tests

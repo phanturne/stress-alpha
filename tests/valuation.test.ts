@@ -273,6 +273,90 @@ describe("computeValuation", () => {
     });
     expect(valuationCautious.verdictVsConsensus).toContain("Below consensus");
   });
+
+  it("preserves manual scenario probability adjustments without being overwritten by auto-calibration", () => {
+    // Report scenarios that have prior raw/calibrated fields populated
+    const preCalibratedScenarios: Scenarios = {
+      ...mockScenarios,
+      scenarios: [
+        {
+          name: "Bull",
+          probability: 0.25,
+          rawProbability: 0.25,
+          calibratedProbability: 0.35,
+          forwardEps: 8,
+          multiple: 25, // FV = 200
+          assumptions: ["Optimistic expansion"],
+          keyDrivers: [],
+        },
+        {
+          name: "Base",
+          probability: 0.5,
+          rawProbability: 0.5,
+          calibratedProbability: 0.45,
+          forwardEps: 6,
+          multiple: 20, // FV = 120
+          assumptions: ["In-line growth"],
+          keyDrivers: [],
+        },
+        {
+          name: "Panic",
+          probability: 0.25,
+          rawProbability: 0.25,
+          calibratedProbability: 0.2,
+          forwardEps: 4,
+          multiple: 15, // FV = 60
+          assumptions: ["Severe slowdown"],
+          keyDrivers: [],
+        },
+      ],
+    };
+
+    // User moves Bull slider from 25% to 60%, Base to 30%, Bear to 10%
+    const manuallyAdjusted: Scenarios = {
+      ...preCalibratedScenarios,
+      scenarios: [
+        {
+          ...preCalibratedScenarios.scenarios[0],
+          probability: 0.6,
+          rawProbability: 0.6,
+          calibratedProbability: 0.6,
+        },
+        {
+          ...preCalibratedScenarios.scenarios[1],
+          probability: 0.3,
+          rawProbability: 0.3,
+          calibratedProbability: 0.3,
+        },
+        {
+          ...preCalibratedScenarios.scenarios[2],
+          probability: 0.1,
+          rawProbability: 0.1,
+          calibratedProbability: 0.1,
+        },
+      ],
+    };
+
+    const val = computeValuation({
+      facts: mockFacts,
+      scenarios: manuallyAdjusted,
+      disableAutoCalibration: true,
+    });
+
+    // Verify user probability values remain intact
+    expect(manuallyAdjusted.scenarios[0].probability).toBe(0.6);
+    expect(manuallyAdjusted.scenarios[1].probability).toBe(0.3);
+    expect(manuallyAdjusted.scenarios[2].probability).toBe(0.1);
+
+    expect(val.scenarioResults[0].probability).toBe(0.6);
+    expect(val.scenarioResults[1].probability).toBe(0.3);
+    expect(val.scenarioResults[2].probability).toBe(0.1);
+
+    // Weighted FV = (0.6 * 200) + (0.3 * 120) + (0.1 * 60) = 120 + 36 + 6 = 162
+    expect(val.weightedFairValue).toBe(162);
+    // Upside = (162 - 100) / 100 = 62%
+    expect(val.upsidePct).toBe(62);
+  });
 });
 
 describe("deriveEffectiveBaseline", () => {

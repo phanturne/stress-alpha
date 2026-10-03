@@ -429,7 +429,14 @@ export default function HomePage() {
   const handleScenarioChange = (idx: number, patch: Partial<Scenario>) => {
     if (!reportData) return;
     const updatedScenarios = [...reportData.scenarios.scenarios];
-    updatedScenarios[idx] = { ...updatedScenarios[idx], ...patch };
+    updatedScenarios[idx] = {
+      ...updatedScenarios[idx],
+      ...patch,
+      ...(patch.probability !== undefined && {
+        rawProbability: patch.probability,
+        calibratedProbability: patch.probability,
+      }),
+    };
 
     const newScenarios = {
       ...reportData.scenarios,
@@ -444,6 +451,8 @@ export default function HomePage() {
         ...updatedZh[idx],
         ...(patch.probability !== undefined && {
           probability: patch.probability,
+          rawProbability: patch.probability,
+          calibratedProbability: patch.probability,
         }),
         ...(patch.forwardEps !== undefined && { forwardEps: patch.forwardEps }),
         ...(patch.multiple !== undefined && { multiple: patch.multiple }),
@@ -451,7 +460,7 @@ export default function HomePage() {
       newScenariosZh = { ...newScenariosZh, scenarios: updatedZh };
     }
 
-    // Deterministically recompute valuation
+    // Deterministically recompute valuation with manual override (disableAutoCalibration: true)
     const updatedValuation = computeValuation({
       facts: reportData.facts,
       scenarios: newScenarios,
@@ -459,6 +468,8 @@ export default function HomePage() {
       moat: reportData.moat,
       estimates: reportData.estimates,
       stressParams,
+      disableAutoCalibration: true,
+      calibrationAudit: reportData.valuation?.calibrationAudit,
     });
 
     setReportData({
@@ -490,6 +501,8 @@ export default function HomePage() {
       moat: reportData.moat,
       estimates: reportData.estimates,
       stressParams,
+      disableAutoCalibration: true,
+      calibrationAudit: reportData.valuation?.calibrationAudit,
     });
   }, [reportData, stressParams]);
 

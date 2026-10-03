@@ -1249,7 +1249,7 @@ export const translations: Record<Locale, Translations> = {
         "Audited qualitative signals, executive confidence metrics, analyst concern frequencies, and high-impact quotes.",
       empty: "No earnings call sentiment data available for this report.",
       overallConfidence: "Overall Executive Confidence",
-      behavioralDimensions: "Executive Behavioral Dimensions (1-5 Scale)",
+      behavioralDimensions: "Executive Behavioral Dimensions (1-10 Scale)",
       metrics: {
         specificity: "Specificity",
         forwardConfidence: "Forward Confidence",
@@ -2113,7 +2113,7 @@ export const translations: Record<Locale, Translations> = {
         "经审计的管理层语言信号、五维信心得分、华尔街分析师问答焦点与关键原声引用。",
       empty: "当前研报暂无财报电话会议情绪审计数据。",
       overallConfidence: "管理层综合信心得分",
-      behavioralDimensions: "管理层行为五维雷达评估 (1-5 分制)",
+      behavioralDimensions: "管理层行为五维雷达评估 (1-10 分制)",
       metrics: {
         specificity: "表述精确度 (Specificity)",
         forwardConfidence: "前瞻信心指数 (Forward Confidence)",
