@@ -91,7 +91,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   }, [reportData, facts, catalysts, scenarios, moat, stressResult, memoLang]);
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6">
+    <div className="memo-view-container mx-auto w-full max-w-4xl px-4 py-6">
       {/* Control Bar */}
       <div className="no-print mb-6 flex items-center justify-between border-b border-border/80 pb-6">
         <button
@@ -174,6 +174,22 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
       {/* Printable Memo Sheet */}
       <div className="memo-print-page glass-panel flex flex-col gap-8 rounded-2xl border border-border/80 p-8 text-slate-100 shadow-2xl md:p-12">
+        {/* Print-Only Institutional Document Header */}
+        <div className="print-only mb-2 items-center justify-between border-b-2 border-slate-900 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-sm font-black tracking-tight text-slate-950">
+              STRESS<span className="text-accent">ALPHA</span>
+            </span>
+            <span className="text-slate-400">|</span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-600">
+              {t.docClassification}
+            </span>
+          </div>
+          <div className="font-mono text-[9px] font-extrabold tracking-wider text-slate-700">
+            {t.confidentialBadge}
+          </div>
+        </div>
+
         {/* Memo Header */}
         <div className="flex flex-col justify-between gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end">
           <div>
@@ -215,7 +231,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         </div>
 
         {/* Executive Synthesis */}
-        <div className="flex flex-col gap-2">
+        <div className="memo-section flex break-inside-avoid flex-col gap-2">
           <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
             {t.sec1Title}
           </h2>
@@ -287,7 +303,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         </div>
 
         {/* 5-Pillar Snowflake Fundamental Audit Section */}
-        <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface-0/60 p-5 shadow-sm">
+        <div className="memo-section flex break-inside-avoid flex-col gap-3 rounded-2xl border border-border/80 bg-surface-0/60 p-5 shadow-sm">
           <div className="flex flex-col justify-between gap-2 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-accent" />
@@ -360,7 +376,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         </div>
 
         {/* Valuation Regimes Table */}
-        <div className="flex flex-col gap-3">
+        <div className="memo-section flex break-inside-avoid flex-col gap-3">
           <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
             {t.sec2Title}
           </h2>
@@ -491,7 +507,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         {/* Quality of Earnings Guardrail */}
         {facts.oneTimeItems && facts.oneTimeItems.length > 0 && (
-          <div className="flex flex-col gap-2 rounded-xl border border-fintech-amber/30 bg-surface-0/80 p-4 shadow-sm">
+          <div className="memo-section flex break-inside-avoid flex-col gap-2 rounded-xl border border-fintech-amber/30 bg-surface-0/80 p-4 shadow-sm">
             <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase text-fintech-amber">
               <ShieldCheck className="size-4" />
               {t.sec3Title}
@@ -541,7 +557,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         {/* Catalysts Summary */}
         {catalysts && catalysts.catalysts && (
-          <div className="flex flex-col gap-2">
+          <div className="memo-section flex break-inside-avoid flex-col gap-2">
             <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
               {t.sec4Title}
             </h2>
@@ -559,12 +575,12 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         {/* Economic Moat & Competitors */}
         {moat && (
-          <div className="flex flex-col gap-3">
+          <div className="memo-section flex break-inside-avoid flex-col gap-3">
             <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
               {t.secMoatTitle}
             </h2>
 
-            <div className="flex flex-col gap-2 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
+            <div className="flex break-inside-avoid flex-col gap-2 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <span className="bg-fintech-greenGlow/20 rounded border border-fintech-green/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
                   {moat.overallMoatRating} Moat
@@ -580,7 +596,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
             {/* Moat Sources Grid */}
             {moat.moatSources && moat.moatSources.length > 0 && (
-              <div className="grid grid-cols-1 gap-2.5 text-xs md:grid-cols-2">
+              <div className="grid break-inside-avoid grid-cols-1 gap-2.5 text-xs md:grid-cols-2">
                 {moat.moatSources.map((s, i) => (
                   <div
                     key={i}
@@ -605,7 +621,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
             {/* Peer Benchmarking Table */}
             {moat.competitors && moat.competitors.length > 0 && (
-              <div className="custom-scrollbar overflow-x-auto rounded-xl border border-border/80">
+              <div className="custom-scrollbar break-inside-avoid overflow-x-auto rounded-xl border border-border/80">
                 <table className="w-full border-collapse text-left text-[11px]">
                   <thead>
                     <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
@@ -690,12 +706,12 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         {/* Analyst Estimates & Consensus */}
         {estimates && (
-          <div className="flex flex-col gap-3">
+          <div className="memo-section flex break-inside-avoid flex-col gap-3">
             <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
               {t.secEstimatesTitle}
             </h2>
 
-            <div className="flex flex-col gap-2.5 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
+            <div className="flex break-inside-avoid flex-col gap-2.5 rounded-xl border border-border/80 bg-surface-0/80 p-4 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="bg-fintech-greenGlow/20 rounded border border-fintech-green/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-fintech-green shadow-sm">
@@ -726,7 +742,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             </div>
 
             {estimates.estimates && estimates.estimates.length > 0 && (
-              <div className="custom-scrollbar overflow-x-auto rounded-xl border border-border/80">
+              <div className="custom-scrollbar break-inside-avoid overflow-x-auto rounded-xl border border-border/80">
                 <table className="w-full border-collapse text-left text-[11px]">
                   <thead>
                     <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
@@ -790,7 +806,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {filing &&
           filing.newRiskFactors &&
           filing.newRiskFactors.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <div className="memo-section flex break-inside-avoid flex-col gap-2">
               <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
                 {t.sec5Title}
               </h2>
@@ -806,6 +822,47 @@ export const MemoView: React.FC<MemoViewProps> = ({
               </ul>
             </div>
           )}
+
+        {/* Institutional Governance Sign-Off & Audit Trail */}
+        <div className="memo-section mt-2 flex break-inside-avoid flex-col gap-3 rounded-xl border border-border/80 bg-surface-0/60 p-4">
+          <div className="flex flex-col justify-between gap-3 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="size-4 text-accent" />
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+                {t.footerMethodologyTitle}
+              </span>
+            </div>
+            <div className="font-mono text-[10px] text-slate-400">
+              {t.docId}: SA-{facts.ticker}-{facts.quarter}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 text-xs text-slate-300 md:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[10px] font-bold uppercase text-slate-400">
+                {t.footerMethodologyTitle}
+              </span>
+              <p className="text-[11px] leading-relaxed text-slate-400">
+                {t.footerMethodology}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[10px] font-bold uppercase text-slate-400">
+                {t.footerDisclaimerTitle}
+              </span>
+              <p className="text-[11px] leading-relaxed text-slate-400">
+                {t.footerDisclaimer}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-2 font-mono text-[10px] text-slate-400">
+            <div>{t.footerAuditStatus}</div>
+            <div className="text-accent">
+              {t.printGeneratedOn} • https://stressalpha.vercel.app
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -245,15 +245,98 @@ input[type="range"]::-moz-range-thumb {
     box-shadow 0.15s ease;
 }
 
-/* Print styles for Investment Committee Memo */
+/* Utility for print-only elements */
+.print-only {
+  display: none !important;
+}
+
+/* Print styles for Investment Committee Memo (Institutional PDF Export) */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 14mm 14mm;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  :root,
+  html,
+  body,
+  .memo-print-page {
+    --bg-rgb: 255 255 255 !important;
+    --surface-0-rgb: 255 255 255 !important;
+    --surface-1-rgb: 248 250 252 !important;
+    --surface-2-rgb: 241 245 249 !important;
+    --surface-3-rgb: 226 232 240 !important;
+    --border-rgb: 203 213 225 !important;
+    --border-light-rgb: 226 232 240 !important;
+    --text-primary-rgb: 15 23 42 !important;
+    --text-secondary-rgb: 51 65 85 !important;
+    --text-muted-rgb: 71 85 105 !important;
+    --accent-rgb: 2 132 199 !important;
+    --green-rgb: 4 120 87 !important;
+    --red-rgb: 185 28 28 !important;
+    --amber-rgb: 180 83 9 !important;
+    --bg: #ffffff !important;
+    --surface-0: #ffffff !important;
+    --surface-1: #f8fafc !important;
+    --surface-2: #f1f5f9 !important;
+    --surface-3: #e2e8f0 !important;
+    --border: #cbd5e1 !important;
+    --border-light: #e2e8f0 !important;
+    --text-primary: #0f172a !important;
+    --text-secondary: #334155 !important;
+    --text-muted: #475569 !important;
+    --accent: #0284c7 !important;
+    --green: #047857 !important;
+    --red: #b91c1c !important;
+    --amber: #b45309 !important;
+  }
+
+  .print-only {
+    display: flex !important;
+  }
+
+  .no-print,
+  button,
+  header,
+  nav,
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  html,
   body {
     background: #ffffff !important;
     color: #0f172a !important;
+    font-size: 10pt !important;
+    line-height: 1.45 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
   }
-  .no-print {
-    display: none !important;
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
   }
+
+  .memo-view-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
   .memo-print-page {
     background: #ffffff !important;
     color: #0f172a !important;
@@ -262,36 +345,200 @@ input[type="range"]::-moz-range-thumb {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    gap: 1.25rem !important;
   }
+
+  .memo-print-page h1 {
+    color: #0f172a !important;
+    font-size: 18pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .memo-print-page h2 {
+    color: #334155 !important;
+    font-size: 9.5pt !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  .memo-print-page p,
+  .memo-print-page li {
+    color: #334155 !important;
+    font-size: 9pt !important;
+    line-height: 1.5 !important;
+  }
+
+  .memo-print-page strong {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  .memo-print-page .text-white {
+    color: #0f172a !important;
+  }
+
+  .memo-print-page .text-slate-100,
+  .memo-print-page .text-slate-200 {
+    color: #1e293b !important;
+  }
+
+  .memo-print-page .text-slate-300 {
+    color: #334155 !important;
+  }
+
+  .memo-print-page .text-slate-400,
+  .memo-print-page .text-slate-500 {
+    color: #475569 !important;
+  }
+
+  /* Preserve Financial Semantic Colors */
+  .memo-print-page .text-accent,
+  .memo-print-page strong.text-accent,
+  .memo-print-page span.text-accent {
+    color: #0284c7 !important;
+  }
+
+  .memo-print-page .text-fintech-green,
+  .memo-print-page strong.text-fintech-green,
+  .memo-print-page span.text-fintech-green,
+  .memo-print-page td.text-fintech-green {
+    color: #047857 !important;
+  }
+
+  .memo-print-page .text-fintech-red,
+  .memo-print-page strong.text-fintech-red,
+  .memo-print-page span.text-fintech-red,
+  .memo-print-page td.text-fintech-red {
+    color: #b91c1c !important;
+  }
+
+  .memo-print-page .text-fintech-amber,
+  .memo-print-page strong.text-fintech-amber,
+  .memo-print-page span.text-fintech-amber {
+    color: #b45309 !important;
+  }
+
+  /* Card Surfaces, Badges, and Dividers */
+  .memo-print-page .glass-panel,
+  .memo-print-page [class*="bg-surface-0"],
+  .memo-print-page [class*="bg-surface-1"] {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  .memo-print-page [class*="bg-surface-2"] {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .memo-print-page [class*="border-border"] {
+    border-color: #cbd5e1 !important;
+  }
+
+  .memo-print-page [class*="border-white/"] {
+    border-color: #e2e8f0 !important;
+  }
+
+  .memo-print-page [class*="divide-border"] > :not([hidden]) ~ :not([hidden]) {
+    border-color: #e2e8f0 !important;
+  }
+
+  .memo-print-page [class*="bg-accent/"] {
+    background-color: rgba(2, 132, 199, 0.08) !important;
+  }
+
+  .memo-print-page [class*="border-accent/"] {
+    border-color: rgba(2, 132, 199, 0.35) !important;
+  }
+
+  .memo-print-page [class*="bg-fintech-greenGlow/"] {
+    background-color: rgba(4, 120, 87, 0.08) !important;
+  }
+
+  .memo-print-page [class*="border-fintech-green/"] {
+    border-color: rgba(4, 120, 87, 0.35) !important;
+  }
+
+  .memo-print-page [class*="border-fintech-amber/"] {
+    border-color: rgba(180, 83, 9, 0.35) !important;
+  }
+
+  /* Tables */
+  .memo-print-page .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .memo-print-page table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8pt !important;
+  }
+
+  .memo-print-page thead {
+    display: table-header-group !important;
+  }
+
+  .memo-print-page tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memo-print-page th {
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    border-bottom: 1.5px solid #cbd5e1 !important;
+    padding: 5px 6px !important;
+    font-size: 7.5pt !important;
+  }
+
+  .memo-print-page td {
+    color: #1e293b !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 5px 6px !important;
+  }
+
+  /* Section Break Controls */
+  .memo-print-page .memo-section,
+  .memo-print-page .break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
   .memo-print-page h1,
   .memo-print-page h2,
   .memo-print-page h3,
-  .memo-print-page h4,
-  .memo-print-page strong {
-    color: #0f172a !important;
+  .memo-print-page h4 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
   }
-  .memo-print-page p,
-  .memo-print-page span,
-  .memo-print-page li {
-    color: #334155 !important;
+
+  /* Snowflake Radar SVG in Print */
+  .memo-print-page .snowflake-rings circle {
+    stroke: rgba(15, 23, 42, 0.18) !important;
   }
-  .memo-print-page table {
-    border-color: #cbd5e1 !important;
+
+  .memo-print-page .snowflake-axes line {
+    stroke: rgba(15, 23, 42, 0.22) !important;
   }
-  .memo-print-page th {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border-color: #cbd5e1 !important;
+
+  .memo-print-page .snowflake-labels text {
+    fill: #334155 !important;
   }
-  .memo-print-page td {
-    color: #1e293b !important;
-    border-color: #e2e8f0 !important;
+
+  .memo-print-page .snowflake-labels .fill-white {
+    fill: #0f172a !important;
   }
-  .memo-print-page .bg-surface-0,
-  .memo-print-page .bg-surface-1,
-  .memo-print-page .bg-surface-2 {
-    background: #f8fafc !important;
-    border-color: #cbd5e1 !important;
+
+  .memo-print-page svg .fill-white {
+    fill: #0f172a !important;
+  }
+
+  .memo-print-page svg .fill-surface-0\/90 {
+    fill: #f1f5f9 !important;
+  }
+
+  .memo-print-page svg .stroke-white\/20 {
+    stroke: rgba(15, 23, 42, 0.2) !important;
   }
 }
 

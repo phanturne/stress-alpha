@@ -160,7 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="glass-header sticky top-0 z-40 flex h-14 w-full shrink-0 flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
+    <header className="glass-header no-print sticky top-0 z-40 flex h-14 w-full shrink-0 flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Clickable Brand Logo -> Returns to Home (Screener) */}
@@ -176,14 +176,9 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
           <div className="hidden sm:block">
-            <div className="flex items-center gap-1.5">
-              <span className="text-base font-extrabold tracking-tight text-white transition-colors group-hover:text-accent">
-                Stress<span className="text-accent">Alpha</span>
-              </span>
-              <span className="hidden rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-400 md:inline">
-                {t.engineTag}
-              </span>
-            </div>
+            <span className="text-base font-extrabold tracking-tight text-white transition-colors group-hover:text-accent">
+              Stress<span className="text-accent">Alpha</span>
+            </span>
           </div>
         </button>
 

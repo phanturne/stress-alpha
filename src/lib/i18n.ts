@@ -488,6 +488,15 @@ export interface Translations {
     colUpside: string;
     colDate: string;
     targetPriorFrom: string;
+    confidentialBadge: string;
+    docClassification: string;
+    footerMethodologyTitle: string;
+    footerMethodology: string;
+    footerDisclaimerTitle: string;
+    footerDisclaimer: string;
+    docId: string;
+    footerAuditStatus: string;
+    printGeneratedOn: string;
   };
   page: {
     loading: string;
@@ -1348,6 +1357,18 @@ export const translations: Record<Locale, Translations> = {
       colUpside: "Upside",
       colDate: "Date",
       targetPriorFrom: "from",
+      confidentialBadge: "CONFIDENTIAL • INVESTMENT COMMITTEE USE ONLY",
+      docClassification: "Institutional Fundamental Equity Stress Research",
+      footerMethodologyTitle: "Deterministic Arithmetic Engine",
+      footerMethodology:
+        "100% Deterministic Financial Arithmetic — Pure TypeScript sensitivity flow-through, zero LLM mathematical hallucinations. Multi-factor volume shocks, operating leverage rigidity, and risk/reward asymmetry ratios are calculated strictly by StressAlpha Engine.",
+      footerDisclaimerTitle: "Governance & Institutional Audit Trail",
+      footerDisclaimer:
+        "For institutional investment research and scenario stress testing purposes only. Not investment advice or solicitation. Sourced from SEC Form 10-K / 10-Q filings, transcripts, and audited market consensus data.",
+      docId: "Document ID",
+      footerAuditStatus:
+        "Pillar Simplex Calibration: Convex Regularization [0.05, 0.85] | Data Integrity: 100%",
+      printGeneratedOn: "Generated via StressAlpha Institutional Cockpit",
     },
     page: {
       loading: "Loading StressAlpha Report...",
@@ -2219,6 +2240,18 @@ export const translations: Record<Locale, Translations> = {
       colUpside: "空间",
       colDate: "发布日期",
       targetPriorFrom: "前值",
+      confidentialBadge: "机密文档 • 仅限投资决策委员会内部使用",
+      docClassification: "机构级基本面量化压力测试研报",
+      footerMethodologyTitle: "确定性算术引擎",
+      footerMethodology:
+        "100% 确定性金融算术内核 — 纯 TypeScript 传导计算，严格杜绝大模型数学幻觉。多因子需求冲击、固定营运支出刚性与盈亏非对称比率均由 StressAlpha 引擎确定性求解。",
+      footerDisclaimerTitle: "合规治理与审计跟踪",
+      footerDisclaimer:
+        "本研报仅供机构投资研究与极端情景压力测试参考，不构成任何投资建议或证券推介。数据提取自 SEC 10-K / 10-Q 官方呈报文件、财报电话会纪要与经审计的一致预期。",
+      docId: "文档编号",
+      footerAuditStatus:
+        "概率单纯形校准: 凸收缩正则化 [0.05, 0.85] | 数据完整性: 100%",
+      printGeneratedOn: "由 StressAlpha 机构研报驾驶舱生成",
     },
     page: {
       loading: "正在加载 StressAlpha 研报数据...",

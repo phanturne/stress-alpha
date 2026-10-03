@@ -1638,7 +1638,7 @@ export default function HomePage() {
         <button
           type="button"
           onClick={handleScrollToTop}
-          className="fixed bottom-6 right-6 z-40 hidden animate-fade-in items-center gap-2 rounded-xl border border-white/[0.12] bg-surface-1/95 px-3 py-2 text-xs font-semibold text-slate-200 shadow-2xl backdrop-blur-md transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95 lg:flex"
+          className="no-print fixed bottom-6 right-6 z-40 hidden animate-fade-in items-center gap-2 rounded-xl border border-white/[0.12] bg-surface-1/95 px-3 py-2 text-xs font-semibold text-slate-200 shadow-2xl backdrop-blur-md transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95 lg:flex"
           title={locale === "zh" ? "回到顶部" : "Back to top"}
           aria-label="Back to top"
         >
@@ -1651,7 +1651,7 @@ export default function HomePage() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 animate-fade-in items-center gap-2 rounded-xl border border-accent/40 bg-surface-2 px-4 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl">
+        <div className="no-print fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 animate-fade-in items-center gap-2 rounded-xl border border-accent/40 bg-surface-2 px-4 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl">
           <Check className="size-4 text-accent" />
           <span>{toastMessage}</span>
         </div>
