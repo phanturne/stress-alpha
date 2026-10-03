@@ -134,7 +134,6 @@ export function WatchlistClientPage({
         currentSlug={null}
         onSelectReport={handleSelectReport}
         viewMode="watchlist"
-        isWatchlistActive={true}
         onViewModeChange={(mode) => {
           if (mode === "screener") {
             router.push("/screener");

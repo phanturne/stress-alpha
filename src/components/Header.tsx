@@ -55,7 +55,6 @@ interface HeaderProps {
   reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
   viewMode: "cockpit" | "memo" | "screener" | "watchlist";
-  isWatchlistActive?: boolean;
   onViewModeChange: (
     mode: "cockpit" | "memo" | "screener" | "watchlist",
     options?: { watchlistOnly?: boolean }
@@ -74,7 +73,6 @@ export const Header: React.FC<HeaderProps> = ({
   reports = [],
   onSelectReport,
   viewMode,
-  isWatchlistActive = false,
   onViewModeChange,
   onOpenShortcutsModal,
   onShare,
@@ -214,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={() => onViewModeChange("screener", { watchlistOnly: false })}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "screener" && !isWatchlistActive
+            viewMode === "screener"
               ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
               : "text-slate-400 hover:text-white"
           }`}
@@ -228,8 +226,7 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={() => onViewModeChange("watchlist")}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "watchlist" ||
-            (viewMode === "screener" && isWatchlistActive)
+            viewMode === "watchlist"
               ? "bg-amber-500/15 font-bold text-amber-300 shadow-sm ring-1 ring-amber-500/30"
               : "text-slate-400 hover:text-white"
           }`}
@@ -237,8 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Star
             className={`size-3.5 ${
-              viewMode === "watchlist" ||
-              (viewMode === "screener" && isWatchlistActive)
+              viewMode === "watchlist"
                 ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
                 : "text-slate-400"
             }`}
@@ -247,8 +243,7 @@ export const Header: React.FC<HeaderProps> = ({
           {watchlistCount > 0 && (
             <span
               className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold ${
-                viewMode === "watchlist" ||
-                (viewMode === "screener" && isWatchlistActive)
+                viewMode === "watchlist"
                   ? "bg-amber-400 text-slate-950"
                   : "bg-surface-3 text-slate-400"
               }`}
@@ -654,7 +649,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                    viewMode === "screener" && !isWatchlistActive
+                    viewMode === "screener"
                       ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
                       : "text-slate-300 hover:bg-surface-2"
                   }`}
@@ -670,8 +665,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                    viewMode === "watchlist" ||
-                    (viewMode === "screener" && isWatchlistActive)
+                    viewMode === "watchlist"
                       ? "border border-amber-500/30 bg-amber-500/15 text-amber-300 shadow-sm"
                       : "text-slate-300 hover:bg-surface-2"
                   }`}
@@ -679,8 +673,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="flex items-center gap-2.5">
                     <Star
                       className={`size-4 ${
-                        viewMode === "watchlist" ||
-                        (viewMode === "screener" && isWatchlistActive)
+                        viewMode === "watchlist"
                           ? "fill-amber-400 text-amber-400"
                           : "text-amber-400"
                       }`}
