@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -92,6 +92,35 @@ export const Header: React.FC<HeaderProps> = ({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click without blocking user interactions on the rest of the page
+  useEffect(() => {
+    if (!isSettingsOpen && !isUserMenuOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        isSettingsOpen &&
+        settingsRef.current &&
+        !settingsRef.current.contains(target)
+      ) {
+        setIsSettingsOpen(false);
+      }
+      if (
+        isUserMenuOpen &&
+        userMenuRef.current &&
+        !userMenuRef.current.contains(target)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [isSettingsOpen, isUserMenuOpen]);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -276,7 +305,7 @@ export const Header: React.FC<HeaderProps> = ({
         </a>
 
         {/* Settings & Resources Dropdown */}
-        <div className="relative">
+        <div ref={settingsRef} className="relative">
           <button
             type="button"
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -296,141 +325,135 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {isSettingsOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setIsSettingsOpen(false)}
-              />
-              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-72 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
-                {/* Language Switcher Row */}
-                <div className="flex items-center justify-between px-2.5 py-2 text-xs">
-                  <div className="flex items-center gap-2 font-medium text-slate-300">
-                    <Globe className="size-3.5 text-accent" />
-                    <span>{t.language}</span>
-                  </div>
-                  <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => onToggleLocale("en")}
-                      className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
-                        locale === "en"
-                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      EN
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onToggleLocale("zh")}
-                      className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
-                        locale === "zh"
-                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      中文
-                    </button>
-                  </div>
+            <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-72 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+              {/* Language Switcher Row */}
+              <div className="flex items-center justify-between px-2.5 py-2 text-xs">
+                <div className="flex items-center gap-2 font-medium text-slate-300">
+                  <Globe className="size-3.5 text-accent" />
+                  <span>{t.language}</span>
                 </div>
-
-                {/* Visual Theme Switcher Row */}
-                <div className="flex items-center justify-between px-2.5 py-2 text-xs">
-                  <div className="flex items-center gap-2 font-medium text-slate-300">
-                    {theme === "light" ? (
-                      <Sun className="size-3.5 text-amber-500" />
-                    ) : (
-                      <Moon className="size-3.5 text-accent" />
-                    )}
-                    <span>{t.theme}</span>
-                  </div>
-                  <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setTheme("cyber")}
-                      className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
-                        theme === "cyber"
-                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                      title={t.themeCyber}
-                    >
-                      <Moon className="size-3" />
-                      <span>{t.themeCyberShort}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTheme("light")}
-                      className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
-                        theme === "light"
-                          ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                      title={t.themeLight}
-                    >
-                      <Sun className="size-3" />
-                      <span>{t.themeLightShort}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Navigation Links: Methodology & Hotkeys */}
-                <div className="py-1">
-                  <Link
-                    href="/methodology"
-                    onClick={() => setIsSettingsOpen(false)}
-                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => onToggleLocale("en")}
+                    className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                      locale === "en"
+                        ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                        : "text-slate-400 hover:text-white"
+                    }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="size-3.5 text-slate-400" />
-                      <span>{t.methodology}</span>
-                    </div>
-                    <ArrowUpRight className="size-3 text-slate-500" />
-                  </Link>
-
-                  {onOpenShortcutsModal && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsSettingsOpen(false);
-                        onOpenShortcutsModal();
-                      }}
-                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Keyboard className="size-3.5 text-slate-400" />
-                        <span>{t.shortcuts}</span>
-                      </div>
-                      <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
-                        ?
-                      </kbd>
-                    </button>
-                  )}
-                </div>
-
-                {/* Secondary External GitHub Link */}
-                <div className="pt-1">
-                  <a
-                    href="https://github.com/phanturne/stress-alpha"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-surface-2 hover:text-slate-200"
+                    EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onToggleLocale("zh")}
+                    className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                      locale === "zh"
+                        ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                        : "text-slate-400 hover:text-white"
+                    }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <GithubIcon className="size-3.5 text-slate-400" />
-                      <span>{t.github}</span>
-                    </div>
-                    <ExternalLink className="size-3 text-slate-500" />
-                  </a>
+                    中文
+                  </button>
                 </div>
               </div>
-            </>
+
+              {/* Visual Theme Switcher Row */}
+              <div className="flex items-center justify-between px-2.5 py-2 text-xs">
+                <div className="flex items-center gap-2 font-medium text-slate-300">
+                  {theme === "light" ? (
+                    <Sun className="size-3.5 text-amber-500" />
+                  ) : (
+                    <Moon className="size-3.5 text-accent" />
+                  )}
+                  <span>{t.theme}</span>
+                </div>
+                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setTheme("cyber")}
+                    className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                      theme === "cyber"
+                        ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                    title={t.themeCyber}
+                  >
+                    <Moon className="size-3" />
+                    <span>{t.themeCyberShort}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTheme("light")}
+                    className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                      theme === "light"
+                        ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                    title={t.themeLight}
+                  >
+                    <Sun className="size-3" />
+                    <span>{t.themeLightShort}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Links: Methodology & Hotkeys */}
+              <div className="py-1">
+                <Link
+                  href="/methodology"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="size-3.5 text-slate-400" />
+                    <span>{t.methodology}</span>
+                  </div>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+
+                {onOpenShortcutsModal && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      onOpenShortcutsModal();
+                    }}
+                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Keyboard className="size-3.5 text-slate-400" />
+                      <span>{t.shortcuts}</span>
+                    </div>
+                    <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                      ?
+                    </kbd>
+                  </button>
+                )}
+              </div>
+
+              {/* Secondary External GitHub Link */}
+              <div className="pt-1">
+                <a
+                  href="https://github.com/phanturne/stress-alpha"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 transition-colors hover:bg-surface-2 hover:text-slate-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <GithubIcon className="size-3.5 text-slate-400" />
+                    <span>{t.github}</span>
+                  </div>
+                  <ExternalLink className="size-3 text-slate-500" />
+                </a>
+              </div>
+            </div>
           )}
         </div>
 
         {/* User Profile / Authentication Menu */}
         {session?.user ? (
-          <div className="relative">
+          <div ref={userMenuRef} className="relative">
             <button
               type="button"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -453,35 +476,29 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isUserMenuOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setIsUserMenuOpen(false)}
-                />
-                <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-56 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
-                  <div className="px-2.5 py-2">
-                    <div className="truncate text-xs font-bold text-white">
-                      {session.user.name || tAuth.profile}
-                    </div>
-                    <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
-                      {session.user.email}
-                    </div>
+              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-56 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+                <div className="px-2.5 py-2">
+                  <div className="truncate text-xs font-bold text-white">
+                    {session.user.name || tAuth.profile}
                   </div>
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        setIsUserMenuOpen(false);
-                        await signOut();
-                      }}
-                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-rose-300 transition-colors hover:bg-rose-500/10 hover:text-rose-200"
-                    >
-                      <LogOut className="size-3.5 text-rose-400" />
-                      <span>{tAuth.signOut}</span>
-                    </button>
+                  <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
+                    {session.user.email}
                   </div>
                 </div>
-              </>
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsUserMenuOpen(false);
+                      await signOut();
+                    }}
+                    className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-rose-300 transition-colors hover:bg-rose-500/10 hover:text-rose-200"
+                  >
+                    <LogOut className="size-3.5 text-rose-400" />
+                    <span>{tAuth.signOut}</span>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         ) : (

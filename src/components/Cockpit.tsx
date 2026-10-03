@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   RotateCcw,
   Sliders,
@@ -105,6 +105,21 @@ export const Cockpit: React.FC<CockpitProps> = ({
     "volume" | "margins" | "all"
   >("volume");
   const [isGuardrailOpen, setIsGuardrailOpen] = useState<boolean>(false);
+  const guardrailRef = useRef<HTMLDivElement>(null);
+
+  const handleToggleGuardrail = () => {
+    const nextState = !isGuardrailOpen;
+    setIsGuardrailOpen(nextState);
+    if (nextState) {
+      setTimeout(() => {
+        guardrailRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 50);
+    }
+  };
+
   const [editingParam, setEditingParam] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>("");
 
@@ -968,7 +983,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
       {/* 4. Collapsible Income Quality Guardrail Card (Saves 150px vertical height) */}
       {facts.oneTimeItems && facts.oneTimeItems.length > 0 && (
-        <div className="glass-panel bg-fintech-amberGlow/5 flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 p-3.5 shadow-lg sm:p-4">
+        <div
+          ref={guardrailRef}
+          className="glass-panel bg-fintech-amberGlow/5 flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 p-3.5 shadow-lg sm:p-4"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-fintech-amber">
               <ShieldAlert className="size-4" />
@@ -976,7 +994,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             </div>
             <button
               type="button"
-              onClick={() => setIsGuardrailOpen(!isGuardrailOpen)}
+              onClick={handleToggleGuardrail}
               className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-300 shadow-sm transition-colors hover:border-accent/40 hover:text-white"
               title={
                 isGuardrailOpen

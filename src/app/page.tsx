@@ -82,7 +82,17 @@ export default function HomePage() {
   const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const workspaceScrollRef = useRef<HTMLDivElement | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isFavorite, toggleFavorite, isAuthenticated } = useWatchlist();
+
+  // Clean up toast timer on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Restore saved language preference from localStorage on mount
   useEffect(() => {
@@ -118,10 +128,16 @@ export default function HomePage() {
     fixedOpexShiftPct: 0,
   });
 
-  const showToast = (msg: string) => {
+  const showToast = useCallback((msg: string) => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
-  };
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage(null);
+      toastTimeoutRef.current = null;
+    }, 2500);
+  }, []);
 
   // Load report from API with optional initial shock overrides & client cache
   const loadReport = useCallback(
@@ -693,12 +709,20 @@ export default function HomePage() {
         return;
       }
 
-      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
-      if (
-        tag === "input" ||
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName?.toLowerCase();
+      const inputType = (target as HTMLInputElement)?.type?.toLowerCase();
+
+      // Only suppress hotkeys when actively typing inside text-entry controls
+      const isTextEntry =
         tag === "textarea" ||
-        (e.target as HTMLElement)?.isContentEditable
-      ) {
+        Boolean(target?.isContentEditable) ||
+        (tag === "input" &&
+          !["range", "button", "checkbox", "radio", "submit", "reset"].includes(
+            inputType || ""
+          ));
+
+      if (isTextEntry) {
         return;
       }
 
@@ -722,6 +746,12 @@ export default function HomePage() {
         if (currentTabIndex < tabItems.length - 1) {
           switchWorkspace(tabItems[currentTabIndex + 1].id);
         }
+        return;
+      }
+
+      if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        handleResetDefaults();
         return;
       }
 
@@ -1104,11 +1134,13 @@ export default function HomePage() {
                   <div
                     ref={tabScrollRef}
                     onWheel={(e) => {
-                      if (tabScrollRef.current && e.deltaY !== 0) {
-                        tabScrollRef.current.scrollBy({ left: e.deltaY * 0.8 });
+                      if (tabScrollRef.current) {
+                        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                          tabScrollRef.current.scrollLeft += e.deltaY * 1.5;
+                        }
                       }
                     }}
-                    className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto scroll-smooth py-0.5 sm:gap-1.5"
+                    className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto py-0.5 sm:gap-1.5"
                   >
                     {tabItems.map((tab) => {
                       const Icon = tab.icon;

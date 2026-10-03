@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   FolderOpen,
   ChevronDown,
@@ -57,6 +57,25 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const [expandedTickers, setExpandedTickers] = useState<
     Record<string, boolean>
   >({});
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click without blocking user interactions on the rest of the page
+  useEffect(() => {
+    if (!isOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearchQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [isOpen]);
 
   const toggleTickerExpanded = (ticker: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -183,22 +202,29 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
     return (
       <div
         key={r.slug}
-        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          onSelectReport(r.slug);
+          setIsOpen(false);
+          setSearchQuery("");
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelectReport(r.slug);
+            setIsOpen(false);
+            setSearchQuery("");
+          }
+        }}
+        className={`flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
           isSelected
             ? "bg-accent/10 font-semibold text-accent"
             : "text-slate-300 hover:bg-surface-2 hover:text-white"
         }`}
+        title={r.company || r.name}
       >
-        <button
-          type="button"
-          onClick={() => {
-            onSelectReport(r.slug);
-            setIsOpen(false);
-            setSearchQuery("");
-          }}
-          className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left"
-          title={r.company || r.name}
-        >
+        <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
           <div className="flex min-w-0 items-center gap-2">
             <span className="font-mono font-bold text-white">
               {r.ticker || r.name}
@@ -219,7 +245,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               ${r.weightedFairValue}
             </span>
           ) : null}
-        </button>
+        </div>
 
         <div className="ml-2 flex shrink-0 items-center gap-1.5">
           {isSelected && <Check className="size-3.5 shrink-0 text-accent" />}
@@ -262,24 +288,31 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         key={g.ticker}
         className="border-b border-white/[0.04] last:border-b-0"
       >
-        {/* Compact Single-Row Ticker Item */}
+        {/* Compact Single-Row Ticker Item - Full-row clickable */}
         <div
-          className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            onSelectReport(featuredReport.slug);
+            setIsOpen(false);
+            setSearchQuery("");
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelectReport(featuredReport.slug);
+              setIsOpen(false);
+              setSearchQuery("");
+            }
+          }}
+          className={`flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
             isSelected
               ? "bg-accent/10 font-semibold text-accent"
               : "text-slate-300 hover:bg-surface-2 hover:text-white"
           }`}
+          title={g.company || g.ticker}
         >
-          <button
-            type="button"
-            onClick={() => {
-              onSelectReport(featuredReport.slug);
-              setIsOpen(false);
-              setSearchQuery("");
-            }}
-            className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left"
-            title={g.company || g.ticker}
-          >
+          <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
             <div className="flex min-w-0 items-center gap-2">
               <span className="font-mono font-bold text-white">{g.ticker}</span>
               <span className="font-mono text-[11px] text-slate-400">
@@ -296,7 +329,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 ${featuredReport.weightedFairValue}
               </span>
             ) : null}
-          </button>
+          </div>
 
           {/* Action cluster: Quarters expander pill + Checkmark + Star */}
           <div className="ml-2 flex shrink-0 items-center gap-1.5">
@@ -418,7 +451,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   };
 
   return (
-    <div className="relative inline-block text-left">
+    <div ref={dropdownRef} className="relative inline-block text-left">
       {/* Unified Ticker · Quarter Financial Capsule */}
       <button
         type="button"
@@ -465,143 +498,134 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => {
-              setIsOpen(false);
-              setSearchQuery("");
-            }}
-          />
-          <div className="glass-panel absolute left-0 z-50 mt-2 w-80 max-w-[calc(100vw-24px)] divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-96">
-            {/* Search Input Bar */}
-            <div className="bg-surface-0/80 p-2.5">
-              <div className="relative flex items-center">
-                <Search className="absolute left-2.5 size-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={
-                    locale === "zh"
-                      ? "搜索代码、公司或季度..."
-                      : "Search ticker, company or quarter..."
-                  }
-                  className="w-full rounded-lg border border-white/[0.08] bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
-                  autoFocus
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2 text-slate-400 hover:text-white"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Quarter Switcher Bar for Current Stock (Ultra-compact single horizontal line) */}
-            {activeSiblingReports.length > 1 && !searchQuery && (
-              <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-surface-0/60 px-3 py-1.5 text-xs">
-                <div className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-slate-400">
-                  <Calendar className="size-3 text-accent" />
-                  <span>{displayTicker}:</span>
-                </div>
-                <div className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto py-0.5">
-                  {activeSiblingReports.map((r, idx) => {
-                    const isCurrent = r.slug === currentSlug;
-                    const isQuarterLatest = idx === 0;
-                    return (
-                      <button
-                        key={r.slug}
-                        type="button"
-                        onClick={() => {
-                          onSelectReport(r.slug);
-                          setIsOpen(false);
-                          setSearchQuery("");
-                        }}
-                        className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold transition-all ${
-                          isCurrent
-                            ? "border border-accent/60 bg-accent/25 font-bold text-accent shadow-sm"
-                            : "border border-white/[0.08] bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
-                        }`}
-                        title={`${r.quarter}${r.reportDate ? ` (${r.reportDate})` : ""}`}
-                      >
-                        <span>{r.quarter}</span>
-                        {isQuarterLatest && (
-                          <span
-                            className={`ml-1 font-mono text-[8px] font-bold ${
-                              isCurrent ? "text-accent" : "text-emerald-400"
-                            }`}
-                          >
-                            ★
-                          </span>
-                        )}
-                        {isCurrent && (
-                          <Check className="ml-1 inline size-3 text-accent" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Available Reports / Universe List */}
-            <div className="custom-scrollbar max-h-80 overflow-y-auto py-1">
-              {filteredReports.length === 0 ? (
-                <div className="px-3 py-6 text-center text-xs text-slate-500">
-                  {t.noReportsFound}
-                </div>
-              ) : (
-                <>
-                  {pinnedGroups.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-1.5 border-b border-white/[0.04] bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                        <Star className="size-3 fill-amber-400 text-amber-400" />
-                        <span>
-                          {t.watchlistSection} ({pinnedGroups.length})
-                        </span>
-                      </div>
-                      {pinnedGroups.map(renderGroup)}
-                    </div>
-                  )}
-
-                  {otherGroups.length > 0 && (
-                    <div>
-                      {pinnedGroups.length > 0 && (
-                        <div className="flex items-center gap-1.5 border-y border-white/[0.04] bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                          <span>{t.allReportsSection}</span>
-                        </div>
-                      )}
-                      {otherGroups.map(renderGroup)}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Screener Action Footer */}
-            {onOpenScreener && (
-              <div className="border-t border-white/[0.06] bg-surface-0/90 p-2">
+        <div className="glass-panel absolute left-0 z-50 mt-2 w-80 max-w-[calc(100vw-24px)] divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-96">
+          {/* Search Input Bar */}
+          <div className="bg-surface-0/80 p-2.5">
+            <div className="relative flex items-center">
+              <Search className="absolute left-2.5 size-3.5 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={
+                  locale === "zh"
+                    ? "搜索代码、公司或季度..."
+                    : "Search ticker, company or quarter..."
+                }
+                className="w-full rounded-lg border border-white/[0.08] bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                autoFocus
+              />
+              {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => {
-                    onOpenScreener();
-                    setIsOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 text-slate-400 hover:text-white"
                 >
-                  <BarChart3 className="size-3.5" />
-                  <span>{t.openScreener}</span>
+                  <X className="size-3.5" />
                 </button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Quarter Switcher Bar for Current Stock (Ultra-compact single horizontal line) */}
+          {activeSiblingReports.length > 1 && !searchQuery && (
+            <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-surface-0/60 px-3 py-1.5 text-xs">
+              <div className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-slate-400">
+                <Calendar className="size-3 text-accent" />
+                <span>{displayTicker}:</span>
               </div>
+              <div className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto py-0.5">
+                {activeSiblingReports.map((r, idx) => {
+                  const isCurrent = r.slug === currentSlug;
+                  const isQuarterLatest = idx === 0;
+                  return (
+                    <button
+                      key={r.slug}
+                      type="button"
+                      onClick={() => {
+                        onSelectReport(r.slug);
+                        setIsOpen(false);
+                        setSearchQuery("");
+                      }}
+                      className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold transition-all ${
+                        isCurrent
+                          ? "border border-accent/60 bg-accent/25 font-bold text-accent shadow-sm"
+                          : "border border-white/[0.08] bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                      }`}
+                      title={`${r.quarter}${r.reportDate ? ` (${r.reportDate})` : ""}`}
+                    >
+                      <span>{r.quarter}</span>
+                      {isQuarterLatest && (
+                        <span
+                          className={`ml-1 font-mono text-[8px] font-bold ${
+                            isCurrent ? "text-accent" : "text-emerald-400"
+                          }`}
+                        >
+                          ★
+                        </span>
+                      )}
+                      {isCurrent && (
+                        <Check className="ml-1 inline size-3 text-accent" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Available Reports / Universe List */}
+          <div className="custom-scrollbar max-h-80 overflow-y-auto py-1">
+            {filteredReports.length === 0 ? (
+              <div className="px-3 py-6 text-center text-xs text-slate-500">
+                {t.noReportsFound}
+              </div>
+            ) : (
+              <>
+                {pinnedGroups.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 border-b border-white/[0.04] bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                      <Star className="size-3 fill-amber-400 text-amber-400" />
+                      <span>
+                        {t.watchlistSection} ({pinnedGroups.length})
+                      </span>
+                    </div>
+                    {pinnedGroups.map(renderGroup)}
+                  </div>
+                )}
+
+                {otherGroups.length > 0 && (
+                  <div>
+                    {pinnedGroups.length > 0 && (
+                      <div className="flex items-center gap-1.5 border-y border-white/[0.04] bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        <span>{t.allReportsSection}</span>
+                      </div>
+                    )}
+                    {otherGroups.map(renderGroup)}
+                  </div>
+                )}
+              </>
             )}
           </div>
-        </>
+
+          {/* Screener Action Footer */}
+          {onOpenScreener && (
+            <div className="border-t border-white/[0.06] bg-surface-0/90 p-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenScreener();
+                  setIsOpen(false);
+                  setSearchQuery("");
+                }}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
+              >
+                <BarChart3 className="size-3.5" />
+                <span>{t.openScreener}</span>
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
