@@ -272,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-        {/* Quick Theme Toggle Button (Moon: Cyber Obsidian / Sun: Clean Light) */}
+        {/* Quick Theme Toggle Button (Moon: Dark / Sun: Light) */}
         <button
           type="button"
           onClick={toggleTheme}
@@ -366,16 +366,16 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
                   <button
                     type="button"
-                    onClick={() => setTheme("cyber")}
+                    onClick={() => setTheme("dark")}
                     className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
-                      theme === "cyber"
+                      theme === "dark"
                         ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
                         : "text-slate-400 hover:text-white"
                     }`}
-                    title={t.themeCyber}
+                    title={t.themeDark}
                   >
                     <Moon className="size-3" />
-                    <span>{t.themeCyberShort}</span>
+                    <span>{t.themeDarkShort}</span>
                   </button>
                   <button
                     type="button"
@@ -841,15 +841,15 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
                   <button
                     type="button"
-                    onClick={() => setTheme("cyber")}
+                    onClick={() => setTheme("dark")}
                     className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold ${
-                      theme === "cyber"
+                      theme === "dark"
                         ? "bg-accent font-extrabold text-slate-950"
                         : "text-slate-400"
                     }`}
                   >
                     <Moon className="size-3" />
-                    <span>{t.themeCyberShort}</span>
+                    <span>{t.themeDarkShort}</span>
                   </button>
                   <button
                     type="button"

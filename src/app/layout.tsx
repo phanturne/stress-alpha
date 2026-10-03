@@ -42,12 +42,12 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
-      data-theme="cyber"
+      data-theme="dark"
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('stress_alpha_theme');var theme=(t==='light')?'light':'cyber';document.documentElement.setAttribute('data-theme',theme);if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('stress_alpha_theme');var theme=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',theme);if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})()`,
           }}
         />
       </head>

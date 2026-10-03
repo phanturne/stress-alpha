@@ -22,10 +22,12 @@ export interface Translations {
     settings: string;
     language: string;
     theme: string;
-    themeCyber: string;
+    themeDark: string;
     themeLight: string;
-    themeCyberShort: string;
+    themeDarkShort: string;
     themeLightShort: string;
+    themeCyber?: string;
+    themeCyberShort?: string;
     toggleTheme: string;
     shortcuts: string;
     watchlist: string;
@@ -853,11 +855,13 @@ export const translations: Record<Locale, Translations> = {
       settings: "Settings & Resources",
       language: "Language",
       theme: "Visual Theme",
-      themeCyber: "Cyber Obsidian",
-      themeLight: "Clean Light",
-      themeCyberShort: "Cyber",
+      themeDark: "Dark",
+      themeLight: "Light",
+      themeDarkShort: "Dark",
       themeLightShort: "Light",
-      toggleTheme: "Toggle Visual Theme (Cyber Obsidian / Clean Light)",
+      themeCyber: "Dark",
+      themeCyberShort: "Dark",
+      toggleTheme: "Toggle Visual Theme (Dark / Light)",
       shortcuts: "Keyboard Shortcuts",
       watchlist: "Watchlist",
       addToWatchlist: "Add to Watchlist (F)",
@@ -1737,11 +1741,13 @@ export const translations: Record<Locale, Translations> = {
       settings: "偏好与设置",
       language: "界面语言",
       theme: "视觉主题",
-      themeCyber: "黑曜赛博",
-      themeLight: "浅色明亮",
-      themeCyberShort: "黑曜",
+      themeDark: "深色模式",
+      themeLight: "浅色模式",
+      themeDarkShort: "深色",
       themeLightShort: "浅色",
-      toggleTheme: "切换视觉主题 (黑曜赛博 / 浅色明亮)",
+      themeCyber: "深色模式",
+      themeCyberShort: "深色",
+      toggleTheme: "切换视觉主题 (深色 / 浅色)",
       shortcuts: "键盘快捷键",
       watchlist: "自选关注",
       addToWatchlist: "加入自选 (F)",

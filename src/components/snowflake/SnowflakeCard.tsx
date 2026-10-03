@@ -74,7 +74,7 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
                 {p.shortLabel}
               </span>
               <span
-                className="font-mono text-[10px] font-bold"
+                className="snowflake-pillar-score font-mono text-[10px] font-bold"
                 style={{ color: p.color }}
               >
                 {p.score}/6

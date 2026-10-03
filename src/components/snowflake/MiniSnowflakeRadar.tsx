@@ -113,6 +113,7 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = ({
           stroke="rgba(255, 255, 255, 0.08)"
           strokeWidth={idx === 2 ? 0.8 : 0.5}
           strokeDasharray={idx < 2 ? "1.5 1.5" : undefined}
+          className="mini-snowflake-ring"
         />
       ))}
 
@@ -130,6 +131,7 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = ({
             y2={outerY}
             stroke="rgba(255, 255, 255, 0.1)"
             strokeWidth="0.6"
+            className="mini-snowflake-axis"
           />
         );
       })}
@@ -152,7 +154,13 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = ({
       ))}
 
       {/* Center Origin Dot */}
-      <circle cx={cx} cy={cy} r="0.8" fill="rgba(255, 255, 255, 0.3)" />
+      <circle
+        cx={cx}
+        cy={cy}
+        r="0.8"
+        fill="rgba(255, 255, 255, 0.3)"
+        className="mini-snowflake-center"
+      />
     </svg>
   );
 };

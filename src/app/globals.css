@@ -69,12 +69,12 @@
     --accent-rgb: 2 132 199; /* #0284c7 */
     --accent-hover-rgb: 3 105 161; /* #0369a1 */
     --accent-glow: rgba(2, 132, 199, 0.18);
-    --green-rgb: 5 150 105; /* #059669 */
-    --green-glow: rgba(5, 150, 105, 0.18);
-    --red-rgb: 220 38 38; /* #dc2626 */
-    --red-glow: rgba(220, 38 38, 0.18);
-    --amber-rgb: 217 119 6; /* #d97706 */
-    --amber-glow: rgba(217, 119, 6, 0.18);
+    --green-rgb: 4 120 87; /* #047857 - emerald-700 */
+    --green-glow: rgba(4, 120, 87, 0.18);
+    --red-rgb: 185 28 28; /* #b91c1c - red-700 */
+    --red-glow: rgba(185, 28 28, 0.18);
+    --amber-rgb: 180 83 9; /* #b45309 - amber-700 */
+    --amber-glow: rgba(180, 83, 9, 0.18);
 
     --bg: #f8fafc;
     --surface-0: #ffffff;
@@ -88,9 +88,9 @@
     --text-muted: #64748b;
     --accent: #0284c7;
     --accent-hover: #0369a1;
-    --green: #059669;
-    --red: #dc2626;
-    --amber: #d97706;
+    --green: #047857;
+    --red: #b91c1c;
+    --amber: #b45309;
 
     --glass-bg: rgba(255, 255, 255, 0.88);
     --glass-header-bg: rgba(255, 255, 255, 0.92);
@@ -177,15 +177,15 @@ input[type="number"].no-spinners {
   height: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(13, 17, 23, 0.5);
+  background: var(--scrollbar-track);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #242f40;
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+  background: var(--accent);
 }
 
 /* Custom range sliders for financial stress model */
@@ -312,14 +312,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* =========================================================================
-   Light Mode Theme Adjustments
+   Light Mode Theme Adjustments (High Contrast & Institutional Readability)
    ========================================================================= */
 .light,
 [data-theme="light"] {
   color-scheme: light;
 }
 
-/* Remap high-contrast dark typography classes for light mode */
+/* Base typography contrast */
 .light .text-white,
 [data-theme="light"] .text-white {
   color: #0f172a;
@@ -356,7 +356,192 @@ input[type="range"]::-moz-range-thumb {
   color: #0284c7;
 }
 
-/* Remap white borders and dividers for crisp light contrast */
+.light .hover\:text-slate-200:hover,
+[data-theme="light"] .hover\:text-slate-200:hover {
+  color: #0f172a;
+}
+
+/* Primary Accent & Solid Buttons: Ensure text on filled accent buttons is crisp white */
+.light .bg-accent,
+.light .bg-accent *,
+.light .bg-accent.text-slate-950,
+.light .bg-accent .text-slate-950,
+.light .bg-accent.text-white,
+.light .bg-accent .text-white,
+[data-theme="light"] .bg-accent,
+[data-theme="light"] .bg-accent *,
+[data-theme="light"] .bg-accent.text-slate-950,
+[data-theme="light"] .bg-accent .text-slate-950,
+[data-theme="light"] .bg-accent.text-white,
+[data-theme="light"] .bg-accent .text-white {
+  color: #ffffff !important;
+}
+
+.light .bg-accent svg,
+[data-theme="light"] .bg-accent svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* High-contrast financial & semantic indicator colors for light mode */
+.light .text-emerald-400,
+.light .text-emerald-300,
+.light .text-green-400,
+.light .text-green-300,
+[data-theme="light"] .text-emerald-400,
+[data-theme="light"] .text-emerald-300,
+[data-theme="light"] .text-green-400,
+[data-theme="light"] .text-green-300 {
+  color: #047857 !important; /* emerald-700, 5.5:1 contrast */
+}
+
+.light .text-rose-400,
+.light .text-rose-300,
+.light .text-red-400,
+.light .text-red-300,
+[data-theme="light"] .text-rose-400,
+[data-theme="light"] .text-rose-300,
+[data-theme="light"] .text-red-400,
+[data-theme="light"] .text-red-300 {
+  color: #be123c !important; /* rose-700, 5.2:1 contrast */
+}
+
+.light .text-amber-400,
+.light .text-amber-300,
+.light .text-yellow-400,
+.light .text-yellow-300,
+[data-theme="light"] .text-amber-400,
+[data-theme="light"] .text-amber-300,
+[data-theme="light"] .text-yellow-400,
+[data-theme="light"] .text-yellow-300 {
+  color: #b45309 !important; /* amber-700, 4.6:1 contrast */
+}
+
+.light .text-sky-400,
+.light .text-sky-300,
+.light .text-cyan-400,
+.light .text-cyan-300,
+[data-theme="light"] .text-sky-400,
+[data-theme="light"] .text-sky-300,
+[data-theme="light"] .text-cyan-400,
+[data-theme="light"] .text-cyan-300 {
+  color: #0369a1 !important; /* sky-700, 4.8:1 contrast */
+}
+
+.light .text-purple-400,
+.light .text-purple-300,
+.light .text-indigo-400,
+.light .text-indigo-300,
+[data-theme="light"] .text-purple-400,
+[data-theme="light"] .text-purple-300,
+[data-theme="light"] .text-indigo-400,
+[data-theme="light"] .text-indigo-300 {
+  color: #7e22ce !important; /* purple-700, 4.8:1 contrast */
+}
+
+.light .text-blue-400,
+.light .text-blue-300,
+[data-theme="light"] .text-blue-400,
+[data-theme="light"] .text-blue-300 {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+/* Semi-transparent text variations (e.g. text-emerald-400/80) */
+.light [class*="text-emerald-400/"],
+[data-theme="light"] [class*="text-emerald-400/"] {
+  color: #059669 !important;
+}
+
+.light [class*="text-rose-400/"],
+[data-theme="light"] [class*="text-rose-400/"] {
+  color: #e11d48 !important;
+}
+
+.light [class*="text-amber-400/"],
+[data-theme="light"] [class*="text-amber-400/"] {
+  color: #b45309 !important;
+}
+
+/* Financial & Status Badges: Refine border & background tint for crisp light contrast */
+.light [class*="border-emerald-500/"],
+[data-theme="light"] [class*="border-emerald-500/"] {
+  border-color: rgba(4, 120, 87, 0.35);
+}
+.light [class*="bg-emerald-500/"],
+[data-theme="light"] [class*="bg-emerald-500/"] {
+  background-color: rgba(4, 120, 87, 0.12);
+}
+
+.light [class*="border-rose-500/"],
+[data-theme="light"] [class*="border-rose-500/"] {
+  border-color: rgba(190, 18, 60, 0.35);
+}
+.light [class*="bg-rose-500/"],
+[data-theme="light"] [class*="bg-rose-500/"] {
+  background-color: rgba(190, 18, 60, 0.1);
+}
+
+.light [class*="border-amber-500/"],
+[data-theme="light"] [class*="border-amber-500/"] {
+  border-color: rgba(180, 83, 9, 0.35);
+}
+.light [class*="bg-amber-500/"],
+[data-theme="light"] [class*="bg-amber-500/"] {
+  background-color: rgba(180, 83, 9, 0.12);
+}
+
+.light [class*="border-purple-500/"],
+[data-theme="light"] [class*="border-purple-500/"] {
+  border-color: rgba(126, 34, 206, 0.35);
+}
+.light [class*="bg-purple-500/"],
+[data-theme="light"] [class*="bg-purple-500/"] {
+  background-color: rgba(126, 34, 206, 0.1);
+}
+
+.light [class*="border-sky-500/"],
+.light [class*="border-cyan-500/"],
+[data-theme="light"] [class*="border-sky-500/"],
+[data-theme="light"] [class*="border-cyan-500/"] {
+  border-color: rgba(3, 105, 161, 0.35);
+}
+.light [class*="bg-sky-500/"],
+.light [class*="bg-cyan-500/"],
+[data-theme="light"] [class*="bg-sky-500/"],
+[data-theme="light"] [class*="bg-cyan-500/"] {
+  background-color: rgba(3, 105, 161, 0.1);
+}
+
+/* SVG icons, fills, and star ratings */
+.light .fill-amber-400,
+[data-theme="light"] .fill-amber-400 {
+  fill: #d97706;
+}
+.light .fill-emerald-400,
+[data-theme="light"] .fill-emerald-400 {
+  fill: #047857;
+}
+.light .fill-rose-400,
+[data-theme="light"] .fill-rose-400 {
+  fill: #be123c;
+}
+
+/* Eliminate muddy neon drop shadows in light mode */
+.light [class*="drop-shadow-[0_0_"],
+[data-theme="light"] [class*="drop-shadow-[0_0_"] {
+  filter: none !important;
+}
+
+/* Remap white backgrounds, borders and dividers for crisp light contrast */
+.light [class*="bg-white/"],
+[data-theme="light"] [class*="bg-white/"] {
+  background-color: rgba(15, 23, 42, 0.04);
+}
+.light [class*="hover:bg-white/"]:hover,
+[data-theme="light"] [class*="hover:bg-white/"]:hover {
+  background-color: rgba(15, 23, 42, 0.06);
+}
+
 .light [class*="border-white/"],
 [data-theme="light"] [class*="border-white/"] {
   border-color: rgba(15, 23, 42, 0.08);
@@ -375,20 +560,68 @@ input[type="range"]::-moz-range-thumb {
   --tw-ring-color: rgba(15, 23, 42, 0.08);
 }
 
-/* Snowflake Radar light adjustments */
+/* Glass panel subtle shadow elevation in light mode */
+.light .glass-panel,
+[data-theme="light"] .glass-panel {
+  box-shadow:
+    0 1px 3px 0 rgba(15, 23, 42, 0.05),
+    0 1px 2px -1px rgba(15, 23, 42, 0.05);
+}
+
+/* Snowflake Radar & Mini Radar light adjustments */
 .light .snowflake-rings circle,
 [data-theme="light"] .snowflake-rings circle {
-  stroke: rgba(15, 23, 42, 0.12);
+  stroke: rgba(15, 23, 42, 0.14);
 }
 
 .light .snowflake-axes line,
 [data-theme="light"] .snowflake-axes line {
-  stroke: rgba(15, 23, 42, 0.15);
+  stroke: rgba(15, 23, 42, 0.18);
+}
+
+.light .mini-snowflake-ring,
+[data-theme="light"] .mini-snowflake-ring {
+  stroke: rgba(15, 23, 42, 0.14) !important;
+}
+
+.light .mini-snowflake-axis,
+[data-theme="light"] .mini-snowflake-axis {
+  stroke: rgba(15, 23, 42, 0.18) !important;
+}
+
+.light .mini-snowflake-center,
+[data-theme="light"] .mini-snowflake-center {
+  fill: rgba(15, 23, 42, 0.35) !important;
+}
+
+.light .snowflake-labels text,
+[data-theme="light"] .snowflake-labels text {
+  fill: #475569;
+}
+
+.light .snowflake-labels .fill-white,
+[data-theme="light"] .snowflake-labels .fill-white {
+  fill: #0f172a;
+}
+
+.light .snowflake-labels g:hover text,
+[data-theme="light"] .snowflake-labels g:hover text {
+  fill: #0284c7;
+}
+
+.light .snowflake-pillar-score,
+[data-theme="light"] .snowflake-pillar-score {
+  filter: contrast(1.5) brightness(0.75);
 }
 
 .light svg .fill-white,
 [data-theme="light"] svg .fill-white {
   fill: #0f172a;
+}
+
+.light svg .fill-slate-400,
+[data-theme="light"] svg .fill-slate-400 {
+  fill: #64748b;
 }
 
 .light svg .stroke-white\/20,
@@ -425,6 +658,36 @@ input[type="range"]::-moz-range-thumb {
 .light #social-card-canvas [class*="border-white/"],
 [data-theme="light"] #social-card-canvas [class*="border-white/"] {
   border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.light #social-card-canvas [class*="bg-white/"],
+[data-theme="light"] #social-card-canvas [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.light #social-card-canvas .text-emerald-400,
+[data-theme="light"] #social-card-canvas .text-emerald-400 {
+  color: #34d399 !important;
+}
+
+.light #social-card-canvas .text-rose-400,
+[data-theme="light"] #social-card-canvas .text-rose-400 {
+  color: #fb7185 !important;
+}
+
+.light #social-card-canvas .text-amber-400,
+[data-theme="light"] #social-card-canvas .text-amber-400 {
+  color: #fbbf24 !important;
+}
+
+.light #social-card-canvas .text-purple-300,
+[data-theme="light"] #social-card-canvas .text-purple-300 {
+  color: #d8b4fe !important;
+}
+
+.light #social-card-canvas .text-sky-300,
+[data-theme="light"] #social-card-canvas .text-sky-300 {
+  color: #7dd3fc !important;
 }
 
 /* Modern Shimmer Skeleton Loader Utility */

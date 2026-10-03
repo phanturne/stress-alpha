@@ -8,7 +8,7 @@ import React, {
   useCallback,
 } from "react";
 
-export type Theme = "cyber" | "light";
+export type Theme = "dark" | "light";
 
 export const THEME_STORAGE_KEY = "stress_alpha_theme";
 
@@ -19,6 +19,11 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+function normalizeTheme(val: string | null | undefined): Theme {
+  if (val === "light") return "light";
+  return "dark";
+}
 
 function applyThemeToDocument(theme: Theme) {
   if (typeof document === "undefined") return;
@@ -34,32 +39,29 @@ function applyThemeToDocument(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("cyber");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-      if (stored === "light" || stored === "cyber") {
-        applyThemeToDocument(stored);
+      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      if (stored) {
+        const resolved = normalizeTheme(stored);
+        applyThemeToDocument(resolved);
         Promise.resolve().then(() => {
-          setThemeState(stored);
+          setThemeState(resolved);
         });
       } else {
         // Fall back to DOM attribute if set by inline script
-        const domTheme = document.documentElement.getAttribute(
-          "data-theme"
-        ) as Theme | null;
-        if (domTheme === "light" || domTheme === "cyber") {
-          Promise.resolve().then(() => {
-            setThemeState(domTheme);
-          });
-        } else {
-          applyThemeToDocument("cyber");
-        }
+        const domTheme = document.documentElement.getAttribute("data-theme");
+        const resolved = normalizeTheme(domTheme);
+        applyThemeToDocument(resolved);
+        Promise.resolve().then(() => {
+          setThemeState(resolved);
+        });
       }
     } catch {
       // Fallback for private browsing or storage errors
-      applyThemeToDocument("cyber");
+      applyThemeToDocument("dark");
     }
   }, []);
 
@@ -75,7 +77,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const toggleTheme = useCallback(() => {
     setThemeState((prevTheme) => {
-      const nextTheme: Theme = prevTheme === "cyber" ? "light" : "cyber";
+      const nextTheme: Theme = prevTheme === "dark" ? "light" : "dark";
       applyThemeToDocument(nextTheme);
       try {
         localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
