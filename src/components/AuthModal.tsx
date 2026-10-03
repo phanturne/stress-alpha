@@ -29,6 +29,43 @@ interface AuthModalContentProps {
   onSuccess?: () => void;
 }
 
+function getAuthErrorMessage(
+  err: any,
+  t: ReturnType<typeof getTranslations>["auth"]
+): string {
+  if (!err) return t.errorTitle;
+  const msg = typeof err === "string" ? err : err.message || "";
+  const code = (err.code || "").toUpperCase();
+  const lowerMsg = msg.toLowerCase();
+
+  if (
+    code === "PASSWORD_TOO_SHORT" ||
+    lowerMsg.includes("too short") ||
+    lowerMsg.includes("short")
+  ) {
+    return t.passwordTooShort;
+  }
+  if (
+    code === "INVALID_EMAIL_OR_PASSWORD" ||
+    lowerMsg.includes("invalid email or password") ||
+    lowerMsg.includes("invalid password") ||
+    lowerMsg.includes("credential")
+  ) {
+    return t.invalidCredentials;
+  }
+  if (
+    code.includes("USER_ALREADY_EXISTS") ||
+    lowerMsg.includes("already exists") ||
+    lowerMsg.includes("user already")
+  ) {
+    return t.userAlreadyExists;
+  }
+  if (code === "INVALID_EMAIL" || lowerMsg.includes("invalid email")) {
+    return t.invalidEmail;
+  }
+  return msg || t.errorTitle;
+}
+
 const AuthModalContent: React.FC<AuthModalContentProps> = ({
   onClose,
   locale = "en",
@@ -58,17 +95,29 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
     e.preventDefault();
     setError(null);
     setSuccess(null);
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError(t.emailRequired);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError(t.passwordTooShort);
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (mode === "signIn") {
         const res = await signIn.email({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
         });
 
         if (res?.error) {
-          setError(res.error.message || t.errorTitle);
+          setError(getAuthErrorMessage(res.error, t));
           setLoading(false);
           return;
         }
@@ -80,13 +129,13 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         }, 600);
       } else {
         const res = await signUp.email({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
-          name: name.trim() || email.split("@")[0] || "User",
+          name: name.trim() || trimmedEmail.split("@")[0] || "User",
         });
 
         if (res?.error) {
-          setError(res.error.message || t.errorTitle);
+          setError(getAuthErrorMessage(res.error, t));
           setLoading(false);
           return;
         }
@@ -98,7 +147,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         }, 600);
       }
     } catch (err: any) {
-      setError(err?.message || t.errorTitle);
+      setError(getAuthErrorMessage(err, t));
     } finally {
       setLoading(false);
     }
@@ -168,7 +217,10 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error) setError(null);
+                  }}
                   placeholder={t.namePlaceholder}
                   className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
                 />
@@ -186,7 +238,10 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(null);
+                }}
                 placeholder={t.emailPlaceholder}
                 className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />
@@ -194,9 +249,14 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-300">
-              {t.password}
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-medium text-slate-300">
+                {t.password}
+              </label>
+              <span className="text-[10px] text-slate-400">
+                {t.passwordHint}
+              </span>
+            </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
               <input
@@ -204,7 +264,10 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                 required
                 minLength={6}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
                 placeholder={t.passwordPlaceholder}
                 className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />

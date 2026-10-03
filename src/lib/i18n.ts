@@ -821,6 +821,12 @@ export interface Translations {
     profile: string;
     guestUser: string;
     syncing: string;
+    passwordHint: string;
+    passwordTooShort: string;
+    invalidCredentials: string;
+    invalidEmail: string;
+    userAlreadyExists: string;
+    emailRequired: string;
   };
 }
 
@@ -1701,6 +1707,12 @@ export const translations: Record<Locale, Translations> = {
       profile: "Profile",
       guestUser: "Guest",
       syncing: "Syncing...",
+      passwordHint: "(min. 6 characters)",
+      passwordTooShort: "Password must be at least 6 characters.",
+      invalidCredentials: "Invalid email or password.",
+      invalidEmail: "Please enter a valid email address.",
+      userAlreadyExists: "An account with this email already exists.",
+      emailRequired: "Email address is required.",
     },
   },
   zh: {
@@ -2555,6 +2567,12 @@ export const translations: Record<Locale, Translations> = {
       profile: "个人资料",
       guestUser: "访客",
       syncing: "同步中...",
+      passwordHint: "(至少 6 个字符)",
+      passwordTooShort: "密码长度至少需要 6 个字符。",
+      invalidCredentials: "电子邮箱或密码错误。",
+      invalidEmail: "请输入有效的电子邮箱地址。",
+      userAlreadyExists: "该电子邮箱已被注册。",
+      emailRequired: "电子邮箱不能为空。",
     },
   },
 };

@@ -210,7 +210,7 @@ stress-alpha/
 │           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices & 60s cache
 │           ├── in-memory-report-repository.ts # In-memory mock repository for tests
 │           └── index.ts              # Repository factory singleton
-└── tests/                            # Vitest unit test suite (111 tests across 12 suites)
+└── tests/                            # Vitest unit test suite (145 tests across 15 suites)
     ├── auth.test.ts
     ├── multi-quarter.test.ts
     ├── report.test.ts

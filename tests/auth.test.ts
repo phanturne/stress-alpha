@@ -12,6 +12,8 @@ import {
   userWatchlistsRelations,
 } from "@/db/schema";
 
+import { getTranslations } from "@/lib/i18n";
+
 describe("Better Auth & Database Cloud Watchlist Integration", () => {
   describe("Better Auth Instance Configuration", () => {
     it("initializes Better Auth with required email and password authentication", () => {
@@ -23,10 +25,29 @@ describe("Better Auth & Database Cloud Watchlist Integration", () => {
       expect(typeof auth.api.signOut).toBe("function");
     });
 
-    it("has properly configured options and base URL", () => {
+    it("has properly configured options and base URL with 6-character minPasswordLength", () => {
       expect(auth.options).toBeDefined();
       expect(auth.options.secret).toBeTruthy();
       expect(auth.options.baseURL).toBeTruthy();
+      expect(auth.options.emailAndPassword?.enabled).toBe(true);
+      expect(auth.options.emailAndPassword?.minPasswordLength).toBe(6);
+    });
+  });
+
+  describe("Password Policy & i18n Error Guardrails", () => {
+    it("provides complete localized validation strings in English and Chinese", () => {
+      const enAuth = getTranslations("en").auth;
+      const zhAuth = getTranslations("zh").auth;
+
+      expect(enAuth.passwordHint).toBe("(min. 6 characters)");
+      expect(enAuth.passwordTooShort).toContain("6");
+      expect(enAuth.emailRequired).toBeTruthy();
+      expect(enAuth.invalidCredentials).toBeTruthy();
+
+      expect(zhAuth.passwordHint).toBe("(至少 6 个字符)");
+      expect(zhAuth.passwordTooShort).toContain("6");
+      expect(zhAuth.emailRequired).toBeTruthy();
+      expect(zhAuth.invalidCredentials).toBeTruthy();
     });
   });
 
