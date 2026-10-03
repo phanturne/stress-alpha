@@ -247,6 +247,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     };
   }, [reports, watchlistOnly, isFavorite]);
 
+  const isWatchlistEmpty = watchlistOnly && stats.count === 0 && !isLoading;
+
   // Filter and sort reports
   const filteredReports = useMemo(() => {
     return reports
@@ -722,349 +724,376 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         <div className="flex items-center gap-2">
           {isLoading ? (
             <Skeleton className="h-6 w-24 rounded-md" />
-          ) : (
+          ) : !isWatchlistEmpty ? (
             <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
               {stats.count} {ts.statsCoverage}
             </span>
-          )}
+          ) : null}
         </div>
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-        {/* Coverage Count */}
-        <div className="glass-panel rounded-xl p-3.5 sm:p-4">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide sm:text-xs">
-              {ts.statsCoverage}
-            </span>
-            <CheckCircle2 className="size-4 text-accent" />
+      {!isWatchlistEmpty && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          {/* Coverage Count */}
+          <div className="glass-panel rounded-xl p-3.5 sm:p-4">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[11px] font-medium tracking-wide sm:text-xs">
+                {ts.statsCoverage}
+              </span>
+              <CheckCircle2 className="size-4 text-accent" />
+            </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="mt-3 h-8 w-16" />
+                <Skeleton className="mt-2 h-3.5 w-24" />
+              </>
+            ) : (
+              <>
+                <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                  {stats.count}
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  {`${stats.wideMoatCount} ${ts.wideMoat}`}
+                </p>
+              </>
+            )}
           </div>
-          {isLoading ? (
-            <>
-              <Skeleton className="mt-3 h-8 w-16" />
-              <Skeleton className="mt-2 h-3.5 w-24" />
-            </>
-          ) : (
-            <>
-              <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
-                {stats.count}
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {`${stats.wideMoatCount} ${ts.wideMoat}`}
-              </p>
-            </>
-          )}
-        </div>
 
-        {/* Avg Upside */}
-        <div className="glass-panel rounded-xl p-3.5 sm:p-4">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide sm:text-xs">
-              {ts.statsAvgUpside}
-            </span>
-            <TrendingUp className="size-4 text-green-400" />
+          {/* Avg Upside */}
+          <div className="glass-panel rounded-xl p-3.5 sm:p-4">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[11px] font-medium tracking-wide sm:text-xs">
+                {ts.statsAvgUpside}
+              </span>
+              <TrendingUp className="size-4 text-green-400" />
+            </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="mt-3 h-8 w-24" />
+                <Skeleton className="mt-2 h-3.5 w-32" />
+              </>
+            ) : (
+              <>
+                <div
+                  className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
+                    stats.avgUpside >= 0 ? "text-green-400" : "text-rose-400"
+                  }`}
+                >
+                  {stats.avgUpside >= 0 ? "+" : ""}
+                  {stats.avgUpside.toFixed(1)}%
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  {ts.statsAvgUpsideSub}
+                </p>
+              </>
+            )}
           </div>
-          {isLoading ? (
-            <>
-              <Skeleton className="mt-3 h-8 w-24" />
-              <Skeleton className="mt-2 h-3.5 w-32" />
-            </>
-          ) : (
-            <>
-              <div
-                className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
-                  stats.avgUpside >= 0 ? "text-green-400" : "text-rose-400"
-                }`}
-              >
-                {stats.avgUpside >= 0 ? "+" : ""}
-                {stats.avgUpside.toFixed(1)}%
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {ts.statsAvgUpsideSub}
-              </p>
-            </>
-          )}
-        </div>
 
-        {/* Highest Upside Pick */}
-        <div
-          className={`glass-panel rounded-xl p-3.5 sm:p-4 ${
-            stats.topPick && !isLoading
-              ? "cursor-pointer transition-all hover:border-accent/40 hover:bg-surface-2/40"
-              : ""
-          }`}
-          onClick={() =>
-            !isLoading &&
-            stats.topPick &&
-            onSelectReport(stats.topPick.slug, "cockpit")
-          }
-          title={
-            stats.topPick && !isLoading
-              ? ts.openCockpitTooltip(
-                  stats.topPick.ticker || stats.topPick.slug
-                )
-              : undefined
-          }
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide sm:text-xs">
-              {ts.statsTopPick}
-            </span>
-            <Sparkles className="size-4 text-amber-400" />
-          </div>
-          {isLoading ? (
-            <>
-              <Skeleton className="mt-3 h-8 w-28" />
-              <Skeleton className="mt-2 h-3.5 w-24" />
-            </>
-          ) : (
-            <>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-mono text-2xl font-black text-white sm:text-3xl">
-                  {stats.topPick?.ticker || "—"}
-                </span>
-                {stats.topPick?.upsidePct !== undefined && (
-                  <span
-                    className={`font-mono text-sm font-bold ${
-                      stats.topPick.upsidePct >= 0
-                        ? "text-green-400"
-                        : "text-rose-400"
-                    }`}
-                  >
-                    {stats.topPick.upsidePct >= 0 ? "+" : ""}
-                    {stats.topPick.upsidePct.toFixed(1)}%
+          {/* Highest Upside Pick */}
+          <div
+            className={`glass-panel rounded-xl p-3.5 sm:p-4 ${
+              stats.topPick && !isLoading
+                ? "cursor-pointer transition-all hover:border-accent/40 hover:bg-surface-2/40"
+                : ""
+            }`}
+            onClick={() =>
+              !isLoading &&
+              stats.topPick &&
+              onSelectReport(stats.topPick.slug, "cockpit")
+            }
+            title={
+              stats.topPick && !isLoading
+                ? ts.openCockpitTooltip(
+                    stats.topPick.ticker || stats.topPick.slug
+                  )
+                : undefined
+            }
+          >
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[11px] font-medium tracking-wide sm:text-xs">
+                {ts.statsTopPick}
+              </span>
+              <Sparkles className="size-4 text-amber-400" />
+            </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="mt-3 h-8 w-28" />
+                <Skeleton className="mt-2 h-3.5 w-24" />
+              </>
+            ) : (
+              <>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="font-mono text-2xl font-black text-white sm:text-3xl">
+                    {stats.topPick?.ticker || "—"}
                   </span>
-                )}
-              </div>
-              <p className="mt-1 truncate text-[11px] text-slate-400">
-                {stats.topPick?.company || "—"}
-              </p>
-            </>
-          )}
-        </div>
-
-        {/* Wide Moat Share */}
-        <div className="glass-panel rounded-xl p-3.5 sm:p-4">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide sm:text-xs">
-              {ts.statsWideMoat}
-            </span>
-            <Shield className="size-4 text-purple-400" />
+                  {stats.topPick?.upsidePct !== undefined && (
+                    <span
+                      className={`font-mono text-sm font-bold ${
+                        stats.topPick.upsidePct >= 0
+                          ? "text-green-400"
+                          : "text-rose-400"
+                      }`}
+                    >
+                      {stats.topPick.upsidePct >= 0 ? "+" : ""}
+                      {stats.topPick.upsidePct.toFixed(1)}%
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 truncate text-[11px] text-slate-400">
+                  {stats.topPick?.company || "—"}
+                </p>
+              </>
+            )}
           </div>
-          {isLoading ? (
-            <>
-              <Skeleton className="mt-3 h-8 w-16" />
-              <Skeleton className="mt-2 h-3.5 w-28" />
-            </>
-          ) : (
-            <>
-              <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
-                {stats.count > 0
-                  ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
-                  : "0%"}
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {ts.statsWideMoatSub(stats.wideMoatCount, stats.count)}
-              </p>
-            </>
-          )}
+
+          {/* Wide Moat Share */}
+          <div className="glass-panel rounded-xl p-3.5 sm:p-4">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-[11px] font-medium tracking-wide sm:text-xs">
+                {ts.statsWideMoat}
+              </span>
+              <Shield className="size-4 text-purple-400" />
+            </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="mt-3 h-8 w-16" />
+                <Skeleton className="mt-2 h-3.5 w-28" />
+              </>
+            ) : (
+              <>
+                <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                  {stats.count > 0
+                    ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
+                    : "0%"}
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  {ts.statsWideMoatSub(stats.wideMoatCount, stats.count)}
+                </p>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Filter and Search Controls */}
-      <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
-        {/* Search input */}
-        <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={ts.searchPlaceholder}
-            className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Watchlist Filter Pill */}
-          <button
-            type="button"
-            onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
-            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
-              watchlistOnly
-                ? "border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-sm ring-1 ring-amber-500/30"
-                : "border-white/[0.08] bg-surface-0/60 text-slate-400 hover:border-white/20 hover:text-white"
-            }`}
-            title={ts.filterWatchlist}
-          >
-            <Star
-              className={`size-3.5 ${
-                watchlistOnly
-                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
-                  : "text-slate-400"
-              }`}
+      {!isWatchlistEmpty && (
+        <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
+          {/* Search input */}
+          <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={ts.searchPlaceholder}
+              className="w-full rounded-lg border border-white/[0.08] bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
             />
-            <span>{ts.filterWatchlist}</span>
-            {watchlistCount > 0 && (
-              <span
-                className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
-                  watchlistOnly
-                    ? "bg-amber-400 font-bold text-slate-950"
-                    : "bg-surface-3 text-slate-400"
-                }`}
-              >
-                {watchlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Moat Filter */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => setMoatFilter("all")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                moatFilter === "all"
-                  ? "bg-accent/20 font-semibold text-accent"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.allMoatsTooltip}
-            >
-              {ts.allMoats}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMoatFilter("wide")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                moatFilter === "wide"
-                  ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.wideMoatTooltip}
-            >
-              {ts.wideMoat}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMoatFilter("narrow")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                moatFilter === "narrow"
-                  ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.narrowMoatTooltip}
-            >
-              {ts.narrowMoat}
-            </button>
-          </div>
-
-          {/* Upside Filter */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => setUpsideFilter("all")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                upsideFilter === "all"
-                  ? "bg-accent/20 font-semibold text-accent"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.filterAllTooltip}
-            >
-              {ts.filterAll}
-            </button>
-            <button
-              type="button"
-              onClick={() => setUpsideFilter("undervalued")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                upsideFilter === "undervalued"
-                  ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.filterUndervaluedTooltip}
-            >
-              {ts.filterUndervalued}
-            </button>
-            <button
-              type="button"
-              onClick={() => setUpsideFilter("high-upside")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                upsideFilter === "high-upside"
-                  ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.filterHighUpsideTooltip}
-            >
-              {ts.filterHighUpside}
-            </button>
-          </div>
-        </div>
-
-        {/* View Mode Toggle & Result Counter & Reset */}
-        <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
-          {/* View Mode Toggle: Cards vs Table */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode("cards")}
-              className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                viewMode === "cards"
-                  ? "bg-accent/20 font-bold text-accent"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.viewCards}
-            >
-              <LayoutGrid className="size-3.5" />
-              <span>{ts.viewCards}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode("table")}
-              className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                viewMode === "table"
-                  ? "bg-accent/20 font-bold text-accent"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={ts.viewTable}
-            >
-              <Table className="size-3.5" />
-              <span>{ts.viewTable}</span>
-            </button>
-          </div>
-
-          <div className="hidden h-4 w-px bg-white/10 sm:block" />
-
-          {/* Results count & Reset */}
-          <div className="flex items-center gap-2">
-            <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-500">
-              {ts.resultsCount(filteredReports.length, reports.length)}
-            </span>
-            {hasActiveFilters && (
+            {searchQuery && (
               <button
-                type="button"
-                onClick={handleResetFilters}
-                className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
-                title={ts.resetFilters}
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
               >
-                <RotateCcw className="size-2.5" />
-                <span>{ts.resetFilters}</span>
+                ✕
               </button>
             )}
           </div>
+
+          {/* Filter Pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Watchlist Filter Pill */}
+            {(watchlistCount > 0 || watchlistOnly) && (
+              <button
+                type="button"
+                onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
+                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
+                  watchlistOnly
+                    ? "border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-sm ring-1 ring-amber-500/30"
+                    : "border-white/[0.08] bg-surface-0/60 text-slate-400 hover:border-white/20 hover:text-white"
+                }`}
+                title={ts.filterWatchlist}
+              >
+                <Star
+                  className={`size-3.5 ${
+                    watchlistOnly
+                      ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                      : "text-slate-400"
+                  }`}
+                />
+                <span>{ts.filterWatchlist}</span>
+                {watchlistCount > 0 && (
+                  <span
+                    className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
+                      watchlistOnly
+                        ? "bg-amber-400 font-bold text-slate-950"
+                        : "bg-surface-3 text-slate-400"
+                    }`}
+                  >
+                    {watchlistCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Moat Filter */}
+            <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setMoatFilter("all")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  moatFilter === "all"
+                    ? "bg-accent/20 font-semibold text-accent"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.allMoatsTooltip}
+              >
+                {ts.allMoats}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMoatFilter("wide")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  moatFilter === "wide"
+                    ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.wideMoatTooltip}
+              >
+                {ts.wideMoat}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMoatFilter("narrow")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  moatFilter === "narrow"
+                    ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.narrowMoatTooltip}
+              >
+                {ts.narrowMoat}
+              </button>
+            </div>
+
+            {/* Upside Filter */}
+            <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setUpsideFilter("all")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  upsideFilter === "all"
+                    ? "bg-accent/20 font-semibold text-accent"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.filterAllTooltip}
+              >
+                {ts.filterAll}
+              </button>
+              <button
+                type="button"
+                onClick={() => setUpsideFilter("undervalued")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  upsideFilter === "undervalued"
+                    ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.filterUndervaluedTooltip}
+              >
+                {ts.filterUndervalued}
+              </button>
+              <button
+                type="button"
+                onClick={() => setUpsideFilter("high-upside")}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  upsideFilter === "high-upside"
+                    ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.filterHighUpsideTooltip}
+              >
+                {ts.filterHighUpside}
+              </button>
+            </div>
+          </div>
+
+          {/* View Mode Toggle & Result Counter & Reset */}
+          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
+            {/* View Mode Toggle: Cards vs Table */}
+            <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/60 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => handleSetViewMode("cards")}
+                className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                  viewMode === "cards"
+                    ? "bg-accent/20 font-bold text-accent"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.viewCards}
+              >
+                <LayoutGrid className="size-3.5" />
+                <span>{ts.viewCards}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetViewMode("table")}
+                className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                  viewMode === "table"
+                    ? "bg-accent/20 font-bold text-accent"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={ts.viewTable}
+              >
+                <Table className="size-3.5" />
+                <span>{ts.viewTable}</span>
+              </button>
+            </div>
+
+            <div className="hidden h-4 w-px bg-white/10 sm:block" />
+
+            {/* Results count & Reset */}
+            <div className="flex items-center gap-2">
+              <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-500">
+                {ts.resultsCount(filteredReports.length, reports.length)}
+              </span>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
+                  title={ts.resetFilters}
+                >
+                  <RotateCcw className="size-2.5" />
+                  <span>{ts.resetFilters}</span>
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content: Cards or Table */}
-      {viewMode === "cards" ? (
+      {isWatchlistEmpty ? (
+        <div className="glass-panel mx-auto my-8 flex max-w-xl flex-col items-center gap-4 rounded-2xl border border-white/[0.08] p-8 text-center shadow-lg sm:p-12">
+          <div className="flex size-14 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
+            <Star className="size-7 fill-amber-400" />
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="font-mono text-lg font-bold text-white sm:text-xl">
+              {ts.watchlistEmptyTitle}
+            </h3>
+            <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-400 sm:text-sm">
+              {ts.watchlistEmptyDesc}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleToggleWatchlistOnly(false)}
+            className="mt-2 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md transition-all hover:bg-accent/90 active:scale-[0.98]"
+          >
+            {ts.viewAllReports}
+          </button>
+        </div>
+      ) : viewMode === "cards" ? (
         renderCardsView()
       ) : (
         <div className="glass-panel overflow-hidden rounded-xl">

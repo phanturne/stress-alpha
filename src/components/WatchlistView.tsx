@@ -366,36 +366,38 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
         </div>
 
         {/* View Mode Segmented Switcher */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode("cards")}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                viewMode === "cards"
-                  ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={tw.viewCards}
-            >
-              <LayoutGrid className="size-3.5" />
-              <span>{tw.viewCards}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode("table")}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                viewMode === "table"
-                  ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title={tw.viewTable}
-            >
-              <TableIcon className="size-3.5" />
-              <span>{tw.viewTable}</span>
-            </button>
+        {tickerGroups.length > 0 && (
+          <div className="flex items-center gap-2 self-start sm:self-center">
+            <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm">
+              <button
+                type="button"
+                onClick={() => handleSetViewMode("cards")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  viewMode === "cards"
+                    ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={tw.viewCards}
+              >
+                <LayoutGrid className="size-3.5" />
+                <span>{tw.viewCards}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetViewMode("table")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  viewMode === "table"
+                    ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title={tw.viewTable}
+              >
+                <TableIcon className="size-3.5" />
+                <span>{tw.viewTable}</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Top Portfolio Summary KPI Strip (when watchlist has items) */}
