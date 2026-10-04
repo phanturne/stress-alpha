@@ -48,11 +48,20 @@ function parseYear(quarterStr: string, slug: string): number {
 }
 
 async function main() {
-  const targetArg = process.argv[2];
+  const args = process.argv.slice(2);
+  const isDryRun = args.includes("--dry-run") || args.includes("--no-db");
+  const targetArg = args.find((a) => !a.startsWith("-"));
 
   if (!targetArg) {
-    console.error("Usage: npm run analyze -- <report-directory-or-slug>");
-    console.error("Example: npm run analyze -- reports/AMZN-Q2-2026-analysis");
+    console.error(
+      "Usage: npm run analyze -- <report-directory-or-slug> [--dry-run]"
+    );
+    console.error(
+      "Example 1: npm run analyze -- reports/AMZN-Q2-2026-analysis"
+    );
+    console.error(
+      "Example 2 (Dry run): npm run analyze -- reports/AMZN-Q2-2026-analysis --dry-run"
+    );
     process.exit(1);
   }
 
@@ -339,8 +348,15 @@ async function main() {
 
   const slug = path.basename(absRunDir);
 
-  // Database Persistence: Save directly to Neon if configured
-  if (process.env.DATABASE_URL) {
+  // Database Persistence: Save directly to Neon if configured and not dry-run
+  if (isDryRun) {
+    console.log(
+      "\n🧪 [Dry-Run Mode] Skipping Neon Database persistence (--dry-run active)."
+    );
+    console.log(
+      "   All valuation models, QPCE calibrations, and sanity audits validated successfully."
+    );
+  } else if (process.env.DATABASE_URL) {
     try {
       const { getDb } = await import("../src/db/index.js");
       const { tickersTable, reportsTable } =

@@ -14,6 +14,10 @@ This document defines the architectural conventions, data modeling rules, intern
 2. **Audited SEC Data Extraction & Financial Feeds**:
    - Extract facts directly from SEC 10-K / 10-Q filings, press releases, and earnings call transcripts via **Massive.com** ([pricing](https://massive.com/pricing)) for point-in-time statements & ratios, and **Finnhub.io** ([pricing](https://finnhub.io/pricing)) for audio transcripts, SEC filings, and sell-side estimates.
    - Enforce the **Income Quality Guardrail**: Identify non-operating, mark-to-market, or one-off items (e.g., ASU 2016-01 equity adjustments) and isolate normalized `epsOperating` to prevent valuation base inflation.
+   - Decoupled Deterministic Data Ingestion & 8-Module Scaffolding (`src/lib/services/financial-data.ts`, `POST /api/pipeline/data`, `npm run fetch:data`):
+     - Zero LLM tool-calling overhead or hallucinations for quantitative financial statements, market caps, consensus price targets, broker upgrade/downgrade history, or SEC filing links.
+     - Automatically scaffolds complete, schema-valid starter drafts for all 8 quarterly modules (both English & Chinese) with non-destructive preservation of manual analyst edits.
+     - Accessible via REST API (`POST /api/pipeline/data`) and CLI (`npm run fetch:data -- <TICKER> [--stage | STAGING_DIR]`), reusable across automated cron schedules, UI trigger buttons, and AI skills.
 
 ---
 

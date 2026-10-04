@@ -13,53 +13,87 @@ Full workflow instructions:
 
 ## Complete Workflow Steps
 
-### Step 1: Create the Staging Directory
+### Step 1 & 2: Automated Ingestion & 8-Module Scaffolding
+
+Execute the unified TypeScript data ingestion engine. With `--stage`, it automatically resolves the fiscal quarter staging folder (e.g. `reports/<TICKER>-Q2-2026-analysis`), fetches all institutional feeds, and generates valid starter drafts for all 8 quarterly modules (in both English and Chinese):
+
 ```bash
-mkdir -p /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+npm run fetch:data -- <TICKER> --stage
 ```
 
-### Step 2: Extract & Ingest Artifacts
+*Or pass an explicit directory path:*
+```bash
+npm run fetch:data -- <TICKER> reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+```
 
-#### Institutional Data Feeds & Pricing Tiers
-StressAlpha sources quantitative filings, market telemetry, sell-side consensus, and qualitative transcripts from two primary institutional financial data providers:
+*Or invoke the programmatic Next.js REST API:*
+```bash
+curl -s -X POST http://localhost:3000/api/pipeline/data \
+  -H "Content-Type: application/json" \
+  -d '{"ticker": "<TICKER>", "autoStage": true}'
+```
 
-1. **[Massive.com Financial Data](https://massive.com/pricing)** (formerly Polygon.io):
-   - **Company Financials & Ratios** (`/stocks/financials/v1/*`): Point-in-time standardized SEC 10-K/10-Q income statements, balance sheets, cash flow statements, and financial ratios for `facts.json` and peer matrices in `moat-competitors.json`.
-   - **Historical Market Aggregates** (`/v2/aggs/ticker/{TICKER}/range/1/day/*`): Point-in-time EOD prices and historical day-1 post-earnings price reactions for `reactions.json`.
-   - **Pricing Context**: Sourced under Stocks Developer/Advanced tiers or the Financials & Ratios expansion (`https://massive.com/pricing`). Partner datasets (Benzinga $99/mo) can supply live rating revisions.
+This single command automatically fetches live feeds and stages all 18 JSON artifacts:
+1. **Analyst Estimates**: `analyst-estimates.json` & `analyst-estimates_zh.json` (Consensus breakdown, 52W target distributions, sell-side broker roster).
+2. **Fundamental Profile**: `fundamental_profile.json` (SEC balance sheet, cash flows, and historical quarterly income statements).
+3. **Reactions**: `reactions.json` (Historical post-earnings day-1 moves).
+4. **SEC Filings**: `sec-filings.json` (Direct links to 10-Q, 10-K, and 8-K filings).
+5. **Facts**: `facts.draft.json`, `facts.json`, `facts_zh.json` (Headline revenue, operating margin, clean operating EPS, capital runway, valuation archetype).
+6. **Stress Baseline**: `stress-baseline.json` (Annualized baseline revenue, gross margin %, fixed OpEx, shares outstanding, and upstream driver elasticities).
+7. **Scenarios**: `scenarios.json` & `scenarios_zh.json` (Bull, Base, Panic regimes with forward EPS, multiples, and assumptions).
+8. **Moat & Competitors**: `moat-competitors.json` & `moat-competitors_zh.json` (5-pillar economic moat evaluation and competitor benchmarking).
+9. **Catalysts**: `catalysts.json` & `catalysts_zh.json` (Growth & risk catalysts with probability anchors).
+10. **Earnings Sentiment**: `earnings-sentiment.json` (Management tone scorecard, analyst concern topics, and key quotes).
+11. **Filing Extracts**: `filing-extracts.json` & `filing-extracts_zh.json` (10-Q Item 1A risk disclosure diffs and novel findings).
 
+> [!TIP]
+> **Non-Destructive Staging:** `writePipelineArtifacts` preserves existing qualitative files (`scenarios.json`, `moat-competitors.json`, etc.) if you have already customized them. Pass `--overwrite-all` only if you wish to reset all files back to raw starter templates.
+
+#### Institutional Data Feeds & Fallbacks
+1. **[Massive.com Financial Data](https://massive.com/pricing)** (Polygon.io):
+   - Standardized SEC 10-K/10-Q statements (`/stocks/financials/v1/*`) and historical price aggregates (`/v2/aggs/ticker/{TICKER}/range/1/day/*`).
 2. **[Finnhub.io Financial API](https://finnhub.io/pricing)**:
-   - **Earnings Call Transcripts API** (`/stock/transcripts`): Full audio call transcripts and analyst Q&A sessions for management tone audits and quotes in `earnings-sentiment.json` (Stage 0c). Sourced under Fundamentals tier ($50–$200/mo).
-   - **SEC Filings API** (`/stock/filings`): Real-time 10-Q / 10-K search and Item 1A risk disclosure diffs for `filing-extracts.json` (Stage 0b).
-   - **Analyst Price Targets & Recommendations** (`/stock/price-target`, `/stock/recommendation`, `/stock/upgrade-downgrade`): Street consensus ratings, 52W target distributions (Low/Mean/Median/High), and sell-side brokerage revisions for `analyst-estimates.json` (Stage 1c). Sourced under Estimates tier ($75–$200/mo) or Free tier (60 req/min).
+   - Consensus recommendations (`/stock/recommendation`), company profile (`/stock/profile2`), SEC filings search (`/stock/filings`), and audio transcripts (`/stock/transcripts`).
+3. **Yahoo Finance & Local Telemetry**:
+   - Zero-config automatic fallback for consensus price targets and broker rating history.
 
-3. **Zero-Config Local Fallback**:
-   When API keys (`MASSIVE_API_KEY`, `FINNHUB_API_KEY`) are not provided, run the local Python extractors powered by Yahoo Finance / EDGAR:
-   ```bash
-   python3 /Users/krding/Projects/stress-alpha/scripts/fetch_fundamental_profile.py <TICKER> /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
-   ```
+#### Qualitative AI Review & Synthesis
+With all quantitative financials and starter schemas scaffolded, the LLM only audits and enriches qualitative context using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
+- `facts.json`: Audit **forensic governance** (`governanceRisk`: 'none'|'low'|'moderate'|'severe', `accountingFlags`, `materialLitigationOrDoj`).
+- `moat-competitors.json`: Morningstar 5-pillar moat evaluation and direct competitor benchmarking.
+- `scenarios.json`: Customize discrete Bull, Base, Panic regimes with forward EPS, multiples, and initial raw prior probabilities (`rawProbability`).
+- `stress-baseline.json`: Refine upstream driver shocks and operational leverage.
+- `earnings-sentiment.json`: Verify management tone scorecard across 5 dimensions and key executive quotes.
+- `filing-extracts.json`: Extract novel 10-Q risk disclosures.
 
-Follow the institutional prompt templates in `/Users/krding/Projects/stress-alpha/prompts/` to assemble:
-- `facts.json`: Headline financials, segment unit economics, management forward guidance, income quality clean operating EPS, **forensic governance audit** (`governanceRisk`: 'none'|'low'|'moderate'|'severe', `accountingFlags`, `materialLitigationOrDoj`), and **valuation archetype & capital runway** (`valuationArchetype`: 'compounder'|'operating_scaler'|'venture_hypergrowth', `grossMarginPct`, `cashAndEquivalentsBillions`, `quarterlyCashBurnBillions`, `cashRunwayMonths`). *(Sourced via Massive Financials API `/stocks/financials/v1/*` or profile extractor)*.
-- `moat-competitors.json`: Morningstar 5-pillar moat evaluation, sector-velocity calibrated durability, and direct competitor benchmarking. *(Peer metrics enriched via Massive Financials & Ratios)*.
-- `analyst-estimates.json` / `analyst-estimates_zh.json`: Wall Street analyst consensus breakdown, 52W price target range (low/mean/high), sell-side estimates roster with prior targets, and synthesis narrative. Run automated tool or query Finnhub Estimates:
-  ```bash
-  python3 /Users/krding/Projects/stress-alpha/scripts/fetch_analyst_estimates.py <TICKER> /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis --price <CURRENT_PRICE>
-  ```
-- `scenarios.json`: Discrete Bull, Base, Panic regimes with forward EPS, multiples, and initial raw prior probabilities (`rawProbability`).
-- `stress-baseline.json`: Baseline revenue, operating cost leverage, and upstream driver elasticities.
-- `earnings-sentiment.json`: Management tone scorecard across 5 dimensions, analyst Q&A topics, and key executive quotes. *(Sourced via Finnhub Transcripts API `/stock/transcripts`)*.
-- `filing-extracts.json` / `filing-extracts_zh.json`: 10-Q Item 1A risk disclosure diffs and novel commitments. *(Sourced via Finnhub Filings API or SEC EDGAR)*.
-- `reactions.json`: Historical post-earnings day-1 moves and conditional reaction framing. *(Sourced via Massive Aggregates API)*.
-- `catalysts.json`: Growth and downside drivers with probability anchors and evidence.
+---
 
-### Step 3: Run the Deterministic Engine & Save to Neon Database
+### Step 3: Fast Pre-Flight & Valuation Verification (Dry-Run Mode)
+
+Before saving to the database, test the calculation, QPCE calibration, and sanity audit locally without writing to Neon PostgreSQL:
+
 ```bash
-npx tsx /Users/krding/Projects/stress-alpha/scripts/analyze.ts /Users/krding/Projects/stress-alpha/reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+npm run analyze -- reports/<TICKER>-<QUARTER>-<YEAR>-analysis --dry-run
 ```
-This runs the **Quantitative Probability Calibration Engine (QPCE)** across 4 pillars (Lexicographic Governance Veto, Archetype-Aware Resilience & Cash Runway Dilution Guardrails, Sell-Side Skew, Market Shrinkage Anchor), validates all schemas, renders bilingual reports, and persists the record directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
 
-### Step 4: Open in the Web Cockpit
+This verifies 100% Data Completeness across all 8 modules and confirms that all schema invariants pass.
+
+---
+
+### Step 4: Persist to Neon Database & Render Reports
+
+Once satisfied with qualitative audits, execute production analysis:
+
+```bash
+npm run analyze -- reports/<TICKER>-<QUARTER>-<YEAR>-analysis
+```
+
+This runs the **Quantitative Probability Calibration Engine (QPCE)** across 4 pillars, validates all schemas, renders bilingual markdown memos (`report.md` & `report_zh.md`), and persists the report and ticker directly into **Neon PostgreSQL** (`tickers` and `reports` tables).
+
+---
+
+### Step 5: Open in the Web Cockpit
+
 ```bash
 /Users/krding/Projects/stress-alpha/scripts/open_report.sh <TICKER>-<QUARTER>-<YEAR>-analysis
 ```

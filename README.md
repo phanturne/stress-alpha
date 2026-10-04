@@ -27,6 +27,8 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - Live API endpoints:
   - `GET /api/reports`: Queries summaries, live stock prices, snowflake scores, and dynamic valuation metrics.
   - `GET /api/reports/[slug]`: Serves the complete artifact bundle for a selected report.
+  - `GET /api/pipeline/data?ticker=NVDA`: Fetches point-in-time SEC statements, consensus targets, and broker revisions.
+  - `POST /api/pipeline/data`: Automated financial data ingestion and staging for public equities.
 - URL deep-linking: `http://localhost:3000/?report=NVDA-Q2-2027-analysis&mode=cockpit`, dedicated Screener `http://localhost:3000/screener`, and dedicated Watchlist `http://localhost:3000/watchlist`.
 
 ### 3. Dedicated Watchlist & Portfolio Analytics
@@ -125,16 +127,19 @@ StressAlpha includes dedicated AI Skills for end-to-end fundamental and earnings
 - Global level: `~/.agents/skills/stress-alpha/SKILL.md`
 - **Audited Financial Feeds**: Seamlessly integrates with [Massive.com](https://massive.com/pricing) (for SEC point-in-time financial statements, ratios, and aggregates) and [Finnhub.io](https://finnhub.io/pricing) (for earnings call audio transcripts, SEC filings, and sell-side price targets/recommendations).
 
-### Running the Complete Flow with 1 Command:
+### Running the Complete Flow with Deterministic CLI:
 ```bash
-# Analyze and display a report in the web app
-/Users/krding/Projects/stress-alpha/scripts/run_flow.sh AMZN-Q2-2026-analysis
-```
+# 1. Deterministic Data Ingestion & 8-Module Scaffolding (Live Feeds + Starter Drafts)
+npm run fetch:data -- TSLA --stage
 
-### CLI Analysis Engine:
-```bash
-# Compute deterministic valuation, render markdown & persist directly to Neon DB
-npx tsx scripts/analyze.ts LITE-Q4-2026-analysis
+# 2. Local Pre-Flight & Valuation Verification (Dry-Run Mode, skips DB)
+npm run analyze -- reports/TSLA-Q4-2025-analysis --dry-run
+
+# 3. Compute Deterministic Valuation, Render Markdown & Persist to Neon DB
+npm run analyze -- reports/TSLA-Q4-2025-analysis
+
+# 4. Launch Cockpit in Web App
+npm run open -- reports/TSLA-Q4-2025-analysis
 ```
 
 ---
@@ -205,13 +210,16 @@ stress-alpha/
 │       ├── url-state.ts              # URL search param state sync & serializer
 │       ├── report.ts                 # Bilingual markdown report generator
 │       ├── i18n.ts                   # Centralized internationalization dictionary
+│       ├── services/                 # Institutional Data Services
+│       │   └── financial-data.ts     # Massive, Finnhub, & Yahoo Finance unified data pipeline
 │       └── repository/               # Data Access Layer (DAL)
 │           ├── types.ts              # IReportRepository interface
 │           ├── drizzle-report-repository.ts # Neon Postgres implementation with live prices & 60s cache
 │           ├── in-memory-report-repository.ts # In-memory mock repository for tests
 │           └── index.ts              # Repository factory singleton
-└── tests/                            # Vitest unit test suite (145 tests across 15 suites)
+└── tests/                            # Vitest unit test suite (154 tests across 16 suites)
     ├── auth.test.ts
+    ├── financial-data.test.ts
     ├── multi-quarter.test.ts
     ├── report.test.ts
     ├── repository.test.ts
@@ -252,19 +260,24 @@ stress-alpha/
    npm run sync:prices
    ```
 
-5. **Run test suite & verify build:**
+5. **Fetch pipeline data & stage artifacts for any equity:**
+   ```bash
+   npm run fetch:data -- NVDA reports/NVDA-Q2-2027-analysis
+   ```
+
+6. **Run test suite & verify build:**
    ```bash
    npm test
    npm run test:coverage
    npm run build
    ```
 
-6. **Run development server:**
+7. **Run development server:**
    ```bash
    npm run dev
    ```
 
-7. **Open browser:**
+8. **Open browser:**
    ```
    http://localhost:3000
    ```

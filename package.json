@@ -20,6 +20,7 @@
     "sync:prices": "npx tsx scripts/sync_prices.ts",
     "migrate:neon": "npx tsx scripts/migrate_to_neon.ts",
     "db:query": "npx tsx scripts/db_query.ts",
+    "fetch:data": "npx tsx scripts/fetch_data.ts",
     "prepare": "husky"
   },
   "dependencies": {
