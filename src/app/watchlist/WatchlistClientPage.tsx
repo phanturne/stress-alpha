@@ -7,6 +7,7 @@ import { WatchlistView } from "@/components/WatchlistView";
 import type { ReportSummary } from "@/lib/repository";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { Keyboard, X } from "lucide-react";
+import { useRecentReport } from "@/lib/recent-report";
 
 interface WatchlistClientPageProps {
   initialReports?: ReportSummary[];
@@ -22,6 +23,7 @@ export function WatchlistClientPage({
   );
   const [locale, setLocale] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const { recentReport } = useRecentReport();
 
   // Restore saved language preference on mount
   useEffect(() => {
@@ -95,6 +97,14 @@ export function WatchlistClientPage({
         return;
       }
 
+      if (e.key === "m" || e.key === "M") {
+        if (recentReport?.slug) {
+          e.preventDefault();
+          handleSelectReport(recentReport.slug);
+          return;
+        }
+      }
+
       if (e.key === "l" || e.key === "L") {
         e.preventDefault();
         handleToggleLocale(locale === "zh" ? "en" : "zh");
@@ -123,7 +133,14 @@ export function WatchlistClientPage({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [locale, isShortcutsOpen, handleToggleLocale, router]);
+  }, [
+    locale,
+    isShortcutsOpen,
+    handleToggleLocale,
+    router,
+    recentReport?.slug,
+    handleSelectReport,
+  ]);
 
   const t = getTranslations(locale);
 
@@ -132,13 +149,21 @@ export function WatchlistClientPage({
       {/* Top Navigation */}
       <Header
         currentSlug={null}
+        reports={reports}
         onSelectReport={handleSelectReport}
         viewMode="watchlist"
         onViewModeChange={(mode) => {
           if (mode === "screener") {
             router.push("/screener");
           } else if (mode === "cockpit" || mode === "memo") {
-            router.push("/");
+            if (recentReport?.slug) {
+              handleSelectReport(
+                recentReport.slug,
+                mode === "memo" ? "memo" : "cockpit"
+              );
+            } else {
+              router.push("/");
+            }
           }
         }}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
@@ -183,6 +208,16 @@ export function WatchlistClientPage({
                   L
                 </kbd>
               </div>
+              {recentReport?.slug && (
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400">
+                    {t.shortcuts.returnToModel}
+                  </span>
+                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                    M
+                  </kbd>
+                </div>
+              )}
               <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.screener}</span>
                 <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeScript } from "@/components/ThemeScript";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,11 +46,7 @@ export default function RootLayout({
       data-theme="dark"
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('stress_alpha_theme');var theme=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',theme);if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})()`,
-          }}
-        />
+        <ThemeScript />
       </head>
       <body className="bg-background font-sans text-foreground antialiased selection:bg-accent/20 selection:text-accent">
         <ThemeProvider>{children}</ThemeProvider>

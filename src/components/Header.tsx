@@ -26,6 +26,7 @@ import { AUTH_REQUIRED_EVENT, useWatchlist } from "@/lib/watchlist";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthModal } from "./AuthModal";
+import { useRecentReport } from "@/lib/recent-report";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   return (
@@ -131,7 +132,14 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [isMobileMenuOpen]);
 
+  const { recentReport } = useRecentReport(currentSlug, facts?.ticker);
   const currentTicker = facts?.ticker;
+  const activeSlug = currentSlug || recentReport?.slug || null;
+  const activeTicker =
+    currentTicker ||
+    recentReport?.ticker ||
+    reports.find((r) => r.slug === activeSlug)?.ticker ||
+    (activeSlug ? activeSlug.split("-")[0].toUpperCase() : null);
   const siblingReports = React.useMemo(() => {
     if (!reports || reports.length === 0) return [];
     if (currentTicker) {
@@ -201,8 +209,33 @@ export const Header: React.FC<HeaderProps> = ({
         />
       </div>
 
-      {/* Center Nav: Segmented Primary Navigation Bar (Screener + Watchlist) */}
+      {/* Center Nav: Segmented Primary Navigation Bar (Model + Screener + Watchlist) */}
       <nav className="hidden items-center justify-center gap-1 rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm md:flex">
+        {activeSlug && activeTicker && (
+          <button
+            type="button"
+            onClick={() => {
+              if (currentSlug !== activeSlug) {
+                onSelectReport(activeSlug);
+              }
+              onViewModeChange("cockpit");
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "cockpit" || viewMode === "memo"
+                ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
+                : "text-slate-400 hover:text-white"
+            }`}
+            title={
+              viewMode === "cockpit" || viewMode === "memo"
+                ? `${activeTicker} ${t.cockpit} (M)`
+                : t.modelNavTooltip(activeTicker)
+            }
+          >
+            <SlidersHorizontal className="size-3.5" />
+            <span>{`${activeTicker} · ${t.cockpit}`}</span>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => onViewModeChange("screener", { watchlistOnly: false })}
@@ -682,11 +715,14 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
 
-                {currentSlug && (
+                {activeSlug && (
                   <>
                     <button
                       type="button"
                       onClick={() => {
+                        if (currentSlug !== activeSlug) {
+                          onSelectReport(activeSlug);
+                        }
                         onViewModeChange("cockpit");
                         setIsMobileMenuOpen(false);
                       }}
@@ -697,23 +733,29 @@ export const Header: React.FC<HeaderProps> = ({
                       }`}
                     >
                       <SlidersHorizontal className="size-4 text-accent" />
-                      <span>{t.cockpit}</span>
+                      <span>
+                        {activeTicker
+                          ? `${activeTicker} · ${t.cockpit}`
+                          : t.cockpit}
+                      </span>
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onViewModeChange("memo");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                        viewMode === "memo"
-                          ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                          : "text-slate-300 hover:bg-surface-2"
-                      }`}
-                    >
-                      <FileText className="size-4 text-accent" />
-                      <span>{t.memo}</span>
-                    </button>
+                    {(viewMode === "cockpit" || viewMode === "memo") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onViewModeChange("memo");
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                          viewMode === "memo"
+                            ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                            : "text-slate-300 hover:bg-surface-2"
+                        }`}
+                      >
+                        <FileText className="size-4 text-accent" />
+                        <span>{t.memo}</span>
+                      </button>
+                    )}
                   </>
                 )}
               </div>

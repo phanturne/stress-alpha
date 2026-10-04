@@ -48,6 +48,7 @@ export interface Translations {
     mobileMenu: string;
     closeMenu: string;
     navigation: string;
+    modelNavTooltip: (ticker?: string) => string;
   };
   selector: {
     selectReport: string;
@@ -143,6 +144,7 @@ export interface Translations {
     toggleFavorite: string;
     close: string;
     prevNextTab: string;
+    returnToModel: string;
   };
   snowflake: {
     title: string;
@@ -894,6 +896,8 @@ export const translations: Record<Locale, Translations> = {
       mobileMenu: "Menu",
       closeMenu: "Close",
       navigation: "Navigation",
+      modelNavTooltip: (ticker?: string) =>
+        ticker ? `Return to ${ticker} Model (M)` : "Valuation Model (M)",
     },
     selector: {
       selectReport: "Select Stock...",
@@ -994,6 +998,7 @@ export const translations: Record<Locale, Translations> = {
       toggleFavorite: "Toggle Watchlist / Favorite (F)",
       close: "Close Dialog (Esc / ?)",
       prevNextTab: "Prev / Next Workspace ([ / ])",
+      returnToModel: "Return to Model (M)",
     },
     snowflake: {
       title: "Snowflake Analysis",
@@ -1790,6 +1795,8 @@ export const translations: Record<Locale, Translations> = {
       mobileMenu: "菜单",
       closeMenu: "关闭",
       navigation: "导航",
+      modelNavTooltip: (ticker?: string) =>
+        ticker ? `返回 ${ticker} 估值模型 (M)` : "估值模型 (M)",
     },
     selector: {
       selectReport: "选择标的股票...",
@@ -1885,6 +1892,7 @@ export const translations: Record<Locale, Translations> = {
       toggleFavorite: "加入/移出自选标的 (F)",
       close: "关闭窗口 (Esc / ?)",
       prevNextTab: "上一个 / 下一个工作台 ([ / ])",
+      returnToModel: "返回估值模型 (M)",
     },
     snowflake: {
       title: "全景雪花图评分",

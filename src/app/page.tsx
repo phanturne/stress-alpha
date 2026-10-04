@@ -55,6 +55,7 @@ import {
   serializeScenarioUrlState,
 } from "@/lib/url-state";
 import { useWatchlist } from "@/lib/watchlist";
+import { setStoredLastReport } from "@/lib/recent-report";
 
 const clientReportDataCache = new Map<string, ReportData>();
 let clientReportsListCache: ReportSummary[] | null = null;
@@ -146,6 +147,9 @@ export default function HomePage() {
       if (cached) {
         setReportData(cached);
         setCurrentSlug(slug);
+        if (cached.facts?.ticker) {
+          setStoredLastReport(slug, cached.facts.ticker);
+        }
         const initialShocks: Record<string, number> = {};
         if (cached.baseline?.upstreamDrivers) {
           for (const d of cached.baseline.upstreamDrivers) {
@@ -172,6 +176,9 @@ export default function HomePage() {
         clientReportDataCache.set(slug, data);
         setReportData(data);
         setCurrentSlug(slug);
+        if (data.facts?.ticker) {
+          setStoredLastReport(slug, data.facts.ticker);
+        }
 
         // Initialize driver shocks from baseline, allowing initial overrides from URL
         const initialShocks: Record<string, number> = {};

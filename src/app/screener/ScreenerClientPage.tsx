@@ -7,6 +7,7 @@ import { ScreenerView } from "@/components/ScreenerView";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { Keyboard, X } from "lucide-react";
+import { useRecentReport } from "@/lib/recent-report";
 
 interface ScreenerClientPageProps {
   initialReports?: ReportSummary[];
@@ -22,13 +23,20 @@ export function ScreenerClientPage({
   );
   const [locale, setLocale] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(() => {
+  const { recentReport } = useRecentReport();
+  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(false);
+
+  // Restore watchlist filter from URL query on client mount
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      return params.get("watchlist") === "true";
+      if (params.get("watchlist") === "true") {
+        Promise.resolve().then(() => {
+          setWatchlistOnly(true);
+        });
+      }
     }
-    return false;
-  });
+  }, []);
 
   // Restore saved language preference on mount
   useEffect(() => {
@@ -102,6 +110,14 @@ export function ScreenerClientPage({
         return;
       }
 
+      if (e.key === "m" || e.key === "M") {
+        if (recentReport?.slug) {
+          e.preventDefault();
+          handleSelectReport(recentReport.slug);
+          return;
+        }
+      }
+
       if (e.key === "l" || e.key === "L") {
         e.preventDefault();
         handleToggleLocale(locale === "zh" ? "en" : "zh");
@@ -124,7 +140,13 @@ export function ScreenerClientPage({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [locale, isShortcutsOpen, handleToggleLocale]);
+  }, [
+    locale,
+    isShortcutsOpen,
+    handleToggleLocale,
+    recentReport?.slug,
+    handleSelectReport,
+  ]);
 
   const t = getTranslations(locale);
 
@@ -133,6 +155,7 @@ export function ScreenerClientPage({
       {/* Top Navigation - No specific report associated */}
       <Header
         currentSlug={null}
+        reports={reports}
         onSelectReport={handleSelectReport}
         viewMode="screener"
         onViewModeChange={(mode, options) => {
@@ -148,7 +171,14 @@ export function ScreenerClientPage({
               window.history.replaceState(null, "", url);
             }
           } else if (mode === "cockpit" || mode === "memo") {
-            router.push("/");
+            if (recentReport?.slug) {
+              handleSelectReport(
+                recentReport.slug,
+                mode === "memo" ? "memo" : "cockpit"
+              );
+            } else {
+              router.push("/");
+            }
           }
         }}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
@@ -204,6 +234,16 @@ export function ScreenerClientPage({
                   ?
                 </kbd>
               </div>
+              {recentReport?.slug && (
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">
+                    {t.shortcuts.returnToModel}
+                  </span>
+                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                    M
+                  </kbd>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">
                   {t.shortcuts.toggleFavorite}
