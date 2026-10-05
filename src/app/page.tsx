@@ -309,9 +309,13 @@ export default function HomePage() {
   // View mode navigation with browser history push
   const handleViewModeChange = useCallback(
     (
-      mode: "cockpit" | "memo" | "screener" | "watchlist",
+      mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
       options?: { watchlistOnly?: boolean }
     ) => {
+      if (mode === "settings") {
+        router.push("/settings");
+        return;
+      }
       if (mode === "watchlist") {
         router.push("/watchlist");
         return;

@@ -159,7 +159,9 @@ export function ScreenerClientPage({
         onSelectReport={handleSelectReport}
         viewMode="screener"
         onViewModeChange={(mode, options) => {
-          if (mode === "watchlist") {
+          if (mode === "settings") {
+            router.push("/settings");
+          } else if (mode === "watchlist") {
             router.push("/watchlist");
           } else if (mode === "screener") {
             const nextWatchlist = Boolean(options?.watchlistOnly);

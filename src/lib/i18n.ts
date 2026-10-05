@@ -20,6 +20,7 @@ export interface Translations {
     snowflakeTooltip: string;
     linkCopied: string;
     settings: string;
+    settingsPage: string;
     language: string;
     theme: string;
     themeDark: string;
@@ -840,6 +841,92 @@ export interface Translations {
     invalidEmail: string;
     userAlreadyExists: string;
     emailRequired: string;
+    memberBadge: string;
+  };
+  settingsPage: {
+    title: string;
+    subtitle: string;
+    backToModel: string;
+    backToScreener: string;
+    tabAccount: string;
+    tabAppearance: string;
+    tabValuation: string;
+    tabPrivacy: string;
+    tabSystem: string;
+    account: {
+      title: string;
+      description: string;
+      notSignedIn: string;
+      notSignedInDesc: string;
+      signInButton: string;
+      nameLabel: string;
+      emailLabel: string;
+      showEmail: string;
+      hideEmail: string;
+      emailPrivacyNotice: string;
+      statusLabel: string;
+      statusConnected: string;
+      userIdLabel: string;
+      copyUserId: string;
+      copiedUserId: string;
+      verifiedBadge: string;
+      unverifiedBadge: string;
+      signOutButton: string;
+    };
+    appearance: {
+      title: string;
+      description: string;
+      languageTitle: string;
+      languageDesc: string;
+      langEnTitle: string;
+      langEnDesc: string;
+      langZhTitle: string;
+      langZhDesc: string;
+      themeTitle: string;
+      themeDesc: string;
+      themeDarkTitle: string;
+      themeDarkDesc: string;
+      themeLightTitle: string;
+      themeLightDesc: string;
+    };
+    valuation: {
+      title: string;
+      description: string;
+      qpceTitle: string;
+      qpceDesc: string;
+      qpceFormula: string;
+      guardrailTitle: string;
+      guardrailDesc: string;
+      feedsTitle: string;
+      feedsDesc: string;
+      feedsMassive: string;
+      feedsFinnhub: string;
+    };
+    privacy: {
+      title: string;
+      description: string;
+      privacyFirstTitle: string;
+      privacyFirstDesc: string;
+      dropdownPrivacyTitle: string;
+      dropdownPrivacyDesc: string;
+      statusActive: string;
+      cloudSyncTitle: string;
+      cloudSyncDesc: string;
+      clearCacheTitle: string;
+      clearCacheDesc: string;
+      clearCacheButton: string;
+      clearCacheSuccess: string;
+    };
+    system: {
+      title: string;
+      description: string;
+      versionLabel: string;
+      engineLabel: string;
+      databaseLabel: string;
+      methodologyLink: string;
+      githubLink: string;
+      shortcutsButton: string;
+    };
   };
 }
 
@@ -864,6 +951,7 @@ export const translations: Record<Locale, Translations> = {
       snowflakeTooltip: "30-Point Snowflake (W)",
       linkCopied: "Scenario link copied to clipboard!",
       settings: "Settings & Resources",
+      settingsPage: "Settings & Preferences",
       language: "Language",
       theme: "Visual Theme",
       themeDark: "Dark",
@@ -1743,6 +1831,116 @@ export const translations: Record<Locale, Translations> = {
       invalidEmail: "Please enter a valid email address.",
       userAlreadyExists: "An account with this email already exists.",
       emailRequired: "Email address is required.",
+      memberBadge: "Member",
+    },
+    settingsPage: {
+      title: "Settings & Preferences",
+      subtitle:
+        "Manage account security, workspace display defaults, valuation parameters, and privacy controls.",
+      backToModel: "Back to Valuation Model",
+      backToScreener: "Back to Universe Screener",
+      tabAccount: "Account & Profile",
+      tabAppearance: "Appearance & Language",
+      tabValuation: "Valuation Engine",
+      tabPrivacy: "Privacy & Storage",
+      tabSystem: "System & Info",
+      account: {
+        title: "Account & Security",
+        description:
+          "Manage your institutional profile, cloud database session, and authentication credentials.",
+        notSignedIn: "Guest Workspace",
+        notSignedInDesc:
+          "You are browsing in guest mode. Sign in to synchronize your stock watchlists and custom stress scenarios across devices via Neon PostgreSQL.",
+        signInButton: "Sign In or Register",
+        nameLabel: "Display Name",
+        emailLabel: "Email Address",
+        showEmail: "Show email",
+        hideEmail: "Hide email",
+        emailPrivacyNotice:
+          "Your email address is automatically concealed from header dropdowns and menus to protect your privacy during screen shares, presentations, and recordings.",
+        statusLabel: "Cloud Sync Status",
+        statusConnected: "Connected to Neon PostgreSQL",
+        userIdLabel: "User Identifier",
+        copyUserId: "Copy ID",
+        copiedUserId: "Copied!",
+        verifiedBadge: "Verified",
+        unverifiedBadge: "Unverified",
+        signOutButton: "Sign Out",
+      },
+      appearance: {
+        title: "Appearance & Localization",
+        description:
+          "Customize visual color scheme, typography contrast, and language dictionary preferences.",
+        languageTitle: "Interface Language",
+        languageDesc:
+          "Select your preferred language. All metrics, SEC audits, and analytical commentary adapt in real time.",
+        langEnTitle: "English (US)",
+        langEnDesc:
+          "Institutional financial terminology, SEC 10-Q/10-K audit logs, and Wall St consensus spreads.",
+        langZhTitle: "简体中文 (ZH)",
+        langZhDesc:
+          "全景中文财报审计、30项雪花图雷达、情景压力测试与护城河竞争格局深度分析。",
+        themeTitle: "Visual Theme",
+        themeDesc:
+          "Dual-theme engine with zero FOUC, optimized for prolonged buy-side research sessions.",
+        themeDarkTitle: "Bloomberg Terminal Dark",
+        themeDarkDesc:
+          "Deep #07090e base, neon cyan accents, dark glassmorphism panels, and high-density financial typography.",
+        themeLightTitle: "FactSet / WSJ Day Light",
+        themeLightDesc:
+          "Crisp #f8fafc daylight surfaces, high-contrast #0f172a typography, and calibrated WCAG AA financial indicators.",
+      },
+      valuation: {
+        title: "Valuation & Stress Defaults",
+        description:
+          "Underlying mathematical models, probability calibration regimes, and accounting guardrails.",
+        qpceTitle: "Quantitative Probability Calibration Engine (QPCE)",
+        qpceDesc:
+          "Scenario probabilities are regularized in multinomial logit (softmax) space across 4 valuation regimes: Bull, Base, Bear, and Panic Floor.",
+        qpceFormula:
+          "Simplex Invariant: Σ P_i = 1.000, P_i ∈ [0.05, 0.85] with 20% Bayesian market shrinkage anchor.",
+        guardrailTitle: "Income Quality & Operating EPS Guardrail",
+        guardrailDesc:
+          "Enforces non-GAAP operating purity by isolating core epsOperating from ASU 2016-01 mark-to-market fluctuations and non-operating windfalls.",
+        feedsTitle: "Audited SEC & Financial Data Feeds",
+        feedsDesc:
+          "Deterministic quantitative data ingestion pipeline with zero LLM math hallucinations.",
+        feedsMassive:
+          "Massive.com — Point-in-time financial statements, segment breakdowns, and historical ratios.",
+        feedsFinnhub:
+          "Finnhub.io — Audio earnings transcripts, SEC EDGAR filing links, and sell-side price targets.",
+      },
+      privacy: {
+        title: "Privacy & Storage Management",
+        description:
+          "Institutional data privacy controls, navigation bar concealment, and local cache controls.",
+        privacyFirstTitle: "Zero-Tracking Architecture",
+        privacyFirstDesc:
+          "StressAlpha does not sell user data, run third-party advertising pixels, or compromise financial research confidentiality.",
+        dropdownPrivacyTitle: "Menu Email Concealment",
+        dropdownPrivacyDesc:
+          "Account email addresses are omitted from header menus, mobile drawers, and quick controls by default to prevent shoulder-surfing and presentation leaks.",
+        statusActive: "Active (Concealed)",
+        cloudSyncTitle: "PostgreSQL Cloud Persistence",
+        cloudSyncDesc:
+          "Watchlists and user records are stored with row-level association in Neon serverless PostgreSQL.",
+        clearCacheTitle: "Reset Local Preferences & Cache",
+        clearCacheDesc:
+          "Clear cached report slugs, temporary scenario sliders, and local storage keys without signing out.",
+        clearCacheButton: "Clear Local Cache",
+        clearCacheSuccess: "Local cache successfully reset.",
+      },
+      system: {
+        title: "System & Architecture",
+        description:
+          "Platform versioning, deterministic engines, and institutional documentation links.",
+        versionLabel: "Platform Version",
+        engineLabel: "Deterministic Engines",
+        databaseLabel: "Database Engine",
+        methodologyLink: "Interactive Methodology Guide",
+        githubLink: "Open Source GitHub Repository",
+        shortcutsButton: "View Keyboard Shortcuts",
+      },
     },
   },
   zh: {
@@ -1765,6 +1963,7 @@ export const translations: Record<Locale, Translations> = {
       snowflakeTooltip: "30项全景雪花图 (W)",
       linkCopied: "情景分析链接已复制到剪贴板！",
       settings: "偏好与设置",
+      settingsPage: "偏好与系统设置",
       language: "界面语言",
       theme: "视觉主题",
       themeDark: "深色模式",
@@ -2620,6 +2819,110 @@ export const translations: Record<Locale, Translations> = {
       invalidEmail: "请输入有效的电子邮箱地址。",
       userAlreadyExists: "该电子邮箱已被注册。",
       emailRequired: "电子邮箱不能为空。",
+      memberBadge: "会员分析师",
+    },
+    settingsPage: {
+      title: "偏好与系统设置",
+      subtitle: "管理账户安全、工作区显示参数、估值模型预设与隐私保护选项。",
+      backToModel: "返回估值模型",
+      backToScreener: "返回全景选股器",
+      tabAccount: "账户与个人资料",
+      tabAppearance: "外观与语言",
+      tabValuation: "估值决策引擎",
+      tabPrivacy: "隐私与存储管理",
+      tabSystem: "系统与架构信息",
+      account: {
+        title: "账户与安全",
+        description: "管理您的机构分析师资料、云端数据库会话与身份凭证。",
+        notSignedIn: "访客工作区",
+        notSignedInDesc:
+          "您当前处于访客模式。登录后可将自选股清单与自定义压力测试模型参数同步至 Neon PostgreSQL 云端数据库。",
+        signInButton: "登录或注册",
+        nameLabel: "显示姓名",
+        emailLabel: "电子邮箱",
+        showEmail: "显示邮箱",
+        hideEmail: "隐藏邮箱",
+        emailPrivacyNotice:
+          "您的邮箱地址已在所有顶部导航和下拉菜单中隐蔽，防止在屏幕共享、线上演示或录屏时意外泄露隐私。",
+        statusLabel: "云端同步状态",
+        statusConnected: "已连接至 Neon PostgreSQL",
+        userIdLabel: "用户唯一标识",
+        copyUserId: "复制 ID",
+        copiedUserId: "已复制！",
+        verifiedBadge: "已验证",
+        unverifiedBadge: "未验证",
+        signOutButton: "退出登录",
+      },
+      appearance: {
+        title: "外观与本地化",
+        description: "自定义界面视觉配色、字体对比度与语言词典偏好。",
+        languageTitle: "界面语言",
+        languageDesc:
+          "选择首选语言。所有指标、SEC 审计底稿和情景评述将实时动态适配。",
+        langEnTitle: "English (US)",
+        langEnDesc:
+          "机构级英文金融术语、SEC 10-Q/10-K 审计日志及华尔街卖方预期剪刀差。",
+        langZhTitle: "简体中文 (ZH)",
+        langZhDesc:
+          "全景中文财报审计、30项雪花图雷达、情景压力测试与护城河竞争格局深度分析。",
+        themeTitle: "视觉主题",
+        themeDesc:
+          "零闪烁（Zero FOUC）双主题引擎，针对买方长时间研究特别调优。",
+        themeDarkTitle: "彭博终端深色模式",
+        themeDarkDesc:
+          "基于 #07090e 纯粹深色底色，高辨识度青色高亮，暗色毛玻璃与紧凑金融排版。",
+        themeLightTitle: "FactSet / 华尔街日报浅色模式",
+        themeLightDesc:
+          "清爽 #f8fafc 日间白底卡片，高对比度 #0f172a 字体与 WCAG AA 金融色彩规范。",
+      },
+      valuation: {
+        title: "估值模型与压力预设",
+        description: "底层金融数学模型、情景概率校准引擎与会计防欺诈护栏。",
+        qpceTitle: "定量概率校准引擎 (QPCE)",
+        qpceDesc:
+          "情景发生概率在多项式 Logit (Softmax) 空间中经过严格校准，覆盖四大估值区间：乐观成长、基准指引、悲观承压与极限流动性恐慌底。",
+        qpceFormula:
+          "单纯形不变性：Σ P_i = 1.000，P_i ∈ [0.05, 0.85]，融入 20% 贝叶斯市场收缩锚点。",
+        guardrailTitle: "收益质量与核心经营 EPS 护栏",
+        guardrailDesc:
+          "严格剔除 ASU 2016-01 公允价值变动与一次性非经常损益，以规范化核心经营 EPS 作为估值基准，防止基础虚高。",
+        feedsTitle: "可审计 SEC 与金融数据源",
+        feedsDesc:
+          "纯确定性 TypeScript 数据提取引擎，完全杜绝 LLM 数学计算幻觉。",
+        feedsMassive:
+          "Massive.com — 点对点权威财务报表、业务细分营收与历史财务比率。",
+        feedsFinnhub:
+          "Finnhub.io — 业绩说明会音频转录、SEC EDGAR 原始披露链接与卖方目标价预期。",
+      },
+      privacy: {
+        title: "隐私与数据管理",
+        description: "机构级隐私防护、导航栏隐蔽策略与本地缓存管理。",
+        privacyFirstTitle: "零追踪架构",
+        privacyFirstDesc:
+          "StressAlpha 不出售任何用户数据，不加载任何第三方追踪或广告代码，严格保护买方投资研究的私密性。",
+        dropdownPrivacyTitle: "菜单邮箱隐私隐蔽",
+        dropdownPrivacyDesc:
+          "默认从桌面端导航栏下拉列表与移动端抽屉中隐藏邮箱地址，仅保留分析师称谓，杜绝窥屏与录屏泄密。",
+        statusActive: "已开启 (完全隐蔽)",
+        cloudSyncTitle: "PostgreSQL 云端持久化",
+        cloudSyncDesc:
+          "自选股与用户记录在 Neon Serverless PostgreSQL 中实现行级关联持久化。",
+        clearCacheTitle: "重置本地偏好与临时缓存",
+        clearCacheDesc:
+          "清理本地缓存的最近研报记录、临时情景滑块状态，不会退出登录。",
+        clearCacheButton: "清理本地缓存",
+        clearCacheSuccess: "本地缓存已成功重置。",
+      },
+      system: {
+        title: "系统与架构信息",
+        description: "平台版本编号、确定性计算引擎及开源代码仓库信息。",
+        versionLabel: "平台版本",
+        engineLabel: "确定性计算引擎",
+        databaseLabel: "数据库引擎",
+        methodologyLink: "模型算法原理交互指南",
+        githubLink: "GitHub 开源代码仓库",
+        shortcutsButton: "查看键盘快捷键",
+      },
     },
   },
 };

@@ -118,6 +118,11 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Offensive Variant Perception Decomposition:** Quantifies consensus divergence ($\Delta = (\text{WFV} - T_{\text{cons}}) / T_{\text{cons}} \times 100\%$) into 4 analytical tiers (`in_line`, `moderate_alpha`, `high_conviction_alpha`, `extreme_divergence`). Decomposes alpha into Base Scenario multiple delta, earnings delta, and dynamic regime stress haircut.
 - **On-Demand Inspection Modal:** Clean trigger badge in the model scenario cards opening a comprehensive attribution modal (`VariantPerceptionModal.tsx`) with zero layout clutter.
 
+### 13. Dedicated Settings Page & Institutional Privacy Guardrail
+- **Dedicated Settings Page (`/settings`):** Centralized hub to manage account security, theme preferences (Bloomberg Terminal Dark `#07090e` vs FactSet / WSJ Day Light `#f8fafc`), language dictionary selection (English & 简体中文), quantitative valuation mathematical models (QPCE simplex calibration, Operating EPS income guardrails), local cache management, and platform telemetry.
+- **Zero-Exposure Email Privacy Guardrail:** Raw user emails are completely omitted from header menus, profile dropdowns, and mobile drawers by default to prevent shoulder-surfing and accidental disclosure during video recordings, presentations, or live screen sharing. On the private `/settings` page, emails are masked (`a***@domain.com`) with an intentional user-controlled visibility toggle.
+- **Seamless Navigation:** Accessible via 1-click links in the desktop Header Settings dropdown, User Profile menu, and mobile navigation drawer.
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)

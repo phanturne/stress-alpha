@@ -153,7 +153,9 @@ export function WatchlistClientPage({
         onSelectReport={handleSelectReport}
         viewMode="watchlist"
         onViewModeChange={(mode) => {
-          if (mode === "screener") {
+          if (mode === "settings") {
+            router.push("/settings");
+          } else if (mode === "screener") {
             router.push("/screener");
           } else if (mode === "cockpit" || mode === "memo") {
             if (recentReport?.slug) {

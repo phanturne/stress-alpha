@@ -55,9 +55,9 @@ interface HeaderProps {
   currentSlug?: string | null;
   reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
-  viewMode: "cockpit" | "memo" | "screener" | "watchlist";
+  viewMode: "cockpit" | "memo" | "screener" | "watchlist" | "settings";
   onViewModeChange: (
-    mode: "cockpit" | "memo" | "screener" | "watchlist",
+    mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
     options?: { watchlistOnly?: boolean }
   ) => void;
   onOpenShortcutsModal?: () => void;
@@ -288,6 +288,7 @@ export const Header: React.FC<HeaderProps> = ({
         {onShare &&
           viewMode !== "screener" &&
           viewMode !== "watchlist" &&
+          viewMode !== "settings" &&
           facts && (
             <button
               type="button"
@@ -421,8 +422,20 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
 
-              {/* Navigation Links: Methodology & Hotkeys */}
+              {/* Navigation Links: Settings, Methodology & Hotkeys */}
               <div className="py-1">
+                <Link
+                  href="/settings"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="size-3.5 text-slate-400" />
+                    <span>{t.settingsPage}</span>
+                  </div>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+
                 <Link
                   href="/methodology"
                   onClick={() => setIsSettingsOpen(false)}
@@ -501,12 +514,28 @@ export const Header: React.FC<HeaderProps> = ({
             {isUserMenuOpen && (
               <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-56 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
                 <div className="px-2.5 py-2">
-                  <div className="truncate text-xs font-bold text-white">
-                    {session.user.name || tAuth.profile}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="truncate text-xs font-bold text-white">
+                      {session.user.name || tAuth.profile}
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-emerald-400">
+                      <span className="size-1 animate-pulse rounded-full bg-emerald-400" />
+                      {tAuth.memberBadge}
+                    </span>
                   </div>
-                  <div className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
-                    {session.user.email}
-                  </div>
+                </div>
+                <div className="py-1">
+                  <Link
+                    href="/settings"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Settings className="size-3.5 text-slate-400" />
+                      <span>{t.settingsPage}</span>
+                    </div>
+                    <ArrowUpRight className="size-3 text-slate-500" />
+                  </Link>
                 </div>
                 <div className="pt-1">
                   <button
@@ -540,17 +569,21 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Right Mobile: Quick Actions & Hamburger Menu */}
       <div className="flex shrink-0 items-center gap-1.5 md:hidden">
         {/* Quick Share (when a report is open) */}
-        {onShare && viewMode !== "screener" && facts && (
-          <button
-            type="button"
-            onClick={onShare}
-            className="flex size-8 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent shadow-sm transition-all hover:bg-accent/20"
-            title={t.shareTooltip}
-            aria-label={t.share}
-          >
-            <Share2 className="size-3.5" />
-          </button>
-        )}
+        {onShare &&
+          viewMode !== "screener" &&
+          viewMode !== "watchlist" &&
+          viewMode !== "settings" &&
+          facts && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="flex size-8 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent shadow-sm transition-all hover:bg-accent/20"
+              title={t.shareTooltip}
+              aria-label={t.share}
+            >
+              <Share2 className="size-3.5" />
+            </button>
+          )}
 
         {/* Quick Theme Toggle */}
         <button
@@ -632,8 +665,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="truncate text-xs font-bold text-white">
                         {session.user.name || tAuth.profile}
                       </div>
-                      <div className="truncate font-mono text-[10px] text-slate-400">
-                        {session.user.email}
+                      <div className="flex items-center gap-1 font-mono text-[9px] text-emerald-400">
+                        <span className="size-1 animate-pulse rounded-full bg-emerald-400" />
+                        <span>{tAuth.cloudSyncActive}</span>
                       </div>
                     </div>
                   </div>
@@ -762,76 +796,85 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Historical Quarters (Mobile Drawer) */}
-            {viewMode !== "screener" && siblingReports.length > 1 && (
-              <div className="py-3">
-                <div className="mb-2 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="size-3 text-accent" />
-                    {t.quarterHistory}
-                  </span>
-                  <span className="font-mono text-accent">{facts?.ticker}</span>
+            {viewMode !== "screener" &&
+              viewMode !== "watchlist" &&
+              viewMode !== "settings" &&
+              siblingReports.length > 1 && (
+                <div className="py-3">
+                  <div className="mb-2 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="size-3 text-accent" />
+                      {t.quarterHistory}
+                    </span>
+                    <span className="font-mono text-accent">
+                      {facts?.ticker}
+                    </span>
+                  </div>
+                  <div className="max-h-36 space-y-1 overflow-y-auto">
+                    {siblingReports.map((r, idx) => {
+                      const isSelected = r.slug === currentSlug;
+                      const isLatest = idx === 0;
+                      return (
+                        <button
+                          key={r.slug}
+                          type="button"
+                          onClick={() => {
+                            onViewModeChange("cockpit");
+                            onSelectReport(r.slug);
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                            isSelected
+                              ? "bg-accent/15 font-bold text-accent"
+                              : "text-slate-300 hover:bg-surface-2"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono">
+                              {r.quarter || r.slug}
+                            </span>
+                            <span
+                              className={`py-0.2 rounded px-1 font-mono text-[9px] font-bold ${
+                                isLatest
+                                  ? "bg-emerald-500/15 text-emerald-400"
+                                  : "bg-amber-500/20 text-amber-400"
+                              }`}
+                            >
+                              {isLatest ? t.latestBadge : t.historicalBadge}
+                            </span>
+                          </div>
+                          {r.weightedFairValue ? (
+                            <span className="font-mono text-[11px] text-slate-400">
+                              ${r.weightedFairValue}
+                            </span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="max-h-36 space-y-1 overflow-y-auto">
-                  {siblingReports.map((r, idx) => {
-                    const isSelected = r.slug === currentSlug;
-                    const isLatest = idx === 0;
-                    return (
-                      <button
-                        key={r.slug}
-                        type="button"
-                        onClick={() => {
-                          onViewModeChange("cockpit");
-                          onSelectReport(r.slug);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
-                          isSelected
-                            ? "bg-accent/15 font-bold text-accent"
-                            : "text-slate-300 hover:bg-surface-2"
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono">
-                            {r.quarter || r.slug}
-                          </span>
-                          <span
-                            className={`py-0.2 rounded px-1 font-mono text-[9px] font-bold ${
-                              isLatest
-                                ? "bg-emerald-500/15 text-emerald-400"
-                                : "bg-amber-500/20 text-amber-400"
-                            }`}
-                          >
-                            {isLatest ? t.latestBadge : t.historicalBadge}
-                          </span>
-                        </div>
-                        {r.weightedFairValue ? (
-                          <span className="font-mono text-[11px] text-slate-400">
-                            ${r.weightedFairValue}
-                          </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+              )}
 
             {/* Quick Share CTA (Mobile) */}
-            {onShare && viewMode !== "screener" && facts && (
-              <div className="py-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onShare();
-                  }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/15 py-2 text-xs font-bold text-accent transition-colors hover:bg-accent/25"
-                >
-                  <Share2 className="size-3.5" />
-                  <span>{t.share}</span>
-                </button>
-              </div>
-            )}
+            {onShare &&
+              viewMode !== "screener" &&
+              viewMode !== "watchlist" &&
+              viewMode !== "settings" &&
+              facts && (
+                <div className="py-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onShare();
+                    }}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/15 py-2 text-xs font-bold text-accent transition-colors hover:bg-accent/25"
+                  >
+                    <Share2 className="size-3.5" />
+                    <span>{t.share}</span>
+                  </button>
+                </div>
+              )}
 
             {/* Language & Theme Controls */}
             <div className="space-y-3 py-3">
@@ -906,6 +949,17 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Links Section */}
             <div className="space-y-1 py-3">
+              <Link
+                href="/settings"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+              >
+                <div className="flex items-center gap-2">
+                  <Settings className="size-3.5 text-slate-400" />
+                  <span>{t.settingsPage}</span>
+                </div>
+                <ArrowUpRight className="size-3 text-slate-500" />
+              </Link>
               <Link
                 href="/methodology"
                 onClick={() => setIsMobileMenuOpen(false)}

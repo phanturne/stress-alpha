@@ -200,6 +200,11 @@ The **Snowflake Fundamental Radar** ([`src/lib/snowflake.ts`](file:///Users/krdi
      - **Mobile-Only Bottom Workspace Pager** (`lg:hidden`): Sequential bottom pager (`← Prev Workspace` | dots indicator | `Next Workspace →`) is reserved for mobile screens, eliminating vertical clutter on desktop.
      - **Floating Desktop "Back to Top" Action**: Seamlessly appears when vertical scroll exceeds 350px in the workspace container (`lg:flex`), returning to top with smooth animation.
      - **Keyboard Ergonomics**: Instant switching via numeric keys `1-7` and brackets `[` / `]` for previous/next workspace.
+6. **Dedicated Settings Page & Institutional Privacy Guardrail**:
+   - Dedicated route at `/settings` managed by [`src/app/settings/SettingsClientPage.tsx`](file:///Users/krding/Projects/stress-alpha/src/app/settings/SettingsClientPage.tsx).
+   - **Zero-Exposure Email Privacy Invariant**: User email addresses (`session.user.email`) MUST NEVER be rendered directly in global headers, user profile dropdowns, or mobile navigation drawers to safeguard against shoulder-surfing and screen sharing disclosure.
+   - On `/settings`, email addresses are masked by default (`a***@domain.com`) with an explicit user visibility toggle.
+   - Centralizes account authentication, dual-theme selection, language localization, quantitative valuation parameters, local storage cache clearing, and institutional telemetry.
 
 ---
 
