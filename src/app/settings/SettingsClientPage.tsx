@@ -441,7 +441,7 @@ export function SettingsClientPage({
             {/* SECTION 2: Appearance & Localization */}
             {activeSection === "appearance" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
-                {/* Visual Theme Card */}
+                {/* Theme Card */}
                 <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">

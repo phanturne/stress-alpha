@@ -35,14 +35,14 @@ describe("Global Theme Architecture (Dark & Light)", () => {
     const en = getTranslations("en").header;
     const zh = getTranslations("zh").header;
 
-    expect(en.theme).toBe("Visual Theme");
+    expect(en.theme).toBe("Theme");
     expect(en.themeDark).toBe("Dark");
     expect(en.themeLight).toBe("Light");
     expect(en.themeDarkShort).toBe("Dark");
     expect(en.themeLightShort).toBe("Light");
     expect(en.toggleTheme).toContain("Dark / Light");
 
-    expect(zh.theme).toBe("视觉主题");
+    expect(zh.theme).toBe("主题");
     expect(zh.themeDark).toBe("深色模式");
     expect(zh.themeLight).toBe("浅色模式");
     expect(zh.themeDarkShort).toBe("深色");

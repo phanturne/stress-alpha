@@ -104,6 +104,18 @@ describe("Screener & Reports API", () => {
     const highUpside = reports.filter((r) => (r.upsidePct ?? 0) > 20);
     expect(highUpside.length).toBeGreaterThan(0);
     expect(typeof highUpside[0].ticker).toBe("string");
+
+    // Rank by analyst target percentage delta
+    const validAnalystUpside = reports.filter(
+      (r) => typeof r.analystUpsidePct === "number"
+    );
+    expect(validAnalystUpside.length).toBeGreaterThan(0);
+    const sortedAnalyst = [...validAnalystUpside].sort(
+      (a, b) => (b.analystUpsidePct ?? -999) - (a.analystUpsidePct ?? -999)
+    );
+    expect(sortedAnalyst[0].analystUpsidePct).toBeGreaterThanOrEqual(
+      sortedAnalyst[sortedAnalyst.length - 1].analystUpsidePct ?? -999
+    );
   });
 
   it("filters universe reports by active watchlist", async () => {

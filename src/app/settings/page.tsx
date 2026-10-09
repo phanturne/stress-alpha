@@ -5,7 +5,7 @@ import { SettingsClientPage } from "./SettingsClientPage";
 export const metadata: Metadata = {
   title: "Settings & Preferences — StressAlpha",
   description:
-    "Manage account security, privacy settings, visual theme, language, and quantitative valuation model parameters.",
+    "Manage account security, privacy settings, theme, language, and quantitative valuation model parameters.",
 };
 
 export const revalidate = 60;

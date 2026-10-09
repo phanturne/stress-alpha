@@ -382,7 +382,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
 
-              {/* Visual Theme Switcher Row */}
+              {/* Theme Switcher Row */}
               <div className="flex items-center justify-between px-2.5 py-2 text-xs">
                 <div className="flex items-center gap-2 font-medium text-slate-300">
                   {theme === "light" ? (
@@ -512,7 +512,8 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isUserMenuOpen && (
-              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-56 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-64 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+                {/* User Header */}
                 <div className="px-2.5 py-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="truncate text-xs font-bold text-white">
@@ -524,6 +525,83 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                 </div>
+
+                {/* Quick Preferences: Language & Theme */}
+                <div className="py-1">
+                  {/* Language Switcher Row */}
+                  <div className="flex items-center justify-between px-2.5 py-1.5 text-xs">
+                    <div className="flex items-center gap-2 font-medium text-slate-300">
+                      <Globe className="size-3.5 text-accent" />
+                      <span>{t.language}</span>
+                    </div>
+                    <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => onToggleLocale("en")}
+                        className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                          locale === "en"
+                            ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        EN
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onToggleLocale("zh")}
+                        className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                          locale === "zh"
+                            ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        中文
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Theme Switcher Row */}
+                  <div className="flex items-center justify-between px-2.5 py-1.5 text-xs">
+                    <div className="flex items-center gap-2 font-medium text-slate-300">
+                      {theme === "light" ? (
+                        <Sun className="size-3.5 text-amber-500" />
+                      ) : (
+                        <Moon className="size-3.5 text-accent" />
+                      )}
+                      <span>{t.theme}</span>
+                    </div>
+                    <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setTheme("dark")}
+                        className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                          theme === "dark"
+                            ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                        title={t.themeDark}
+                      >
+                        <Moon className="size-3" />
+                        <span>{t.themeDarkShort}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTheme("light")}
+                        className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
+                          theme === "light"
+                            ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                        title={t.themeLight}
+                      >
+                        <Sun className="size-3" />
+                        <span>{t.themeLightShort}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Link to Full Settings */}
                 <div className="py-1">
                   <Link
                     href="/settings"
@@ -537,6 +615,8 @@ export const Header: React.FC<HeaderProps> = ({
                     <ArrowUpRight className="size-3 text-slate-500" />
                   </Link>
                 </div>
+
+                {/* Sign Out Button */}
                 <div className="pt-1">
                   <button
                     type="button"

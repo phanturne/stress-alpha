@@ -302,8 +302,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             valB = b.currentPrice ?? 0;
             break;
           case "analystTarget":
-            valA = a.analystTarget ?? -999;
-            valB = b.analystTarget ?? -999;
+            valA =
+              a.analystUpsidePct ??
+              (a.analystTarget && a.currentPrice && a.currentPrice > 0
+                ? ((a.analystTarget - a.currentPrice) / a.currentPrice) * 100
+                : -999);
+            valB =
+              b.analystUpsidePct ??
+              (b.analystTarget && b.currentPrice && b.currentPrice > 0
+                ? ((b.analystTarget - b.currentPrice) / b.currentPrice) * 100
+                : -999);
             break;
           case "opMargin":
             valA = a.operatingMarginPct ?? -999;
