@@ -18,6 +18,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "sync:prices": "npx tsx scripts/sync_prices.ts",
+    "sync:news": "npx tsx scripts/sync_news.ts",
+    "seed:deps": "npx tsx scripts/seed_upstream_dependencies.ts",
     "migrate:neon": "npx tsx scripts/migrate_to_neon.ts",
     "db:query": "npx tsx scripts/db_query.ts",
     "fetch:data": "npx tsx scripts/fetch_data.ts",

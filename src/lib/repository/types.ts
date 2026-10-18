@@ -1,4 +1,12 @@
 import type { ReportData } from "@/lib/schemas";
+import type {
+  MarketEventSelect,
+  MarketEventInsert,
+  UpstreamDependencySelect,
+  UpstreamDependencyInsert,
+  ValuationRevisionSelect,
+  ValuationRevisionInsert,
+} from "@/db/schema";
 
 export interface ReportSummary {
   slug: string;
@@ -68,4 +76,39 @@ export interface IReportRepository {
    * Check if a report exists for the given slug.
    */
   hasReport(slug: string): Promise<boolean>;
+
+  /**
+   * Fetch market events for a ticker, sorted newest first.
+   */
+  getMarketEvents(ticker: string, limit?: number): Promise<MarketEventSelect[]>;
+
+  /**
+   * Persist a market event with deterministic transmission vector.
+   */
+  saveMarketEvent(event: MarketEventInsert): Promise<void>;
+
+  /**
+   * Get upstream dependencies where targetTicker is dependent on source suppliers.
+   */
+  getUpstreamDependencies(
+    targetTicker: string
+  ): Promise<UpstreamDependencySelect[]>;
+
+  /**
+   * Upsert a cross-company upstream dependency edge.
+   */
+  saveUpstreamDependency(dep: UpstreamDependencyInsert): Promise<void>;
+
+  /**
+   * Fetch fair value revision ledger entries for a ticker, sorted newest first.
+   */
+  getValuationRevisions(
+    ticker: string,
+    limit?: number
+  ): Promise<ValuationRevisionSelect[]>;
+
+  /**
+   * Record a fair value revision snapshot in the valuation ledger.
+   */
+  saveValuationRevision(rev: ValuationRevisionInsert): Promise<void>;
 }

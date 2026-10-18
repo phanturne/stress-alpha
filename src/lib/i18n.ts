@@ -201,13 +201,14 @@ export interface Translations {
     shortSegments: string;
     shortCatalysts: string;
     shortAudit: string;
+    shortNews: string;
     shortReport: string;
     nextTab: string;
     prevTab: string;
     allTabs: string;
     tabNumber: (current: number, total: number) => string;
   };
-  newsTab?: {
+  newsTab: {
     title: string;
     subtitle: string;
     empty: string;
@@ -385,6 +386,13 @@ export interface Translations {
     modelStanceTitle: string;
     dataNotesTitle: string;
     closeModal: string;
+    revisionsLedgerTitle: string;
+    revisionsLedgerSubtitle: string;
+    revisionsEmpty: string;
+    colRevisionDate: string;
+    colRevisionTrigger: string;
+    colRevisionHeadline: string;
+    colRevisionShift: string;
   };
   segmentsTab: {
     title: string;
@@ -1144,6 +1152,7 @@ export const translations: Record<Locale, Translations> = {
       shortSegments: "Segments",
       shortCatalysts: "Catalysts",
       shortAudit: "Audit",
+      shortNews: "News",
       shortReport: "Notes",
       nextTab: "Next Workspace",
       prevTab: "Prev Workspace",
@@ -1340,6 +1349,15 @@ export const translations: Record<Locale, Translations> = {
       modelStanceTitle: "Model Analytical Stance",
       dataNotesTitle: "Data Quality & Invariant Notes",
       closeModal: "Close",
+      revisionsLedgerTitle: "Valuation Revision Ledger",
+      revisionsLedgerSubtitle:
+        "Immutable audit trail of event-driven valuation adjustments",
+      revisionsEmpty:
+        "No historical valuation revisions recorded yet. Revisions are logged upon fundamental shocks or quarterly filings.",
+      colRevisionDate: "Revision Date",
+      colRevisionTrigger: "Trigger",
+      colRevisionHeadline: "Event & Rationale",
+      colRevisionShift: "Valuation Shift",
     },
     segmentsTab: {
       title: "Operational Segments & Management Guidance",
@@ -2148,6 +2166,7 @@ export const translations: Record<Locale, Translations> = {
       shortSegments: "分部",
       shortCatalysts: "催化",
       shortAudit: "审计",
+      shortNews: "动态",
       shortReport: "底稿",
       nextTab: "下一工作台",
       prevTab: "上一工作台",
@@ -2338,6 +2357,14 @@ export const translations: Record<Locale, Translations> = {
       modelStanceTitle: "模型分析研判",
       dataNotesTitle: "数据质量与审计提示",
       closeModal: "关闭",
+      revisionsLedgerTitle: "公允估值推演历史与修订账本",
+      revisionsLedgerSubtitle: "不可篡改的事件驱动加权公允估值修订审计轨迹",
+      revisionsEmpty:
+        "暂无历史公允估值修订记录。当发生重大基本面冲击或季度财报发布时将自动记录修订。",
+      colRevisionDate: "修订日期",
+      colRevisionTrigger: "触发类型",
+      colRevisionHeadline: "事件与推演依据",
+      colRevisionShift: "估值变动",
     },
     segmentsTab: {
       title: "分部业务运营数据与管理层业绩指引",

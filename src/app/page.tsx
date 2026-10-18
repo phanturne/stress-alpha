@@ -26,6 +26,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
+  Radio,
 } from "lucide-react";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { Header } from "@/components/Header";
@@ -38,11 +39,18 @@ import { MoatTab } from "@/components/tabs/MoatTab";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
+import { NewsTab } from "@/components/tabs/NewsTab";
 import { ScreenerView } from "@/components/ScreenerView";
 import { SocialCardModal } from "@/components/social-card/SocialCardModal";
 import { SnowflakeModal } from "@/components/snowflake/SnowflakeModal";
 import { computeSnowflakeScore } from "@/lib/snowflake";
-import type { ReportData, Scenario } from "@/lib/schemas";
+import type {
+  ReportData,
+  Scenario,
+  MarketEvent,
+  UpstreamDependency,
+  ValuationRevision,
+} from "@/lib/schemas";
 import type { ReportSummary } from "@/app/api/reports/route";
 import {
   computeStressedValuation,
@@ -85,6 +93,16 @@ export default function HomePage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isFavorite, toggleFavorite, isAuthenticated } = useWatchlist();
+
+  // News, Upstream Supply Chain, and Valuation Revision History state
+  const [marketEvents, setMarketEvents] = useState<MarketEvent[]>([]);
+  const [upstreamDependencies, setUpstreamDependencies] = useState<
+    UpstreamDependency[]
+  >([]);
+  const [valuationRevisions, setValuationRevisions] = useState<
+    ValuationRevision[]
+  >([]);
+  const [isNewsLoading, setIsNewsLoading] = useState<boolean>(false);
 
   // Clean up toast timer on unmount
   useEffect(() => {
@@ -414,27 +432,172 @@ export default function HomePage() {
   }, [reportData?.baseline, t.page.resetSlidersToast]);
 
   // Catalyst probability changes
-  const handleCatalystProbabilityChange = (idx: number, prob: number) => {
-    if (!reportData?.catalysts) return;
-    const updated = [...reportData.catalysts.catalysts];
-    updated[idx] = { ...updated[idx], probability: prob };
+  const handleCatalystProbabilityChange = useCallback(
+    (idx: number, prob: number) => {
+      if (!reportData?.catalysts) return;
+      const updated = [...reportData.catalysts.catalysts];
+      updated[idx] = { ...updated[idx], probability: prob };
 
-    let updatedZh = reportData.catalystsZh;
-    if (updatedZh?.catalysts?.[idx]) {
-      const zhList = [...updatedZh.catalysts];
-      zhList[idx] = { ...zhList[idx], probability: prob };
-      updatedZh = { ...updatedZh, catalysts: zhList };
+      let updatedZh = reportData.catalystsZh;
+      if (updatedZh?.catalysts?.[idx]) {
+        const zhList = [...updatedZh.catalysts];
+        zhList[idx] = { ...zhList[idx], probability: prob };
+        updatedZh = { ...updatedZh, catalysts: zhList };
+      }
+
+      setReportData({
+        ...reportData,
+        catalysts: {
+          ...reportData.catalysts,
+          catalysts: updated,
+        },
+        catalystsZh: updatedZh,
+      });
+    },
+    [reportData]
+  );
+
+  // News & Catalyst Simulation Handlers
+  const handleSimulateShock = useCallback(
+    (driverId: string, shockPct: number) => {
+      const drivers = reportData?.baseline?.upstreamDrivers || [];
+      // Smart matching: direct match, or fuzzy match by keyword / prefix
+      let targetDriver = drivers.find((d) => d.id === driverId);
+      if (!targetDriver && drivers.length > 0) {
+        const queryNorm = driverId.toLowerCase().replace(/[-_]/g, " ");
+        targetDriver = drivers.find((d) => {
+          const idNorm = d.id.toLowerCase().replace(/[-_]/g, " ");
+          const nameNorm = (d.name || "").toLowerCase();
+          return (
+            idNorm.includes(queryNorm) ||
+            queryNorm.includes(idNorm) ||
+            nameNorm.includes(queryNorm) ||
+            queryNorm
+              .split(" ")
+              .some(
+                (w) =>
+                  w.length > 3 && (idNorm.includes(w) || nameNorm.includes(w))
+              )
+          );
+        });
+        if (!targetDriver) {
+          targetDriver = drivers[0];
+        }
+      }
+
+      const effectiveDriverId = targetDriver ? targetDriver.id : driverId;
+      const driverName = targetDriver?.name || effectiveDriverId;
+
+      setStressParams((prev) => ({
+        ...prev,
+        driverShocks: {
+          ...prev.driverShocks,
+          [effectiveDriverId]: shockPct,
+        },
+      }));
+      showToast(
+        `⚡ Simulated shock on ${driverName}: ${shockPct > 0 ? "+" : ""}${shockPct}%`
+      );
+    },
+    [reportData?.baseline?.upstreamDrivers, showToast]
+  );
+
+  const handleSimulateGrossMarginDelta = useCallback(
+    (bps: number) => {
+      setStressParams((prev) => ({
+        ...prev,
+        grossMarginBpsDelta: bps,
+      }));
+      showToast(
+        `⚡ Simulated gross margin delta: ${bps > 0 ? "+" : ""}${bps} bps`
+      );
+    },
+    [showToast]
+  );
+
+  const handleSimulateCatalystProb = useCallback(
+    (catalystId: string, prob: number) => {
+      if (!reportData?.catalysts || !reportData.catalysts.catalysts.length)
+        return;
+      const catalysts = reportData.catalysts.catalysts;
+      let idx = catalysts.findIndex((c) => c.id === catalystId);
+      if (idx === -1) {
+        const query = catalystId.toLowerCase().replace(/[-_]/g, " ");
+        idx = catalysts.findIndex(
+          (c) =>
+            c.title.toLowerCase().includes(query) ||
+            c.id.toLowerCase().includes(query)
+        );
+        if (idx === -1) idx = 0;
+      }
+      handleCatalystProbabilityChange(idx, prob);
+      showToast(
+        `✨ Simulated catalyst probability on "${catalysts[idx].title}": ${(prob * 100).toFixed(0)}%`
+      );
+    },
+    [reportData, handleCatalystProbabilityChange, showToast]
+  );
+
+  const handleNavigateToModel = useCallback(() => {
+    setMobileSection("cockpit");
+    if (typeof window !== "undefined") {
+      const cockpitEl = document.getElementById("model-cockpit-pane");
+      if (cockpitEl) {
+        cockpitEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        cockpitEl.classList.add(
+          "ring-2",
+          "ring-accent",
+          "ring-offset-2",
+          "ring-offset-surface-0",
+          "transition-all",
+          "duration-500"
+        );
+        setTimeout(() => {
+          cockpitEl.classList.remove(
+            "ring-2",
+            "ring-accent",
+            "ring-offset-2",
+            "ring-offset-surface-0"
+          );
+        }, 1800);
+      }
     }
+  }, []);
 
-    setReportData({
-      ...reportData,
-      catalysts: {
-        ...reportData.catalysts,
-        catalysts: updated,
-      },
-      catalystsZh: updatedZh,
-    });
-  };
+  // Fetch news, supply chain dependencies, and valuation revisions
+  const fetchNewsAndRevisions = useCallback(async (ticker: string) => {
+    if (!ticker) return;
+    queueMicrotask(() => setIsNewsLoading(true));
+    try {
+      const [newsRes, revsRes] = await Promise.all([
+        fetch(`/api/news?ticker=${encodeURIComponent(ticker)}`),
+        fetch(`/api/revisions?ticker=${encodeURIComponent(ticker)}`),
+      ]);
+      if (newsRes.ok) {
+        const newsData = await newsRes.json();
+        setMarketEvents(newsData.events || []);
+        setUpstreamDependencies(newsData.upstreamDependencies || []);
+      }
+      if (revsRes.ok) {
+        const revsData = await revsRes.json();
+        setValuationRevisions(revsData.revisions || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch news or revisions for ticker:", err);
+    } finally {
+      setIsNewsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const ticker = reportData?.facts?.ticker;
+    if (!ticker) return;
+
+    const loadData = async () => {
+      await fetchNewsAndRevisions(ticker);
+    };
+    void loadData();
+  }, [reportData?.facts?.ticker, fetchNewsAndRevisions]);
 
   // Scenario inline field changes
   const handleScenarioChange = (idx: number, patch: Partial<Scenario>) => {
@@ -619,8 +782,16 @@ export default function HomePage() {
         count: displayCatalysts?.catalysts?.length,
       },
       {
-        id: "audit",
+        id: "news",
         shortcut: "6",
+        label: t.tabs.news,
+        shortLabel: t.tabs.shortNews,
+        icon: Radio,
+        count: marketEvents.length,
+      },
+      {
+        id: "audit",
+        shortcut: "7",
         label: t.tabs.audit,
         shortLabel: t.tabs.shortAudit,
         icon: FileSearch,
@@ -630,7 +801,7 @@ export default function HomePage() {
       },
       {
         id: "report",
-        shortcut: "7",
+        shortcut: "8",
         label: t.tabs.report,
         shortLabel: t.tabs.shortReport,
         icon: FileText,
@@ -643,6 +814,7 @@ export default function HomePage() {
       displayMoat,
       displayFacts,
       displayCatalysts,
+      marketEvents.length,
       displayFiling,
       displayReactions,
     ]
@@ -1026,6 +1198,7 @@ export default function HomePage() {
 
             {/* Left Sticky Cockpit (~400px responsive) */}
             <div
+              id="model-cockpit-pane"
               className={`w-full shrink-0 lg:h-full lg:min-h-0 lg:w-[380px] xl:w-[415px] 2xl:w-[440px] ${mobileSection === "cockpit" ? "block" : "hidden lg:block"}`}
             >
               <Cockpit
@@ -1273,6 +1446,7 @@ export default function HomePage() {
                       }
                       onScenarioChange={handleScenarioChange}
                       locale={locale}
+                      revisions={valuationRevisions}
                     />
                   )}
 
@@ -1297,6 +1471,22 @@ export default function HomePage() {
                       catalystsData={displayCatalysts}
                       onProbabilityChange={handleCatalystProbabilityChange}
                       locale={locale}
+                    />
+                  )}
+
+                  {activeTab === "news" && (
+                    <NewsTab
+                      ticker={displayFacts?.ticker}
+                      events={marketEvents}
+                      upstreamDependencies={upstreamDependencies}
+                      currentPrice={displayFacts?.currentPrice}
+                      locale={locale}
+                      onSimulateShock={handleSimulateShock}
+                      onSimulateGrossMarginDelta={
+                        handleSimulateGrossMarginDelta
+                      }
+                      onSimulateCatalystProb={handleSimulateCatalystProb}
+                      onNavigateToModel={handleNavigateToModel}
                     />
                   )}
 
@@ -1516,7 +1706,7 @@ export default function HomePage() {
                   </kbd>
                   <span className="text-[10px] text-slate-500">–</span>
                   <kbd className="rounded border border-white/[0.12] bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent shadow-sm">
-                    7
+                    {tabItems.length}
                   </kbd>
                 </div>
               </div>

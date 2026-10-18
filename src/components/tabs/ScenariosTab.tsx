@@ -9,12 +9,16 @@ import {
   Scale,
   Activity,
   ShieldCheck,
+  History,
+  Clock,
+  ArrowRight,
 } from "lucide-react";
 import type {
   Scenarios,
   Scenario,
   Valuation,
   SensitivityEntry,
+  ValuationRevision,
 } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -27,6 +31,7 @@ interface ScenariosTabProps {
   sensitivityData?: SensitivityEntry[];
   onScenarioChange: (index: number, updated: Partial<Scenario>) => void;
   locale?: Locale;
+  revisions?: ValuationRevision[];
 }
 
 export const ScenariosTab: React.FC<ScenariosTabProps> = ({
@@ -36,6 +41,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   sensitivityData,
   onScenarioChange,
   locale = "en",
+  revisions = [],
 }) => {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const t = getTranslations(locale).scenariosTab;
@@ -486,6 +492,99 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           </div>
         </div>
       )}
+
+      {/* Valuation Revision Ledger (Immutable Event-Driven Audit Trail) */}
+      <div className="glass-panel flex flex-col gap-4 rounded-2xl border border-white/[0.08] p-5 shadow-xl sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
+              <History className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
+                  {t.revisionsLedgerTitle}
+                </h4>
+                <span className="rounded-full border border-white/[0.08] bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                  {revisions.length}
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-slate-400">
+                {t.revisionsLedgerSubtitle}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {revisions.length === 0 ? (
+          <div className="rounded-xl border border-white/[0.06] bg-surface-0/60 p-6 text-center font-mono text-xs text-slate-400">
+            {t.revisionsEmpty}
+          </div>
+        ) : (
+          <div className="flex flex-col divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 shadow-inner">
+            {revisions.map((rev) => {
+              const deltaNum = Number(rev.wfvDeltaPct);
+              const deltaPct = isNaN(deltaNum) ? 0 : deltaNum;
+              const isPositive = deltaPct >= 0;
+              const dateStr = rev.revisionDate
+                ? String(rev.revisionDate).slice(0, 10)
+                : "";
+
+              return (
+                <div
+                  key={rev.id}
+                  className="flex flex-col gap-2 p-3.5 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:justify-between sm:p-4"
+                >
+                  <div className="flex min-w-0 flex-1 flex-col gap-1 pr-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="flex items-center gap-1 font-mono text-[11px] text-slate-400">
+                        <Clock className="size-3" />
+                        {dateStr}
+                      </span>
+                      <span className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-slate-300">
+                        {rev.triggerType}
+                      </span>
+                    </div>
+
+                    <h5 className="truncate text-xs font-bold text-white sm:text-sm">
+                      {rev.headline}
+                    </h5>
+
+                    {rev.rationale && (
+                      <p className="line-clamp-2 text-xs leading-relaxed text-slate-400">
+                        {rev.rationale}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
+                    <div className="flex items-center gap-1.5 font-mono text-xs">
+                      <span className="text-slate-400">
+                        {formatCurrency(Number(rev.priorWfv), 2)}
+                      </span>
+                      <ArrowRight className="size-3 text-slate-500" />
+                      <span className="font-bold text-white">
+                        {formatCurrency(Number(rev.newWfv), 2)}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`rounded px-2 py-0.5 font-mono text-xs font-bold tabular-nums ${
+                        isPositive
+                          ? "bg-fintech-greenGlow/15 border border-fintech-green/30 text-fintech-green"
+                          : "bg-fintech-redGlow/15 border border-fintech-red/30 text-fintech-red"
+                      }`}
+                    >
+                      {isPositive ? "+" : ""}
+                      {deltaPct.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {valuation?.sanityAudit && (
         <VariantPerceptionModal

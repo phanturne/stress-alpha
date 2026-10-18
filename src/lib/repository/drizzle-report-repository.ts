@@ -1,6 +1,18 @@
 import { eq, desc, sql } from "drizzle-orm";
 import { getDb } from "@/db";
-import { reportsTable, tickersTable } from "@/db/schema";
+import {
+  reportsTable,
+  tickersTable,
+  marketEventsTable,
+  upstreamDependenciesTable,
+  valuationRevisionsTable,
+  type MarketEventSelect,
+  type MarketEventInsert,
+  type UpstreamDependencySelect,
+  type UpstreamDependencyInsert,
+  type ValuationRevisionSelect,
+  type ValuationRevisionInsert,
+} from "@/db/schema";
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData, Valuation, Facts, Scenarios } from "@/lib/schemas";
 import { computeSnowflakeScore } from "@/lib/snowflake";
@@ -388,5 +400,201 @@ export class DrizzleReportRepository implements IReportRepository {
       timestamp: Date.now(),
     });
     return reportData;
+  }
+
+  async getMarketEvents(
+    ticker: string,
+    limit = 50
+  ): Promise<MarketEventSelect[]> {
+    const db = getDb();
+    return db
+      .select()
+      .from(marketEventsTable)
+      .where(eq(marketEventsTable.ticker, ticker.toUpperCase()))
+      .orderBy(desc(marketEventsTable.publishedAt))
+      .limit(limit);
+  }
+
+  async saveMarketEvent(event: MarketEventInsert): Promise<void> {
+    const db = getDb();
+    const id =
+      event.id ||
+      `evt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const ticker = event.ticker.toUpperCase();
+    const publishedAt =
+      event.publishedAt instanceof Date
+        ? event.publishedAt
+        : new Date(event.publishedAt);
+
+    await db
+      .insert(tickersTable)
+      .values({
+        ticker,
+        company: `${ticker} Corporation`,
+        currentPrice: "100.00",
+      })
+      .onConflictDoNothing();
+
+    await db
+      .insert(marketEventsTable)
+      .values({
+        ...event,
+        id,
+        ticker,
+        publishedAt,
+        priceMovePct:
+          event.priceMovePct != null ? String(event.priceMovePct) : undefined,
+        abnormalReturnSigma:
+          event.abnormalReturnSigma != null
+            ? String(event.abnormalReturnSigma)
+            : undefined,
+        impliedWfvImpactPct:
+          event.impliedWfvImpactPct != null
+            ? String(event.impliedWfvImpactPct)
+            : undefined,
+      })
+      .onConflictDoUpdate({
+        target: marketEventsTable.id,
+        set: {
+          title: event.title,
+          summary: event.summary,
+          sourceUrl: event.sourceUrl,
+          publisher: event.publisher,
+          publishedAt,
+          eventType: event.eventType,
+          priceMovePct:
+            event.priceMovePct != null ? String(event.priceMovePct) : undefined,
+          abnormalReturnSigma:
+            event.abnormalReturnSigma != null
+              ? String(event.abnormalReturnSigma)
+              : undefined,
+          transmissionType: event.transmissionType,
+          transmissionPayload: event.transmissionPayload,
+          impliedWfvImpactPct:
+            event.impliedWfvImpactPct != null
+              ? String(event.impliedWfvImpactPct)
+              : undefined,
+        },
+      });
+  }
+
+  async getUpstreamDependencies(
+    targetTicker: string
+  ): Promise<UpstreamDependencySelect[]> {
+    const db = getDb();
+    return db
+      .select()
+      .from(upstreamDependenciesTable)
+      .where(
+        eq(upstreamDependenciesTable.targetTicker, targetTicker.toUpperCase())
+      );
+  }
+
+  async saveUpstreamDependency(dep: UpstreamDependencyInsert): Promise<void> {
+    const db = getDb();
+    const sourceTicker = dep.sourceTicker.toUpperCase();
+    const targetTicker = dep.targetTicker.toUpperCase();
+    const id =
+      dep.id || `updep-${sourceTicker}-${targetTicker}-${dep.driverId}`;
+
+    await db
+      .insert(tickersTable)
+      .values([
+        {
+          ticker: sourceTicker,
+          company: `${sourceTicker} Corporation`,
+          currentPrice: "100.00",
+        },
+        {
+          ticker: targetTicker,
+          company: `${targetTicker} Corporation`,
+          currentPrice: "100.00",
+        },
+      ])
+      .onConflictDoNothing();
+
+    await db
+      .insert(upstreamDependenciesTable)
+      .values({
+        ...dep,
+        id,
+        sourceTicker,
+        targetTicker,
+        exposureShare: String(dep.exposureShare),
+        elasticity: String(dep.elasticity),
+      })
+      .onConflictDoUpdate({
+        target: [
+          upstreamDependenciesTable.sourceTicker,
+          upstreamDependenciesTable.targetTicker,
+          upstreamDependenciesTable.driverId,
+        ],
+        set: {
+          driverName: dep.driverName,
+          exposureShare: String(dep.exposureShare),
+          elasticity: String(dep.elasticity),
+          notes: dep.notes,
+        },
+      });
+  }
+
+  async getValuationRevisions(
+    ticker: string,
+    limit = 50
+  ): Promise<ValuationRevisionSelect[]> {
+    const db = getDb();
+    return db
+      .select()
+      .from(valuationRevisionsTable)
+      .where(eq(valuationRevisionsTable.ticker, ticker.toUpperCase()))
+      .orderBy(desc(valuationRevisionsTable.revisionDate))
+      .limit(limit);
+  }
+
+  async saveValuationRevision(rev: ValuationRevisionInsert): Promise<void> {
+    const db = getDb();
+    const ticker = rev.ticker.toUpperCase();
+    const id =
+      rev.id ||
+      `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const revisionDate =
+      rev.revisionDate instanceof Date
+        ? rev.revisionDate
+        : new Date(rev.revisionDate);
+
+    await db
+      .insert(tickersTable)
+      .values({
+        ticker,
+        company: `${ticker} Corporation`,
+        currentPrice: "100.00",
+      })
+      .onConflictDoNothing();
+
+    await db
+      .insert(valuationRevisionsTable)
+      .values({
+        ...rev,
+        id,
+        ticker,
+        revisionDate,
+        priorWfv: String(rev.priorWfv),
+        newWfv: String(rev.newWfv),
+        wfvDeltaPct: String(rev.wfvDeltaPct),
+      })
+      .onConflictDoUpdate({
+        target: valuationRevisionsTable.id,
+        set: {
+          revisionDate,
+          triggerType: rev.triggerType,
+          triggerEventId: rev.triggerEventId,
+          headline: rev.headline,
+          rationale: rev.rationale,
+          priorWfv: String(rev.priorWfv),
+          newWfv: String(rev.newWfv),
+          wfvDeltaPct: String(rev.wfvDeltaPct),
+          fullStateDiff: rev.fullStateDiff,
+        },
+      });
   }
 }

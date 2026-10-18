@@ -1,11 +1,22 @@
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData } from "@/lib/schemas";
+import type {
+  MarketEventSelect,
+  MarketEventInsert,
+  UpstreamDependencySelect,
+  UpstreamDependencyInsert,
+  ValuationRevisionSelect,
+  ValuationRevisionInsert,
+} from "@/db/schema";
 import { computeSnowflakeScore } from "@/lib/snowflake";
 import { computeStressedValuation, computeValuation } from "@/lib/valuation";
 
 export class InMemoryReportRepository implements IReportRepository {
   private reports: Map<string, ReportData> = new Map();
   private summaries: Map<string, ReportSummary> = new Map();
+  private marketEvents: MarketEventSelect[] = [];
+  private upstreamDependencies: UpstreamDependencySelect[] = [];
+  private valuationRevisions: ValuationRevisionSelect[] = [];
 
   constructor(
     initialData?: { report: ReportData; summary?: Partial<ReportSummary> }[]
@@ -163,5 +174,166 @@ export class InMemoryReportRepository implements IReportRepository {
 
   async getReport(slug: string): Promise<ReportData | null> {
     return this.reports.get(slug) ?? null;
+  }
+
+  async getMarketEvents(
+    ticker: string,
+    limit = 50
+  ): Promise<MarketEventSelect[]> {
+    const upper = ticker.toUpperCase();
+    return this.marketEvents
+      .filter((e) => e.ticker.toUpperCase() === upper)
+      .sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      )
+      .slice(0, limit);
+  }
+
+  async saveMarketEvent(event: MarketEventInsert): Promise<void> {
+    const id =
+      event.id ||
+      `evt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const publishedAt =
+      event.publishedAt instanceof Date
+        ? event.publishedAt
+        : new Date(event.publishedAt);
+    const createdAt =
+      event.createdAt instanceof Date
+        ? event.createdAt
+        : event.createdAt
+          ? new Date(event.createdAt)
+          : new Date();
+
+    const selectItem: MarketEventSelect = {
+      id,
+      ticker: event.ticker.toUpperCase(),
+      title: event.title,
+      summary: event.summary,
+      sourceUrl: event.sourceUrl ?? null,
+      publisher: event.publisher,
+      publishedAt,
+      eventType: event.eventType,
+      priceMovePct:
+        event.priceMovePct != null ? String(event.priceMovePct) : null,
+      abnormalReturnSigma:
+        event.abnormalReturnSigma != null
+          ? String(event.abnormalReturnSigma)
+          : null,
+      transmissionType: event.transmissionType ?? "none",
+      transmissionPayload: event.transmissionPayload ?? null,
+      impliedWfvImpactPct:
+        event.impliedWfvImpactPct != null
+          ? String(event.impliedWfvImpactPct)
+          : null,
+      createdAt,
+    };
+
+    const existingIndex = this.marketEvents.findIndex((e) => e.id === id);
+    if (existingIndex >= 0) {
+      this.marketEvents[existingIndex] = selectItem;
+    } else {
+      this.marketEvents.push(selectItem);
+    }
+  }
+
+  async getUpstreamDependencies(
+    targetTicker: string
+  ): Promise<UpstreamDependencySelect[]> {
+    const upper = targetTicker.toUpperCase();
+    return this.upstreamDependencies.filter(
+      (d) => d.targetTicker.toUpperCase() === upper
+    );
+  }
+
+  async saveUpstreamDependency(dep: UpstreamDependencyInsert): Promise<void> {
+    const sourceTicker = dep.sourceTicker.toUpperCase();
+    const targetTicker = dep.targetTicker.toUpperCase();
+    const id =
+      dep.id || `updep-${sourceTicker}-${targetTicker}-${dep.driverId}`;
+    const createdAt =
+      dep.createdAt instanceof Date
+        ? dep.createdAt
+        : dep.createdAt
+          ? new Date(dep.createdAt)
+          : new Date();
+
+    const selectItem: UpstreamDependencySelect = {
+      id,
+      sourceTicker,
+      targetTicker,
+      driverId: dep.driverId,
+      driverName: dep.driverName ?? null,
+      exposureShare: String(dep.exposureShare),
+      elasticity: String(dep.elasticity),
+      notes: dep.notes ?? null,
+      createdAt,
+    };
+
+    const existingIndex = this.upstreamDependencies.findIndex(
+      (d) =>
+        d.id === id ||
+        (d.sourceTicker === sourceTicker &&
+          d.targetTicker === targetTicker &&
+          d.driverId === dep.driverId)
+    );
+    if (existingIndex >= 0) {
+      this.upstreamDependencies[existingIndex] = selectItem;
+    } else {
+      this.upstreamDependencies.push(selectItem);
+    }
+  }
+
+  async getValuationRevisions(
+    ticker: string,
+    limit = 50
+  ): Promise<ValuationRevisionSelect[]> {
+    const upper = ticker.toUpperCase();
+    return this.valuationRevisions
+      .filter((r) => r.ticker.toUpperCase() === upper)
+      .sort(
+        (a, b) =>
+          new Date(b.revisionDate).getTime() -
+          new Date(a.revisionDate).getTime()
+      )
+      .slice(0, limit);
+  }
+
+  async saveValuationRevision(rev: ValuationRevisionInsert): Promise<void> {
+    const id =
+      rev.id ||
+      `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const revisionDate =
+      rev.revisionDate instanceof Date
+        ? rev.revisionDate
+        : new Date(rev.revisionDate);
+    const createdAt =
+      rev.createdAt instanceof Date
+        ? rev.createdAt
+        : rev.createdAt
+          ? new Date(rev.createdAt)
+          : new Date();
+
+    const selectItem: ValuationRevisionSelect = {
+      id,
+      ticker: rev.ticker.toUpperCase(),
+      revisionDate,
+      triggerType: rev.triggerType,
+      triggerEventId: rev.triggerEventId ?? null,
+      headline: rev.headline,
+      rationale: rev.rationale,
+      priorWfv: String(rev.priorWfv),
+      newWfv: String(rev.newWfv),
+      wfvDeltaPct: String(rev.wfvDeltaPct),
+      fullStateDiff: rev.fullStateDiff,
+      createdAt,
+    };
+
+    const existingIndex = this.valuationRevisions.findIndex((r) => r.id === id);
+    if (existingIndex >= 0) {
+      this.valuationRevisions[existingIndex] = selectItem;
+    } else {
+      this.valuationRevisions.push(selectItem);
+    }
   }
 }

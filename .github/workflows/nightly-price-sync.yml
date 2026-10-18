@@ -1,4 +1,4 @@
-name: Nightly Market Price Sync
+name: Nightly Market & News Sync
 
 on:
   schedule:
@@ -7,8 +7,8 @@ on:
   workflow_dispatch: # Allows manual trigger from GitHub Actions UI
 
 jobs:
-  sync-prices:
-    name: Sync Closing Prices
+  sync-market-and-news:
+    name: Sync Closing Prices & News Intelligence
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +28,12 @@ jobs:
         run: npx tsx scripts/sync_prices.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+      - name: Run News & Catalyst Sync Script
+        run: npx tsx scripts/sync_news.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}

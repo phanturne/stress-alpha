@@ -10,6 +10,7 @@ import type {
   Facts,
   Scenarios,
   Valuation,
+  ReportData,
 } from "./schemas";
 import {
   computeStressedValuation,
@@ -42,7 +43,8 @@ export function calculateEventTransmissionImpact(params: {
     currentValuation?.weightedFairValue ??
     (currentPrice > 0 ? currentPrice : facts.trailingEps * 20);
 
-  const payload: TransmissionPayload | undefined = event.transmissionPayload;
+  const payload: TransmissionPayload | undefined =
+    event.transmissionPayload || undefined;
 
   // 1. Upstream Driver Shock Flow-Through
   if (
@@ -52,13 +54,39 @@ export function calculateEventTransmissionImpact(params: {
   ) {
     const shockPct = payload.deltaShockPct ?? 0;
 
+    // Fuzzy match driver to company's actual baseline drivers if exact ID differs
+    const drivers = baseline.upstreamDrivers || [];
+    let matchedDriver = drivers.find((d) => d.id === payload.driverId);
+    if (!matchedDriver && drivers.length > 0) {
+      const queryNorm = payload.driverId.toLowerCase().replace(/[-_]/g, " ");
+      matchedDriver =
+        drivers.find((d) => {
+          const idNorm = d.id.toLowerCase().replace(/[-_]/g, " ");
+          const nameNorm = (d.name || "").toLowerCase();
+          return (
+            idNorm.includes(queryNorm) ||
+            queryNorm.includes(idNorm) ||
+            nameNorm.includes(queryNorm) ||
+            queryNorm
+              .split(" ")
+              .some(
+                (w) =>
+                  w.length > 3 && (idNorm.includes(w) || nameNorm.includes(w))
+              )
+          );
+        }) || drivers[0];
+    }
+    const effectiveDriverId = matchedDriver
+      ? matchedDriver.id
+      : payload.driverId;
+
     // Baseline unperturbed stress valuation
     const unperturbed = computeStressedValuation(baseline, currentPrice);
 
     // Perturbed stress valuation with the event shock applied
     const perturbed = computeStressedValuation(baseline, currentPrice, {
       driverShocks: {
-        [payload.driverId]: shockPct,
+        [effectiveDriverId]: shockPct,
       },
     });
 
@@ -81,7 +109,41 @@ export function calculateEventTransmissionImpact(params: {
       impliedWfvDeltaPct: wfvDeltaPct,
       impliedRevenueDeltaBillions: revDelta,
       impliedEpsDelta: epsDelta,
-      transmissionSummary: `Upstream driver "${payload.driverId}" shifted by ${shockPct > 0 ? "+" : ""}${shockPct}%. Revenue impact: ${revDelta > 0 ? "+" : ""}$${revDelta}B, EPS impact: ${epsDelta > 0 ? "+" : ""}$${epsDelta}.`,
+      transmissionSummary: `Upstream driver "${matchedDriver?.name || effectiveDriverId}" shifted by ${shockPct > 0 ? "+" : ""}${shockPct}%. Revenue impact: ${revDelta > 0 ? "+" : ""}$${revDelta}B, EPS impact: ${epsDelta > 0 ? "+" : ""}$${epsDelta}.`,
+    };
+  }
+
+  // 2. Segment Growth Outlook & Gross Margin Flow-Through
+  if (
+    (event.transmissionType === "segment_growth" ||
+      payload?.grossMarginBpsDelta !== undefined ||
+      payload?.segmentDeltaGrowthPct !== undefined) &&
+    baseline
+  ) {
+    const gmDelta =
+      payload?.grossMarginBpsDelta ??
+      (payload?.segmentDeltaGrowthPct ? payload.segmentDeltaGrowthPct * 20 : 0);
+
+    const unperturbed = computeStressedValuation(baseline, currentPrice);
+    const perturbed = computeStressedValuation(baseline, currentPrice, {
+      grossMarginBpsDelta: gmDelta,
+    });
+
+    const epsDelta = round2(perturbed.stressEps - unperturbed.stressEps);
+    const targetBase = perturbed.valuationBands.base.targetPrice;
+    const unperturbedBase = unperturbed.valuationBands.base.targetPrice;
+    const wfvDeltaPct =
+      unperturbedBase > 0
+        ? round2(((targetBase - unperturbedBase) / unperturbedBase) * 100)
+        : 0;
+    const impliedWfv = round2(baseWfv * (1 + wfvDeltaPct / 100));
+
+    return {
+      impliedWfv,
+      impliedWfvDeltaPct: wfvDeltaPct,
+      impliedRevenueDeltaBillions: 0,
+      impliedEpsDelta: epsDelta,
+      transmissionSummary: `Operating margin lever adjusted by ${gmDelta > 0 ? "+" : ""}${gmDelta} bps. EPS impact: ${epsDelta > 0 ? "+" : ""}$${epsDelta}. Implied WFV shift: ${wfvDeltaPct > 0 ? "+" : ""}${wfvDeltaPct}%.`,
     };
   }
 
@@ -140,4 +202,26 @@ export function calculateEventTransmissionImpact(params: {
     transmissionSummary:
       "Qualitative market context archived without direct valuation perturbation.",
   };
+}
+
+/**
+ * Calculates the implied percentage change in Weighted Fair Value (WFV)
+ * for a market event against a loaded ReportData object.
+ * Returns undefined if ReportData is missing or incomplete.
+ */
+export function calculateNewsTransmissionImpact(
+  event: MarketEvent,
+  reportData: ReportData | null
+): number | undefined {
+  if (!reportData || !reportData.facts || !reportData.scenarios) {
+    return undefined;
+  }
+  const result = calculateEventTransmissionImpact({
+    event,
+    baseline: reportData.baseline,
+    facts: reportData.facts,
+    scenarios: reportData.scenarios,
+    currentValuation: reportData.valuation,
+  });
+  return result.impliedWfvDeltaPct;
 }

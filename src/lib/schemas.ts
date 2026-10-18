@@ -600,6 +600,7 @@ export const TransmissionPayloadSchema = z.object({
     .optional(),
   segmentName: z.string().optional(),
   segmentDeltaGrowthPct: z.number().optional(),
+  grossMarginBpsDelta: z.number().optional(),
   rationale: z.string().optional(),
 });
 export type TransmissionPayload = z.infer<typeof TransmissionPayloadSchema>;
@@ -609,15 +610,15 @@ export const MarketEventSchema = z.object({
   ticker: z.string(),
   title: z.string(),
   summary: z.string(),
-  sourceUrl: z.string().optional(),
+  sourceUrl: z.string().optional().nullable(),
   publisher: z.string(),
   publishedAt: z.string().describe("ISO date string"),
   eventType: MarketEventTypeSchema,
-  priceMovePct: z.number().optional(),
-  abnormalReturnSigma: z.number().optional(),
+  priceMovePct: z.number().optional().nullable(),
+  abnormalReturnSigma: z.number().optional().nullable(),
   transmissionType: TransmissionTypeSchema.default("none"),
-  transmissionPayload: TransmissionPayloadSchema.optional(),
-  impliedWfvImpactPct: z.number().optional(),
+  transmissionPayload: TransmissionPayloadSchema.optional().nullable(),
+  impliedWfvImpactPct: z.number().optional().nullable(),
   sources: z.array(SourceSchema).optional().default([]),
 });
 export type MarketEvent = z.infer<typeof MarketEventSchema>;
@@ -633,12 +634,79 @@ export const UpstreamDependencySchema = z.object({
   sourceTicker: z.string().describe("Upstream ticker e.g. TSM"),
   targetTicker: z.string().describe("Downstream ticker e.g. NVDA"),
   driverId: z.string().describe("Driver ID matching upstreamDrivers"),
-  driverName: z.string().optional(),
+  driverName: z.string().optional().nullable(),
   exposureShare: z.number().min(0).max(1),
   elasticity: z.number(),
-  notes: z.string().optional(),
+  notes: z.string().optional().nullable(),
+  createdAt: z.string().or(z.date()).optional(),
 });
 export type UpstreamDependency = z.infer<typeof UpstreamDependencySchema>;
+
+export const UpstreamDependenciesListSchema = z.object({
+  targetTicker: z.string(),
+  dependencies: z.array(UpstreamDependencySchema),
+});
+export type UpstreamDependenciesList = z.infer<
+  typeof UpstreamDependenciesListSchema
+>;
+
+// --- Stage 6: Fair Value Revision History & Valuation Ledger ---
+export const ValuationRevisionStateDiffSchema = z.object({
+  priorRegimes: z.object({
+    bull: z.number(),
+    base: z.number(),
+    panic: z.number(),
+  }),
+  newRegimes: z.object({
+    bull: z.number(),
+    base: z.number(),
+    panic: z.number(),
+  }),
+  priorProbabilities: z
+    .object({
+      bull: z.number(),
+      base: z.number(),
+      panic: z.number(),
+    })
+    .optional(),
+  newProbabilities: z
+    .object({
+      bull: z.number(),
+      base: z.number(),
+      panic: z.number(),
+    })
+    .optional(),
+  driverShocksApplied: z.record(z.string(), z.number()).optional(),
+  grossMarginBpsDelta: z.number().optional(),
+  fixedOpexShiftPct: z.number().optional(),
+});
+export type ValuationRevisionStateDiff = z.infer<
+  typeof ValuationRevisionStateDiffSchema
+>;
+
+export const ValuationRevisionSchema = z.object({
+  id: z.string(),
+  ticker: z.string(),
+  revisionDate: z.string().or(z.date()),
+  triggerType: z.string(), // 'quarterly_filing' | 'peer_earnings_shock' | 'sec_8k' | 'consensus_wave' | 'catalyst_activation'
+  triggerEventId: z.string().optional().nullable(),
+  headline: z.string(),
+  rationale: z.string(),
+  priorWfv: z.number().or(z.string().transform((v) => Number(v))),
+  newWfv: z.number().or(z.string().transform((v) => Number(v))),
+  wfvDeltaPct: z.number().or(z.string().transform((v) => Number(v))),
+  fullStateDiff: ValuationRevisionStateDiffSchema,
+  createdAt: z.string().or(z.date()).optional(),
+});
+export type ValuationRevision = z.infer<typeof ValuationRevisionSchema>;
+
+export const ValuationRevisionsListSchema = z.object({
+  ticker: z.string(),
+  revisions: z.array(ValuationRevisionSchema),
+});
+export type ValuationRevisionsList = z.infer<
+  typeof ValuationRevisionsListSchema
+>;
 
 // --- Full Dataset Loaded in UI ---
 export interface ReportData {

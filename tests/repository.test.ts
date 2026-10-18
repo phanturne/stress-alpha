@@ -164,6 +164,79 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(fetched?.facts.ticker).toBe(testTicker);
       expect(fetched?.valuation?.weightedFairValue).toBe(120);
     });
+
+    it("manages market events, upstream dependencies, and valuation revisions on ephemeral test branch", async () => {
+      const testTicker = "NVDA";
+
+      // 1. Market Event
+      const eventId = `evt-test-${Date.now()}`;
+      await drizzleRepo.saveMarketEvent({
+        id: eventId,
+        ticker: testTicker,
+        title: "Test AI Packaging Expansion",
+        summary: "TSMC expands CoWoS packaging allocation.",
+        publisher: "Bloomberg",
+        publishedAt: new Date(),
+        eventType: "upstream_earnings",
+        transmissionType: "driver_shock",
+        transmissionPayload: {
+          driverId: "hyperscaler-capex",
+          deltaShockPct: 20,
+        },
+        impliedWfvImpactPct: "4.50",
+      });
+
+      const events = await drizzleRepo.getMarketEvents(testTicker, 10);
+      expect(events.length).toBeGreaterThanOrEqual(1);
+      const foundEvent = events.find((e) => e.id === eventId);
+      expect(foundEvent).toBeDefined();
+      expect(foundEvent?.ticker).toBe(testTicker);
+      expect(foundEvent?.eventType).toBe("upstream_earnings");
+
+      // 2. Upstream Dependency
+      const depId = `updep-TSM-NVDA-hyperscaler-capex`;
+      await drizzleRepo.saveUpstreamDependency({
+        id: depId,
+        sourceTicker: "TSM",
+        targetTicker: testTicker,
+        driverId: "hyperscaler-capex",
+        driverName: "Hyperscaler Cloud CapEx Growth",
+        exposureShare: "0.70",
+        elasticity: "0.85",
+        notes: "Test dependency allocation",
+      });
+
+      const deps = await drizzleRepo.getUpstreamDependencies(testTicker);
+      expect(deps.length).toBeGreaterThanOrEqual(1);
+      const foundDep = deps.find((d) => d.id === depId);
+      expect(foundDep).toBeDefined();
+      expect(foundDep?.sourceTicker).toBe("TSM");
+      expect(foundDep?.targetTicker).toBe(testTicker);
+
+      // 3. Valuation Revision
+      const revId = `rev-test-${Date.now()}`;
+      await drizzleRepo.saveValuationRevision({
+        id: revId,
+        ticker: testTicker,
+        revisionDate: new Date(),
+        triggerType: "peer_earnings_shock",
+        headline: "TSMC CapEx Surge Drives Multiple Expansion",
+        rationale: "Hyperscaler CapEx guidance lifted by 20%.",
+        priorWfv: "140.00",
+        newWfv: "155.00",
+        wfvDeltaPct: "10.71",
+        fullStateDiff: {
+          priorRegimes: { bull: 175, base: 140, panic: 90 },
+          newRegimes: { bull: 195, base: 155, panic: 95 },
+        },
+      });
+
+      const revisions = await drizzleRepo.getValuationRevisions(testTicker, 10);
+      expect(revisions.length).toBeGreaterThanOrEqual(1);
+      const foundRev = revisions.find((r) => r.id === revId);
+      expect(foundRev).toBeDefined();
+      expect(foundRev?.triggerType).toBe("peer_earnings_shock");
+    });
   });
 
   describe("InMemoryReportRepository", () => {
@@ -205,6 +278,63 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(removed).toBe(true);
       expect(await memRepo.hasReport("TEST-Q1-2026-analysis")).toBe(false);
       expect(await memRepo.listReports()).toEqual([]);
+    });
+
+    it("supports market events, upstream dependencies, and valuation revisions in memory", async () => {
+      const testTicker = "MSFT";
+
+      // Market Events
+      await memRepo.saveMarketEvent({
+        id: "evt-msft-1",
+        ticker: testTicker,
+        title: "Azure Cloud Growth Accelerates",
+        summary: "Q3 revenue up 29%.",
+        publisher: "Reuters",
+        publishedAt: new Date("2026-09-20"),
+        eventType: "product_release",
+        transmissionType: "catalyst_prob",
+        transmissionPayload: { catalystId: "azure-ai", newProbability: 0.85 },
+      });
+
+      const events = await memRepo.getMarketEvents(testTicker);
+      expect(events.length).toBe(1);
+      expect(events[0].id).toBe("evt-msft-1");
+      expect(events[0].ticker).toBe(testTicker);
+
+      // Upstream Dependencies
+      await memRepo.saveUpstreamDependency({
+        sourceTicker: "NVDA",
+        targetTicker: testTicker,
+        driverId: "gpu-supply",
+        exposureShare: "0.45",
+        elasticity: "0.90",
+      });
+
+      const deps = await memRepo.getUpstreamDependencies(testTicker);
+      expect(deps.length).toBe(1);
+      expect(deps[0].sourceTicker).toBe("NVDA");
+
+      // Valuation Revisions
+      await memRepo.saveValuationRevision({
+        id: "rev-msft-1",
+        ticker: testTicker,
+        revisionDate: new Date("2026-09-21"),
+        triggerType: "catalyst_activation",
+        headline: "Copilot Adoption Reaches Critical Mass",
+        rationale: "Enterprise seats surpassed 50M.",
+        priorWfv: "450.00",
+        newWfv: "490.00",
+        wfvDeltaPct: "8.89",
+        fullStateDiff: {
+          priorRegimes: { bull: 520, base: 450, panic: 340 },
+          newRegimes: { bull: 560, base: 490, panic: 360 },
+        },
+      });
+
+      const revs = await memRepo.getValuationRevisions(testTicker);
+      expect(revs.length).toBe(1);
+      expect(revs[0].id).toBe("rev-msft-1");
+      expect(revs[0].priorWfv).toBe("450.00");
     });
   });
 

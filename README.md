@@ -112,6 +112,9 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Zero-Hallucination News Transmission:** Instead of letting AI speculate on price targets from news, headlines are converted into structured transmission vectors (Upstream Driver Shocks, Catalyst Probabilities, Consensus Skews) that feed deterministically into the financial engine.
 - **Deterministic Clickbait Filter:** High-speed regex & publisher blacklisting (`src/lib/news-filter.ts`) rejects ~95% of syndication spam and bot articles with 0 LLM cost.
 - **Cross-Company Dependency Graph:** Directed Acyclic Graph (DAG) in Neon PostgreSQL (`upstreamDependenciesTable`) propagating supplier/customer earnings shocks (e.g. TSMC CapEx $\to$ NVIDIA revenue $\to$ Data Center power demand) without duplicating extractions.
+- **News & Pulse Workspace (`NewsTab.tsx`):** FactSet/Perplexity-grade workspace with Latest Market Pulse banner, abnormal price move pills, transmission badges, and interactive **"⚡ Simulate in Cockpit"** button that injects shocks directly into the valuation model.
+- **Immutable Valuation Revision Ledger (`ScenariosTab.tsx`):** Event-driven audit trail tracking date, trigger event, headline, prior WFV $\to$ new WFV, and delta percentage between earnings releases.
+- **Automated Nightly Synchronization (`.github/workflows/nightly-price-sync.yml`):** Runs Monday–Friday at 22:00 UTC, executing `sync_prices.ts` followed by `sync_news.ts`.
 
 ### 12. Data Completeness & Variant Perception Audit
 - **Defensive Data Integrity Gatekeeper:** Audits 8 quarterly modules (`facts`, `scenarios`, `baseline`, `moat`, `estimates`, `filing`, `sentiment`, `catalysts`) to compute a deterministic Data Completeness Score ($0-100\%$) and validate fatal invariants (ticker mismatch, non-positive price, undefined operating EPS, share count validity, probability simplex closure) before persisting to Neon DB.
@@ -171,6 +174,8 @@ stress-alpha/
 ├── scripts/
 │   ├── analyze.ts                    # CLI valuation & DB persistence engine
 │   ├── sync_prices.ts                # Standalone Yahoo Finance market price sync
+│   ├── sync_news.ts                  # News & SEC 8-K sync, transmission calculation, and valuation revision logger
+│   ├── seed_upstream_dependencies.ts # Supply chain cross-company DAG seeder
 │   ├── migrate_to_neon.ts            # One-time migration seeder into Neon DB
 │   ├── fetch_analyst_estimates.py    # Yahoo Finance consensus extractor
 │   ├── capture_screenshots.sh        # Headless Chrome snapshot capture script

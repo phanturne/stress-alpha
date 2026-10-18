@@ -23,6 +23,7 @@ import type {
   Reactions,
   MarketEvent,
   TransmissionPayload,
+  ValuationRevisionStateDiff,
 } from "@/lib/schemas";
 
 // ---------------------------------------------------------------------------
@@ -256,7 +257,9 @@ export const userWatchlistsTable = pgTable(
 export const marketEventsTable = pgTable(
   "market_events",
   {
-    id: text("id").primaryKey(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     ticker: text("ticker")
       .notNull()
       .references(() => tickersTable.ticker, { onDelete: "cascade" }),
@@ -296,7 +299,9 @@ export const marketEventsTable = pgTable(
 export const upstreamDependenciesTable = pgTable(
   "upstream_dependencies",
   {
-    id: text("id").primaryKey(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     sourceTicker: text("source_ticker")
       .notNull()
       .references(() => tickersTable.ticker, { onDelete: "cascade" }),
@@ -327,7 +332,48 @@ export const upstreamDependenciesTable = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// 7. Relations
+// 7. Valuation Revisions Table (Fair Value Revision Ledger)
+// ---------------------------------------------------------------------------
+export const valuationRevisionsTable = pgTable(
+  "valuation_revisions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    ticker: text("ticker")
+      .notNull()
+      .references(() => tickersTable.ticker, { onDelete: "cascade" }),
+    revisionDate: timestamp("revision_date", { withTimezone: true }).notNull(),
+    triggerType: text("trigger_type").notNull(), // 'quarterly_filing' | 'peer_earnings_shock' | 'sec_8k' | 'consensus_wave' | 'catalyst_activation'
+    triggerEventId: text("trigger_event_id").references(
+      () => marketEventsTable.id,
+      { onDelete: "set null" }
+    ),
+    headline: text("headline").notNull(),
+    rationale: text("rationale").notNull(),
+
+    // Outcome Values
+    priorWfv: numeric("prior_wfv", { precision: 12, scale: 2 }).notNull(),
+    newWfv: numeric("new_wfv", { precision: 12, scale: 2 }).notNull(),
+    wfvDeltaPct: numeric("wfv_delta_pct", { precision: 6, scale: 2 }).notNull(),
+
+    // Full State Diff Payload
+    fullStateDiff: jsonb("full_state_diff")
+      .$type<ValuationRevisionStateDiff>()
+      .notNull(),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_val_revisions_ticker").on(table.ticker),
+    index("idx_val_revisions_date").on(table.revisionDate),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// 8. Relations
 // ---------------------------------------------------------------------------
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
@@ -359,6 +405,20 @@ export const userWatchlistsRelations = relations(
   })
 );
 
+export const valuationRevisionsRelations = relations(
+  valuationRevisionsTable,
+  ({ one }) => ({
+    ticker: one(tickersTable, {
+      fields: [valuationRevisionsTable.ticker],
+      references: [tickersTable.ticker],
+    }),
+    triggerEvent: one(marketEventsTable, {
+      fields: [valuationRevisionsTable.triggerEventId],
+      references: [marketEventsTable.id],
+    }),
+  })
+);
+
 export type UserSelect = typeof user.$inferSelect;
 export type UserInsert = typeof user.$inferInsert;
 export type SessionSelect = typeof session.$inferSelect;
@@ -372,3 +432,7 @@ export type UpstreamDependencySelect =
   typeof upstreamDependenciesTable.$inferSelect;
 export type UpstreamDependencyInsert =
   typeof upstreamDependenciesTable.$inferInsert;
+export type ValuationRevisionSelect =
+  typeof valuationRevisionsTable.$inferSelect;
+export type ValuationRevisionInsert =
+  typeof valuationRevisionsTable.$inferInsert;

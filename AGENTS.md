@@ -242,3 +242,13 @@ Whenever you implement a new feature, modify calculation engines, adjust data sc
    - **Architecture & Methodology Docs**: If valuation algorithms, risk factors, or accounting guardrails are added or modified, update the interactive methodology guide ([`src/app/methodology/`](file:///Users/krding/Projects/stress-alpha/src/app/methodology/)) and skill references ([`.agents/skills/`](file:///Users/krding/Projects/stress-alpha/.agents/skills/)).
 2. **Zero Documentation Drift**:
    - Never leave documentation behind code changes. Outdated documentation is treated with the same rigor as a failing unit test or broken TypeScript build.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
