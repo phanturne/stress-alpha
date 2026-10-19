@@ -1,0 +1,63 @@
+name: Automated Earnings Sync & Scaffolding
+
+on:
+  schedule:
+    # 8:45 AM EST (12:45 UTC or 13:45 UTC depending on DST) - Post-BMO earnings
+    - cron: "45 12 * * 1-5"
+    # 5:15 PM EST (21:15 UTC or 22:15 UTC depending on DST) - Post-AMC earnings
+    - cron: "15 21 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "Specific date to sync (YYYY-MM-DD, defaults to today)"
+        required: false
+        type: string
+      force_resync:
+        description: "Force overwrite existing reports"
+        required: false
+        type: boolean
+        default: false
+      session:
+        description: "Earnings reporting session filter (bmo | amc | all)"
+        required: false
+        type: choice
+        options:
+          - all
+          - bmo
+          - amc
+        default: all
+
+jobs:
+  sync-earnings:
+    name: Sync Earnings Calendar & Scaffold Reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Earnings Calendar Ingestion Script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.target_date }}" ]; then
+            ARGS="$ARGS --date=${{ github.event.inputs.target_date }}"
+          fi
+          if [ "${{ github.event.inputs.force_resync }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ "${{ github.event.inputs.session }}" = "bmo" ] || [ "${{ github.event.inputs.session }}" = "amc" ]; then
+            ARGS="$ARGS --session=${{ github.event.inputs.session }}"
+          fi
+          npx tsx scripts/sync_earnings_calendar.ts $ARGS

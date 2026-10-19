@@ -402,6 +402,160 @@ export class DrizzleReportRepository implements IReportRepository {
     return reportData;
   }
 
+  async saveReport(report: ReportData): Promise<void> {
+    const db = getDb();
+    const slug = report.folderSlug;
+    const ticker = report.facts.ticker.toUpperCase();
+    const quarter = report.facts.quarter || "Q1 2026";
+
+    const match =
+      quarter.match(/\b(20\d{2})\b/) || slug.match(/\b(20\d{2})\b/);
+    const year = match ? parseInt(match[1], 10) : new Date().getFullYear();
+
+    const currentPrice =
+      report.facts.currentPrice ?? report.valuation?.currentPrice ?? 0;
+    const weightedFairValue = report.valuation?.weightedFairValue ?? 0;
+
+    let baseFairValue = 0;
+    let bullFairValue = 0;
+    let bearFairValue = 0;
+    if (report.scenarios?.scenarios) {
+      for (const s of report.scenarios.scenarios) {
+        const fv = s.forwardEps * s.multiple;
+        const lower = s.name.toLowerCase();
+        if (lower.includes("base")) baseFairValue = fv;
+        else if (lower.includes("bull")) bullFairValue = fv;
+        else if (lower.includes("bear") || lower.includes("panic"))
+          bearFairValue = fv;
+      }
+    }
+
+    const panicFairValue =
+      report.valuation?.stressTest?.valuationBands?.panic?.targetPrice;
+
+    // Ensure ticker exists in tickersTable
+    await db
+      .insert(tickersTable)
+      .values({
+        ticker,
+        company: report.facts.company || `${ticker} Corporation`,
+        currentPrice: String(currentPrice),
+        priceUpdatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: tickersTable.ticker,
+        set: {
+          currentPrice: String(currentPrice),
+          priceUpdatedAt: new Date(),
+        },
+      });
+
+    // Save report in reportsTable
+    await db
+      .insert(reportsTable)
+      .values({
+        slug,
+        ticker,
+        quarter,
+        year,
+        reportDate:
+          report.facts.reportDate || new Date().toISOString().split("T")[0],
+        status: "published",
+        reportPrice: String(currentPrice),
+        weightedFairValue: String(weightedFairValue),
+        baseFairValue: String(baseFairValue),
+        bullFairValue: String(bullFairValue),
+        bearFairValue: String(bearFairValue),
+        panicFairValue: panicFairValue ? String(panicFairValue) : null,
+        moatRating: report.moat?.overallMoatRating ?? null,
+        moatTrend: report.moat?.moatTrend ?? null,
+        operatingMarginPct:
+          report.facts.operatingMarginPct != null
+            ? String(report.facts.operatingMarginPct)
+            : null,
+        revenueGrowthPct:
+          report.facts.revenueGrowthPct != null
+            ? String(report.facts.revenueGrowthPct)
+            : null,
+        facts: report.facts,
+        scenarios: report.scenarios,
+        valuation: (report.valuation ?? {}) as any,
+        baseline: report.baseline,
+        moat: report.moat,
+        moatZh: report.moatZh,
+        estimates: report.estimates,
+        estimatesZh: report.estimatesZh,
+        catalysts: report.catalysts,
+        sentiment: report.sentiment,
+        filing: report.filing,
+        reactions: report.reactions,
+        factsZh: report.factsZh,
+        scenariosZh: report.scenariosZh,
+        catalystsZh: report.catalystsZh,
+        sentimentZh: report.sentimentZh,
+        filingZh: report.filingZh,
+        reactionsZh: report.reactionsZh,
+        reportMd: report.reportMarkdown,
+        reportMdZh: report.reportMarkdownZh,
+        publishedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: reportsTable.slug,
+        set: {
+          reportPrice: String(currentPrice),
+          weightedFairValue: String(weightedFairValue),
+          baseFairValue: String(baseFairValue),
+          bullFairValue: String(bullFairValue),
+          bearFairValue: String(bearFairValue),
+          panicFairValue: panicFairValue ? String(panicFairValue) : null,
+          moatRating: report.moat?.overallMoatRating ?? null,
+          moatTrend: report.moat?.moatTrend ?? null,
+          operatingMarginPct:
+            report.facts.operatingMarginPct != null
+              ? String(report.facts.operatingMarginPct)
+              : null,
+          revenueGrowthPct:
+            report.facts.revenueGrowthPct != null
+              ? String(report.facts.revenueGrowthPct)
+              : null,
+          facts: report.facts,
+          scenarios: report.scenarios,
+          valuation: (report.valuation ?? {}) as any,
+          baseline: report.baseline,
+          moat: report.moat,
+          moatZh: report.moatZh,
+          estimates: report.estimates,
+          estimatesZh: report.estimatesZh,
+          catalysts: report.catalysts,
+          sentiment: report.sentiment,
+          filing: report.filing,
+          reactions: report.reactions,
+          factsZh: report.factsZh,
+          scenariosZh: report.scenariosZh,
+          catalystsZh: report.catalystsZh,
+          sentimentZh: report.sentimentZh,
+          filingZh: report.filingZh,
+          reactionsZh: report.reactionsZh,
+          reportMd: report.reportMarkdown,
+          reportMdZh: report.reportMarkdownZh,
+          updatedAt: new Date(),
+        },
+      });
+
+    // Invalidate caches
+    this.cachedSummaries = null;
+    this.cachedReports.delete(slug);
+    this.snowflakeCache.delete(slug);
+  }
+
+  async deleteReport(slug: string): Promise<void> {
+    const db = getDb();
+    await db.delete(reportsTable).where(eq(reportsTable.slug, slug));
+    this.cachedSummaries = null;
+    this.cachedReports.delete(slug);
+    this.snowflakeCache.delete(slug);
+  }
+
   async getMarketEvents(
     ticker: string,
     limit = 50

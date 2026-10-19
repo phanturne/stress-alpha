@@ -466,7 +466,11 @@ export async function fetchPolygonAggregates(
 // --- Fundamental Profile Ingestion ---
 
 export async function fetchFundamentalProfile(
-  tickerSymbol: string
+  tickerSymbol: string,
+  options?: {
+    apiKey?: string;
+    massiveApiKey?: string;
+  }
 ): Promise<FinancialProfile> {
   const ticker = tickerSymbol.toUpperCase();
 
@@ -496,10 +500,13 @@ export async function fetchFundamentalProfile(
   }
 
   // 2. Fetch Finnhub profile & quote
-  const fhProfile = await fetchFinnhubProfile(ticker);
+  const fhProfile = await fetchFinnhubProfile(ticker, options?.apiKey);
 
   // 3. Fetch Massive statements
-  const massiveData = await fetchMassiveFinancials(ticker);
+  const massiveData = await fetchMassiveFinancials(
+    ticker,
+    options?.massiveApiKey
+  );
 
   // Merge price & market cap
   const currentPrice =
@@ -608,7 +615,7 @@ export async function fetchFundamentalProfile(
 
 export async function fetchAnalystEstimates(
   tickerSymbol: string,
-  options?: { limit?: number; benchmarkPrice?: number }
+  options?: { limit?: number; benchmarkPrice?: number; apiKey?: string }
 ): Promise<{ estimatesEn: AnalystEstimates; estimatesZh: AnalystEstimates }> {
   const ticker = tickerSymbol.toUpperCase();
   const limit = options?.limit ?? 30;
@@ -657,7 +664,7 @@ export async function fetchAnalystEstimates(
   let bearishCount = 0;
   let usedFinnhub = false;
 
-  const fhRec = await fetchFinnhubRecommendations(ticker);
+  const fhRec = await fetchFinnhubRecommendations(ticker, options?.apiKey);
   if (fhRec) {
     bullishCount = fhRec.strongBuy + fhRec.buy;
     neutralCount = fhRec.hold;
@@ -1674,25 +1681,57 @@ export function generateFilingExtractsDraft(
 
 // --- Master Orchestrator: Fetch Complete Dataset Bundle ---
 
+export interface PipelineBundleOptions {
+  benchmarkPrice?: number;
+  quarterStr?: string;
+  apiKey?: string;
+  massiveApiKey?: string;
+}
+
 export async function fetchCompletePipelineBundle(
   tickerSymbol: string,
-  options?: {
-    benchmarkPrice?: number;
-    quarterStr?: string;
-  }
+  folderSlugOrOptions?: string | PipelineBundleOptions,
+  maybeOptions?: PipelineBundleOptions
 ): Promise<PipelineDataBundle> {
+  let folderSlug: string | undefined;
+  let options: PipelineBundleOptions | undefined;
+
+  if (typeof folderSlugOrOptions === "string") {
+    folderSlug = folderSlugOrOptions;
+    options = maybeOptions;
+  } else {
+    options = folderSlugOrOptions;
+  }
+
   const ticker = tickerSymbol.toUpperCase();
 
+  // If quarterStr is not provided, try to extract from folderSlug (e.g. nvda-2026q3 -> Q3 2026)
+  let quarterStr = options?.quarterStr;
+  if (!quarterStr && folderSlug) {
+    const match = folderSlug.match(
+      /(?:q([1-4])[-_ ]?(20\d{2})|(20\d{2})[-_ ]?q([1-4]))/i
+    );
+    if (match) {
+      const q = match[1] || match[4];
+      const y = match[2] || match[3];
+      quarterStr = `Q${q} ${y}`;
+    }
+  }
+
   // 1. Fetch Profile & Statements
-  const profile = await fetchFundamentalProfile(ticker);
+  const profile = await fetchFundamentalProfile(ticker, {
+    apiKey: options?.apiKey,
+    massiveApiKey: options?.massiveApiKey,
+  });
 
   // 2. Fetch Analyst Consensus & Estimates
   const { estimatesEn, estimatesZh } = await fetchAnalystEstimates(ticker, {
     benchmarkPrice: options?.benchmarkPrice || profile.currentPrice,
+    apiKey: options?.apiKey,
   });
 
   // 3. Fetch SEC Filings
-  const filings = await fetchFinnhubFilings(ticker);
+  const filings = await fetchFinnhubFilings(ticker, options?.apiKey);
 
   // 4. Fetch Historical Reactions
   const reactions = await fetchHistoricalReactions(
@@ -1701,11 +1740,7 @@ export async function fetchCompletePipelineBundle(
   );
 
   // 5. Pre-populate Facts Draft (EN & ZH)
-  const factsDraft = generateFactsDraft(
-    profile,
-    estimatesEn,
-    options?.quarterStr
-  );
+  const factsDraft = generateFactsDraft(profile, estimatesEn, quarterStr);
   const factsZh = generateFactsZh(factsDraft);
 
   // 6. Pre-populate Baseline Draft
@@ -1832,3 +1867,13 @@ export async function writePipelineArtifacts(
 
   return writtenFiles;
 }
+
+// --- Earnings Calendar Ingestion & Scaffolding ---
+export {
+  fetchFinnhubEarningsCalendar,
+  syncEarningsCalendar,
+  type EarningsCalendarEntry,
+  type FetchFinnhubEarningsCalendarOptions,
+  type SyncEarningsCalendarOptions,
+  type SyncEarningsCalendarResult,
+} from "./earnings-calendar";

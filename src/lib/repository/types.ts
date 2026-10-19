@@ -78,6 +78,21 @@ export interface IReportRepository {
   hasReport(slug: string): Promise<boolean>;
 
   /**
+   * Persist full report data and synchronize summary and tickers table.
+   */
+  saveReport(report: ReportData): Promise<void>;
+
+  /**
+   * Delete a report by its slug.
+   */
+  deleteReport?(slug: string): Promise<void>;
+
+  /**
+   * Synchronize the current market price for a ticker across reports and cache.
+   */
+  syncPrice?(ticker: string, price: number): Promise<void>;
+
+  /**
    * Fetch market events for a ticker, sorted newest first.
    */
   getMarketEvents(ticker: string, limit?: number): Promise<MarketEventSelect[]>;

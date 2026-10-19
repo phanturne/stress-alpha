@@ -23,6 +23,7 @@
     "migrate:neon": "npx tsx scripts/migrate_to_neon.ts",
     "db:query": "npx tsx scripts/db_query.ts",
     "fetch:data": "npx tsx scripts/fetch_data.ts",
+    "sync:earnings": "npx tsx scripts/sync_earnings_calendar.ts",
     "prepare": "husky"
   },
   "dependencies": {

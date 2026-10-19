@@ -18,7 +18,9 @@ import type {
   Catalysts,
 } from "./schemas";
 import type { Locale } from "./i18n";
-import { auditReportData } from "./sanity";
+import { auditReportData, computeSanityAudit } from "./sanity";
+
+export { computeSanityAudit } from "./sanity";
 
 export interface StressTestParams {
   driverShocks?: Record<string, number>; // driverId -> shock percentage (e.g. -20 for -20%)
@@ -53,8 +55,36 @@ export function round2(n: number): number {
 export function computeStressedValuation(
   baseline: FinancialModelBaseline,
   currentPrice: number,
-  params: StressTestParams = {}
-): StressResult {
+  params?: StressTestParams
+): StressResult;
+export function computeStressedValuation(
+  baseline: FinancialModelBaseline | undefined,
+  scenarios: Scenarios,
+  facts: Facts
+): Valuation;
+export function computeStressedValuation(
+  baseline: FinancialModelBaseline | undefined,
+  priceOrScenarios: number | Scenarios,
+  paramsOrFacts?: StressTestParams | Facts
+): StressResult | Valuation {
+  if (typeof priceOrScenarios !== "number") {
+    const scenarios = priceOrScenarios;
+    const facts = paramsOrFacts as Facts;
+    return computeValuation({
+      facts,
+      scenarios,
+      baseline,
+    });
+  }
+
+  if (!baseline) {
+    throw new Error(
+      "FinancialModelBaseline is required to compute stressed valuation bands"
+    );
+  }
+
+  const currentPrice = priceOrScenarios;
+  const params = (paramsOrFacts as StressTestParams) ?? {};
   const driverShocks = params.driverShocks ?? {};
   const gmBpsDelta = params.grossMarginBpsDelta ?? 0;
   const opexShiftPct = params.fixedOpexShiftPct ?? 0;

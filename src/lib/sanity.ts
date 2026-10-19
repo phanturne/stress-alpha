@@ -25,6 +25,7 @@ import type {
   SanityIssue,
   ConsensusAttribution,
   DivergenceClassification,
+  ReportData,
 } from "@/lib/schemas";
 
 export interface SanityAuditInput {
@@ -61,6 +62,29 @@ export const AUDITED_MODULES = [
 ] as const;
 
 export type AuditedModuleName = (typeof AUDITED_MODULES)[number];
+
+/**
+ * Convenience helper to compute a SanityAudit directly from a ReportData object and optional Valuation.
+ */
+export function computeSanityAudit(
+  report: ReportData,
+  valuation?: Valuation,
+  locale: Locale = "en"
+): SanityAudit {
+  return auditReportData({
+    facts: report.facts,
+    scenarios: report.scenarios,
+    baseline: report.baseline,
+    moat: report.moat,
+    estimates: report.estimates,
+    filing: report.filing,
+    sentiment: report.sentiment,
+    reactions: report.reactions,
+    catalysts: report.catalysts,
+    weightedFairValue: valuation?.weightedFairValue,
+    locale,
+  });
+}
 
 /**
  * Audits quarterly data artifacts for mathematical integrity and consensus divergence.

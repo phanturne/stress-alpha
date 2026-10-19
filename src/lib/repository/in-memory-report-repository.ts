@@ -176,6 +176,15 @@ export class InMemoryReportRepository implements IReportRepository {
     return this.reports.get(slug) ?? null;
   }
 
+  async saveReport(report: ReportData): Promise<void> {
+    this.addReport(report);
+  }
+
+  async deleteReport(slug: string): Promise<void> {
+    this.reports.delete(slug);
+    this.summaries.delete(slug);
+  }
+
   async getMarketEvents(
     ticker: string,
     limit = 50

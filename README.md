@@ -126,6 +126,23 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 - **Zero-Exposure Email Privacy Guardrail:** Raw user emails are completely omitted from header menus, profile dropdowns, and mobile drawers by default to prevent shoulder-surfing and accidental disclosure during video recordings, presentations, or live screen sharing. On the private `/settings` page, emails are masked (`a***@domain.com`) with an intentional user-controlled visibility toggle.
 - **Seamless Navigation:** Accessible via 1-click links in the desktop Header Settings dropdown, User Profile menu, and mobile navigation drawer.
 
+### 14. Inverted Earnings Calendar & Autonomous Scaffolding Engine
+- **Inverted Single-Call Calendar Ingestion:** Rather than polling 3,500 individual tickers, queries Finnhub's earnings calendar API once or twice daily to retrieve all US market reporting companies in a single request.
+- **Session Splitting & XBRL Normalization Window:** Scheduled at **8:45 AM EST** (post-BMO earnings) and **5:15 PM EST** (post-AMC earnings) via `.github/workflows/earnings_sync.yml` to guarantee XBRL normalization has completed.
+- **Universe Gating & Deduplication:** Matches reporting companies against active coverage universe, skipping populated reports (`revenueBillions > 0`) unless forced with `--force`.
+- **Autonomous Valuation & Revision Ledger:** Automatically runs deterministic 4-regime valuation (`computeStressedValuation`) and sanity audits (`computeSanityAudit`), persisting reports to Neon PostgreSQL and recording fair value revision ledger points in `valuation_revisions`.
+- **CLI Commands:**
+  ```bash
+  # Ingest & scaffold today's earnings (simulated dry-run)
+  npm run sync:earnings -- --dry-run
+
+  # Ingest & scaffold a specific reporting date with session filter
+  npm run sync:earnings -- --date=2026-10-19 --session=bmo
+
+  # Force re-scaffold existing reports
+  npm run sync:earnings -- --date=2026-10-19 --force
+  ```
+
 ---
 
 ## 🤖 AI Skill Integration (`stress-alpha`)
@@ -164,7 +181,8 @@ stress-alpha/
 ├── eslint.config.mjs                 # Flat ESLint configuration (core-web-vitals)
 ├── .github/workflows/
 │   ├── ci.yml                        # GitHub Actions CI workflow (lint, test, build)
-│   └── nightly-price-sync.yml        # Nightly 5:00 PM EST market price sync
+│   ├── nightly-price-sync.yml        # Nightly 5:00 PM EST market price sync
+│   └── earnings_sync.yml             # Twice-daily automated earnings sync & scaffolding (BMO & AMC)
 ├── docs/
 │   ├── architecture.md               # Canonical system architecture documentation
 │   ├── spec-neon-drizzle.md          # Neon Postgres + Drizzle ORM technical spec
@@ -175,6 +193,7 @@ stress-alpha/
 │   ├── analyze.ts                    # CLI valuation & DB persistence engine
 │   ├── sync_prices.ts                # Standalone Yahoo Finance market price sync
 │   ├── sync_news.ts                  # News & SEC 8-K sync, transmission calculation, and valuation revision logger
+│   ├── sync_earnings_calendar.ts     # Finnhub earnings calendar ingestion & autonomous report scaffolding
 │   ├── seed_upstream_dependencies.ts # Supply chain cross-company DAG seeder
 │   ├── migrate_to_neon.ts            # One-time migration seeder into Neon DB
 │   ├── fetch_analyst_estimates.py    # Yahoo Finance consensus extractor

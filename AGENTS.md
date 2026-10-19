@@ -18,6 +18,11 @@ This document defines the architectural conventions, data modeling rules, intern
      - Zero LLM tool-calling overhead or hallucinations for quantitative financial statements, market caps, consensus price targets, broker upgrade/downgrade history, or SEC filing links.
      - Automatically scaffolds complete, schema-valid starter drafts for all 8 quarterly modules (both English & Chinese) with non-destructive preservation of manual analyst edits.
      - Accessible via REST API (`POST /api/pipeline/data`) and CLI (`npm run fetch:data -- <TICKER> [--stage | STAGING_DIR]`), reusable across automated cron schedules, UI trigger buttons, and AI skills.
+   - Inverted Earnings Calendar & Autonomous Scaffolding Engine (`src/lib/services/earnings-calendar.ts`, `scripts/sync_earnings_calendar.ts`, `.github/workflows/earnings_sync.yml`, `npm run sync:earnings`):
+     - Inverted single-call polling queries Finnhub's earnings calendar (`GET /calendar/earnings?from=DATE&to=DATE`) to retrieve reporting companies across US markets without fragile webhooks.
+     - Gated by session (`bmo` at 8:45 AM EST, `amc` at 5:15 PM EST) and active coverage universe.
+     - Non-destructive deduplication skips populated reports (`revenueBillions > 0`) while enabling forced re-scaffolding (`--force`) and safe simulation (`--dry-run`).
+     - Automatically runs deterministic valuation (`computeStressedValuation`) and sanity audit (`computeSanityAudit`), persisting bilingual report data and recording initial revision snapshots in `valuation_revisions`.
 
 ---
 
