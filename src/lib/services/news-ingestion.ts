@@ -9,7 +9,11 @@ import {
   type TransmissionPayload,
   type ReportData,
 } from "@/lib/schemas";
-import { filterCandidateNews, type RawNewsArticle } from "@/lib/news-filter";
+import {
+  filterCandidateNews,
+  isRelevantToTicker,
+  type RawNewsArticle,
+} from "@/lib/news-filter";
 import { calculateNewsTransmissionImpact } from "@/lib/news-transmission";
 import { fetchFinnhubFilings } from "./financial-data";
 
@@ -18,6 +22,10 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 function getFinnhubApiKey(provided?: string): string | undefined {
   return provided || process.env.FINNHUB_API_KEY;
+}
+
+function getPolygonApiKey(provided?: string): string | undefined {
+  return provided || process.env.MASSIVE_API_KEY || process.env.POLYGON_API_KEY;
 }
 
 /**
@@ -279,7 +287,7 @@ export function mapArticleToTransmission(
 
   // 8. Product Catalyst & Commercial Release
   const catalystKeywords =
-    /\b(product launch|commercial release|general availability|unveils?|commercial rollout|rollout|fda approval|patent grant)\b/i;
+    /\b(product launch|commercial release|general availability|commercial rollout|rollout|fda approval|patent grant)\b|(\bunveils?\s+(new|next-gen|latest|flagship|ai|chip|platform|gpu|accelerator|system|model|architecture|vehicle|feature|service|hardware|software|lineup)\b)/i;
   if (catalystKeywords.test(text)) {
     return {
       eventType: "product_release",
@@ -454,5 +462,252 @@ export async function ingestNewsForTicker(
     success: true,
     ingestedCount,
     events,
+  };
+}
+
+export interface FetchPolygonGlobalNewsOptions {
+  lookbackDays?: number;
+  limit?: number;
+  apiKey?: string;
+}
+
+/**
+ * Fetch top global marketplace news articles across all US exchanges
+ * from Polygon.io / Massive.com Reference News API.
+ */
+export async function fetchPolygonGlobalNews(
+  options?: FetchPolygonGlobalNewsOptions
+): Promise<RawNewsArticle[]> {
+  const token = getPolygonApiKey(options?.apiKey);
+  if (!token) {
+    return [];
+  }
+
+  const limit = options?.limit ?? 1000;
+  const url = new URL("https://api.polygon.io/v2/reference/news");
+  url.searchParams.set("limit", String(limit));
+  url.searchParams.set("order", "desc");
+  url.searchParams.set("sort", "published_utc");
+  url.searchParams.set("apiKey", token);
+
+  if (options?.lookbackDays && options.lookbackDays > 0) {
+    const gteDate = new Date(
+      Date.now() - options.lookbackDays * 86400 * 1000
+    ).toISOString();
+    url.searchParams.set("published_utc.gte", gteDate);
+  }
+
+  try {
+    const res = await fetch(url.toString());
+    if (!res.ok) {
+      return [];
+    }
+
+    const data = await res.json();
+    if (!data || !Array.isArray(data.results)) {
+      return [];
+    }
+
+    return data.results.map((item: any) => ({
+      title: item.title || "",
+      publisher:
+        (typeof item.publisher === "object"
+          ? item.publisher?.name
+          : item.publisher) || "Polygon News",
+      url: item.article_url || item.url,
+      publishedAt:
+        item.published_utc || item.publishedAt || new Date().toISOString(),
+      tickers: Array.isArray(item.tickers) ? item.tickers : [],
+      summary: item.description || item.summary || "",
+    }));
+  } catch (err) {
+    console.warn("⚠️ Warning fetching Polygon global news:", err);
+    return [];
+  }
+}
+
+export interface IngestFirehoseOptions {
+  lookbackDays?: number;
+  limit?: number;
+  apiKey?: string;
+  repository?: IReportRepository;
+}
+
+export interface IngestFirehoseResult {
+  success: boolean;
+  totalFetched: number;
+  totalIngested: number;
+  eventsByTicker: Record<string, MarketEventSelect[]>;
+}
+
+/**
+ * Ingests global marketplace news firehose via Polygon.io Reference News API,
+ * matches candidates against the active universe in memory, filters noise & legal spam,
+ * maps deterministic fundamental transmissions, calculates implied WFV impact,
+ * and persists verified events to Neon DB.
+ */
+export async function ingestGlobalNewsFirehose(
+  options?: IngestFirehoseOptions
+): Promise<IngestFirehoseResult> {
+  const repo = options?.repository || getReportRepository();
+  const rawArticles = await fetchPolygonGlobalNews(options);
+
+  // 1. Identify active universe from repository reports and active database tickers
+  const reportSummaries = await repo.listReports();
+  const activeTickers = new Set<string>();
+
+  for (const s of reportSummaries) {
+    if (s.ticker) {
+      activeTickers.add(s.ticker.toUpperCase());
+    }
+  }
+
+  try {
+    if (process.env.DATABASE_URL) {
+      const { getDb } = await import("@/db");
+      const { tickersTable } = await import("@/db/schema");
+      const { eq } = await import("drizzle-orm");
+      const db = getDb();
+      const rows = await db
+        .select({ ticker: tickersTable.ticker })
+        .from(tickersTable)
+        .where(eq(tickersTable.active, true));
+
+      for (const r of rows) {
+        if (r.ticker) {
+          activeTickers.add(r.ticker.toUpperCase());
+        }
+      }
+    }
+  } catch {
+    // Ignore DB errors in mock / test environments
+  }
+
+  if (activeTickers.size === 0 || rawArticles.length === 0) {
+    return {
+      success: true,
+      totalFetched: rawArticles.length,
+      totalIngested: 0,
+      eventsByTicker: {},
+    };
+  }
+
+  // 2. Pre-load active reports for covered tickers
+  const reportsByTicker = new Map<string, ReportData | null>();
+  for (const ticker of activeTickers) {
+    const reportData = await getActiveReportForTicker(ticker, repo);
+    reportsByTicker.set(ticker, reportData);
+  }
+
+  let totalIngested = 0;
+  const tickersWithNewEvents = new Set<string>();
+
+  // 3. For each active ticker, match and ingest relevant candidate articles
+  for (const ticker of activeTickers) {
+    const matchedArticles = rawArticles.filter((article) =>
+      isRelevantToTicker(article, ticker)
+    );
+
+    if (matchedArticles.length === 0) {
+      continue;
+    }
+
+    // Filter candidates (clickbait, legal solicitation spam, wire deduplication)
+    const filteredCandidates = filterCandidateNews(matchedArticles, {
+      ticker,
+    });
+
+    const reportData = reportsByTicker.get(ticker) ?? null;
+    const seenThemes = new Set<string>();
+
+    for (const article of filteredCandidates) {
+      const { eventType, transmissionType, transmissionPayload } =
+        mapArticleToTransmission(article);
+
+      const isSec =
+        article.publisher === "SEC EDGAR" || /form 8-k/i.test(article.title);
+
+      // Materiality Guardrail:
+      // Only persist events with an active fundamental transmission vector or official Form 8-K
+      if (transmissionType === "none" && !isSec) {
+        continue;
+      }
+
+      // Deduplicate repetitive events with identical transmission payload per ticker
+      const themeKey = `${ticker}-${transmissionType}-${
+        transmissionPayload?.driverId ||
+        transmissionPayload?.segmentName ||
+        (transmissionPayload as any)?.analystAction?.firm ||
+        eventType
+      }`;
+      if (seenThemes.has(themeKey) && eventType !== "analyst_rating") {
+        continue;
+      }
+      seenThemes.add(themeKey);
+
+      const publishedAt = article.publishedAt
+        ? new Date(article.publishedAt)
+        : new Date();
+
+      const eventId = `evt-${ticker.toLowerCase()}-${publishedAt.getTime()}-${Math.random()
+        .toString(36)
+        .substring(2, 6)}`;
+
+      const tempEvent: MarketEvent = {
+        id: eventId,
+        ticker,
+        title: article.title,
+        summary: article.summary || article.title,
+        sourceUrl: article.url,
+        publisher: article.publisher,
+        publishedAt: publishedAt.toISOString(),
+        eventType,
+        transmissionType,
+        transmissionPayload,
+        sources: article.url
+          ? [
+              {
+                url: article.url,
+                title: article.title,
+                publisher: article.publisher,
+              },
+            ]
+          : [],
+      };
+
+      // Pure TypeScript deterministic WFV impact calculation
+      const impactPct = calculateNewsTransmissionImpact(tempEvent, reportData);
+
+      const eventInsert: MarketEventInsert = {
+        id: eventId,
+        ticker,
+        title: article.title,
+        summary: article.summary || article.title,
+        sourceUrl: article.url,
+        publisher: article.publisher,
+        publishedAt,
+        eventType,
+        transmissionType,
+        transmissionPayload,
+        impliedWfvImpactPct: impactPct != null ? String(impactPct) : undefined,
+      };
+
+      await repo.saveMarketEvent(eventInsert);
+      totalIngested++;
+      tickersWithNewEvents.add(ticker);
+    }
+  }
+
+  // 4. Retrieve event pools for updated tickers
+  const eventsByTicker: Record<string, MarketEventSelect[]> = {};
+  for (const ticker of tickersWithNewEvents) {
+    eventsByTicker[ticker] = await repo.getMarketEvents(ticker, 50);
+  }
+
+  return {
+    success: true,
+    totalFetched: rawArticles.length,
+    totalIngested,
+    eventsByTicker,
   };
 }

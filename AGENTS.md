@@ -119,13 +119,16 @@ Scenario probabilities are calibrated in multinomial logit (softmax) space rathe
 ### Event-Driven Fundamental Transmission & News Pipeline
 To factor in real-time news, product announcements, and cross-company supply chain updates without LLM price hallucinations:
 1. **Materiality & Junk Gating (`src/lib/news-filter.ts`)**:
-   - Deterministic regex & publisher blacklisting filters out ~95% of syndication clickbait before any LLM is invoked.
+   - Deterministic regex & publisher blacklisting filters out ~95% of syndication clickbait and class-action lawyer solicitation spam before any LLM is invoked.
    - Mandatory pass gates for Form 8-K filings, verified brokerage rating revisions, and statistical return anomalies ($|R| \ge 2.5\sigma$ or $\ge \pm 3.0\%$).
 2. **Deterministic Transmission Engine (`src/lib/news-transmission.ts`)**:
    - Qualitative news is strictly mapped into typed transmission vectors (`driver_shock`, `catalyst_prob`, `qpce_skew`, `segment_growth`).
    - Pure TypeScript calculates implied $\Delta \text{Revenue}$, $\Delta \text{EPS}$, and implied WFV impact directly via [`computeStressedValuation()`](file:///Users/krding/Projects/stress-alpha/src/lib/valuation.ts#L41) with zero LLM math.
 3. **Cross-Company Dependency Graph**:
    - Captures supplier/customer ripples (e.g. TSMC CapEx $\to$ NVIDIA revenue) via `upstreamDependenciesTable`.
+4. **Global Marketplace News Firehose (`src/lib/services/news-ingestion.ts`, `scripts/sync_news.ts --firehose`)**:
+   - Connects to Polygon.io / Massive Reference News API (`GET /v2/reference/news?limit=1000`) to stream top market articles in a single unparameterized query.
+   - Matches articles against active universe and verified upstream partners in memory, filters noise, calculates WFV revisions, and persists vetted events into Neon DB in ~5s across all covered stocks.
 
 ### Deterministic Sanity & Variant Perception Audit Engine (`src/lib/sanity.ts`)
 To safeguard database integrity and quantify buy-side variant perception against Wall Street sell-side consensus:

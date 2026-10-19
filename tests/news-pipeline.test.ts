@@ -24,6 +24,8 @@ import {
 import {
   mapArticleToTransmission,
   ingestNewsForTicker,
+  fetchPolygonGlobalNews,
+  ingestGlobalNewsFirehose,
 } from "../src/lib/services/news-ingestion";
 import {
   InMemoryReportRepository,
@@ -154,6 +156,43 @@ describe("News & Catalyst Pipeline", () => {
         isClickbaitOrJunk(
           "Could Investing $200 Per Month in VOO Make You a Millionaire?",
           "Yahoo"
+        )
+      ).toBe(true);
+    });
+
+    it("rejects class-action lawsuit and shareholder rights solicitation spam", () => {
+      expect(
+        isClickbaitOrJunk(
+          "Robbins LLP Reminds Investors of Lead Plaintiff Deadline in Securities Class Action Lawsuit",
+          "GlobeNewswire"
+        )
+      ).toBe(true);
+
+      expect(
+        isClickbaitOrJunk(
+          "Glancy Prongay & Murray LLP Reminds Investors of Deadline Alert in Class Action",
+          "PR Newswire"
+        )
+      ).toBe(true);
+
+      expect(
+        isClickbaitOrJunk(
+          "Rosen Law Firm, a Top Ranked Shareholder Rights Law Firm, Announces Investigation",
+          "GlobeNewswire"
+        )
+      ).toBe(true);
+
+      expect(
+        isClickbaitOrJunk(
+          "Levi & Korsinsky Encourages Tech Investors to Secure Counsel in Pending Securities Class Action",
+          "Business Wire"
+        )
+      ).toBe(true);
+
+      expect(
+        isClickbaitOrJunk(
+          "Shareholder Alert: Bronstein, Gewirtz & Grossman, LLC Reminds Investors of Class Action Lawsuit",
+          "PR Newswire"
         )
       ).toBe(true);
     });
@@ -725,6 +764,251 @@ describe("News & Catalyst Pipeline", () => {
       expect(data.revisions.length).toBeGreaterThanOrEqual(1);
       expect(data.revisions[0].id).toBe("rev-api-test");
       expect(Number(data.revisions[0].priorWfv)).toBe(135);
+    });
+  });
+
+  describe("Polygon Global News Firehose Service", () => {
+    it("returns empty array gracefully when API key is missing or on failure", async () => {
+      const origMassive = process.env.MASSIVE_API_KEY;
+      const origPolygon = process.env.POLYGON_API_KEY;
+      delete process.env.MASSIVE_API_KEY;
+      delete process.env.POLYGON_API_KEY;
+
+      try {
+        const result = await fetchPolygonGlobalNews({ apiKey: "" });
+        expect(result).toEqual([]);
+      } finally {
+        if (origMassive) process.env.MASSIVE_API_KEY = origMassive;
+        if (origPolygon) process.env.POLYGON_API_KEY = origPolygon;
+      }
+    });
+
+    it("fetches and maps Polygon Reference News schema correctly", async () => {
+      const origFetch = globalThis.fetch;
+      const mockPolygonPayload = {
+        results: [
+          {
+            id: "poly-sample-1",
+            title: "TSMC Boosts CoWoS Packaging CapEx Allocation by 25%",
+            publisher: {
+              name: "Bloomberg",
+              homepage_url: "https://bloomberg.com",
+            },
+            article_url: "https://bloomberg.com/news/tsmc-cowos",
+            published_utc: "2026-10-18T14:30:00Z",
+            description: "Advanced packaging lines running at 100% capacity.",
+            tickers: ["TSM", "NVDA"],
+          },
+        ],
+      };
+
+      let requestedUrl = "";
+      globalThis.fetch = (async (url: any) => {
+        requestedUrl = String(url);
+        return {
+          ok: true,
+          json: async () => mockPolygonPayload,
+        } as Response;
+      }) as typeof fetch;
+
+      try {
+        const articles = await fetchPolygonGlobalNews({
+          apiKey: "test-polygon-key",
+          lookbackDays: 3,
+          limit: 10,
+        });
+
+        expect(requestedUrl).toContain(
+          "https://api.polygon.io/v2/reference/news"
+        );
+        expect(requestedUrl).toContain("limit=10");
+        expect(requestedUrl).toContain("apiKey=test-polygon-key");
+        expect(requestedUrl).toContain("sort=published_utc");
+        expect(requestedUrl).toContain("order=desc");
+        expect(requestedUrl).toContain("published_utc.gte=");
+
+        expect(articles.length).toBe(1);
+        expect(articles[0].title).toBe(
+          "TSMC Boosts CoWoS Packaging CapEx Allocation by 25%"
+        );
+        expect(articles[0].publisher).toBe("Bloomberg");
+        expect(articles[0].url).toBe("https://bloomberg.com/news/tsmc-cowos");
+        expect(articles[0].publishedAt).toBe("2026-10-18T14:30:00Z");
+        expect(articles[0].tickers).toEqual(["TSM", "NVDA"]);
+        expect(articles[0].summary).toBe(
+          "Advanced packaging lines running at 100% capacity."
+        );
+      } finally {
+        globalThis.fetch = origFetch;
+      }
+    });
+
+    it("ingests global news firehose end-to-end with InMemoryReportRepository", async () => {
+      const repo = new InMemoryReportRepository();
+
+      const mockReportData: ReportData = {
+        folderSlug: "NVDA-Q2-2027-analysis",
+        folderName: "NVDA-Q2-2027-analysis",
+        facts: {
+          ticker: "NVDA",
+          company: "NVIDIA Corporation",
+          quarter: "Q2 2027",
+          reportDate: "2026-08-26",
+          revenueBillions: 30,
+          revenueGrowthPct: 122,
+          operatingIncomeBillions: 18.6,
+          operatingMarginPct: 62,
+          epsReported: 0.68,
+          epsOperating: 0.68,
+          epsConsensus: 0.65,
+          currentPrice: 125,
+          marketCapBillions: 3000,
+          trailingEps: 2.5,
+          forwardEpsConsensus: 3.8,
+          oneTimeItems: [],
+          sources: [],
+          segments: [
+            { name: "Data Center", revenueBillions: 26, growthPct: 150 },
+          ],
+        },
+        scenarios: {
+          ticker: "NVDA",
+          basisYear: "FY2027",
+          currentPrice: 125,
+          consensusTarget: 145,
+          scenarios: [
+            {
+              name: "Bull",
+              forwardEps: 4.5,
+              multiple: 35,
+              probability: 0.35,
+              assumptions: [],
+              keyDrivers: [],
+            },
+            {
+              name: "Base",
+              forwardEps: 3.8,
+              multiple: 28,
+              probability: 0.5,
+              assumptions: [],
+              keyDrivers: [],
+            },
+            {
+              name: "Bear",
+              forwardEps: 2.8,
+              multiple: 20,
+              probability: 0.15,
+              assumptions: [],
+              keyDrivers: [],
+            },
+          ],
+        },
+        baseline: {
+          baseRevenueBillions: 100,
+          baseGrossMarginPct: 70,
+          fixedOpexBillions: 20,
+          taxRatePct: 15,
+          dilutedSharesBillions: 2.5,
+          multipleRegimes: {
+            bull: 35,
+            base: 28,
+            panic: 18,
+          },
+          upstreamDrivers: [
+            {
+              id: "advanced-packaging",
+              name: "CoWoS Packaging Growth",
+              exposureShare: 0.7,
+              elasticity: 0.85,
+              defaultShockPct: 0,
+              minShockPct: -50,
+              maxShockPct: 50,
+            },
+          ],
+        },
+      };
+
+      repo.addReport(mockReportData);
+
+      const mockFirehoseResults = {
+        results: [
+          // 1. Legal spam: Should be rejected by layer 1 filter
+          {
+            id: "poly-lawyer-1",
+            title:
+              "Robbins LLP Reminds Investors of Lead Plaintiff Deadline in Securities Class Action Lawsuit Against NVIDIA",
+            publisher: { name: "GlobeNewswire" },
+            article_url: "https://globenewswire.com/lawsuit-nvda",
+            published_utc: "2026-10-18T10:00:00Z",
+            description:
+              "Investors who suffered losses are encouraged to contact counsel.",
+            tickers: ["NVDA"],
+          },
+          // 2. Syndication clickbait: Should be rejected by layer 1 filter
+          {
+            id: "poly-clickbait-1",
+            title: "3 Stocks to Buy Instead of NVIDIA Right Now",
+            publisher: { name: "Motley Fool" },
+            article_url: "https://fool.com/3-stocks",
+            published_utc: "2026-10-18T11:00:00Z",
+            description: "Here are 3 great tech stocks.",
+            tickers: ["NVDA"],
+          },
+          // 3. Genuine upstream fundamental transmission: Should be vetted and ingested
+          {
+            id: "poly-fundamental-1",
+            title: "TSMC Boosts CoWoS Packaging CapEx Allocation by 25%",
+            publisher: { name: "Bloomberg" },
+            article_url: "https://bloomberg.com/tsmc-packaging",
+            published_utc: "2026-10-18T12:00:00Z",
+            description:
+              "TSMC expands advanced packaging capacity to meet AI demand.",
+            tickers: ["TSM", "NVDA"],
+          },
+          // 4. Untracked company: Should be ignored (not in active universe)
+          {
+            id: "poly-untracked-1",
+            title: "Chipotle Opens 50 New Digital-Only Drive-Thru Locations",
+            publisher: { name: "Reuters" },
+            article_url: "https://reuters.com/cmg-expansion",
+            published_utc: "2026-10-18T13:00:00Z",
+            description: "Fast-casual restaurant chain expands.",
+            tickers: ["CMG"],
+          },
+        ],
+      };
+
+      const origFetch = globalThis.fetch;
+      globalThis.fetch = (async () => {
+        return {
+          ok: true,
+          json: async () => mockFirehoseResults,
+        } as Response;
+      }) as typeof fetch;
+
+      try {
+        const firehoseSummary = await ingestGlobalNewsFirehose({
+          apiKey: "test-firehose-key",
+          lookbackDays: 3,
+          repository: repo,
+        });
+
+        expect(firehoseSummary.success).toBe(true);
+        expect(firehoseSummary.totalFetched).toBe(4);
+        expect(firehoseSummary.totalIngested).toBe(1);
+        expect(firehoseSummary.eventsByTicker).toHaveProperty("NVDA");
+
+        const nvdaEvents = firehoseSummary.eventsByTicker["NVDA"];
+        expect(nvdaEvents.length).toBe(1);
+        expect(nvdaEvents[0].title).toBe(
+          "TSMC Boosts CoWoS Packaging CapEx Allocation by 25%"
+        );
+        expect(nvdaEvents[0].transmissionType).toBe("driver_shock");
+        expect(nvdaEvents[0].impliedWfvImpactPct).toBeDefined();
+        expect(Number(nvdaEvents[0].impliedWfvImpactPct)).toBeGreaterThan(0);
+      } finally {
+        globalThis.fetch = origFetch;
+      }
     });
   });
 });

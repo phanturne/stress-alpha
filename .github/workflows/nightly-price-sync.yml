@@ -31,8 +31,8 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
 
-      - name: Run News & Catalyst Sync Script
-        run: npx tsx scripts/sync_news.ts
+      - name: Run Global News Firehose Sync Script
+        run: npx tsx scripts/sync_news.ts --firehose
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}

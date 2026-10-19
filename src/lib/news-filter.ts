@@ -33,7 +33,8 @@ export const JUNK_HEADLINE_PATTERNS = [
   /\b(make you a )?millionaire(-maker)?\b/i,
   /bull of the day/i,
   /bear of the day/i,
-  /unusual options activity/i,
+  // Class action & legal solicitation spam
+  /securities class action|class action lawsuit|investor counsel|reminds investors of|deadline alert|shareholder rights law firm|shareholder alert|lead plaintiff|encourages .* investors to secure counsel/i,
 
   // Wealth prediction & future fortune formulas
   /(turn|worth|invest(ed|ing)?).*\$?\d+.*(into|by|in 20\d\d)/i,
@@ -90,6 +91,10 @@ export const JUNK_HEADLINE_PATTERNS = [
   /\b(vgt|voo|spy|qqq)\b/i,
   /etfs to shield/i,
   /high-yield .* to load up/i,
+
+  // Third-party market research report sales pitches & paywalled study promos
+  /\bmarket (analysis|research|report|size|share|growth|trends|forecast|outlook)\b.*(\d{4}[-\s]\d{4}|to reach \$|\bcagr\b)/i,
+  /\b(research and markets|technavio|grand view research|marketsandmarkets|allied market research)\b/i,
 ];
 
 // Common ticker aliases and related supply-chain keywords for relevance filtering
@@ -174,41 +179,44 @@ export function isRelevantToTicker(
 
   // SEC filings for the ticker are always relevant
   if (article.publisher === "SEC EDGAR" || /form 8-k/i.test(title)) {
+    if (
+      article.tickers &&
+      article.tickers.length > 0 &&
+      !article.tickers.some((t) => t.toUpperCase() === upper) &&
+      !new RegExp(`\\b${upper.toLowerCase()}\\b`, "i").test(text)
+    ) {
+      return false;
+    }
     return true;
   }
+
+  const allowedPartners: Record<string, string[]> = {
+    NVDA: ["TSM", "ASML", "NVDA", "AVGO", "MSFT"],
+    MU: ["MU", "TSM", "WDC"],
+    AAPL: ["AAPL", "TSM"],
+    AMD: ["AMD", "TSM"],
+  };
+  const allowed = allowedPartners[upper] || [upper];
 
   // If the title contains another ticker in parentheses like (DHR), (AKAM), (NLST),
   // reject unless it is the target ticker or an approved upstream partner.
   const tickerMatch = title.match(/\(([A-Z]{1,5})\)/);
   if (tickerMatch) {
     const symbol = tickerMatch[1].toUpperCase();
-    const allowedPartners: Record<string, string[]> = {
-      NVDA: ["TSM", "ASML", "NVDA", "AVGO"],
-      MU: ["MU"],
-    };
-    const allowed = allowedPartners[upper] || [upper];
     if (!allowed.includes(symbol)) {
       return false;
     }
   }
 
-  // 1. Explicit ticker list from metadata
+  // 1. Explicit ticker list from metadata (target ticker or approved partner)
   if (
     article.tickers &&
-    article.tickers.some((t) => t.toUpperCase() === upper)
+    article.tickers.some((t) => allowed.includes(t.toUpperCase()))
   ) {
-    // If target ticker is in title, definitely relevant
-    const isTargetInTitle =
-      new RegExp(`\\b${upper.toLowerCase()}\\b`, "i").test(titleLower) ||
-      (TICKER_KEYWORD_MAP[upper] &&
-        TICKER_KEYWORD_MAP[upper].some((kw) =>
-          new RegExp(`\\b${kw}\\b`, "i").test(titleLower)
-        ));
-
-    if (isTargetInTitle) return true;
+    return true;
   }
 
-  // 2. Check keyword aliases
+  // 2. Check keyword aliases in title & summary
   const keywords = TICKER_KEYWORD_MAP[upper] || [upper.toLowerCase()];
   return keywords.some((kw) => new RegExp(`\\b${kw}\\b`, "i").test(text));
 }
