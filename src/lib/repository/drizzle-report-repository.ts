@@ -408,8 +408,7 @@ export class DrizzleReportRepository implements IReportRepository {
     const ticker = report.facts.ticker.toUpperCase();
     const quarter = report.facts.quarter || "Q1 2026";
 
-    const match =
-      quarter.match(/\b(20\d{2})\b/) || slug.match(/\b(20\d{2})\b/);
+    const match = quarter.match(/\b(20\d{2})\b/) || slug.match(/\b(20\d{2})\b/);
     const year = match ? parseInt(match[1], 10) : new Date().getFullYear();
 
     const currentPrice =

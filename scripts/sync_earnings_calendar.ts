@@ -55,7 +55,9 @@ async function main() {
   const targetDate = date || new Date().toISOString().split("T")[0];
 
   console.log("\n" + "=".repeat(66));
-  console.log("⚡ [StressAlpha Inverted Earnings Calendar & Scaffolding Engine]");
+  console.log(
+    "⚡ [StressAlpha Inverted Earnings Calendar & Scaffolding Engine]"
+  );
   console.log(` • Target Date:   ${targetDate}`);
   console.log(
     ` • Session:       ${session ? session.toUpperCase() : "ALL (bmo + amc)"}`
@@ -82,21 +84,11 @@ async function main() {
   console.log(
     ` • Execution Mode:                   ${dryRun ? "SIMULATION (Dry-Run)" : "LIVE (Neon DB)"}`
   );
-  console.log(
-    ` • Total Reporting on Calendar:      ${result.totalOnCalendar}`
-  );
-  console.log(
-    ` • Matched Coverage Universe:        ${result.matchedUniverse}`
-  );
-  console.log(
-    ` • Scaffolded Reports:               ${result.scaffolded}`
-  );
-  console.log(
-    ` • Skipped (Already Populated):      ${result.skipped}`
-  );
-  console.log(
-    ` • Errors Encountered:               ${errorCount}`
-  );
+  console.log(` • Total Reporting on Calendar:      ${result.totalOnCalendar}`);
+  console.log(` • Matched Coverage Universe:        ${result.matchedUniverse}`);
+  console.log(` • Scaffolded Reports:               ${result.scaffolded}`);
+  console.log(` • Skipped (Already Populated):      ${result.skipped}`);
+  console.log(` • Errors Encountered:               ${errorCount}`);
   console.log("=".repeat(66));
 
   if (result.results.length > 0) {

@@ -141,7 +141,10 @@ export async function fetchFinnhubEarningsCalendar(
 
     return entries;
   } catch (err) {
-    console.warn("⚠️ [Finnhub Calendar] Error fetching earnings calendar:", err);
+    console.warn(
+      "⚠️ [Finnhub Calendar] Error fetching earnings calendar:",
+      err
+    );
     return [];
   }
 }

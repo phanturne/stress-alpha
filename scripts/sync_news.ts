@@ -58,9 +58,7 @@ async function processValuationRevisionsForTicker(
   for (const event of events) {
     const payload = event.transmissionPayload as any;
     const wfvImpact =
-      event.impliedWfvImpactPct != null
-        ? Number(event.impliedWfvImpactPct)
-        : 0;
+      event.impliedWfvImpactPct != null ? Number(event.impliedWfvImpactPct) : 0;
 
     const hasNonZeroShock =
       event.transmissionType !== "none" &&
@@ -102,9 +100,7 @@ async function processValuationRevisionsForTicker(
             ]
           : [],
         priceMovePct:
-          event.priceMovePct != null
-            ? Number(event.priceMovePct)
-            : undefined,
+          event.priceMovePct != null ? Number(event.priceMovePct) : undefined,
         abnormalReturnSigma:
           event.abnormalReturnSigma != null
             ? Number(event.abnormalReturnSigma)
@@ -123,17 +119,16 @@ async function processValuationRevisionsForTicker(
     });
 
     const priorWfv =
-      reportData.valuation?.weightedFairValue ??
-      reportData.facts.currentPrice;
+      reportData.valuation?.weightedFairValue ?? reportData.facts.currentPrice;
     const newWfv = impactResult.impliedWfv;
     const wfvDeltaPct = impactResult.impliedWfvDeltaPct;
 
     if (Math.abs(newWfv - priorWfv) >= 0.01 || wfvDeltaPct !== 0) {
-      const bullScenario = reportData.valuation?.scenarioResults?.find(
-        (s) => s.name.toLowerCase().includes("bull")
+      const bullScenario = reportData.valuation?.scenarioResults?.find((s) =>
+        s.name.toLowerCase().includes("bull")
       );
-      const baseScenario = reportData.valuation?.scenarioResults?.find(
-        (s) => s.name.toLowerCase().includes("base")
+      const baseScenario = reportData.valuation?.scenarioResults?.find((s) =>
+        s.name.toLowerCase().includes("base")
       );
       const panicScenario = reportData.valuation?.scenarioResults?.find(
         (s) =>
@@ -145,12 +140,8 @@ async function processValuationRevisionsForTicker(
       const priorBase = baseScenario?.fairValue ?? 0;
       const priorPanic = panicScenario?.fairValue ?? 0;
 
-      const newBull = Number(
-        (priorBull * (1 + wfvDeltaPct / 100)).toFixed(2)
-      );
-      const newBase = Number(
-        (priorBase * (1 + wfvDeltaPct / 100)).toFixed(2)
-      );
+      const newBull = Number((priorBull * (1 + wfvDeltaPct / 100)).toFixed(2));
+      const newBase = Number((priorBase * (1 + wfvDeltaPct / 100)).toFixed(2));
       const newPanic = Number(
         (priorPanic * (1 + wfvDeltaPct / 100)).toFixed(2)
       );
@@ -197,8 +188,7 @@ async function processValuationRevisionsForTicker(
                   event.transmissionPayload.deltaShockPct ?? 0,
               }
             : undefined,
-          grossMarginBpsDelta:
-            event.transmissionPayload?.grossMarginBpsDelta,
+          grossMarginBpsDelta: event.transmissionPayload?.grossMarginBpsDelta,
         },
       };
 
@@ -298,11 +288,19 @@ async function syncNews() {
 
     console.log("\n" + "=".repeat(62));
     console.log("📊 [StressAlpha News Firehose & Valuation Revision Summary]");
-    console.log(` • Ingestion Architecture:          Global Firehose (Polygon.io)`);
+    console.log(
+      ` • Ingestion Architecture:          Global Firehose (Polygon.io)`
+    );
     console.log(` • Lookback Window:                  ${lookbackDays} days`);
-    console.log(` • Raw Articles Streamed:            ${firehoseResult.totalFetched}`);
-    console.log(` • High-Signal Events Ingested:      ${firehoseResult.totalIngested}`);
-    console.log(` • Tickers Updated:                  ${updatedTickers.length}`);
+    console.log(
+      ` • Raw Articles Streamed:            ${firehoseResult.totalFetched}`
+    );
+    console.log(
+      ` • High-Signal Events Ingested:      ${firehoseResult.totalIngested}`
+    );
+    console.log(
+      ` • Tickers Updated:                  ${updatedTickers.length}`
+    );
     console.log(` • Fair Value Revisions Recorded:    ${totalRevisionsLogged}`);
     console.log("=".repeat(62) + "\n");
     return;
