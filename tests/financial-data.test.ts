@@ -8,6 +8,8 @@ import {
   fetchFundamentalProfile,
   fetchAnalystEstimates,
   generateFactsDraft,
+  generateBaselineDraft,
+  generateScenariosDraft,
   writePipelineArtifacts,
   RATING_ZH_MAP,
   ACTION_ZH_MAP,
@@ -257,6 +259,132 @@ describe("Financial Data Ingestion Service & Pipeline Endpoint", () => {
       } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe("Deterministic Baseline & Scenario Guardrails", () => {
+    it("preserves legitimate low forward P/E multiples down to 1.5x (e.g. debt-heavy compounders)", () => {
+      const mockProfile: any = {
+        ticker: "CHTR",
+        companyName: "Charter Communications",
+        currentPrice: 108.0,
+        marketCapBillions: 12.0,
+        sharesOutstandingBillions: 0.114,
+        forwardPE: 2.26,
+        balanceSheet: { totalCashBillions: 1.0, shortTermDebtBillions: 2.0 },
+        cashFlow: { operatingCashFlowBillions: 10.0 },
+      };
+      const mockFacts: any = {
+        ticker: "CHTR",
+        revenueBillions: 13.5,
+        grossMarginPct: 40.0,
+        operatingIncomeBillions: 3.1,
+        valuationArchetype: "compounder",
+      };
+
+      const baseline = generateBaselineDraft(mockFacts, mockProfile);
+      expect(baseline.multipleRegimes.base).toBe(2.26);
+      expect(baseline.multipleRegimes.bull).toBe(3.05);
+      expect(baseline.multipleRegimes.panic).toBe(1.24);
+    });
+
+    it("anchors negative forward EPS starter drafts to consensus price target instead of flatlining at $13", () => {
+      const mockProfile: any = {
+        ticker: "MRNA",
+        companyName: "Moderna",
+        currentPrice: 200.0,
+        marketCapBillions: 78.0,
+        sharesOutstandingBillions: 0.39,
+        balanceSheet: { totalCashBillions: 8.0, shortTermDebtBillions: 0.0 },
+        cashFlow: { operatingCashFlowBillions: -1.5 },
+      };
+      const mockFacts: any = {
+        ticker: "MRNA",
+        revenueBillions: 0.15,
+        grossMarginPct: 30.0,
+        operatingIncomeBillions: -0.8,
+        epsOperating: -1.99,
+        forwardEpsConsensus: -4.53, // Negative forward consensus
+        valuationArchetype: "compounder",
+      };
+      const mockBaseline: any = {
+        baseRevenueBillions: 0.6,
+        baseGrossMarginPct: 30.0,
+        fixedOpexBillions: 0.5,
+        taxRatePct: 16.5,
+        dilutedSharesBillions: 0.39,
+        multipleRegimes: { bull: 34.0, base: 26.0, panic: 16.0 },
+        upstreamDrivers: [],
+      };
+      const mockEstimates: any = {
+        priceTargets: { average: 135.84, high: 200.0, low: 80.0 },
+      };
+
+      const { scenariosEn } = generateScenariosDraft(
+        mockFacts,
+        mockProfile,
+        mockBaseline,
+        mockEstimates
+      );
+
+      const baseScenario = scenariosEn.scenarios.find(
+        (s) => s.name === "Base"
+      )!;
+      // Base EPS should be anchored to consensus (135.84 / 26 = 5.22), yielding Base Target ~ $135.72
+      expect(baseScenario.forwardEps).toBe(5.22);
+      const baseTarget = baseScenario.forwardEps * baseScenario.multiple;
+      expect(baseTarget).toBeCloseTo(135.72, 1);
+      expect(baseTarget).toBeGreaterThan(100); // Definitely NOT flatlined at $13!
+    });
+
+    it("detects unadjusted stock split mismatch and re-normalizes base EPS to consensus target", () => {
+      const mockProfile: any = {
+        ticker: "MSTR",
+        companyName: "MicroStrategy",
+        currentPrice: 145.0,
+        marketCapBillions: 58.0,
+        sharesOutstandingBillions: 0.4,
+        balanceSheet: { totalCashBillions: 0.5, shortTermDebtBillions: 0.0 },
+        cashFlow: { operatingCashFlowBillions: 0.1 },
+      };
+      const mockFacts: any = {
+        ticker: "MSTR",
+        revenueBillions: 0.12,
+        grossMarginPct: 70.0,
+        operatingIncomeBillions: -8.0,
+        epsOperating: -24.77,
+        forwardEpsConsensus: 49.49, // Unadjusted pre-split EPS from 10:1 split
+        valuationArchetype: "compounder",
+      };
+      const mockBaseline: any = {
+        baseRevenueBillions: 0.48,
+        baseGrossMarginPct: 70.0,
+        fixedOpexBillions: 0.2,
+        taxRatePct: 16.5,
+        dilutedSharesBillions: 0.4,
+        multipleRegimes: { bull: 34.0, base: 26.0, panic: 16.0 },
+        upstreamDrivers: [],
+      };
+      const mockEstimates: any = {
+        priceTargets: { average: 239.27, high: 300.0, low: 180.0 },
+      };
+
+      const { scenariosEn } = generateScenariosDraft(
+        mockFacts,
+        mockProfile,
+        mockBaseline,
+        mockEstimates
+      );
+
+      const baseScenario = scenariosEn.scenarios.find(
+        (s) => s.name === "Base"
+      )!;
+      // Without guardrail: 49.49 * 26 = $1,286 (880% blowup).
+      // With guardrail: normalized to consensus target (239.27 / 26 = 9.20), yielding Base Target ~ $239.20
+      expect(baseScenario.forwardEps).toBe(9.2);
+      const baseTarget = baseScenario.forwardEps * baseScenario.multiple;
+      expect(baseTarget).toBeCloseTo(239.2, 1);
+      expect(baseTarget).toBeLessThan(350); // Blowup eliminated!
     });
   });
 });

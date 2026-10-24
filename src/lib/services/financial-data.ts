@@ -480,7 +480,7 @@ export async function fetchFundamentalProfile(
 
   try {
     const [quote, summary] = await Promise.all([
-      yf.quote(ticker).catch(() => ({})),
+      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
       yf
         .quoteSummary(ticker, {
           modules: [
@@ -491,7 +491,7 @@ export async function fetchFundamentalProfile(
             "earnings",
           ],
         })
-        .catch(() => ({})),
+        .catch((err: any) => err?.result ?? {}),
     ]);
     yfQuote = quote || {};
     yfSummary = summary || {};
@@ -635,8 +635,8 @@ export async function fetchAnalystEstimates(
             "summaryDetail",
           ],
         })
-        .catch(() => ({})),
-      yf.quote(ticker).catch(() => ({})),
+        .catch((err: any) => err?.result ?? {}),
+      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
     ]);
     yfSummary = summary || {};
     yfQuote = quote || {};
@@ -735,13 +735,21 @@ export async function fetchAnalystEstimates(
     if (!firm || seenFirms.has(firm.toLowerCase())) continue;
     seenFirms.add(firm.toLowerCase());
 
-    const gradeDate = row.epochGradeDate
-      ? new Date(row.epochGradeDate).toISOString().split("T")[0]
+    const rawEpoch = row.epochGradeDate;
+    const gradeDate = rawEpoch
+      ? new Date(
+          typeof rawEpoch === "number" && rawEpoch < 1e11
+            ? rawEpoch * 1000
+            : rawEpoch
+        )
+          .toISOString()
+          .split("T")[0]
       : new Date().toISOString().split("T")[0];
 
     const toGrade = row.toGrade || "Buy";
     const fromGrade = row.fromGrade;
-    const actionRaw = row.action || "reit";
+    const actionRaw =
+      `${row.action || ""} ${row.priceTargetAction || ""}`.trim();
 
     let actionClean = "Reiterated";
     if (actionRaw.toLowerCase().includes("up")) actionClean = "Upgraded";
@@ -1104,10 +1112,24 @@ export function generateBaselineDraft(
   let baseMult = 25.0;
   let panicMult = 15.0;
 
-  if (profile.forwardPE && profile.forwardPE > 5 && profile.forwardPE < 150) {
+  // Defensive Guardrail: Relax lower bound to 1.5x to preserve legitimate low-multiple
+  // compounders (e.g. debt-heavy cable/utilities/telecom) rather than forcing arbitrary 26x multiples
+  if (
+    profile.forwardPE &&
+    profile.forwardPE >= 1.5 &&
+    profile.forwardPE < 150
+  ) {
     baseMult = round2(profile.forwardPE);
     bullMult = round2(profile.forwardPE * 1.35);
-    panicMult = round2(profile.forwardPE * 0.55);
+    panicMult = round2(Math.max(profile.forwardPE * 0.55, 1.0));
+  } else if (
+    profile.trailingPE &&
+    profile.trailingPE >= 1.5 &&
+    profile.trailingPE < 150
+  ) {
+    baseMult = round2(profile.trailingPE);
+    bullMult = round2(profile.trailingPE * 1.35);
+    panicMult = round2(Math.max(profile.trailingPE * 0.55, 1.0));
   } else if (facts.valuationArchetype === "venture_hypergrowth") {
     baseMult = 55.0;
     bullMult = 75.0;
@@ -1183,10 +1205,56 @@ export function generateScenariosDraft(
     estimates?.priceTargets?.average ||
     round2(profile.currentPrice > 0 ? profile.currentPrice * 1.15 : 100);
 
-  const baseEps =
-    facts.forwardEpsConsensus && facts.forwardEpsConsensus > 0
-      ? facts.forwardEpsConsensus
-      : round2(Math.max((facts.epsOperating || 0.1) * 4 * 1.15, 0.5));
+  let baseEps: number;
+
+  // Guardrail 1: Valid Positive Forward EPS Consensus
+  if (facts.forwardEpsConsensus && facts.forwardEpsConsensus > 0) {
+    const rawFwdEps = facts.forwardEpsConsensus;
+    const impliedBaseTarget = rawFwdEps * baseline.multipleRegimes.base;
+
+    // Guardrail 3 (Stock-Split Mismatch Protection):
+    // If raw implied target is > 3.0x current price while consensus target is within 2.2x price,
+    // detect unadjusted stock split lag (e.g. 10:1 or 3:1) and re-normalize base EPS to consensus target
+    if (
+      profile.currentPrice > 0 &&
+      impliedBaseTarget > profile.currentPrice * 3.0 &&
+      consensusTarget > 0 &&
+      consensusTarget < profile.currentPrice * 2.2
+    ) {
+      baseEps = round2(consensusTarget / baseline.multipleRegimes.base);
+    } else {
+      baseEps = rawFwdEps;
+    }
+  } else if (facts.epsOperating && facts.epsOperating > 0) {
+    const impliedBaseTarget =
+      facts.epsOperating * 4 * 1.15 * baseline.multipleRegimes.base;
+    // Guardrail 4 (Early-Stage Hypergrowth Scale-Up Protection):
+    // If annualized trailing operating EPS implies a valuation < 35% of current price while consensus is bullish,
+    // anchor base EPS to consensus price target to avoid collapsing scale-up AI stocks
+    if (
+      profile.currentPrice > 0 &&
+      impliedBaseTarget < profile.currentPrice * 0.35 &&
+      consensusTarget > profile.currentPrice * 0.8
+    ) {
+      baseEps = round2(consensusTarget / baseline.multipleRegimes.base);
+    } else {
+      baseEps = round2(facts.epsOperating * 4 * 1.15);
+    }
+  } else {
+    // Guardrail 2 (Negative EPS / Unprofitable Starter Fallback):
+    // For companies with negative forward EPS and negative operating income (biotech, REITs, pre-profit AI),
+    // anchor implied forward earnings power to consensus target (which uses P/FFO, EV/Sales, or pipeline DCF)
+    // or current market price rather than an arbitrary flatline clamp ($0.50 * 26x = $13)
+    const anchorPrice =
+      consensusTarget > 0
+        ? consensusTarget
+        : profile.currentPrice > 0
+          ? profile.currentPrice
+          : 50.0;
+    const anchorMultiple = Math.max(baseline.multipleRegimes.base, 10.0);
+    baseEps = round2(Math.max(anchorPrice / anchorMultiple, 0.1));
+  }
+
   const bullEps = round2(baseEps * 1.35);
   const panicEps = round2(Math.max(baseEps * 0.55, 0.1));
 

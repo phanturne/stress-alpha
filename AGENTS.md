@@ -23,6 +23,13 @@ This document defines the architectural conventions, data modeling rules, intern
      - Gated by session (`bmo` at 8:45 AM EST, `amc` at 5:15 PM EST) and active coverage universe.
      - Non-destructive deduplication skips populated reports (`revenueBillions > 0`) while enabling forced re-scaffolding (`--force`) and safe simulation (`--dry-run`).
      - Automatically runs deterministic valuation (`computeStressedValuation`) and sanity audit (`computeSanityAudit`), persisting bilingual report data and recording initial revision snapshots in `valuation_revisions`.
+   - Institutional Universe Seeding & Batch Price Telemetry (`scripts/seed_universe.ts`, `scripts/sync_prices.ts`, `npm run seed:universe`, `npm run sync:prices`):
+     - Ingests official S&P 500 (~503 constituents) and NASDAQ-100 (101 constituents), deduplicating and normalizing symbols into an institutional universe of 518+ core US equities.
+     - Batch-accelerates Yahoo Finance quote synchronization into 50-ticker chunks, refreshing closing prices, prior closes, and market capitalization across the full universe in seconds without hitting rate limits.
+     - Seamlessly expands the active coverage gate for autonomous earnings calendar ingestion and the global news firehose.
+   - Bulk Scaffolding & Batch Report Persistence (`scripts/bulk_scaffold.ts`, `npm run scaffold:universe`):
+     - Ingests 8-module pipeline bundles, computes deterministic valuations, runs sanity audits, renders bilingual memos, and persists full institutional reports into Neon PostgreSQL.
+     - Prioritizes by market cap with configurable limits (`--limit=50`), single-ticker targets (`--ticker=JPM`), or universe-wide backfills (`--all`), with non-destructive skipping of already populated reports.
 
 ---
 

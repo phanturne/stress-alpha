@@ -97,8 +97,10 @@ stress-alpha/
 ├── scripts/
 │   ├── sync_earnings_calendar.ts       # Finnhub earnings calendar ingestion & scaffolding
 │   ├── sync_news.ts                    # Polygon firehose news ingestion & transmission calculation
-│   ├── sync_prices.ts                  # Market price synchronization
+│   ├── sync_prices.ts                  # Market price synchronization (batch-accelerated)
 │   ├── fetch_data.ts                   # SEC 10-Q & consensus pipeline data extractor
+│   ├── seed_universe.ts                # S&P 500 & NASDAQ-100 universe ingestion & quote seeder
+│   ├── bulk_scaffold.ts                # Batch valuation scaffolding & report persistence engine
 │   └── seed_upstream_dependencies.ts   # Cross-company supply chain DAG seeder
 ├── src/
 │   ├── app/                            # Next.js 16 App Router pages & API routes
@@ -124,7 +126,7 @@ stress-alpha/
 │       ├── news-transmission.ts        # Event-to-valuation transmission engine
 │       ├── services/                   # Earnings calendar, financial data, and news services
 │       └── repository/                 # Data Access Layer (Drizzle & InMemory repositories)
-└── tests/                              # Vitest automated test suite (205 tests across 20 suites)
+└── tests/                              # Vitest automated test suite (207 tests across 21 suites)
 ```
 
 ---

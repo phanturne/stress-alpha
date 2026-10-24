@@ -61,49 +61,127 @@ async function syncPrices() {
   }
 
   console.log(
-    `  Found ${tickers.length} active tickers: ${tickers.map((t) => t.ticker).join(", ")}\n`
+    `  Found ${tickers.length} active tickers across coverage universe.\n`
   );
 
   let successCount = 0;
   let errorCount = 0;
+  const chunkSize = 50;
 
-  for (const { ticker, company, currentPrice: oldPrice } of tickers) {
+  for (let i = 0; i < tickers.length; i += chunkSize) {
+    const chunk = tickers.slice(i, i + chunkSize);
+    const symbols = chunk.map((c) => c.ticker);
+
     try {
-      const quote = await fetchQuoteFromYahoo(ticker);
-      const newPrice = Number(quote.regularMarketPrice?.toFixed(2));
-      const prevClose = quote.chartPreviousClose
-        ? Number(quote.chartPreviousClose.toFixed(2))
-        : undefined;
+      const rawQuotes = await yf.quote(symbols);
+      const quotesList = Array.isArray(rawQuotes) ? rawQuotes : [rawQuotes];
+      const quoteMap = new Map<string, any>();
 
-      const delta = Number(oldPrice)
-        ? Number(
-            (((newPrice - Number(oldPrice)) / Number(oldPrice)) * 100).toFixed(
-              2
-            )
-          )
-        : 0;
-      const deltaSign = delta > 0 ? "+" : "";
+      for (const q of quotesList) {
+        if (q && q.symbol) {
+          quoteMap.set(q.symbol.toUpperCase(), q);
+        }
+      }
 
-      // 1. Update tickers table
-      await db
-        .update(tickersTable)
-        .set({
-          currentPrice: String(newPrice),
-          previousClose: prevClose != null ? String(prevClose) : undefined,
-          priceUpdatedAt: new Date(),
-        })
-        .where(eq(tickersTable.ticker, ticker));
+      for (const { ticker, company, currentPrice: oldPrice } of chunk) {
+        const quote = quoteMap.get(ticker.toUpperCase());
+        if (quote && typeof quote.regularMarketPrice === "number") {
+          const newPrice = Number(quote.regularMarketPrice.toFixed(2));
+          const prevClose =
+            typeof quote.regularMarketPreviousClose === "number"
+              ? Number(quote.regularMarketPreviousClose.toFixed(2))
+              : undefined;
 
-      console.log(
-        `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} (${deltaSign}${delta}% vs prior $${Number(oldPrice).toFixed(2)}) — ${company}`
-      );
-      successCount++;
-    } catch (err) {
-      console.error(
-        `  ❌ [${ticker.padEnd(5)}] Failed to fetch price:`,
-        err instanceof Error ? err.message : err
-      );
-      errorCount++;
+          const delta = Number(oldPrice)
+            ? Number(
+                (
+                  ((newPrice - Number(oldPrice)) / Number(oldPrice)) *
+                  100
+                ).toFixed(2)
+              )
+            : 0;
+          const deltaSign = delta > 0 ? "+" : "";
+
+          await db
+            .update(tickersTable)
+            .set({
+              currentPrice: String(newPrice),
+              previousClose: prevClose != null ? String(prevClose) : undefined,
+              priceUpdatedAt: new Date(),
+            })
+            .where(eq(tickersTable.ticker, ticker));
+
+          console.log(
+            `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} (${deltaSign}${delta}% vs prior $${Number(oldPrice).toFixed(2)}) — ${company}`
+          );
+          successCount++;
+        } else {
+          // Fallback to individual quote
+          try {
+            const single = await fetchQuoteFromYahoo(ticker);
+            const newPrice = Number(single.regularMarketPrice?.toFixed(2));
+            const prevClose = single.chartPreviousClose
+              ? Number(single.chartPreviousClose.toFixed(2))
+              : undefined;
+
+            await db
+              .update(tickersTable)
+              .set({
+                currentPrice: String(newPrice),
+                previousClose:
+                  prevClose != null ? String(prevClose) : undefined,
+                priceUpdatedAt: new Date(),
+              })
+              .where(eq(tickersTable.ticker, ticker));
+
+            console.log(
+              `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
+            );
+            successCount++;
+          } catch (err) {
+            console.error(
+              `  ❌ [${ticker.padEnd(5)}] Failed to fetch price:`,
+              err instanceof Error ? err.message : err
+            );
+            errorCount++;
+          }
+        }
+      }
+    } catch {
+      // If batch fails, fallback to individual fetches for this chunk
+      for (const { ticker, company, currentPrice: oldPrice } of chunk) {
+        try {
+          const single = await fetchQuoteFromYahoo(ticker);
+          const newPrice = Number(single.regularMarketPrice?.toFixed(2));
+          const prevClose = single.chartPreviousClose
+            ? Number(single.chartPreviousClose.toFixed(2))
+            : undefined;
+
+          await db
+            .update(tickersTable)
+            .set({
+              currentPrice: String(newPrice),
+              previousClose: prevClose != null ? String(prevClose) : undefined,
+              priceUpdatedAt: new Date(),
+            })
+            .where(eq(tickersTable.ticker, ticker));
+
+          console.log(
+            `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
+          );
+          successCount++;
+        } catch (err) {
+          console.error(
+            `  ❌ [${ticker.padEnd(5)}] Failed to fetch price:`,
+            err instanceof Error ? err.message : err
+          );
+          errorCount++;
+        }
+      }
+    }
+
+    if (i + chunkSize < tickers.length) {
+      await new Promise((r) => setTimeout(r, 100));
     }
   }
 
