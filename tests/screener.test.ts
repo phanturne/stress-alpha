@@ -342,8 +342,7 @@ describe("Screener & Reports API", () => {
     expect(getReportRecencyWeight(rawReports[1])).toBe(20264); // Q4 2026
     expect(getReportRecencyWeight(rawReports[4])).toBe(20272); // Q2 2027
 
-    const { uniqueReports, siblingReportsMap } =
-      deduplicateReportsToLatest(rawReports);
+    const uniqueReports = deduplicateReportsToLatest(rawReports);
 
     // Exactly 3 unique stocks (ONDS, MU, NVDA)
     expect(uniqueReports).toHaveLength(3);
@@ -356,24 +355,16 @@ describe("Screener & Reports API", () => {
     expect(ondsLatest?.quarter).toBe("Q4 2026");
     expect(ondsLatest?.slug).toBe("ONDS-Q4-2026-analysis");
 
-    // Sibling map has both Q4 and Q2 for ONDS
-    const ondsSiblings = siblingReportsMap.get("ONDS");
-    expect(ondsSiblings).toBeDefined();
-    expect(ondsSiblings).toHaveLength(2);
-    expect(ondsSiblings?.[0].quarter).toBe("Q4 2026");
-    expect(ondsSiblings?.[1].quarter).toBe("Q2 2026");
-
     // MU latest quarter is Q4 2026
     const muLatest = uniqueReports.find((r) => r.ticker === "MU");
     expect(muLatest).toBeDefined();
     expect(muLatest?.quarter).toBe("Q4 2026");
     expect(muLatest?.slug).toBe("MU-Q4-2026-analysis");
 
-    // Sibling map has both Q4 and Q3 for MU
-    const muSiblings = siblingReportsMap.get("MU");
-    expect(muSiblings).toBeDefined();
-    expect(muSiblings).toHaveLength(2);
-    expect(muSiblings?.[0].quarter).toBe("Q4 2026");
-    expect(muSiblings?.[1].quarter).toBe("Q3 2026");
+    // NVDA latest quarter is Q2 2027
+    const nvdaLatest = uniqueReports.find((r) => r.ticker === "NVDA");
+    expect(nvdaLatest).toBeDefined();
+    expect(nvdaLatest?.quarter).toBe("Q2 2027");
+    expect(nvdaLatest?.slug).toBe("NVDA-Q2-2027-analysis");
   });
 });
