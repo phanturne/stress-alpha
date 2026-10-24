@@ -3,6 +3,10 @@ import { GET, type ReportSummary } from "@/app/api/reports/route";
 import { getReportRepository } from "@/lib/repository";
 import { computeValuation, computeStressedValuation } from "@/lib/valuation";
 import { computeSnowflakeScore } from "@/lib/snowflake";
+import {
+  deduplicateReportsToLatest,
+  getReportRecencyWeight,
+} from "@/components/ScreenerView";
 
 describe("Screener & Reports API", () => {
   it("GET /api/reports returns enriched report summaries", async () => {
@@ -228,5 +232,148 @@ describe("Screener & Reports API", () => {
         }
       })
     );
+  });
+
+  it("deduplicates multiple reports for the same stock, selecting the latest earnings quarter", () => {
+    const rawReports: ReportSummary[] = [
+      {
+        slug: "ONDS-Q2-2026-analysis",
+        name: "ONDS-Q2-2026-analysis",
+        ticker: "ONDS",
+        company: "Ondas Holdings Inc.",
+        quarter: "Q2 2026",
+        reportDate: "2026-08-14",
+        currentPrice: 7.24,
+        weightedFairValue: 14.07,
+        upsidePct: 94.34,
+        hasFacts: true,
+        hasScenarios: true,
+        hasValuation: true,
+        hasBaseline: true,
+        hasSentiment: true,
+        hasFiling: true,
+        hasCatalysts: true,
+        hasReactions: true,
+        hasEstimates: true,
+      },
+      {
+        slug: "ONDS-Q4-2026-analysis",
+        name: "ONDS-Q4-2026-analysis",
+        ticker: "ONDS",
+        company: "Ondas Holdings Inc.",
+        quarter: "Q4 2026",
+        reportDate: "2026-10-24",
+        currentPrice: 6.2,
+        weightedFairValue: 15.52,
+        upsidePct: 150.32,
+        hasFacts: true,
+        hasScenarios: true,
+        hasValuation: true,
+        hasBaseline: true,
+        hasSentiment: true,
+        hasFiling: true,
+        hasCatalysts: true,
+        hasReactions: true,
+        hasEstimates: true,
+      },
+      {
+        slug: "MU-Q3-2026-analysis",
+        name: "MU-Q3-2026-analysis",
+        ticker: "MU",
+        company: "Micron Technology",
+        quarter: "Q3 2026",
+        reportDate: "2026-06-24",
+        currentPrice: 135.0,
+        weightedFairValue: 180.0,
+        upsidePct: 33.33,
+        hasFacts: true,
+        hasScenarios: true,
+        hasValuation: true,
+        hasBaseline: true,
+        hasSentiment: true,
+        hasFiling: true,
+        hasCatalysts: true,
+        hasReactions: true,
+        hasEstimates: true,
+      },
+      {
+        slug: "MU-Q4-2026-analysis",
+        name: "MU-Q4-2026-analysis",
+        ticker: "MU",
+        company: "Micron Technology",
+        quarter: "Q4 2026",
+        reportDate: "2026-09-30",
+        currentPrice: 108.0,
+        weightedFairValue: 160.0,
+        upsidePct: 48.15,
+        hasFacts: true,
+        hasScenarios: true,
+        hasValuation: true,
+        hasBaseline: true,
+        hasSentiment: true,
+        hasFiling: true,
+        hasCatalysts: true,
+        hasReactions: true,
+        hasEstimates: true,
+      },
+      {
+        slug: "NVDA-Q2-2027-analysis",
+        name: "NVDA-Q2-2027-analysis",
+        ticker: "NVDA",
+        company: "NVIDIA Corporation",
+        quarter: "Q2 2027",
+        reportDate: "2026-08-26",
+        currentPrice: 212.5,
+        weightedFairValue: 245.0,
+        upsidePct: 15.29,
+        hasFacts: true,
+        hasScenarios: true,
+        hasValuation: true,
+        hasBaseline: true,
+        hasSentiment: true,
+        hasFiling: true,
+        hasCatalysts: true,
+        hasReactions: true,
+        hasEstimates: true,
+      },
+    ];
+
+    expect(getReportRecencyWeight(rawReports[0])).toBe(20262); // Q2 2026
+    expect(getReportRecencyWeight(rawReports[1])).toBe(20264); // Q4 2026
+    expect(getReportRecencyWeight(rawReports[4])).toBe(20272); // Q2 2027
+
+    const { uniqueReports, siblingReportsMap } =
+      deduplicateReportsToLatest(rawReports);
+
+    // Exactly 3 unique stocks (ONDS, MU, NVDA)
+    expect(uniqueReports).toHaveLength(3);
+    const tickers = uniqueReports.map((r) => r.ticker).sort();
+    expect(tickers).toEqual(["MU", "NVDA", "ONDS"]);
+
+    // ONDS latest quarter is Q4 2026
+    const ondsLatest = uniqueReports.find((r) => r.ticker === "ONDS");
+    expect(ondsLatest).toBeDefined();
+    expect(ondsLatest?.quarter).toBe("Q4 2026");
+    expect(ondsLatest?.slug).toBe("ONDS-Q4-2026-analysis");
+
+    // Sibling map has both Q4 and Q2 for ONDS
+    const ondsSiblings = siblingReportsMap.get("ONDS");
+    expect(ondsSiblings).toBeDefined();
+    expect(ondsSiblings).toHaveLength(2);
+    expect(ondsSiblings?.[0].quarter).toBe("Q4 2026");
+    expect(ondsSiblings?.[1].quarter).toBe("Q2 2026");
+
+    // MU latest quarter is Q4 2026
+    const muLatest = uniqueReports.find((r) => r.ticker === "MU");
+    expect(muLatest).toBeDefined();
+    expect(muLatest?.quarter).toBe("Q4 2026");
+    expect(muLatest?.slug).toBe("MU-Q4-2026-analysis");
+
+    // Sibling map has both Q4 and Q3 for MU
+    const muSiblings = siblingReportsMap.get("MU");
+    expect(muSiblings).toBeDefined();
+    expect(muSiblings).toHaveLength(2);
+    expect(muSiblings?.[0].quarter).toBe("Q4 2026");
+    expect(muSiblings?.[1].quarter).toBe("Q3 2026");
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Search,
   TrendingUp,
@@ -139,6 +139,76 @@ const SKELETON_ROWS = [
   },
 ];
 
+/**
+ * Computes a deterministic integer score reflecting the quarter/date recency of a report.
+ * Higher score = more recent earnings quarter.
+ * e.g. "Q4 2026" -> 20264, "Q2 2027" -> 20272.
+ */
+export function getReportRecencyWeight(r: ReportSummary): number {
+  if (r.quarter) {
+    const match = r.quarter.match(/Q([1-4])\s*(\d{4})/i);
+    if (match) {
+      const q = parseInt(match[1], 10);
+      const year = parseInt(match[2], 10);
+      return year * 10 + q;
+    }
+  }
+  if (r.reportDate && /^\d{4}-\d{2}-\d{2}/.test(r.reportDate)) {
+    const parts = r.reportDate.split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const q = Math.ceil(month / 3);
+    return year * 10 + q;
+  }
+  if ((r as any).publishedAt) {
+    const ts = new Date((r as any).publishedAt).getTime();
+    if (!isNaN(ts)) return ts;
+  }
+  return 0;
+}
+
+/**
+ * Deduplicates reports by unique ticker symbol, selecting the latest earnings report as primary,
+ * while collecting all historical sibling quarters for fast client-side switching.
+ */
+export function deduplicateReportsToLatest(reports: ReportSummary[]): {
+  uniqueReports: ReportSummary[];
+  siblingReportsMap: Map<string, ReportSummary[]>;
+} {
+  const groupMap = new Map<string, ReportSummary[]>();
+
+  for (const r of reports) {
+    const symbol = (r.ticker || r.slug.split("-")[0] || r.slug).toUpperCase();
+    const existing = groupMap.get(symbol);
+    if (existing) {
+      existing.push(r);
+    } else {
+      groupMap.set(symbol, [r]);
+    }
+  }
+
+  const uniqueReports: ReportSummary[] = [];
+  const siblingReportsMap = new Map<string, ReportSummary[]>();
+
+  groupMap.forEach((reps, symbol) => {
+    // Sort descending by recency (latest first)
+    const sorted = [...reps].sort((a, b) => {
+      const scoreA = getReportRecencyWeight(a);
+      const scoreB = getReportRecencyWeight(b);
+      if (scoreA !== scoreB) return scoreB - scoreA;
+      const dateA = a.reportDate || "";
+      const dateB = b.reportDate || "";
+      if (dateA && dateB && dateA !== dateB) return dateB.localeCompare(dateA);
+      return b.slug.localeCompare(a.slug);
+    });
+
+    uniqueReports.push(sorted[0]);
+    siblingReportsMap.set(symbol, sorted);
+  });
+
+  return { uniqueReports, siblingReportsMap };
+}
+
 export const ScreenerView: React.FC<ScreenerViewProps> = ({
   reports,
   onSelectReport,
@@ -202,11 +272,43 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
     handleToggleWatchlistOnly(false);
   };
 
+  // Group reports by unique ticker symbol, selecting the latest report as default primary
+  const { uniqueReports: uniqueStockReports, siblingReportsMap } = useMemo(
+    () => deduplicateReportsToLatest(reports),
+    [reports]
+  );
+
+  // Tracks active selected quarter per ticker within the screener (defaults to latest)
+  const [selectedSlugByTicker, setSelectedSlugByTicker] = useState<
+    Record<string, string>
+  >({});
+
+  // Resolves the active report for a given ticker
+  const getActiveReportForStock = useCallback(
+    (baseReport: ReportSummary): ReportSummary => {
+      const symbol = (
+        baseReport.ticker ||
+        baseReport.slug.split("-")[0] ||
+        baseReport.slug
+      ).toUpperCase();
+      const selectedSlug = selectedSlugByTicker[symbol];
+      if (!selectedSlug) return baseReport;
+      const siblings = siblingReportsMap.get(symbol);
+      return siblings?.find((s) => s.slug === selectedSlug) || baseReport;
+    },
+    [selectedSlugByTicker, siblingReportsMap]
+  );
+
+  // Active unique stocks scoped with user-selected quarter (if any)
+  const activeStockReports = useMemo(() => {
+    return uniqueStockReports.map(getActiveReportForStock);
+  }, [uniqueStockReports, getActiveReportForStock]);
+
   // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
   const stats = useMemo(() => {
     const baseList = watchlistOnly
-      ? reports.filter((r) => isFavorite(r.ticker || r.slug))
-      : reports;
+      ? activeStockReports.filter((r) => isFavorite(r.ticker || r.slug))
+      : activeStockReports;
 
     if (baseList.length === 0) {
       return {
@@ -245,13 +347,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       topPick,
       wideMoatCount,
     };
-  }, [reports, watchlistOnly, isFavorite]);
+  }, [activeStockReports, watchlistOnly, isFavorite]);
 
   const isWatchlistEmpty = watchlistOnly && stats.count === 0 && !isLoading;
 
   // Filter and sort reports
   const filteredReports = useMemo(() => {
-    return reports
+    return activeStockReports
       .filter((r) => {
         // Watchlist filter
         if (watchlistOnly) {
@@ -353,7 +455,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           : (valB as number) - (valA as number);
       });
   }, [
-    reports,
+    activeStockReports,
     searchQuery,
     watchlistOnly,
     isFavorite,
@@ -513,16 +615,64 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         }`}
                       />
                     </button>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span className="font-mono text-base font-black tracking-tight text-white group-hover:text-accent">
                           {report.ticker || report.slug.split("-")[0]}
                         </span>
-                        {report.quarter && (
-                          <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
-                            {report.quarter}
-                          </span>
-                        )}
+                        {(() => {
+                          const symbol = (
+                            report.ticker ||
+                            report.slug.split("-")[0] ||
+                            report.slug
+                          ).toUpperCase();
+                          const siblings = siblingReportsMap.get(symbol) || [
+                            report,
+                          ];
+
+                          if (siblings.length > 1) {
+                            return (
+                              <div className="flex items-center gap-1">
+                                {siblings.map((s) => {
+                                  const isSelected = s.slug === report.slug;
+                                  return (
+                                    <button
+                                      key={s.slug}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedSlugByTicker((prev) => ({
+                                          ...prev,
+                                          [symbol]: s.slug,
+                                        }));
+                                      }}
+                                      title={
+                                        isSelected
+                                          ? `${s.quarter} (${locale === "zh" ? "当前显示" : "Active"})`
+                                          : `${locale === "zh" ? "切换至" : "Switch to"} ${s.quarter}`
+                                      }
+                                      className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold transition-all ${
+                                        isSelected
+                                          ? "border border-accent/40 bg-accent/20 text-accent shadow-sm"
+                                          : "border border-transparent bg-surface-3 text-slate-400 hover:bg-surface-2 hover:text-white"
+                                      }`}
+                                    >
+                                      {s.quarter}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+
+                          return (
+                            report.quarter && (
+                              <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                                {report.quarter}
+                              </span>
+                            )
+                          );
+                        })()}
                       </div>
                       <p className="max-w-[150px] truncate text-xs text-slate-400 sm:max-w-[180px]">
                         {report.company || report.slug}
@@ -1061,7 +1211,10 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             {/* Results count & Reset */}
             <div className="flex items-center gap-2">
               <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-500">
-                {ts.resultsCount(filteredReports.length, reports.length)}
+                {ts.resultsCount(
+                  filteredReports.length,
+                  activeStockReports.length
+                )}
               </span>
               {hasActiveFilters && (
                 <button
@@ -1519,15 +1672,66 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               {report.ticker || report.slug.split("-")[0]}
                             </span>
                             <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="font-bold text-white group-hover:text-accent">
                                   {report.ticker || report.slug}
                                 </span>
-                                {report.quarter && (
-                                  <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
-                                    {report.quarter}
-                                  </span>
-                                )}
+                                {(() => {
+                                  const symbol = (
+                                    report.ticker ||
+                                    report.slug.split("-")[0] ||
+                                    report.slug
+                                  ).toUpperCase();
+                                  const siblings = siblingReportsMap.get(
+                                    symbol
+                                  ) || [report];
+
+                                  if (siblings.length > 1) {
+                                    return (
+                                      <div className="flex items-center gap-1">
+                                        {siblings.map((s) => {
+                                          const isSelected =
+                                            s.slug === report.slug;
+                                          return (
+                                            <button
+                                              key={s.slug}
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedSlugByTicker(
+                                                  (prev) => ({
+                                                    ...prev,
+                                                    [symbol]: s.slug,
+                                                  })
+                                                );
+                                              }}
+                                              title={
+                                                isSelected
+                                                  ? `${s.quarter} (${locale === "zh" ? "当前显示" : "Active"})`
+                                                  : `${locale === "zh" ? "切换至" : "Switch to"} ${s.quarter}`
+                                              }
+                                              className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold transition-all ${
+                                                isSelected
+                                                  ? "border border-accent/40 bg-accent/20 text-accent shadow-sm"
+                                                  : "border border-transparent bg-surface-3 text-slate-400 hover:bg-surface-2 hover:text-white"
+                                              }`}
+                                            >
+                                              {s.quarter}
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    report.quarter && (
+                                      <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                                        {report.quarter}
+                                      </span>
+                                    )
+                                  );
+                                })()}
                               </div>
                               <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[180px] xl:max-w-[220px]">
                                 {report.company || report.slug}
