@@ -210,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Center Nav: Segmented Primary Navigation Bar (Model + Screener + Watchlist) */}
-      <nav className="hidden items-center justify-center gap-1 rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm md:flex">
+      <nav className="shadow-xs hidden items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1 md:flex">
         {activeSlug && activeTicker && (
           <button
             type="button"
@@ -222,8 +222,8 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
               viewMode === "cockpit" || viewMode === "memo"
-                ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-                : "text-slate-400 hover:text-white"
+                ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
+                : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
             }`}
             title={
               viewMode === "cockpit" || viewMode === "memo"
@@ -231,7 +231,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : t.modelNavTooltip(activeTicker)
             }
           >
-            <SlidersHorizontal className="size-3.5" />
+            <SlidersHorizontal className="size-3.5 text-accent" />
             <span>{`${activeTicker} · ${t.cockpit}`}</span>
           </button>
         )}
@@ -241,8 +241,8 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onViewModeChange("screener", { watchlistOnly: false })}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
             viewMode === "screener"
-              ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-              : "text-slate-400 hover:text-white"
+              ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
+              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
           }`}
           title={`${t.screener} (S)`}
         >
@@ -255,15 +255,15 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onViewModeChange("watchlist")}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
             viewMode === "watchlist"
-              ? "bg-amber-500/15 font-bold text-amber-300 shadow-sm ring-1 ring-amber-500/30"
-              : "text-slate-400 hover:text-white"
+              ? "shadow-xs border border-amber-500/30 bg-amber-500/10 font-bold text-amber-400"
+              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
           }`}
           title={`${t.watchlist} (${watchlistCount})`}
         >
           <Star
             className={`size-3.5 ${
               viewMode === "watchlist"
-                ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                ? "fill-amber-400 text-amber-400"
                 : "text-slate-400"
             }`}
           />
@@ -293,10 +293,10 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onShare}
-              className="group flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-bold text-accent shadow-sm transition-all hover:border-accent/60 hover:bg-accent/20 hover:text-white sm:px-3"
+              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white sm:px-3"
               title={t.shareTooltip}
             >
-              <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-110" />
+              <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-105" />
               <span className="hidden sm:inline">{t.share}</span>
             </button>
           )}
@@ -305,7 +305,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={toggleTheme}
-          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
+          className="shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
           title={t.toggleTheme}
           aria-label={t.toggleTheme}
         >
@@ -321,7 +321,7 @@ export const Header: React.FC<HeaderProps> = ({
           href="https://github.com/phanturne/stress-alpha"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+          className="shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
           title={t.github}
           aria-label={t.github}
         >
@@ -333,9 +333,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className={`flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 ${
+            className={`shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 transition-all hover:border-accent/40 hover:bg-surface-2 ${
               isSettingsOpen
-                ? "border-accent/40 bg-surface-2 text-accent ring-1 ring-accent/30"
+                ? "border-accent/40 bg-surface-2 text-accent"
                 : "text-slate-400 hover:text-white"
             }`}
             title={t.settings}
@@ -637,7 +637,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsAuthModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1/90 px-2.5 py-1.5 text-xs font-medium text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+            className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
             title={tAuth.signIn}
           >
             <LogIn className="size-3.5 text-accent" />

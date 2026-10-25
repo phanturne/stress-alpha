@@ -24,26 +24,21 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
   return (
     <div
       onClick={onOpenModal}
-      className={`glass-panel group flex cursor-pointer flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl transition-all duration-200 hover:border-accent/40 hover:bg-surface-1/90 ${className}`}
+      className={`glass-panel shadow-xs group flex cursor-pointer flex-col gap-3 rounded-2xl border border-border p-4 transition-all duration-150 hover:border-accent/40 hover:bg-surface-1/90 ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent transition-colors group-hover:bg-accent/20">
-            <Sparkles className="size-3.5" />
-          </div>
-          <div>
-            <h3 className="font-mono text-xs font-bold uppercase tracking-tight text-white">
-              {t.scoreCardTitle}
-            </h3>
-            <p className="text-[10px] text-slate-400">
-              {scoreResult.ratingLabel}
-            </p>
-          </div>
+        <div>
+          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
+            {t.scoreCardTitle}
+          </h3>
+          <p className="text-[11px] text-slate-400">
+            {scoreResult.ratingLabel}
+          </p>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-base font-black text-accent">
+          <span className="font-mono text-base font-bold text-white">
             {scoreResult.totalScore}
           </span>
           <span className="font-mono text-xs text-slate-500">/ 30</span>

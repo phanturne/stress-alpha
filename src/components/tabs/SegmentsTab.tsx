@@ -29,7 +29,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
       </div>
 
       {/* Segment Revenue Contribution Bar */}
-      <div className="glass-panel flex flex-col gap-2.5 rounded-xl p-4 shadow-md">
+      <div className="glass-panel shadow-xs flex flex-col gap-2.5 rounded-xl border border-border p-4">
         <div className="flex items-center justify-between font-mono text-xs text-slate-400">
           <span className="font-semibold uppercase tracking-wider">
             {t.breakdownTitle}
@@ -92,7 +92,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
       </div>
 
       {/* Segments Table */}
-      <div className="glass-panel overflow-hidden rounded-xl border border-border/80 shadow-lg">
+      <div className="glass-panel shadow-xs overflow-hidden rounded-xl border border-border">
         <div className="custom-scrollbar overflow-x-auto">
           <table className="w-full border-collapse text-left text-xs">
             <thead>
@@ -140,7 +140,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
       {/* Management Forward Guidance Callout */}
       {(facts.guidanceOperatingIncomeLowBillions ||
         facts.guidanceRevenueLowBillions) && (
-        <div className="glass-panel flex flex-col gap-3 rounded-xl border border-accent/30 bg-accent/5 p-5 shadow-lg">
+        <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-xl border border-accent/30 bg-accent/5 p-5">
           <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-accent">
             <Compass className="size-4" />
             {t.guidanceTitle}

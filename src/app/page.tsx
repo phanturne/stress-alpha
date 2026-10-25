@@ -1153,7 +1153,7 @@ export default function HomePage() {
           <div className="flex h-full min-h-0 w-full flex-col gap-5 lg:flex-row lg:items-stretch xl:gap-6">
             {/* Mobile Segmented View Switcher: [ Cockpit ] [ Deep Dive (7) ] */}
             <div className="-mx-3 mb-1 flex w-[calc(100%+24px)] items-center justify-between px-3 py-1 lg:hidden">
-              <div className="grid w-full grid-cols-2 gap-1 rounded-xl border border-white/[0.06] bg-surface-1 p-1">
+              <div className="grid w-full grid-cols-2 gap-1 rounded-xl border border-border bg-surface-1 p-1">
                 <button
                   type="button"
                   onClick={() => {
@@ -1162,11 +1162,13 @@ export default function HomePage() {
                   }}
                   className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
                     mobileSection === "cockpit"
-                      ? "bg-accent text-slate-950 shadow-sm"
+                      ? "shadow-xs border border-border bg-surface-2 text-white"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <Sliders className="size-3.5" />
+                  <Sliders
+                    className={`size-3.5 ${mobileSection === "cockpit" ? "text-accent" : "text-slate-400"}`}
+                  />
                   <span>{t.cockpit.mobileCockpitTab}</span>
                 </button>
                 <button
@@ -1177,16 +1179,18 @@ export default function HomePage() {
                   }}
                   className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
                     mobileSection === "workspaces"
-                      ? "bg-accent text-slate-950 shadow-sm"
+                      ? "shadow-xs border border-border bg-surface-2 text-white"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <BarChart3 className="size-3.5" />
+                  <BarChart3
+                    className={`size-3.5 ${mobileSection === "workspaces" ? "text-accent" : "text-slate-400"}`}
+                  />
                   <span>{t.cockpit.mobileWorkspacesTab}</span>
                   <span
                     className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
                       mobileSection === "workspaces"
-                        ? "bg-slate-950/20 font-extrabold text-slate-950"
+                        ? "bg-accent/15 font-bold text-accent"
                         : "bg-surface-3 text-slate-400"
                     }`}
                   >
@@ -1250,7 +1254,7 @@ export default function HomePage() {
               className={`flex w-full min-w-0 flex-1 flex-col gap-3 lg:h-full lg:min-h-0 lg:overflow-hidden ${mobileSection === "workspaces" ? "flex" : "hidden lg:flex"}`}
             >
               {/* Mobile Live Valuation Bar when viewing tabs */}
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-1/90 px-3.5 py-2.5 backdrop-blur-md lg:hidden">
+              <div className="flex items-center justify-between rounded-xl border border-border bg-surface-1/90 px-3.5 py-2.5 backdrop-blur-md lg:hidden">
                 <div className="flex items-center gap-3">
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -1301,7 +1305,7 @@ export default function HomePage() {
               </div>
 
               {/* Tab Navigation Ribbon - Pinned at top of right panel on desktop, sticky on mobile */}
-              <div className="glass-header sticky top-14 z-30 -mx-3 shrink-0 px-3 py-1.5 sm:-mx-5 sm:px-5 md:-mx-6 md:px-6 lg:static lg:mx-0 lg:shrink-0 lg:rounded-2xl lg:border lg:border-white/[0.08] lg:bg-surface-1/90 lg:p-1.5 lg:shadow-md lg:backdrop-blur-xl">
+              <div className="glass-header lg:shadow-xs sticky top-14 z-30 -mx-3 shrink-0 px-3 py-1.5 sm:-mx-5 sm:px-5 md:-mx-6 md:px-6 lg:static lg:mx-0 lg:shrink-0 lg:rounded-2xl lg:border lg:border-border lg:bg-surface-1/90 lg:p-1.5 lg:backdrop-blur-xl">
                 <div className="flex items-center gap-1 sm:gap-1.5">
                   {/* Desktop Prev Workspace Step Button */}
                   <button
@@ -1312,7 +1316,7 @@ export default function HomePage() {
                         switchWorkspace(prevTab.id);
                       }
                     }}
-                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] transition-all lg:flex ${
+                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
                       prevTab
                         ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
                         : "cursor-not-allowed text-slate-600 opacity-30"
@@ -1351,35 +1355,41 @@ export default function HomePage() {
                           type="button"
                           onClick={() => switchWorkspace(tab.id)}
                           title={`${tab.label} (${locale === "zh" ? "快捷键" : "Press"} ${tab.shortcut})`}
-                          className={`group flex flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-2 py-1.5 text-xs font-semibold transition-all duration-200 xl:px-2.5 xl:py-2 ${
+                          className={`group flex flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-2 py-1.5 text-xs font-semibold transition-all duration-150 xl:px-2.5 xl:py-2 ${
                             isActive
-                              ? "border border-accent/40 bg-accent/15 font-bold text-accent shadow-glow"
-                              : "border border-transparent text-slate-400 hover:bg-surface-2/80 hover:text-slate-200"
+                              ? "shadow-xs border border-border bg-surface-2 font-bold text-slate-100 dark:text-white"
+                              : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
                           }`}
                         >
-                          <Icon className="size-3.5 shrink-0" />
+                          <Icon
+                            className={`size-3.5 shrink-0 ${isActive ? "text-accent" : "text-slate-400 group-hover:text-slate-300"}`}
+                          />
                           <span className="2xl:hidden">{tab.shortLabel}</span>
                           <span className="hidden 2xl:inline">{tab.label}</span>
                           {tab.count !== undefined && (
                             <span
-                              className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
+                              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] tabular-nums transition-all ${
                                 isActive
-                                  ? "bg-accent/25 font-bold text-accent"
-                                  : "bg-surface-3 text-slate-400"
+                                  ? "bg-accent/15 font-bold text-accent"
+                                  : "bg-surface-3/80 text-slate-400 group-hover:text-slate-300"
                               }`}
                             >
                               {tab.count}
                             </span>
                           )}
-                          <span
-                            className={`hidden font-mono text-[10px] transition-opacity md:inline ${
+                          <kbd
+                            className={`py-0.2 hidden rounded border border-border/80 px-1 font-mono text-[9px] font-medium transition-opacity ${
+                              tab.count !== undefined
+                                ? "opacity-0 group-hover:opacity-100"
+                                : ""
+                            } xl:inline ${
                               isActive
-                                ? "font-bold text-accent/70"
-                                : "text-slate-600 group-hover:text-slate-400"
+                                ? "bg-surface-3 text-slate-300"
+                                : "bg-surface-0/60 text-slate-500 group-hover:text-slate-400"
                             }`}
                           >
-                            [{tab.shortcut}]
-                          </span>
+                            {tab.shortcut}
+                          </kbd>
                         </button>
                       );
                     })}
@@ -1394,7 +1404,7 @@ export default function HomePage() {
                         switchWorkspace(nextTab.id);
                       }
                     }}
-                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] transition-all lg:flex ${
+                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
                       nextTab
                         ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
                         : "cursor-not-allowed text-slate-600 opacity-30"
@@ -1414,14 +1424,14 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => handleViewModeChange("memo")}
-                    className="hidden shrink-0 items-center gap-1.5 rounded-xl border border-white/[0.08] bg-surface-2/60 px-2.5 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white active:scale-95 lg:flex xl:px-3"
+                    className="shadow-xs hidden shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95 lg:flex xl:px-3"
                     title={`${t.header.memo} (M)`}
                   >
                     <FileText className="size-3.5 text-accent" />
                     <span className="hidden xl:inline">{t.header.memo}</span>
-                    <span className="font-mono text-[10px] text-slate-500">
-                      [M]
-                    </span>
+                    <kbd className="py-0.2 rounded border border-border/80 bg-surface-0/60 px-1 font-mono text-[9px] text-slate-400">
+                      M
+                    </kbd>
                   </button>
                 </div>
               </div>

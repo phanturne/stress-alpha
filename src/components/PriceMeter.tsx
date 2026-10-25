@@ -35,14 +35,13 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
   const bullPct = getPositionPct(bullTarget);
 
   return (
-    <div className="glass-panel-subtle flex w-full flex-col gap-3 rounded-xl border border-white/[0.08] p-4 shadow-inner">
+    <div className="glass-panel-subtle shadow-xs flex w-full flex-col gap-3 rounded-xl border border-border p-4">
       {/* Title & Current Price Badge */}
       <div className="flex items-center justify-between text-xs">
         <span className="font-semibold tracking-wide text-slate-300">
           {t.title}
         </span>
-        <div className="flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums text-accent">
-          <span className="size-1.5 animate-pulse rounded-full bg-accent" />
+        <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface-1 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-200">
           <span>
             {t.current}: {formatCurrency(currentPrice)}
           </span>
@@ -51,13 +50,13 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
 
       {/* Visual Meter Bar */}
       <div className="relative select-none pb-6 pt-7">
-        {/* Track Bar with Smooth Multi-Stop Gradient */}
-        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-surface-3 shadow-inner ring-1 ring-white/10">
+        {/* Track Bar with Subtle Multi-Stop Gradient */}
+        <div className="relative h-2 w-full overflow-hidden rounded-full bg-surface-3 ring-1 ring-border">
           <div
-            className="absolute inset-0 opacity-90"
+            className="absolute inset-0 opacity-80"
             style={{
               background:
-                "linear-gradient(90deg, #f43f5e 0%, #f59e0b 35%, #38bdf8 65%, #10b981 100%)",
+                "linear-gradient(90deg, rgba(244, 63, 94, 0.5) 0%, rgba(100, 116, 139, 0.25) 35%, rgba(56, 189, 248, 0.35) 65%, rgba(16, 185, 129, 0.5) 100%)",
             }}
           />
         </div>
@@ -67,11 +66,11 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           className="pointer-events-none absolute top-0 z-20 flex -translate-x-1/2 flex-col items-center transition-all duration-300"
           style={{ left: `${currentPct}%` }}
         >
-          <div className="whitespace-nowrap rounded-md bg-accent px-2 py-0.5 font-mono text-[11px] font-black tabular-nums text-slate-950 shadow-lg shadow-accent/50 ring-1 ring-white/30">
+          <div className="whitespace-nowrap rounded-md border border-white/20 bg-accent px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-950 shadow-sm">
             {formatCurrency(currentPrice, 0)}
           </div>
           <div className="size-0 border-x-4 border-t-[5px] border-x-transparent border-t-accent" />
-          <div className="-mt-0.5 h-3 w-1 rounded-full bg-white shadow-sm" />
+          <div className="shadow-xs -mt-0.5 h-3 w-1 rounded-full bg-white" />
         </div>
 
         {/* Regime Target Markers (Below Track) */}

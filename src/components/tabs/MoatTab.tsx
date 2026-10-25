@@ -128,29 +128,27 @@ export const MoatTab: React.FC<MoatTabProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Tab Header & Moat Verdict Banner */}
-      <div className="glass-panel flex flex-col justify-between gap-4 rounded-2xl p-5 shadow-xl md:flex-row md:items-center">
-        <div className="flex items-start gap-4">
-          <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent shadow-[0_0_15px_rgba(56,189,248,0.15)]">
-            <ShieldCheck className="size-6" />
-          </div>
+      <div className="glass-panel shadow-xs flex flex-col justify-between gap-4 rounded-2xl border border-border p-5 md:flex-row md:items-center">
+        <div className="flex items-start gap-3.5">
+          <ShieldCheck className="mt-1 size-5 shrink-0 text-accent" />
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
               <h3 className="text-base font-bold tracking-tight text-white">
                 {t.title}
               </h3>
               <span
-                className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider shadow-sm ${ratingInfo.bg}`}
+                className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${ratingInfo.bg}`}
               >
                 {ratingInfo.label}
               </span>
               <span
-                className={`flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-xs font-semibold shadow-sm ${trendInfo.color}`}
+                className={`flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-xs font-semibold ${trendInfo.color}`}
               >
                 <TrendIcon className="size-3.5" />
                 {trendInfo.label}
               </span>
             </div>
-            <p className="mt-2 max-w-3xl text-xs leading-relaxed text-slate-300">
+            <p className="mt-1.5 max-w-3xl text-xs leading-relaxed text-slate-300">
               {moatData.competitiveDynamicsSummary}
             </p>
           </div>
@@ -177,14 +175,12 @@ export const MoatTab: React.FC<MoatTabProps> = ({
             return (
               <div
                 key={idx}
-                className="glass-panel group flex flex-col justify-between gap-3 rounded-xl p-4 shadow-md transition-all hover:border-slate-500/50"
+                className="glass-panel shadow-xs group flex flex-col justify-between gap-3 rounded-xl border border-border p-4 transition-all hover:border-border-light"
               >
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <div className="rounded-lg border border-border bg-surface-2 p-1.5 text-slate-300 transition-colors group-hover:border-accent/30">
-                        <SourceIcon className="size-4 text-accent" />
-                      </div>
+                      <SourceIcon className="size-4 text-accent" />
                       <span className="text-sm font-bold tracking-tight text-white">
                         {source.source}
                       </span>
@@ -205,7 +201,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                   source.durabilityYears > 0 && (
                     <div className="flex items-center justify-between border-t border-border/60 pt-2 font-mono text-[11px]">
                       <span className="text-slate-400">{t.durability}:</span>
-                      <span className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 font-semibold text-accent">
+                      <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-semibold text-slate-200">
                         {source.durabilityYears} {t.durabilityYearsSuffix}
                       </span>
                     </div>

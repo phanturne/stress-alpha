@@ -183,22 +183,19 @@ export const Cockpit: React.FC<CockpitProps> = ({
       )}
 
       {/* 1. Header, Stock Identity & Live Valuation Strip */}
-      <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
+      <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border p-4 sm:p-4.5">
         {/* Stock Identity & Reset Action */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="shrink-0 rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-              <Zap className="size-4" />
-            </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="font-mono text-sm font-black uppercase tracking-tight text-white sm:text-base">
+                <h2 className="font-mono text-base font-black uppercase tracking-tight text-white sm:text-lg">
                   {facts.ticker}
                 </h2>
                 <button
                   type="button"
                   onClick={() => toggleFavorite(facts.ticker)}
-                  className="rounded p-0.5 text-slate-500 transition-transform hover:scale-125 hover:text-amber-400 active:scale-95"
+                  className="rounded p-0.5 text-slate-500 transition-transform hover:scale-110 hover:text-amber-400 active:scale-95"
                   title={
                     isFav ? headerT.removeFromWatchlist : headerT.addToWatchlist
                   }
@@ -209,16 +206,16 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   <Star
                     className={`size-3.5 transition-colors ${
                       isFav
-                        ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                        ? "fill-amber-400 text-amber-400"
                         : "text-slate-500 hover:text-amber-300"
                     }`}
                   />
                 </button>
-                <span className="rounded border border-white/[0.08] bg-surface-2/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
+                <span className="rounded border border-border bg-surface-2/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
                   {facts.quarter}
                 </span>
                 {isHistorical ? (
-                  <span className="rounded border border-amber-500/30 bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-400">
+                  <span className="rounded border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-400">
                     {headerT.historicalBadge}
                   </span>
                 ) : (
@@ -239,7 +236,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={onResetDefaults}
-              className="group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
+              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
               title={t.resetTooltip}
             >
               <RotateCcw className="size-3 text-accent transition-transform duration-200 group-hover:-rotate-45" />
@@ -249,8 +246,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* Live Stock Pricing & Weighted Fair Value Strip */}
-        <div className="relative grid grid-cols-2 gap-3 overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 p-3 shadow-inner">
-          <div className="pointer-events-none absolute left-0 top-0 size-28 rounded-full bg-accent/5 blur-2xl" />
+        <div className="relative grid grid-cols-2 gap-3 overflow-hidden rounded-xl border border-border bg-surface-0/80 p-3">
           {/* Current Price */}
           <div>
             <div
@@ -273,7 +269,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               {t.weightedFairValue}
             </div>
             <div className="mt-0.5 flex items-baseline justify-end gap-1.5">
-              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-accent sm:text-2xl">
+              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-white sm:text-2xl">
                 {formatCurrency(weightedFairValue, 2)}
               </span>
               <span
@@ -290,16 +286,16 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* 1-Click Macro Presets Bar */}
-        <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-surface-0/70 p-1 text-[11px]">
+        <div className="flex items-center gap-1.5 rounded-xl border border-border bg-surface-0/70 p-1 text-[11px]">
           <span className="flex shrink-0 items-center gap-1 px-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-            <Wand2 className="size-3 text-accent" />
+            <Sliders className="size-3 text-slate-400" />
             {t.presets.title}:
           </span>
           <div className="grid w-full grid-cols-3 gap-1">
             <button
               type="button"
               onClick={() => handleApplyPreset("baseline")}
-              className="truncate rounded-lg bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
+              className="truncate rounded-lg border border-transparent bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
               title={t.presets.baselineTooltip}
             >
               {t.presets.baseline}
@@ -307,7 +303,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("mild")}
-              className="bg-fintech-amberGlow/10 hover:bg-fintech-amberGlow/20 truncate rounded-lg border border-fintech-amber/25 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-amber transition-colors"
+              className="truncate rounded-lg border border-amber-500/25 bg-amber-500/10 px-1.5 py-1 text-center text-[11px] font-medium text-amber-400 transition-colors hover:bg-amber-500/20"
               title={t.presets.mildTooltip}
             >
               {t.presets.mild}
@@ -315,7 +311,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("severe")}
-              className="bg-fintech-redGlow/10 hover:bg-fintech-redGlow/20 truncate rounded-lg border border-fintech-red/25 px-1.5 py-1 text-center text-[11px] font-medium text-fintech-red transition-colors"
+              className="truncate rounded-lg border border-rose-500/25 bg-rose-500/10 px-1.5 py-1 text-center text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20"
               title={t.presets.severeTooltip}
             >
               {t.presets.severe}
@@ -324,17 +320,15 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* Big Stressed EPS Tag */}
-        <div className="relative flex items-baseline justify-between overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 p-3.5 shadow-inner">
-          <div className="pointer-events-none absolute right-0 top-0 size-32 rounded-full bg-accent/5 blur-2xl" />
+        <div className="relative flex items-baseline justify-between overflow-hidden rounded-xl border border-border bg-surface-0/80 p-3.5">
           <div>
             <div
-              className="flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
+              className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]"
               title={t.stressedForwardEps}
             >
-              <span className="size-1.5 animate-pulse rounded-full bg-accent" />
               {t.stressedForwardEps}
             </div>
-            <div className="mt-0.5 font-mono text-2xl font-black tabular-nums tracking-tight text-accent sm:text-3xl">
+            <div className="mt-0.5 font-mono text-2xl font-black tabular-nums tracking-tight text-white sm:text-3xl">
               {formatCurrency(stressEps)}
             </div>
           </div>
@@ -485,7 +479,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <div className="grid grid-cols-3 gap-2">
               {/* Bull */}
               <div
-                className="from-fintech-greenGlow/15 flex flex-col rounded-xl border border-fintech-green/30 bg-gradient-to-b to-surface-0/60 p-3 shadow-sm"
+                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
                 title={`${t.regimes.bull}: Optimistic expansion regime with premium multiple`}
               >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-green">
@@ -503,10 +497,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
               {/* Base */}
               <div
-                className="flex flex-col rounded-xl border border-white/[0.09] bg-surface-0/80 p-3 shadow-sm"
+                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
                 title={`${t.regimes.base}: Baseline execution matching management consensus guidance`}
               >
-                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-slate-200">
+                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-slate-300">
                   <span className="truncate" title={t.regimes.base}>
                     {t.regimes.base}
                   </span>
@@ -525,7 +519,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
               {/* Bear */}
               <div
-                className="from-fintech-redGlow/15 flex flex-col rounded-xl border border-fintech-red/30 bg-gradient-to-b to-surface-0/60 p-3 shadow-sm"
+                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
                 title={`${t.regimes.bear}: Contraction regime with macroeconomic multiple de-rating`}
               >
                 <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-red">
@@ -544,7 +538,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
             {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
             <div
-              className="bg-fintech-redGlow/10 flex items-center justify-between rounded-xl border border-fintech-red/25 px-3 py-2 font-mono text-xs"
+              className="flex items-center justify-between rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 py-2 font-mono text-xs"
               title="Panic Floor: Cycle trough valuation limit during severe recession"
             >
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-fintech-red">
@@ -630,7 +624,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 >
                   {t.asymmetry.asymmetrySkew}
                 </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-accent">
+                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-white">
                   {riskReward.toFixed(2)}x
                 </div>
               </div>

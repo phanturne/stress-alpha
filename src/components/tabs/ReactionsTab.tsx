@@ -41,7 +41,7 @@ export const ReactionsTab: React.FC<ReactionsTabProps> = ({
 
       {/* Conditional Framing Box */}
       {conditionalFraming && (
-        <div className="glass-panel flex items-start gap-3.5 rounded-xl border border-accent/20 bg-accent/5 p-4.5 shadow-md">
+        <div className="glass-panel shadow-xs flex items-start gap-3.5 rounded-xl border border-accent/20 bg-accent/5 p-4.5">
           <Quote className="mt-0.5 size-5 shrink-0 text-accent" />
           <p className="text-xs italic leading-relaxed text-slate-200">
             &ldquo;{conditionalFraming}&rdquo;
@@ -50,7 +50,7 @@ export const ReactionsTab: React.FC<ReactionsTabProps> = ({
       )}
 
       {/* Reactions Table */}
-      <div className="glass-panel overflow-hidden rounded-xl border border-border/80 shadow-lg">
+      <div className="glass-panel shadow-xs overflow-hidden rounded-xl border border-border">
         <div className="custom-scrollbar overflow-x-auto">
           <table className="w-full border-collapse text-left text-xs">
             <thead>

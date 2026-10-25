@@ -219,7 +219,7 @@ export function SettingsClientPage({
               <button
                 type="button"
                 onClick={() => handleSelectReport(recentReport.slug, "cockpit")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
               >
                 <ArrowLeft className="size-3.5" />
                 <span>
@@ -231,7 +231,7 @@ export function SettingsClientPage({
               <button
                 type="button"
                 onClick={() => router.push("/screener")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
               >
                 <ArrowLeft className="size-3.5" />
                 <span>{tSet.backToScreener}</span>
@@ -247,17 +247,14 @@ export function SettingsClientPage({
         </div>
 
         {/* Page Header Banner */}
-        <div className="glass-panel relative mb-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-surface-1/80 p-6 shadow-xl backdrop-blur-xl sm:p-8">
-          <div className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-accent/10 blur-3xl" />
-          <div className="flex items-start gap-4">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-accent/40 bg-accent/15 text-accent shadow-md">
-              <Sliders className="size-6" />
-            </div>
+        <div className="glass-panel shadow-xs mb-8 rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl sm:p-8">
+          <div className="flex items-start gap-3.5">
+            <Sliders className="mt-1 size-5 shrink-0 text-accent" />
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+              <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                 {tSet.title}
               </h1>
-              <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-slate-400 sm:text-sm">
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-slate-400 sm:text-sm">
                 {tSet.subtitle}
               </p>
             </div>
@@ -268,7 +265,7 @@ export function SettingsClientPage({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Left Category Navigation Bar */}
           <aside className="lg:col-span-3">
-            <nav className="glass-panel sticky top-20 flex flex-row gap-1.5 overflow-x-auto rounded-xl border border-white/[0.08] bg-surface-1/90 p-2 shadow-sm backdrop-blur-md lg:flex-col lg:overflow-x-visible">
+            <nav className="glass-panel shadow-xs sticky top-20 flex flex-row gap-1.5 overflow-x-auto rounded-xl border border-border bg-surface-1/90 p-2 backdrop-blur-md lg:flex-col lg:overflow-x-visible">
               {sectionsList.map((sec) => {
                 const IconComponent = sec.icon;
                 const isActive = activeSection === sec.id;
@@ -279,7 +276,7 @@ export function SettingsClientPage({
                     onClick={() => setActiveSection(sec.id)}
                     className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-all lg:w-full ${
                       isActive
-                        ? "border border-accent/40 bg-accent/15 text-accent shadow-sm ring-1 ring-accent/30"
+                        ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
                         : "text-slate-400 hover:bg-surface-2 hover:text-white"
                     }`}
                   >
@@ -300,7 +297,7 @@ export function SettingsClientPage({
             {/* SECTION 1: Account & Profile */}
             {activeSection === "account" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tAcc.title}
@@ -313,7 +310,7 @@ export function SettingsClientPage({
                   {session?.user ? (
                     <div className="space-y-6 pt-5">
                       {/* Identity Card */}
-                      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/[0.08] bg-surface-0/60 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-0/60 p-4">
                         <div className="flex items-center gap-3.5">
                           <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/30 to-sky-500/20 font-mono text-base font-bold text-accent ring-1 ring-accent/40">
                             {session.user.name
@@ -326,7 +323,7 @@ export function SettingsClientPage({
                             </div>
                             <div className="mt-0.5 flex items-center gap-2">
                               <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
-                                <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+                                <span className="size-1.5 rounded-full bg-emerald-400" />
                                 {t.auth.memberBadge}
                               </span>
                             </div>
@@ -348,7 +345,7 @@ export function SettingsClientPage({
                       {/* Details Grid */}
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {/* Display Name */}
-                        <div className="rounded-xl border border-white/[0.06] bg-surface-0/40 p-4">
+                        <div className="rounded-xl border border-border bg-surface-0/40 p-4">
                           <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                             {tAcc.nameLabel}
                           </label>
@@ -358,7 +355,7 @@ export function SettingsClientPage({
                         </div>
 
                         {/* Email Address with Privacy Concealment & Reveal Toggle */}
-                        <div className="rounded-xl border border-white/[0.06] bg-surface-0/40 p-4">
+                        <div className="rounded-xl border border-border bg-surface-0/40 p-4">
                           <div className="flex items-center justify-between">
                             <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                               {tAcc.emailLabel}
@@ -411,8 +408,8 @@ export function SettingsClientPage({
                   ) : (
                     /* Guest Workspace State */
                     <div className="space-y-5 pt-5">
-                      <div className="rounded-xl border border-white/[0.08] bg-surface-0/50 p-6 text-center">
-                        <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-white/10 bg-surface-2 text-slate-400">
+                      <div className="rounded-xl border border-border bg-surface-0/50 p-6 text-center">
+                        <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-border bg-surface-2 text-slate-400">
                           <User className="size-6" />
                         </div>
                         <h3 className="mt-3 text-sm font-bold text-white">
@@ -425,7 +422,7 @@ export function SettingsClientPage({
                           <button
                             type="button"
                             onClick={() => setIsAuthModalOpen(true)}
-                            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent-hover hover:shadow-accent/40 active:scale-[0.98]"
+                            className="shadow-xs inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
                           >
                             <LogIn className="size-4" />
                             <span>{tAcc.signInButton}</span>
@@ -442,7 +439,7 @@ export function SettingsClientPage({
             {activeSection === "appearance" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
                 {/* Theme Card */}
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tApp.themeTitle}
@@ -466,8 +463,8 @@ export function SettingsClientPage({
                       }}
                       className={`cursor-pointer rounded-xl border p-4.5 transition-all ${
                         theme === "dark"
-                          ? "border-accent bg-accent/10 shadow-lg shadow-accent/10 ring-1 ring-accent"
-                          : "border-white/[0.08] bg-surface-0/60 hover:border-white/20 hover:bg-surface-2"
+                          ? "shadow-xs border-accent bg-accent/10 ring-1 ring-accent/40"
+                          : "border-border bg-surface-0/60 hover:border-slate-500 hover:bg-surface-2"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -501,8 +498,8 @@ export function SettingsClientPage({
                       }}
                       className={`cursor-pointer rounded-xl border p-4.5 transition-all ${
                         theme === "light"
-                          ? "border-accent bg-accent/10 shadow-lg shadow-accent/10 ring-1 ring-accent"
-                          : "border-white/[0.08] bg-surface-0/60 hover:border-white/20 hover:bg-surface-2"
+                          ? "shadow-xs border-accent bg-accent/10 ring-1 ring-accent/40"
+                          : "border-border bg-surface-0/60 hover:border-slate-500 hover:bg-surface-2"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -526,7 +523,7 @@ export function SettingsClientPage({
                 </div>
 
                 {/* Language Selection Card */}
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tApp.languageTitle}
@@ -550,8 +547,8 @@ export function SettingsClientPage({
                       }}
                       className={`cursor-pointer rounded-xl border p-4.5 transition-all ${
                         locale === "en"
-                          ? "border-accent bg-accent/10 shadow-lg shadow-accent/10 ring-1 ring-accent"
-                          : "border-white/[0.08] bg-surface-0/60 hover:border-white/20 hover:bg-surface-2"
+                          ? "shadow-xs border-accent bg-accent/10 ring-1 ring-accent/40"
+                          : "border-border bg-surface-0/60 hover:border-slate-500 hover:bg-surface-2"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -585,8 +582,8 @@ export function SettingsClientPage({
                       }}
                       className={`cursor-pointer rounded-xl border p-4.5 transition-all ${
                         locale === "zh"
-                          ? "border-accent bg-accent/10 shadow-lg shadow-accent/10 ring-1 ring-accent"
-                          : "border-white/[0.08] bg-surface-0/60 hover:border-white/20 hover:bg-surface-2"
+                          ? "shadow-xs border-accent bg-accent/10 ring-1 ring-accent/40"
+                          : "border-border bg-surface-0/60 hover:border-slate-500 hover:bg-surface-2"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -614,7 +611,7 @@ export function SettingsClientPage({
             {/* SECTION 3: Valuation Defaults & Engine */}
             {activeSection === "valuation" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tVal.title}
@@ -626,7 +623,7 @@ export function SettingsClientPage({
 
                   <div className="space-y-5 pt-5">
                     {/* QPCE Panel */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center gap-2">
                         <Sliders className="size-4 text-accent" />
                         <h3 className="text-sm font-bold text-white">
@@ -642,7 +639,7 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Income Quality Guardrail */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="size-4 text-emerald-400" />
                         <h3 className="text-sm font-bold text-white">
@@ -655,7 +652,7 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Audited SEC Data Ingestion Feeds */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center gap-2">
                         <Database className="size-4 text-cyan-400" />
                         <h3 className="text-sm font-bold text-white">
@@ -666,10 +663,10 @@ export function SettingsClientPage({
                         {tVal.feedsDesc}
                       </p>
                       <div className="mt-3 space-y-2 text-xs">
-                        <div className="rounded-lg border border-white/[0.06] bg-surface-1 p-2 font-mono text-slate-300">
+                        <div className="rounded-lg border border-border bg-surface-1 p-2 font-mono text-slate-300">
                           {tVal.feedsMassive}
                         </div>
-                        <div className="rounded-lg border border-white/[0.06] bg-surface-1 p-2 font-mono text-slate-300">
+                        <div className="rounded-lg border border-border bg-surface-1 p-2 font-mono text-slate-300">
                           {tVal.feedsFinnhub}
                         </div>
                       </div>
@@ -682,7 +679,7 @@ export function SettingsClientPage({
             {/* SECTION 4: Privacy & Storage */}
             {activeSection === "privacy" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tPriv.title}
@@ -713,7 +710,7 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Zero-tracking Guarantee */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center gap-2">
                         <Shield className="size-4 text-accent" />
                         <h3 className="text-sm font-bold text-white">
@@ -726,7 +723,7 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Cloud Storage */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center gap-2">
                         <Database className="size-4 text-cyan-400" />
                         <h3 className="text-sm font-bold text-white">
@@ -739,7 +736,7 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Local Cache Management */}
-                    <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4.5">
+                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Trash2 className="size-4 text-amber-400" />
@@ -768,7 +765,7 @@ export function SettingsClientPage({
             {/* SECTION 5: System Telemetry & Documentation */}
             {activeSection === "system" && (
               <div className="space-y-6 duration-150 animate-in fade-in">
-                <div className="glass-panel divide-y divide-white/[0.08] rounded-2xl border border-white/[0.08] bg-surface-1/90 p-6 shadow-xl backdrop-blur-xl">
+                <div className="glass-panel shadow-xs divide-y divide-border rounded-2xl border border-border bg-surface-1/90 p-6 backdrop-blur-xl">
                   <div className="pb-5">
                     <h2 className="text-base font-bold text-white">
                       {tSys.title}
@@ -781,7 +778,7 @@ export function SettingsClientPage({
                   <div className="space-y-5 pt-5">
                     {/* Platform Invariants */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                      <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4">
+                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.versionLabel}
                         </span>
@@ -790,7 +787,7 @@ export function SettingsClientPage({
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4">
+                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.engineLabel}
                         </span>
@@ -799,7 +796,7 @@ export function SettingsClientPage({
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-white/[0.06] bg-surface-0/50 p-4">
+                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.databaseLabel}
                         </span>
@@ -813,7 +810,7 @@ export function SettingsClientPage({
                     <div className="space-y-2 pt-2">
                       <Link
                         href="/methodology"
-                        className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-accent">
@@ -828,7 +825,7 @@ export function SettingsClientPage({
                         href="https://github.com/phanturne/stress-alpha"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-slate-300">
@@ -842,7 +839,7 @@ export function SettingsClientPage({
                       <button
                         type="button"
                         onClick={() => setIsShortcutsOpen(true)}
-                        className="flex w-full items-center justify-between rounded-xl border border-white/[0.08] bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex w-full items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-accent">
@@ -850,7 +847,7 @@ export function SettingsClientPage({
                           </div>
                           <span>{tSys.shortcutsButton}</span>
                         </div>
-                        <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+                        <kbd className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
                           ?
                         </kbd>
                       </button>
@@ -881,8 +878,8 @@ export function SettingsClientPage({
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-2xl border border-white/[0.12] p-6 shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+          <div className="glass-panel w-full max-w-md rounded-2xl border border-border p-6 shadow-lg animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2">
                 <Keyboard className="size-5 text-accent" />
                 <h3 className="font-bold text-white">{t.header.shortcuts}</h3>
@@ -898,13 +895,13 @@ export function SettingsClientPage({
             <div className="mt-4 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.header.language}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   L
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.header.shortcuts}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   ?
                 </kbd>
               </div>
@@ -913,7 +910,7 @@ export function SettingsClientPage({
                   <span className="text-slate-400">
                     {t.shortcuts.returnToModel}
                   </span>
-                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                  <kbd className="rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                     M
                   </kbd>
                 </div>
@@ -922,13 +919,13 @@ export function SettingsClientPage({
                 <span className="text-slate-400">
                   {t.shortcuts.toggleFavorite}
                 </span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   F
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.shortcuts.close}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-slate-300">
+                <kbd className="rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-slate-300">
                   ESC
                 </kbd>
               </div>

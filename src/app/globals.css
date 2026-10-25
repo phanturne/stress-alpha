@@ -18,13 +18,13 @@
     --text-muted-rgb: 100 116 139; /* #64748b */
     --accent-rgb: 56 189 248; /* #38bdf8 */
     --accent-hover-rgb: 14 165 233; /* #0ea5e9 */
-    --accent-glow: rgba(56, 189, 248, 0.18);
+    --accent-glow: rgba(56, 189, 248, 0.12);
     --green-rgb: 16 185 129; /* #10b981 */
-    --green-glow: rgba(16, 185, 129, 0.18);
+    --green-glow: rgba(16, 185, 129, 0.12);
     --red-rgb: 244 63 94; /* #f43f5e */
-    --red-glow: rgba(244, 63, 94, 0.18);
+    --red-glow: rgba(244, 63, 94, 0.12);
     --amber-rgb: 245 158 11; /* #f59e0b */
-    --amber-glow: rgba(245, 158, 11, 0.18);
+    --amber-glow: rgba(245, 158, 11, 0.12);
 
     --bg: #07090e;
     --surface-0: #0d1117;
@@ -68,13 +68,13 @@
     --text-muted-rgb: 100 116 139; /* #64748b */
     --accent-rgb: 2 132 199; /* #0284c7 */
     --accent-hover-rgb: 3 105 161; /* #0369a1 */
-    --accent-glow: rgba(2, 132, 199, 0.18);
+    --accent-glow: rgba(2, 132, 199, 0.12);
     --green-rgb: 4 120 87; /* #047857 - emerald-700 */
-    --green-glow: rgba(4, 120, 87, 0.18);
+    --green-glow: rgba(4, 120, 87, 0.12);
     --red-rgb: 185 28 28; /* #b91c1c - red-700 */
-    --red-glow: rgba(185, 28 28, 0.18);
+    --red-glow: rgba(185, 28, 28, 0.12);
     --amber-rgb: 180 83 9; /* #b45309 - amber-700 */
-    --amber-glow: rgba(180, 83, 9, 0.18);
+    --amber-glow: rgba(180, 83, 9, 0.12);
 
     --bg: #f8fafc;
     --surface-0: #ffffff;
@@ -208,41 +208,37 @@ input[type="range"]:focus {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid var(--slider-thumb-border);
   cursor: grab;
-  box-shadow: 0 0 10px var(--accent-glow);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease,
     background-color 0.15s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.25);
+  transform: scale(1.15);
   background: var(--accent-hover);
-  box-shadow: 0 0 14px var(--accent-glow);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
   cursor: grabbing;
-  transform: scale(1.15);
+  transform: scale(1.1);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid var(--slider-thumb-border);
   cursor: pointer;
-  box-shadow: 0 0 10px var(--accent-glow);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
 }
 
 /* Utility for print-only elements */

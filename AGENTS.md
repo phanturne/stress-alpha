@@ -182,8 +182,8 @@ The **Snowflake Fundamental Radar** ([`src/lib/snowflake.ts`](file:///Users/krdi
 ## 6. UI / UX Design Standards
 
 1. **Design System & Dual-Theme Engine**:
-   - Dark-mode first design inspired by Bloomberg Terminal and FactSet.
-   - **Dark (Default)**: `#07090e` base, dark glassmorphism, cyan `#38bdf8` accent, neon subtle glows.
+   - Dark-mode first design inspired by Bloomberg Terminal, FactSet, Linear, and Stripe.
+   - **Dark (Default)**: `#07090e` base, dark glassmorphism, cyan `#38bdf8` accent, crisp 1px institutional micro-elevation rings (`shadow-xs`), zero blurred neon halo halos.
    - **Light**: High-contrast FactSet/WSJ day mode (`#f8fafc` base, `#ffffff` card surfaces, high-contrast `#0f172a` typography, `#0284c7` sky accent, crisp slate borders, calibrated WCAG AA financial indicators).
    - Driven by `ThemeProvider` ([`src/context/ThemeContext.tsx`](file:///Users/krding/Projects/stress-alpha/src/context/ThemeContext.tsx)), persisted in `localStorage` (`stress_alpha_theme`), synchronized via `data-theme` and `dark`/`light` classes on `<html>` with 0ms FOUC prevention.
    - 1-click Sun/Moon quick toggle in global header ([`src/components/Header.tsx`](file:///Users/krding/Projects/stress-alpha/src/components/Header.tsx)) and dedicated theme switcher in Settings dropdown.

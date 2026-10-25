@@ -58,7 +58,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
   return (
     <div className="flex flex-col gap-5">
       {/* Sub-navigation Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
             {t.title}
@@ -67,7 +67,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
         </div>
 
         {/* Sub-Pills Switcher */}
-        <div className="custom-scrollbar flex max-w-full items-center overflow-x-auto rounded-xl border border-white/[0.08] bg-surface-0/80 p-1 text-xs">
+        <div className="custom-scrollbar flex max-w-full items-center overflow-x-auto rounded-xl border border-border bg-surface-0/80 p-1 text-xs">
           {subNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = subTab === item.id;
@@ -78,17 +78,19 @@ export const AuditTab: React.FC<AuditTabProps> = ({
                 onClick={() => setSubTab(item.id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all ${
                   isActive
-                    ? "bg-accent/20 font-bold text-accent shadow-sm ring-1 ring-accent/30"
+                    ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
                     : "text-slate-400 hover:bg-surface-2/60 hover:text-slate-200"
                 }`}
               >
-                <Icon className="size-3.5" />
+                <Icon
+                  className={`size-3.5 ${isActive ? "text-accent" : "text-slate-400"}`}
+                />
                 <span>{item.label}</span>
                 {item.countBadge && (
                   <span
                     className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
                       isActive
-                        ? "bg-accent/30 font-bold text-accent"
+                        ? "bg-accent/15 font-bold text-accent"
                         : "bg-surface-2 text-slate-400"
                     }`}
                   >

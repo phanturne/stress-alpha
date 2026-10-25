@@ -104,8 +104,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
       {/* Live Weighted Fair Value Summary Cards */}
       <div className="grid grid-cols-1 gap-3.5 md:grid-cols-3">
-        <div className="glass-panel relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] p-4 shadow-md">
-          <div className="pointer-events-none absolute -right-12 -top-12 size-28 rounded-full bg-accent/5 blur-xl" />
+        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
           <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
             {t.wfv}
           </span>
@@ -125,16 +124,16 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           </div>
         </div>
 
-        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-4 shadow-md">
+        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
           <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
             {t.consensusTarget}
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-slate-300 sm:text-3xl">
+            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-white sm:text-3xl">
               {consensusTarget ? formatCurrency(consensusTarget, 2) : "N/A"}
             </span>
             {consensusTarget > 0 && (
-              <span className="rounded-full border border-white/[0.06] bg-surface-2 px-2 py-0.5 font-mono text-xs tabular-nums text-slate-400">
+              <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs tabular-nums text-slate-400">
                 {formatPercent(
                   ((consensusTarget - currentPrice) / currentPrice) * 100
                 )}{" "}
@@ -144,7 +143,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           </div>
         </div>
 
-        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-4 shadow-md">
+        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
           <div className="flex items-center justify-between gap-1">
             <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
               {t.alphaConsensus}
@@ -211,40 +210,26 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           const isBull = nameLower.includes("bull") || nameLower.includes("牛");
           const isBear = nameLower.includes("bear") || nameLower.includes("熊");
 
-          const cardBorderCls = isBull
-            ? "border-emerald-500/35 hover:border-emerald-400/60 bg-gradient-to-b from-emerald-950/20 via-surface-1/95 to-surface-1/90 shadow-emerald-950/20"
-            : isBear
-              ? "border-rose-500/35 hover:border-rose-400/60 bg-gradient-to-b from-rose-950/20 via-surface-1/95 to-surface-1/90 shadow-rose-950/20"
-              : "border-sky-500/35 hover:border-sky-400/60 bg-gradient-to-b from-sky-950/20 via-surface-1/95 to-surface-1/90 shadow-sky-950/20";
-
-          const badgeCls = isBull
-            ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
-            : isBear
-              ? "bg-rose-500/15 border-rose-500/30 text-rose-400"
-              : "bg-sky-500/15 border-sky-500/30 text-sky-400";
-
-          const priceTextCls = isBull
-            ? "text-emerald-300"
-            : isBear
-              ? "text-rose-300"
-              : "text-sky-200";
+          const cardBorderCls =
+            "border-border hover:border-border-light bg-surface-1/90 shadow-xs";
 
           const Icon = isBull ? TrendingUp : isBear ? TrendingDown : Scale;
+          const iconColorCls = isBull
+            ? "text-emerald-400"
+            : isBear
+              ? "text-rose-400"
+              : "text-sky-400";
 
           return (
             <div
               key={scenario.name || idx}
-              className={`glass-panel flex flex-col justify-between gap-4 rounded-2xl border p-5 shadow-xl transition-all duration-200 ${cardBorderCls}`}
+              className={`glass-panel flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all duration-200 ${cardBorderCls}`}
             >
               {/* Card Header: Name & Upside Pill */}
-              <div className="flex items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
+              <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-3">
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`flex items-center justify-center rounded-lg border p-1.5 ${badgeCls}`}
-                  >
-                    <Icon className="size-4" />
-                  </div>
-                  <span className="text-sm font-extrabold tracking-wide text-white">
+                  <Icon className={`size-4 ${iconColorCls}`} />
+                  <span className="text-sm font-bold tracking-tight text-white">
                     {scenario.name}
                   </span>
                 </div>
@@ -266,9 +251,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                   {t.targetPrice}
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span
-                    className={`font-mono text-3xl font-black tabular-nums tracking-tight xl:text-4xl ${priceTextCls}`}
-                  >
+                  <span className="font-mono text-3xl font-black tabular-nums tracking-tight text-white xl:text-4xl">
                     {formatCurrency(fairValue, 2)}
                   </span>
                   <span className="font-mono text-[11px] tabular-nums text-slate-400">

@@ -41,11 +41,14 @@ const config: Config = {
         },
       },
       boxShadow: {
-        glow: "0 0 20px -5px var(--accent-glow)",
-        "glow-green": "0 0 20px -5px var(--green-glow)",
-        "glow-red": "0 0 20px -5px var(--red-glow)",
-        "glow-amber": "0 0 20px -5px var(--amber-glow)",
-        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+        glow: "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px var(--accent-glow)",
+        "glow-green":
+          "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px var(--green-glow)",
+        "glow-red":
+          "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px var(--red-glow)",
+        "glow-amber":
+          "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px var(--amber-glow)",
+        glass: "0 4px 16px 0 rgba(0, 0, 0, 0.2)",
       },
       fontFamily: {
         sans: [

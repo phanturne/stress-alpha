@@ -59,28 +59,16 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
           return (
             <div
               key={catalyst.id || idx}
-              className={`glass-panel rounded-2xl border p-5 shadow-lg transition-all ${
-                isGrowth
-                  ? "border-fintech-green/30 shadow-[0_0_16px_rgba(16,185,129,0.06)] hover:border-fintech-green/60"
-                  : "border-fintech-red/30 shadow-[0_0_16px_rgba(244,63,94,0.06)] hover:border-fintech-red/60"
-              }`}
+              className="glass-panel shadow-xs rounded-2xl border border-border p-5 transition-all hover:border-border-light"
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`flex items-center justify-center rounded-xl p-2 ${
-                      isGrowth
-                        ? "bg-fintech-greenGlow/20 border border-fintech-green/30 text-fintech-green shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-                        : "bg-fintech-redGlow/20 border border-fintech-red/30 text-fintech-red shadow-[0_0_10px_rgba(244,63,94,0.15)]"
-                    }`}
-                  >
-                    {isGrowth ? (
-                      <TrendingUp className="size-4" />
-                    ) : (
-                      <TrendingDown className="size-4" />
-                    )}
-                  </span>
+                <div className="flex items-center gap-2.5">
+                  {isGrowth ? (
+                    <TrendingUp className="size-4 text-emerald-400" />
+                  ) : (
+                    <TrendingDown className="size-4 text-rose-400" />
+                  )}
                   <h4 className="text-sm font-bold tracking-tight text-white">
                     {catalyst.title}
                   </h4>
@@ -88,7 +76,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider shadow-sm ${
+                    className={`rounded border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${
                       isGrowth
                         ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
                         : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
@@ -114,15 +102,14 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
 
               {/* Evidence list */}
               {catalyst.evidence && catalyst.evidence.length > 0 && (
-                <div className="mt-3.5 rounded-xl border border-border/70 bg-surface-0/70 p-3.5">
-                  <div className="mb-2 flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    <Target className="size-3 text-accent" />
+                <div className="mt-3.5 rounded-lg border-l-2 border-accent/40 bg-surface-0/60 p-3">
+                  <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     {t.evidenceTitle}
                   </div>
                   <ul className="space-y-1.5 text-xs text-slate-300">
                     {catalyst.evidence.map((ev, eIdx) => (
                       <li key={eIdx} className="flex items-start gap-2">
-                        <span className="mt-0.5 text-accent">•</span>
+                        <span className="text-accent">•</span>
                         <span className="leading-relaxed">{ev.fact}</span>
                       </li>
                     ))}
@@ -133,8 +120,8 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
               {/* Probability Slider Bar */}
               <div className="mt-4 flex items-center justify-between gap-4 border-t border-border/70 pt-3.5">
                 <div className="flex shrink-0 items-center gap-2 text-xs text-slate-400">
-                  <span className="font-medium">{t.probabilityWeight}:</span>
-                  <span className="font-mono text-sm font-bold tabular-nums text-accent">
+                  <span className="font-medium">{t.probabilityWeight}</span>
+                  <span className="font-mono text-sm font-bold tabular-nums text-white">
                     {probPct}%
                   </span>
                 </div>

@@ -105,13 +105,13 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
         <div className="flex items-center gap-3">
           {/* Report Language Switcher */}
-          <div className="glass-panel flex items-center rounded-xl border border-border/80 p-1 text-xs shadow-sm">
+          <div className="glass-panel shadow-xs flex items-center rounded-xl border border-border p-1 text-xs">
             <button
               type="button"
               onClick={() => handleLangChange("en")}
               className={`rounded-lg px-3 py-1 font-semibold transition-all ${
                 memoLang === "en"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm"
+                  ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -122,7 +122,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               onClick={() => handleLangChange("zh")}
               className={`rounded-lg px-3 py-1 font-semibold transition-all ${
                 memoLang === "zh"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm"
+                  ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -134,7 +134,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <button
               type="button"
               onClick={onOpenSocialCard}
-              className="flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/15 px-3.5 py-2 text-xs font-bold text-accent shadow-md transition-all hover:bg-accent/25 hover:text-white"
+              className="shadow-xs flex items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:bg-surface-2 hover:text-white"
               title={tHeader.exportCardTooltip}
             >
               <Share2 className="size-4 text-accent" />
@@ -145,7 +145,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-accent/20 transition-all hover:bg-accent-hover hover:shadow-accent/40"
+            className="shadow-xs flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-xs font-bold text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
           >
             <Printer className="size-4" />
             {t.printPdf}
@@ -173,7 +173,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
       )}
 
       {/* Printable Memo Sheet */}
-      <div className="memo-print-page glass-panel flex flex-col gap-8 rounded-2xl border border-border/80 p-8 text-slate-100 shadow-2xl md:p-12">
+      <div className="memo-print-page glass-panel flex flex-col gap-8 rounded-2xl border border-border p-8 text-slate-100 shadow-md md:p-12">
         {/* Print-Only Institutional Document Header */}
         <div className="print-only mb-2 items-center justify-between border-b-2 border-slate-900 pb-3">
           <div className="flex items-center gap-2">

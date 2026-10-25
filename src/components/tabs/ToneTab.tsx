@@ -55,11 +55,9 @@ export const ToneTab: React.FC<ToneTabProps> = ({
       </div>
 
       {/* Confidence Header & Radar Score */}
-      <div className="glass-panel flex flex-col items-center justify-between gap-5 rounded-2xl p-5 shadow-xl md:flex-row">
-        <div className="flex items-center gap-4">
-          <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent shadow-[0_0_15px_rgba(56,189,248,0.2)]">
-            <Gauge className="size-6" />
-          </div>
+      <div className="glass-panel shadow-xs flex flex-col items-start justify-between gap-5 rounded-2xl border border-border p-5 md:flex-row md:items-center">
+        <div className="flex items-center gap-3">
+          <Gauge className="size-6 text-accent" />
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t.overallConfidence}
@@ -72,14 +70,14 @@ export const ToneTab: React.FC<ToneTabProps> = ({
         </div>
 
         {managementTone.evidenceNotes && (
-          <p className="max-w-xl rounded-xl border border-border/70 bg-surface-0/80 p-3.5 text-xs leading-relaxed text-slate-300 shadow-sm">
+          <p className="max-w-xl rounded-xl border border-border bg-surface-0/80 p-3.5 text-xs leading-relaxed text-slate-300">
             {managementTone.evidenceNotes}
           </p>
         )}
       </div>
 
       {/* 5-Dimension Scorecard */}
-      <div className="glass-panel flex flex-col gap-4 rounded-2xl p-5 shadow-xl">
+      <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-5">
         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
           {t.behavioralDimensions}
         </h4>
@@ -92,9 +90,9 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               <span className="w-28 shrink-0 text-xs font-semibold text-slate-300 sm:w-44">
                 {m.label}
               </span>
-              <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3/80">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3/80">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-accent/80 to-accent shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all duration-500"
+                  className="h-full rounded-full bg-accent transition-all duration-500"
                   style={{
                     width: `${Math.min(100, Math.max(0, (m.val / 10) * 100))}%`,
                   }}
@@ -187,10 +185,10 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               const sentiment = q.sentiment.toLowerCase();
               const borderClass =
                 sentiment === "bullish"
-                  ? "border-fintech-green/30 bg-fintech-greenGlow/5 shadow-[0_0_12px_rgba(16,185,129,0.06)]"
+                  ? "border-fintech-green/30 bg-fintech-greenGlow/5"
                   : sentiment === "bearish"
-                    ? "border-fintech-red/30 bg-fintech-redGlow/5 shadow-[0_0_12px_rgba(244,63,94,0.06)]"
-                    : "border-border/80 glass-panel";
+                    ? "border-fintech-red/30 bg-fintech-redGlow/5"
+                    : "border-border glass-panel";
 
               const badgeClass =
                 sentiment === "bullish"
@@ -209,7 +207,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
               return (
                 <div
                   key={idx}
-                  className={`flex flex-col justify-between gap-3 rounded-xl border p-4 shadow-md transition-all ${borderClass}`}
+                  className={`shadow-xs flex flex-col justify-between gap-3 rounded-xl border p-4 transition-all ${borderClass}`}
                 >
                   <p className="text-xs italic leading-relaxed text-slate-200">
                     &ldquo;{q.quote}&rdquo;

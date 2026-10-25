@@ -295,9 +295,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             {/* Breakdown Stats Grid */}
             <div className="grid grid-cols-3 gap-3">
               {/* Bullish */}
-              <div className="flex flex-col rounded-xl border border-emerald-500/15 bg-emerald-500/5 p-3">
+              <div className="flex flex-col rounded-xl border border-border bg-surface-0/60 p-3">
                 <div className="mb-1 flex items-center gap-1.5 text-xs text-emerald-400">
-                  <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <div className="size-2 rounded-full bg-emerald-500" />
                   <span className="font-medium">{t.bullish}</span>
                 </div>
                 <div className="font-mono text-lg font-bold text-white">
@@ -309,9 +309,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </div>
 
               {/* Neutral */}
-              <div className="flex flex-col rounded-xl border border-amber-500/15 bg-amber-500/5 p-3">
+              <div className="flex flex-col rounded-xl border border-border bg-surface-0/60 p-3">
                 <div className="mb-1 flex items-center gap-1.5 text-xs text-amber-400">
-                  <div className="size-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                  <div className="size-2 rounded-full bg-amber-400" />
                   <span className="font-medium">{t.neutral}</span>
                 </div>
                 <div className="font-mono text-lg font-bold text-white">
@@ -323,9 +323,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </div>
 
               {/* Bearish */}
-              <div className="flex flex-col rounded-xl border border-rose-500/15 bg-rose-500/5 p-3">
+              <div className="flex flex-col rounded-xl border border-border bg-surface-0/60 p-3">
                 <div className="mb-1 flex items-center gap-1.5 text-xs text-rose-400">
-                  <div className="size-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                  <div className="size-2 rounded-full bg-rose-500" />
                   <span className="font-medium">{t.bearish}</span>
                 </div>
                 <div className="font-mono text-lg font-bold text-white">
@@ -406,9 +406,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   className="absolute top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
                   style={{ left: `${avgPct}%` }}
                 >
-                  <div className="size-4 rounded-full border-2 border-surface-0 bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.7)]" />
+                  <div className="size-3.5 rounded-full border-2 border-surface-0 bg-emerald-400 ring-2 ring-emerald-500/25" />
                   <div className="absolute top-5 flex flex-col items-center whitespace-nowrap">
-                    <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-400 shadow-sm">
+                    <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-400">
                       ${average.toFixed(2)}
                     </span>
                     <span className="text-[10px] font-medium text-slate-400">
@@ -417,15 +417,15 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   </div>
                 </div>
 
-                {/* Current Price Pin (Distinct cyan/blue marker) */}
+                {/* Current Price Pin (Distinct marker) */}
                 {current > 0 && (
                   <div
                     className="absolute top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
                     style={{ left: `${curPct}%` }}
                   >
-                    <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent shadow-[0_0_10px_rgba(56,189,248,0.7)]" />
+                    <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent ring-2 ring-accent/25" />
                     <div className="absolute -top-7 flex flex-col items-center whitespace-nowrap">
-                      <span className="rounded border border-accent/40 bg-accent/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
+                      <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
                         {t.currentPriceLabel}: ${current.toFixed(2)}
                       </span>
                     </div>

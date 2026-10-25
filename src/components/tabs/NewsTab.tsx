@@ -172,14 +172,12 @@ export const NewsTab: React.FC<NewsTabProps> = ({
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-              <Radio className="size-4 animate-pulse" />
-            </div>
+            <Radio className="size-4 text-accent" />
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-100 sm:text-base">
               {t.title}
             </h3>
             {ticker && (
-              <span className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 font-mono text-xs font-bold text-accent">
+              <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs font-bold text-slate-200">
                 {ticker}
               </span>
             )}
@@ -188,13 +186,13 @@ export const NewsTab: React.FC<NewsTabProps> = ({
         </div>
 
         {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-white/[0.08] bg-surface-1/90 p-1 shadow-sm backdrop-blur-md">
+        <div className="shadow-xs flex flex-wrap items-center gap-1.5 rounded-xl border border-border bg-surface-1/90 p-1">
           <button
             type="button"
             onClick={() => setFilterType("all")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "all"
-                ? "bg-accent/20 text-accent shadow-sm ring-1 ring-accent/30"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-slate-100 dark:text-white"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -205,7 +203,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             onClick={() => setFilterType("upstream")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "upstream"
-                ? "bg-emerald-500/20 text-emerald-400 shadow-sm ring-1 ring-emerald-500/30"
+                ? "shadow-xs border border-emerald-500/30 bg-surface-2 font-bold text-emerald-400"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -216,7 +214,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             onClick={() => setFilterType("product")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "product"
-                ? "bg-indigo-500/20 text-indigo-400 shadow-sm ring-1 ring-indigo-500/30"
+                ? "shadow-xs border border-sky-500/30 bg-surface-2 font-bold text-sky-400"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -227,7 +225,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             onClick={() => setFilterType("analyst")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "analyst"
-                ? "bg-amber-500/20 text-amber-400 shadow-sm ring-1 ring-amber-500/30"
+                ? "shadow-xs border border-amber-500/30 bg-surface-2 font-bold text-amber-400"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -238,7 +236,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             onClick={() => setFilterType("sec")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "sec"
-                ? "bg-rose-500/20 text-rose-400 shadow-sm ring-1 ring-rose-500/30"
+                ? "shadow-xs border border-rose-500/30 bg-surface-2 font-bold text-rose-400"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
