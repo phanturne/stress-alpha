@@ -58,7 +58,7 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
       </div>
 
       {/* 5 Pillar Mini Pills */}
-      <div className="grid grid-cols-5 gap-1 border-t border-white/[0.06] pt-1">
+      <div className="grid grid-cols-5 gap-1 border-t border-border/60 pt-1">
         {scoreResult.pillarList.map((p) => {
           return (
             <div

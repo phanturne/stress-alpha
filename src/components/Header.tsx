@@ -178,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({
           className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90"
           title={`StressAlpha Home — ${t.screener}`}
         >
-          <div className="flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent shadow-glow transition-transform group-hover:scale-105">
+          <div className="shadow-xs flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent transition-transform group-hover:scale-105">
             <span className="font-mono text-sm font-extrabold tracking-tighter">
               S<span className="text-white">α</span>
             </span>
@@ -349,21 +349,21 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {isSettingsOpen && (
-            <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-72 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+            <div className="glass-panel shadow-xs absolute right-0 top-full z-50 mt-2 w-72 divide-y divide-border/60 rounded-xl border border-border bg-surface-1/95 p-1.5 backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
               {/* Language Switcher Row */}
               <div className="flex items-center justify-between px-2.5 py-2 text-xs">
                 <div className="flex items-center gap-2 font-medium text-slate-300">
                   <Globe className="size-3.5 text-accent" />
                   <span>{t.language}</span>
                 </div>
-                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                   <button
                     type="button"
                     onClick={() => onToggleLocale("en")}
                     className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                       locale === "en"
                         ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-foreground"
                     }`}
                   >
                     EN
@@ -374,7 +374,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                       locale === "zh"
                         ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-foreground"
                     }`}
                   >
                     中文
@@ -392,14 +392,14 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                   <span>{t.theme}</span>
                 </div>
-                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                   <button
                     type="button"
                     onClick={() => setTheme("dark")}
                     className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                       theme === "dark"
                         ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-foreground"
                     }`}
                     title={t.themeDark}
                   >
@@ -412,7 +412,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                       theme === "light"
                         ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-foreground"
                     }`}
                     title={t.themeLight}
                   >
@@ -427,7 +427,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Link
                   href="/settings"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-foreground"
                 >
                   <div className="flex items-center gap-2">
                     <Settings className="size-3.5 text-slate-400" />
@@ -439,7 +439,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Link
                   href="/methodology"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-foreground"
                 >
                   <div className="flex items-center gap-2">
                     <BookOpen className="size-3.5 text-slate-400" />
@@ -455,13 +455,13 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsSettingsOpen(false);
                       onOpenShortcutsModal();
                     }}
-                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-foreground"
                   >
                     <div className="flex items-center gap-2">
                       <Keyboard className="size-3.5 text-slate-400" />
                       <span>{t.shortcuts}</span>
                     </div>
-                    <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                    <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
                       ?
                     </kbd>
                   </button>
@@ -496,7 +496,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs font-semibold shadow-sm transition-all sm:gap-2 sm:px-2.5 ${
                 isUserMenuOpen
                   ? "border-accent/40 bg-surface-2 text-accent ring-1 ring-accent/30"
-                  : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-white/20 hover:bg-surface-2 hover:text-white"
+                  : "border-border bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
               }`}
               title={tAuth.accountMenu}
               aria-label={tAuth.accountMenu}
@@ -512,11 +512,11 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isUserMenuOpen && (
-              <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-64 divide-y divide-white/[0.06] rounded-xl border border-white/[0.1] bg-surface-1/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
+              <div className="glass-panel shadow-xs absolute right-0 top-full z-50 mt-2 w-64 divide-y divide-border/60 rounded-xl border border-border bg-surface-1/95 p-1.5 backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95">
                 {/* User Header */}
                 <div className="px-2.5 py-2">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="truncate text-xs font-bold text-white">
+                    <div className="truncate text-xs font-bold text-foreground">
                       {session.user.name || tAuth.profile}
                     </div>
                     <span className="inline-flex shrink-0 items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-emerald-400">
@@ -534,14 +534,14 @@ export const Header: React.FC<HeaderProps> = ({
                       <Globe className="size-3.5 text-accent" />
                       <span>{t.language}</span>
                     </div>
-                    <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                    <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                       <button
                         type="button"
                         onClick={() => onToggleLocale("en")}
                         className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                           locale === "en"
                             ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                            : "text-slate-400 hover:text-white"
+                            : "text-slate-400 hover:text-foreground"
                         }`}
                       >
                         EN
@@ -552,7 +552,7 @@ export const Header: React.FC<HeaderProps> = ({
                         className={`rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                           locale === "zh"
                             ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                            : "text-slate-400 hover:text-white"
+                            : "text-slate-400 hover:text-foreground"
                         }`}
                       >
                         中文
@@ -570,14 +570,14 @@ export const Header: React.FC<HeaderProps> = ({
                       )}
                       <span>{t.theme}</span>
                     </div>
-                    <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                    <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                       <button
                         type="button"
                         onClick={() => setTheme("dark")}
                         className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                           theme === "dark"
                             ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                            : "text-slate-400 hover:text-white"
+                            : "text-slate-400 hover:text-foreground"
                         }`}
                         title={t.themeDark}
                       >
@@ -590,7 +590,7 @@ export const Header: React.FC<HeaderProps> = ({
                         className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold transition-all ${
                           theme === "light"
                             ? "bg-accent font-extrabold text-slate-950 shadow-sm shadow-accent/30"
-                            : "text-slate-400 hover:text-white"
+                            : "text-slate-400 hover:text-foreground"
                         }`}
                         title={t.themeLight}
                       >
@@ -606,7 +606,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link
                     href="/settings"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-white"
+                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-2 hover:text-foreground"
                   >
                     <div className="flex items-center gap-2">
                       <Settings className="size-3.5 text-slate-400" />
@@ -637,7 +637,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsAuthModalOpen(true)}
-            className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+            className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
             title={tAuth.signIn}
           >
             <LogIn className="size-3.5 text-accent" />
@@ -669,7 +669,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={toggleTheme}
-          className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-1/90 text-slate-400 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
+          className="shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1/90 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-accent"
           title={t.toggleTheme}
           aria-label={t.toggleTheme}
         >
@@ -684,10 +684,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`flex size-8 items-center justify-center rounded-lg border shadow-sm transition-all ${
+          className={`shadow-xs flex size-8 items-center justify-center rounded-lg border transition-all ${
             isMobileMenuOpen
               ? "border-accent/50 bg-accent/15 text-accent ring-1 ring-accent/30"
-              : "border-white/[0.08] bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2"
+              : "border-border bg-surface-1/90 text-slate-300 hover:border-accent/40 hover:bg-surface-2"
           }`}
           title={isMobileMenuOpen ? t.closeMenu : t.mobileMenu}
           aria-label={isMobileMenuOpen ? t.closeMenu : t.mobileMenu}
@@ -710,21 +710,21 @@ export const Header: React.FC<HeaderProps> = ({
           />
 
           {/* Drawer Panel */}
-          <div className="glass-panel bg-surface-1/98 relative z-10 flex h-full w-full max-w-xs flex-col divide-y divide-white/[0.08] overflow-y-auto p-4 shadow-2xl backdrop-blur-2xl duration-200 animate-in slide-in-from-right">
+          <div className="glass-panel bg-surface-1/98 shadow-xs relative z-10 flex h-full w-full max-w-xs flex-col divide-y divide-border/60 overflow-y-auto p-4 backdrop-blur-2xl duration-200 animate-in slide-in-from-right">
             {/* Drawer Top Bar */}
             <div className="flex items-center justify-between pb-3">
               <div className="flex items-center gap-2">
                 <div className="flex size-7 items-center justify-center rounded-lg border border-accent/40 bg-accent/15 font-mono text-xs font-black text-accent">
-                  S<span className="text-white">α</span>
+                  S<span className="text-foreground">α</span>
                 </div>
-                <span className="font-mono text-sm font-bold text-white">
+                <span className="font-mono text-sm font-bold text-foreground">
                   Stress<span className="text-accent">Alpha</span>
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex size-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-2 text-slate-400 hover:text-white"
+                className="flex size-8 items-center justify-center rounded-lg border border-border bg-surface-2 text-slate-400 hover:text-foreground"
                 aria-label={t.closeMenu}
               >
                 <X className="size-4" />
@@ -734,7 +734,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* User Profile / Auth Section */}
             <div className="py-3">
               {session?.user ? (
-                <div className="flex items-center justify-between rounded-xl border border-white/[0.08] bg-surface-0/60 p-2.5">
+                <div className="flex items-center justify-between rounded-xl border border-border bg-surface-0/60 p-2.5">
                   <div className="flex min-w-0 items-center gap-2">
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/20 font-mono text-xs font-bold text-accent">
                       {session.user.name
@@ -963,7 +963,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Globe className="size-3.5 text-accent" />
                   <span>{t.language}</span>
                 </div>
-                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                   <button
                     type="button"
                     onClick={() => onToggleLocale("en")}
@@ -998,7 +998,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                   <span>{t.theme}</span>
                 </div>
-                <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5">
+                <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5">
                   <button
                     type="button"
                     onClick={() => setTheme("dark")}
@@ -1032,7 +1032,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Link
                 href="/settings"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-foreground"
               >
                 <div className="flex items-center gap-2">
                   <Settings className="size-3.5 text-slate-400" />
@@ -1043,7 +1043,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Link
                 href="/methodology"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+                className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-foreground"
               >
                 <div className="flex items-center gap-2">
                   <BookOpen className="size-3.5 text-slate-400" />
@@ -1058,13 +1058,13 @@ export const Header: React.FC<HeaderProps> = ({
                     setIsMobileMenuOpen(false);
                     onOpenShortcutsModal();
                   }}
-                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-white"
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-slate-300 hover:bg-surface-2 hover:text-foreground"
                 >
                   <div className="flex items-center gap-2">
                     <Keyboard className="size-3.5 text-slate-400" />
                     <span>{t.shortcuts}</span>
                   </div>
-                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
                     ?
                   </kbd>
                 </button>

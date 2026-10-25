@@ -151,7 +151,7 @@ export function ScreenerClientPage({
   const t = getTranslations(locale);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-slate-100">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Top Navigation - No specific report associated */}
       <Header
         currentSlug={null}
@@ -209,16 +209,18 @@ export function ScreenerClientPage({
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-2xl border border-white/[0.12] p-6 shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+          <div className="glass-panel shadow-xs w-full max-w-md rounded-2xl border border-border p-6 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
               <div className="flex items-center gap-2">
                 <Keyboard className="size-5 text-accent" />
-                <h3 className="font-bold text-white">{t.header.shortcuts}</h3>
+                <h3 className="font-bold text-foreground">
+                  {t.header.shortcuts}
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsShortcutsOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-surface-2 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:bg-surface-2 hover:text-foreground"
               >
                 <X className="size-5" />
               </button>
@@ -226,13 +228,13 @@ export function ScreenerClientPage({
             <div className="mt-4 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.header.language}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   L
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.header.shortcuts}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   ?
                 </kbd>
               </div>
@@ -241,7 +243,7 @@ export function ScreenerClientPage({
                   <span className="text-slate-400">
                     {t.shortcuts.returnToModel}
                   </span>
-                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                     M
                   </kbd>
                 </div>
@@ -250,13 +252,13 @@ export function ScreenerClientPage({
                 <span className="text-slate-400">
                   {t.shortcuts.toggleFavorite}
                 </span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-accent">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-accent">
                   F
                 </kbd>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">{t.shortcuts.close}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-1 font-semibold text-slate-300">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-1 font-semibold text-slate-300">
                   ESC
                 </kbd>
               </div>

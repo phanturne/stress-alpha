@@ -66,7 +66,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           className="pointer-events-none absolute top-0 z-20 flex -translate-x-1/2 flex-col items-center transition-all duration-300"
           style={{ left: `${currentPct}%` }}
         >
-          <div className="whitespace-nowrap rounded-md border border-white/20 bg-accent px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-950 shadow-sm">
+          <div className="shadow-xs whitespace-nowrap rounded-md border border-accent/40 bg-accent px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-950">
             {formatCurrency(currentPrice, 0)}
           </div>
           <div className="size-0 border-x-4 border-t-[5px] border-x-transparent border-t-accent" />
@@ -91,7 +91,7 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           style={{ left: `${basePct}%` }}
         >
           <div className="-mt-1 mb-1 h-2 w-0.5 bg-slate-300/80" />
-          <span className="whitespace-nowrap rounded border border-white/[0.1] bg-surface-2 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-slate-200">
+          <span className="shadow-xs whitespace-nowrap rounded border border-border bg-surface-2 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-foreground">
             {formatCurrency(baseTarget, 0)}
           </span>
         </div>
@@ -102,14 +102,14 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
           style={{ left: `${bullPct}%` }}
         >
           <div className="-mt-1 mb-1 h-2 w-0.5 bg-fintech-green/80" />
-          <span className="bg-fintech-greenGlow/20 whitespace-nowrap rounded border border-fintech-green/40 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-green">
+          <span className="bg-fintech-greenGlow/20 shadow-xs whitespace-nowrap rounded border border-fintech-green/40 px-1 py-0.5 font-mono text-[10px] font-bold tabular-nums text-fintech-green">
             {formatCurrency(bullTarget, 0)}
           </span>
         </div>
       </div>
 
       {/* Bottom Regime Labels */}
-      <div className="grid grid-cols-3 border-t border-white/[0.06] pt-1 font-mono text-[11px] text-slate-400">
+      <div className="grid grid-cols-3 border-t border-border/60 pt-1 font-mono text-[11px] text-slate-400">
         <div className="flex items-center gap-1 font-semibold text-fintech-red">
           <span className="size-1.5 rounded-full bg-fintech-red" />
           <span className="truncate">{t.panicFloor}</span>

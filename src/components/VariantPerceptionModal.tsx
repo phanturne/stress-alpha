@@ -60,11 +60,11 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
       />
 
       {/* Modal Dialog Card */}
-      <div className="glass-panel relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/[0.12] bg-surface-1/95 p-0 shadow-2xl">
+      <div className="glass-panel shadow-xs relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-1/95 p-0">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-white/[0.08] p-5 sm:p-6">
+        <div className="flex items-start justify-between border-b border-border p-5 sm:p-6">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent shadow-sm">
+            <div className="shadow-xs flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
               <ShieldCheck className="size-5" />
             </div>
             <div>
@@ -72,7 +72,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
                 <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold text-accent">
                   {ticker}
                 </span>
-                <h3 className="font-sans text-base font-bold tracking-tight text-white sm:text-lg">
+                <h3 className="font-sans text-base font-bold tracking-tight text-foreground sm:text-lg">
                   {t.variantPerceptionTitle}
                 </h3>
               </div>
@@ -85,7 +85,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <X className="size-5" />
           </button>
@@ -124,7 +124,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
           {/* Quantitative Attribution Grid */}
           {ca && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-white/[0.06] bg-surface-2/60 p-3.5 shadow-sm">
+              <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
                 <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
                   {t.divergenceAttributionTitle}
                 </span>
@@ -146,12 +146,12 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
                 </p>
               </div>
 
-              <div className="rounded-xl border border-white/[0.06] bg-surface-2/60 p-3.5 shadow-sm">
+              <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
                 <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
                   {t.baseMultipleVsStreet}
                 </span>
                 <div className="mt-1.5 flex items-baseline gap-1.5">
-                  <span className="font-mono text-2xl font-black tabular-nums text-slate-100">
+                  <span className="font-mono text-2xl font-black tabular-nums text-foreground">
                     {ca.baseFairValue !== undefined
                       ? formatCurrency(ca.baseFairValue, 2)
                       : "—"}
@@ -164,7 +164,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
                 </p>
               </div>
 
-              <div className="rounded-xl border border-white/[0.06] bg-surface-2/60 p-3.5 shadow-sm">
+              <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
                 <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
                   {t.regimeStressImpact}
                 </span>
@@ -191,7 +191,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
 
           {/* Model Analytical Stance */}
           {ca?.rationaleComment && (
-            <div className="rounded-xl border border-accent/25 bg-accent/[0.07] p-4 shadow-sm">
+            <div className="shadow-xs rounded-xl border border-accent/25 bg-accent/[0.07] p-4">
               <div className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-accent">
                 <TrendingUp className="size-3.5" />
                 <span>{t.modelStanceTitle}</span>
@@ -204,7 +204,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
 
           {/* Audit Notices & Missing Modules */}
           {sanityAudit.issues.length > 0 && (
-            <div className="rounded-xl border border-white/[0.06] bg-surface-2/40 p-4">
+            <div className="rounded-xl border border-border/60 bg-surface-2/40 p-4">
               <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {t.dataNotesTitle} ({sanityAudit.issues.length})
               </span>
@@ -233,11 +233,11 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end border-t border-white/[0.08] bg-surface-2/40 px-5 py-3 sm:px-6">
+        <div className="flex items-center justify-end border-t border-border bg-surface-2/40 px-5 py-3 sm:px-6">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-surface-3 px-4 py-2 font-mono text-xs font-semibold text-slate-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="rounded-lg bg-surface-3 px-4 py-2 font-mono text-xs font-semibold text-slate-300 transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             {t.closeModal}
           </button>

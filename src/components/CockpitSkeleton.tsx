@@ -9,7 +9,7 @@ export const CockpitSkeleton: React.FC = () => {
       {/* Left Sticky Model Column (~400px responsive) */}
       <aside className="custom-scrollbar flex h-full min-h-0 w-full shrink-0 flex-col gap-4 lg:w-[380px] lg:overflow-y-auto lg:pr-1.5 xl:w-[415px] 2xl:w-[440px]">
         {/* Card 1: Header, Presets & Live P&L Strip */}
-        <div className="glass-panel flex flex-col gap-3.5 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
+        <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border bg-surface-1/90 p-4 sm:p-4.5">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -27,7 +27,7 @@ export const CockpitSkeleton: React.FC = () => {
           </div>
 
           {/* Stressed Valuation Display */}
-          <div className="rounded-xl border border-white/[0.06] bg-surface-0/60 p-3.5">
+          <div className="rounded-xl border border-border/60 bg-surface-0/60 p-3.5">
             <div className="flex items-baseline justify-between">
               <Skeleton className="h-3 w-24" />
               <Skeleton className="h-4 w-16 rounded-full" />
@@ -51,7 +51,7 @@ export const CockpitSkeleton: React.FC = () => {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="rounded-lg border border-white/[0.04] bg-surface-0/40 p-2.5"
+                className="rounded-lg border border-border/40 bg-surface-0/40 p-2.5"
               >
                 <Skeleton className="h-2.5 w-16" />
                 <Skeleton className="mt-1.5 h-4 w-20" />
@@ -61,7 +61,7 @@ export const CockpitSkeleton: React.FC = () => {
         </div>
 
         {/* Card 2: Interactive Parameter Sliders */}
-        <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
+        <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border bg-surface-1/90 p-4 sm:p-4.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Skeleton className="size-5 rounded-md" />
@@ -92,7 +92,7 @@ export const CockpitSkeleton: React.FC = () => {
         </div>
 
         {/* Card 3: Downside Guardrails */}
-        <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
+        <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border bg-surface-1/90 p-4 sm:p-4.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Skeleton className="size-5 rounded-md" />
@@ -101,11 +101,11 @@ export const CockpitSkeleton: React.FC = () => {
             <Skeleton className="h-5 w-14 rounded-full" />
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-white/[0.04] bg-surface-0/40 p-2.5">
+            <div className="rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
               <Skeleton className="h-2.5 w-20" />
               <Skeleton className="mt-1.5 h-4 w-14" />
             </div>
-            <div className="rounded-lg border border-white/[0.04] bg-surface-0/40 p-2.5">
+            <div className="rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
               <Skeleton className="h-2.5 w-20" />
               <Skeleton className="mt-1.5 h-4 w-14" />
             </div>
@@ -116,7 +116,7 @@ export const CockpitSkeleton: React.FC = () => {
       {/* Right Tabbed Workspace Skeleton */}
       <div className="custom-scrollbar flex w-full min-w-0 flex-1 flex-col gap-4 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5">
         {/* Tab Ribbon Skeleton */}
-        <div className="custom-scrollbar flex items-center gap-1 overflow-x-auto lg:rounded-2xl lg:border lg:border-white/[0.08] lg:bg-surface-1/90 lg:p-1.5">
+        <div className="custom-scrollbar flex items-center gap-1 overflow-x-auto lg:rounded-2xl lg:border lg:border-border lg:bg-surface-1/90 lg:p-1.5">
           {[
             { w: "w-16 xl:w-20", c: "w-4" },
             { w: "w-16 xl:w-20", c: "w-4" },
@@ -148,7 +148,7 @@ export const CockpitSkeleton: React.FC = () => {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="glass-panel flex flex-col justify-between rounded-xl border border-white/[0.08] p-4 shadow-lg"
+                className="glass-panel shadow-xs flex flex-col justify-between rounded-xl border border-border bg-surface-1/90 p-4"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -158,7 +158,7 @@ export const CockpitSkeleton: React.FC = () => {
                   <Skeleton className="mt-3 h-7 w-24" />
                   <Skeleton className="mt-1 h-3.5 w-16" />
                 </div>
-                <div className="mt-4 border-t border-white/[0.06] pt-3">
+                <div className="mt-4 border-t border-border/60 pt-3">
                   <div className="flex items-center justify-between">
                     <Skeleton className="h-3 w-16" />
                     <Skeleton className="h-3.5 w-12 rounded-full" />
@@ -169,8 +169,8 @@ export const CockpitSkeleton: React.FC = () => {
           </div>
 
           {/* Valuation Waterfall / Sensitivity Matrix Card */}
-          <div className="glass-panel rounded-xl border border-white/[0.08] p-4 sm:p-5">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+          <div className="glass-panel shadow-xs rounded-xl border border-border bg-surface-1/90 p-4 sm:p-5">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="space-y-1.5">
                 <Skeleton className="h-5 w-48" />
                 <Skeleton className="h-3 w-72" />

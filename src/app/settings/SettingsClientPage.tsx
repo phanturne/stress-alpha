@@ -182,7 +182,7 @@ export function SettingsClientPage({
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-slate-100 selection:bg-accent/20 selection:text-accent">
+    <div className="flex min-h-screen flex-col bg-background text-foreground selection:bg-accent/20 selection:text-accent">
       {/* Top Application Header */}
       <Header
         currentSlug={null}
@@ -322,7 +322,7 @@ export function SettingsClientPage({
                               {session.user.name || t.auth.profile}
                             </div>
                             <div className="mt-0.5 flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
+                              <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-400">
                                 <span className="size-1.5 rounded-full bg-emerald-400" />
                                 {t.auth.memberBadge}
                               </span>
@@ -387,7 +387,7 @@ export function SettingsClientPage({
                                 ? session.user.email
                                 : maskEmail(session.user.email)}
                             </span>
-                            <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-emerald-400">
+                            <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-emerald-400">
                               {tAcc.verifiedBadge}
                             </span>
                           </div>
@@ -406,28 +406,26 @@ export function SettingsClientPage({
                       </div>
                     </div>
                   ) : (
-                    /* Guest Workspace State */
-                    <div className="space-y-5 pt-5">
-                      <div className="rounded-xl border border-border bg-surface-0/50 p-6 text-center">
-                        <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-border bg-surface-2 text-slate-400">
-                          <User className="size-6" />
-                        </div>
-                        <h3 className="mt-3 text-sm font-bold text-white">
-                          {tAcc.notSignedIn}
-                        </h3>
-                        <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400">
-                          {tAcc.notSignedInDesc}
-                        </p>
-                        <div className="mt-5">
-                          <button
-                            type="button"
-                            onClick={() => setIsAuthModalOpen(true)}
-                            className="shadow-xs inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
-                          >
-                            <LogIn className="size-4" />
-                            <span>{tAcc.signInButton}</span>
-                          </button>
-                        </div>
+                    <div className="py-8 text-center">
+                      {/* Guest Workspace State */}
+                      <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-border bg-surface-2 text-slate-400">
+                        <User className="size-6" />
+                      </div>
+                      <h3 className="mt-3 text-sm font-bold text-white">
+                        {tAcc.notSignedIn}
+                      </h3>
+                      <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400">
+                        {tAcc.notSignedInDesc}
+                      </p>
+                      <div className="mt-5">
+                        <button
+                          type="button"
+                          onClick={() => setIsAuthModalOpen(true)}
+                          className="shadow-xs inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
+                        >
+                          <LogIn className="size-4" />
+                          <span>{tAcc.signInButton}</span>
+                        </button>
                       </div>
                     </div>
                   )}
@@ -621,12 +619,12 @@ export function SettingsClientPage({
                     </p>
                   </div>
 
-                  <div className="space-y-5 pt-5">
+                  <div className="divide-y divide-border/60">
                     {/* QPCE Panel */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5 first:pt-4">
                       <div className="flex items-center gap-2">
                         <Sliders className="size-4 text-accent" />
-                        <h3 className="text-sm font-bold text-white">
+                        <h3 className="text-sm font-bold text-foreground">
                           {tVal.qpceTitle}
                         </h3>
                       </div>
@@ -639,10 +637,10 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Income Quality Guardrail */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5">
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="size-4 text-emerald-400" />
-                        <h3 className="text-sm font-bold text-white">
+                        <h3 className="text-sm font-bold text-foreground">
                           {tVal.guardrailTitle}
                         </h3>
                       </div>
@@ -652,10 +650,10 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Audited SEC Data Ingestion Feeds */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5 last:pb-0">
                       <div className="flex items-center gap-2">
                         <Database className="size-4 text-cyan-400" />
-                        <h3 className="text-sm font-bold text-white">
+                        <h3 className="text-sm font-bold text-foreground">
                           {tVal.feedsTitle}
                         </h3>
                       </div>
@@ -689,17 +687,17 @@ export function SettingsClientPage({
                     </p>
                   </div>
 
-                  <div className="space-y-5 pt-5">
+                  <div className="divide-y divide-border/60">
                     {/* Privacy Guardrail: Concealed in Menus */}
-                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4.5">
+                    <div className="py-5 first:pt-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Lock className="size-4 text-emerald-400" />
-                          <h3 className="text-sm font-bold text-white">
+                          <h3 className="text-sm font-bold text-foreground">
                             {tPriv.dropdownPrivacyTitle}
                           </h3>
                         </div>
-                        <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
+                        <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-400">
                           <CheckCircle2 className="size-3" />
                           {tPriv.statusActive}
                         </span>
@@ -710,10 +708,10 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Zero-tracking Guarantee */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5">
                       <div className="flex items-center gap-2">
                         <Shield className="size-4 text-accent" />
-                        <h3 className="text-sm font-bold text-white">
+                        <h3 className="text-sm font-bold text-foreground">
                           {tPriv.privacyFirstTitle}
                         </h3>
                       </div>
@@ -723,10 +721,10 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Cloud Storage */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5">
                       <div className="flex items-center gap-2">
                         <Database className="size-4 text-cyan-400" />
-                        <h3 className="text-sm font-bold text-white">
+                        <h3 className="text-sm font-bold text-foreground">
                           {tPriv.cloudSyncTitle}
                         </h3>
                       </div>
@@ -736,11 +734,11 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Local Cache Management */}
-                    <div className="rounded-xl border border-border bg-surface-0/50 p-4.5">
+                    <div className="py-5 last:pb-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Trash2 className="size-4 text-amber-400" />
-                          <h3 className="text-sm font-bold text-white">
+                          <h3 className="text-sm font-bold text-foreground">
                             {tPriv.clearCacheTitle}
                           </h3>
                         </div>
@@ -776,19 +774,19 @@ export function SettingsClientPage({
                   </div>
 
                   <div className="space-y-5 pt-5">
-                    {/* Platform Invariants */}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {/* Platform Invariants Telemetry Strip */}
+                    <div className="grid grid-cols-1 divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-surface-0/40 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                      <div className="p-4">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.versionLabel}
                         </span>
-                        <div className="mt-1 font-mono text-xs font-bold text-white">
+                        <div className="mt-1 font-mono text-xs font-bold text-foreground">
                           v1.0.0 (Production)
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="p-4">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.engineLabel}
                         </span>
                         <div className="mt-1 font-mono text-xs font-bold text-accent">
@@ -796,8 +794,8 @@ export function SettingsClientPage({
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-border bg-surface-0/50 p-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="p-4">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                           {tSys.databaseLabel}
                         </span>
                         <div className="mt-1 font-mono text-xs font-bold text-emerald-400">
@@ -807,10 +805,10 @@ export function SettingsClientPage({
                     </div>
 
                     {/* Institutional Resource Links */}
-                    <div className="space-y-2 pt-2">
+                    <div className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-surface-0/40">
                       <Link
                         href="/methodology"
-                        className="flex items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex items-center justify-between p-4 text-xs font-medium text-slate-200 transition-colors hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-accent">
@@ -825,7 +823,7 @@ export function SettingsClientPage({
                         href="https://github.com/phanturne/stress-alpha"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex items-center justify-between p-4 text-xs font-medium text-slate-200 transition-colors hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-slate-300">
@@ -839,7 +837,7 @@ export function SettingsClientPage({
                       <button
                         type="button"
                         onClick={() => setIsShortcutsOpen(true)}
-                        className="flex w-full items-center justify-between rounded-xl border border-border bg-surface-0/60 p-4 text-xs font-medium text-slate-200 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                        className="flex w-full items-center justify-between p-4 text-xs font-medium text-slate-200 transition-colors hover:bg-surface-2 hover:text-white"
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-accent">
@@ -847,7 +845,7 @@ export function SettingsClientPage({
                           </div>
                           <span>{tSys.shortcutsButton}</span>
                         </div>
-                        <kbd className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+                        <kbd className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-400">
                           ?
                         </kbd>
                       </button>

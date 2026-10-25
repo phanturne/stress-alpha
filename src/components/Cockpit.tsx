@@ -236,7 +236,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={onResetDefaults}
-              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-white"
+              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-foreground"
               title={t.resetTooltip}
             >
               <RotateCcw className="size-3 text-accent transition-transform duration-200 group-hover:-rotate-45" />
@@ -255,7 +255,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.currentPrice}
             </div>
-            <div className="mt-0.5 font-mono text-xl font-black tabular-nums tracking-tight text-white sm:text-2xl">
+            <div className="mt-0.5 font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
               {formatCurrency(currentPrice)}
             </div>
           </div>
@@ -269,7 +269,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               {t.weightedFairValue}
             </div>
             <div className="mt-0.5 flex items-baseline justify-end gap-1.5">
-              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-white sm:text-2xl">
+              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(weightedFairValue, 2)}
               </span>
               <span
@@ -295,7 +295,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("baseline")}
-              className="truncate rounded-lg border border-transparent bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
+              className="truncate rounded-lg border border-transparent bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-foreground"
               title={t.presets.baselineTooltip}
             >
               {t.presets.baseline}
@@ -328,7 +328,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.stressedForwardEps}
             </div>
-            <div className="mt-0.5 font-mono text-2xl font-black tabular-nums tracking-tight text-white sm:text-3xl">
+            <div className="mt-0.5 font-mono text-2xl font-black tabular-nums tracking-tight text-foreground sm:text-3xl">
               {formatCurrency(stressEps)}
             </div>
           </div>
@@ -346,9 +346,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* Live Stressed P&L Ribbon */}
-        <div className="grid grid-cols-2 gap-2 pt-0.5 text-center sm:grid-cols-4">
+        <div className="grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-0/60 text-center sm:grid-cols-4 sm:divide-x sm:divide-y-0">
           <div
-            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            className="flex flex-col p-2"
             title={`${t.stressedRev}: ${formatBillions(stressRevenueBillions)}`}
           >
             <div
@@ -357,12 +357,12 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.stressedRev}
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {formatBillions(stressRevenueBillions)}
             </div>
           </div>
           <div
-            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            className="flex flex-col p-2"
             title={`${t.grossProfit}: ${formatBillions(stressGrossProfitBillions)}`}
           >
             <div
@@ -371,12 +371,12 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.grossProfit}
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {formatBillions(stressGrossProfitBillions)}
             </div>
           </div>
           <div
-            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            className="flex flex-col p-2"
             title={`${t.operatingIncome}: ${formatBillions(stressOperatingIncomeBillions)}`}
           >
             <div
@@ -385,12 +385,12 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.operatingIncome}
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {formatBillions(stressOperatingIncomeBillions)}
             </div>
           </div>
           <div
-            className="flex flex-col rounded-lg border border-white/[0.05] bg-surface-0/60 p-2"
+            className="flex flex-col p-2"
             title={`${t.netIncome}: ${formatBillions(stressNetIncomeBillions)}`}
           >
             <div
@@ -399,7 +399,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.netIncome}
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+            <div className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {formatBillions(stressNetIncomeBillions)}
             </div>
           </div>
@@ -449,7 +449,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           panicDelta < 0 ? round2(Math.abs(deltaBull / panicDelta)) : deltaBull;
 
         return (
-          <div className="glass-panel flex flex-col gap-3.5 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
+          <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border p-4 sm:p-4.5">
             <div className="flex items-center justify-between font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
               <span>{t.valuationRegimes}</span>
               <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
@@ -571,9 +571,9 @@ export const Cockpit: React.FC<CockpitProps> = ({
             />
 
             {/* 2x2 Risk Asymmetry Matrix */}
-            <div className="grid grid-cols-2 gap-2 pt-0.5">
+            <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface-0/70 pt-0.5">
               <div
-                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                className="border-b border-r border-border/60 p-2.5"
                 title={`${t.asymmetry.upsideToBull}: Potential percentage gain if stock expands to Bull multiple`}
               >
                 <div
@@ -587,7 +587,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 </div>
               </div>
               <div
-                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                className="border-b border-border/60 p-2.5"
                 title={`${t.asymmetry.downsideToPanic}: Maximum downside drawdown to Panic Floor valuation`}
               >
                 <div
@@ -601,7 +601,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 </div>
               </div>
               <div
-                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                className="border-r border-border/60 p-2.5"
                 title={`${t.asymmetry.pricedInMultiple}: Implied P/E ratio currently priced in at market price`}
               >
                 <div
@@ -615,7 +615,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 </div>
               </div>
               <div
-                className="rounded-xl border border-white/[0.06] bg-surface-0/70 p-2.5"
+                className="p-2.5"
                 title={`${t.asymmetry.asymmetrySkew}: Ratio of upside to Bull vs downside to Panic Floor (>2.0x is attractive)`}
               >
                 <div
@@ -624,7 +624,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 >
                   {t.asymmetry.asymmetrySkew}
                 </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-white">
+                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-foreground">
                   {riskReward.toFixed(2)}x
                 </div>
               </div>
@@ -634,21 +634,21 @@ export const Cockpit: React.FC<CockpitProps> = ({
       })()}
 
       {/* 3. Shock Sliders with Tabbed View (Eliminates Vertical Scroll Fatigue) */}
-      <div className="glass-panel flex flex-col gap-3.5 rounded-2xl border border-white/[0.08] p-4 shadow-xl sm:p-4.5">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+      <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border p-4 sm:p-4.5">
+        <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
           <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
             <Sliders className="size-3.5 text-accent" />
             <span>{t.upstreamTitle}</span>
           </div>
           {/* Tab switcher: Volume vs Margins vs All */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/90 p-0.5 font-mono text-[10px]">
+          <div className="flex items-center rounded-lg border border-border bg-surface-0/90 p-0.5 font-mono text-[10px]">
             <button
               type="button"
               onClick={() => setActiveSliderTab("volume")}
               className={`rounded-md px-2 py-0.5 font-medium transition-all ${
                 activeSliderTab === "volume"
                   ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               {t.sliderTabs.volume}
@@ -659,7 +659,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               className={`rounded-md px-2 py-0.5 font-medium transition-all ${
                 activeSliderTab === "margins"
                   ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               {t.sliderTabs.margins}
@@ -670,7 +670,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
               className={`rounded-md px-2 py-0.5 font-medium transition-all ${
                 activeSliderTab === "all"
                   ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               {t.sliderTabs.all}
@@ -694,7 +694,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   ? "text-fintech-green bg-fintech-greenGlow/15 border-fintech-green/30"
                   : currentVal < 0
                     ? "text-fintech-red bg-fintech-redGlow/15 border-fintech-red/30"
-                    : "text-slate-300 bg-surface-2 border-white/[0.08]";
+                    : "text-slate-300 bg-surface-2 border-border/60";
 
               return (
                 <div key={driver.id} className="flex flex-col gap-1.5">
@@ -789,7 +789,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
         {/* Cost & Margins Controls */}
         {(activeSliderTab === "margins" || activeSliderTab === "all") && (
           <div
-            className={`flex flex-col gap-3.5 ${activeSliderTab === "all" ? "border-t border-white/[0.08] pt-3.5" : ""}`}
+            className={`flex flex-col gap-3.5 ${activeSliderTab === "all" ? "border-t border-border/60 pt-3.5" : ""}`}
           >
             <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-300">
               {t.accountingTitle}
@@ -845,7 +845,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                           ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
                           : (stressParams.grossMarginBpsDelta ?? 0) < 0
                             ? "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
-                            : "border-white/[0.08] bg-surface-2 text-slate-300"
+                            : "border-border/60 bg-surface-2 text-slate-300"
                       }`}
                       title="Click to type exact bps"
                     >
@@ -927,7 +927,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                           ? "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
                           : (stressParams.fixedOpexShiftPct ?? 0) < 0
                             ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
-                            : "border-white/[0.08] bg-surface-2 text-slate-300"
+                            : "border-border/60 bg-surface-2 text-slate-300"
                       }`}
                       title="Click to type exact percentage"
                     >
@@ -962,7 +962,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
         )}
 
         {/* Baseline Metadata Pills */}
-        <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5 font-mono text-[11px] tabular-nums text-slate-400">
+        <div className="flex items-center justify-between rounded-xl border border-border bg-surface-0/80 p-2.5 font-mono text-[11px] tabular-nums text-slate-400">
           <span>
             {t.metadata.baseRev}: {formatBillions(baseline.baseRevenueBillions)}
           </span>
@@ -979,7 +979,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
       {facts.oneTimeItems && facts.oneTimeItems.length > 0 && (
         <div
           ref={guardrailRef}
-          className="glass-panel bg-fintech-amberGlow/5 flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 p-3.5 shadow-lg sm:p-4"
+          className="glass-panel bg-fintech-amberGlow/5 shadow-xs flex flex-col gap-2 rounded-2xl border border-fintech-amber/30 p-3.5 sm:p-4"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-fintech-amber">
@@ -989,7 +989,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={handleToggleGuardrail}
-              className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-2/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-300 shadow-sm transition-colors hover:border-accent/40 hover:text-white"
+              className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:text-foreground"
               title={
                 isGuardrailOpen
                   ? t.guardrail.toggleHide

@@ -102,14 +102,14 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         </div>
       </div>
 
-      {/* Live Weighted Fair Value Summary Cards */}
-      <div className="grid grid-cols-1 gap-3.5 md:grid-cols-3">
-        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
+      {/* Live Weighted Fair Value Summary Strip */}
+      <div className="glass-panel shadow-xs grid grid-cols-1 divide-y divide-border/60 overflow-hidden rounded-2xl border border-border bg-surface-1/90 md:grid-cols-3 md:divide-x md:divide-y-0">
+        <div className="flex flex-col justify-between p-4">
           <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
             {t.wfv}
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-white sm:text-3xl">
+            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-foreground sm:text-3xl">
               {formatCurrency(weightedFairValue, 2)}
             </span>
             <span
@@ -124,12 +124,12 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           </div>
         </div>
 
-        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
+        <div className="flex flex-col justify-between p-4">
           <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
             {t.consensusTarget}
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-white sm:text-3xl">
+            <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-foreground sm:text-3xl">
               {consensusTarget ? formatCurrency(consensusTarget, 2) : "N/A"}
             </span>
             {consensusTarget > 0 && (
@@ -143,7 +143,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           </div>
         </div>
 
-        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border p-4">
+        <div className="flex flex-col justify-between p-4">
           <div className="flex items-center justify-between gap-1">
             <span className="font-mono text-xs font-medium uppercase tracking-wider text-slate-400">
               {t.alphaConsensus}
@@ -223,13 +223,13 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
           return (
             <div
               key={scenario.name || idx}
-              className={`glass-panel flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all duration-200 ${cardBorderCls}`}
+              className={`glass-panel shadow-xs flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all duration-200 ${cardBorderCls}`}
             >
               {/* Card Header: Name & Upside Pill */}
               <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-3">
                 <div className="flex items-center gap-2">
                   <Icon className={`size-4 ${iconColorCls}`} />
-                  <span className="text-sm font-bold tracking-tight text-white">
+                  <span className="text-sm font-bold tracking-tight text-foreground">
                     {scenario.name}
                   </span>
                 </div>
@@ -251,7 +251,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                   {t.targetPrice}
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-3xl font-black tabular-nums tracking-tight text-white xl:text-4xl">
+                  <span className="font-mono text-3xl font-black tabular-nums tracking-tight text-foreground xl:text-4xl">
                     {formatCurrency(fairValue, 2)}
                   </span>
                   <span className="font-mono text-[11px] tabular-nums text-slate-400">
@@ -264,7 +264,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               {/* Interactive Sliders & Inputs Container */}
               <div className="flex flex-col gap-3">
                 {/* Probability Slider & Numeric Input */}
-                <div className="flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-surface-0/80 p-3">
+                <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface-0/80 p-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-medium text-slate-400">
                       {t.weight}
@@ -282,7 +282,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                               Math.round(parseFloat(e.target.value) || 0) / 100,
                           })
                         }
-                        className="w-14 rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                        className="w-14 rounded border border-border bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-foreground focus:border-accent focus:outline-none"
                       />
                       <span className="text-xs text-slate-400">%</span>
                     </div>
@@ -305,7 +305,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
                 {/* 2-Column EPS & Multiple Inline Inputs */}
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
+                  <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface-0/80 p-2.5">
                     <span className="font-mono text-[10px] uppercase text-slate-400">
                       {t.fwdEps}
                     </span>
@@ -322,12 +322,12 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                             forwardEps: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                        className="w-full rounded border border-border bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-foreground focus:border-accent focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-surface-0/80 p-2.5">
+                  <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface-0/80 p-2.5">
                     <span className="font-mono text-[10px] uppercase text-slate-400">
                       {t.exitPe}
                     </span>
@@ -341,7 +341,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                             multiple: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full rounded border border-white/[0.12] bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-white focus:border-accent focus:outline-none"
+                        className="w-full rounded border border-border bg-surface-1 px-1.5 py-0.5 text-right font-mono text-xs font-bold tabular-nums text-foreground focus:border-accent focus:outline-none"
                       />
                       <span className="font-mono text-xs text-slate-400">
                         x
@@ -352,7 +352,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               </div>
 
               {/* Key Qualitative Assumptions Bullet List */}
-              <div className="flex flex-1 flex-col gap-2 border-t border-white/[0.06] pt-2">
+              <div className="flex flex-1 flex-col gap-2 border-t border-border/60 pt-2">
                 <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   {t.assumptionsTitle}
                 </span>
@@ -374,12 +374,10 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
       {/* Integrated Sensitivity Analysis Section */}
       {sensitivityData && sensitivityData.length > 0 && (
-        <div className="glass-panel mt-2 flex flex-col gap-4 rounded-2xl border border-white/[0.08] p-5 shadow-xl sm:p-6">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-                <Activity className="size-4" />
-              </div>
+        <div className="glass-panel shadow-xs mt-2 flex flex-col gap-4 rounded-2xl border border-border p-5 sm:p-6">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Activity className="size-4 text-accent" />
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
                   {t.sensitivityTitle}
@@ -420,16 +418,16 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               return (
                 <div
                   key={scenario.name || sIdx}
-                  className={`flex flex-col justify-between gap-3.5 rounded-2xl border p-4 shadow-lg transition-all sm:p-4.5 ${colBorderCls}`}
+                  className={`shadow-xs flex flex-col justify-between gap-3.5 rounded-2xl border p-4 transition-all sm:p-4.5 ${colBorderCls}`}
                 >
-                  <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
                     <div className="flex items-center gap-2">
                       <div
                         className={`flex items-center justify-center rounded-md border p-1 ${badgeCls}`}
                       >
                         <Icon className="size-3.5" />
                       </div>
-                      <span className="text-xs font-extrabold tracking-wide text-white">
+                      <span className="text-xs font-extrabold tracking-wide text-foreground">
                         {scenario.name}
                       </span>
                     </div>
@@ -439,13 +437,13 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                   </div>
 
                   {/* Clean List of Parameter Sensitivities (Replaces Cluttered Cards) */}
-                  <div className="flex flex-col divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.06] bg-surface-0/70">
+                  <div className="flex flex-col divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-0/70">
                     {items.map((it, idx) => {
                       const isPositive = it.fairValueDelta >= 0;
                       return (
                         <div
                           key={idx}
-                          className="flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors hover:bg-white/[0.02]"
+                          className="flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors hover:bg-surface-2/40"
                         >
                           <div className="flex flex-col gap-0.5">
                             <span className="text-xs font-semibold text-slate-200">
@@ -477,18 +475,16 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
       )}
 
       {/* Valuation Revision Ledger (Immutable Event-Driven Audit Trail) */}
-      <div className="glass-panel flex flex-col gap-4 rounded-2xl border border-white/[0.08] p-5 shadow-xl sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-              <History className="size-4" />
-            </div>
+      <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
+          <div className="flex items-center gap-2">
+            <History className="size-4 text-accent" />
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
                   {t.revisionsLedgerTitle}
                 </h4>
-                <span className="rounded-full border border-white/[0.08] bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">
                   {revisions.length}
                 </span>
               </div>
@@ -500,11 +496,11 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
         </div>
 
         {revisions.length === 0 ? (
-          <div className="rounded-xl border border-white/[0.06] bg-surface-0/60 p-6 text-center font-mono text-xs text-slate-400">
+          <div className="rounded-xl border border-border bg-surface-0/60 p-6 text-center font-mono text-xs text-slate-400">
             {t.revisionsEmpty}
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.08] bg-surface-0/80 shadow-inner">
+          <div className="flex flex-col divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-0/80 shadow-inner">
             {revisions.map((rev) => {
               const deltaNum = Number(rev.wfvDeltaPct);
               const deltaPct = isNaN(deltaNum) ? 0 : deltaNum;
@@ -516,7 +512,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               return (
                 <div
                   key={rev.id}
-                  className="flex flex-col gap-2 p-3.5 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:justify-between sm:p-4"
+                  className="flex flex-col gap-2 p-3.5 transition-colors hover:bg-surface-2/40 sm:flex-row sm:items-center sm:justify-between sm:p-4"
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-1 pr-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -524,12 +520,12 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         <Clock className="size-3" />
                         {dateStr}
                       </span>
-                      <span className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-slate-300">
+                      <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-slate-300">
                         {rev.triggerType}
                       </span>
                     </div>
 
-                    <h5 className="truncate text-xs font-bold text-white sm:text-sm">
+                    <h5 className="truncate text-xs font-bold text-foreground sm:text-sm">
                       {rev.headline}
                     </h5>
 
@@ -546,7 +542,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         {formatCurrency(Number(rev.priorWfv), 2)}
                       </span>
                       <ArrowRight className="size-3 text-slate-500" />
-                      <span className="font-bold text-white">
+                      <span className="font-bold text-foreground">
                         {formatCurrency(Number(rev.newWfv), 2)}
                       </span>
                     </div>

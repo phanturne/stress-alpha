@@ -493,20 +493,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       return (
         <div className="glass-panel rounded-xl px-4 py-16 text-center text-slate-400">
           {watchlistOnly ? (
-            <div className="flex flex-col items-center">
-              <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
-                <Star className="size-6 fill-amber-400" />
-              </div>
-              <h3 className="mt-3 text-base font-bold text-white">
+            <div className="flex flex-col items-center gap-2">
+              <Star className="size-6 text-amber-400" />
+              <h3 className="text-base font-bold text-foreground">
                 {ts.watchlistEmptyTitle}
               </h3>
-              <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
+              <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
                 {ts.watchlistEmptyDesc}
               </p>
               <button
                 type="button"
                 onClick={() => handleToggleWatchlistOnly(false)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
               >
                 {ts.viewAllReports}
               </button>
@@ -580,18 +578,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       <Star
                         className={`size-4 ${
                           isFavorite(report.ticker || report.slug)
-                            ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                            ? "fill-amber-400 text-amber-400"
                             : "text-slate-600 group-hover:text-slate-400"
                         }`}
                       />
                     </button>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-base font-black tracking-tight text-white group-hover:text-accent">
+                        <span className="font-mono text-base font-black tracking-tight text-foreground group-hover:text-accent">
                           {report.ticker || report.slug.split("-")[0]}
                         </span>
                         {report.quarter && (
-                          <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                          <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
                             {report.quarter}
                           </span>
                         )}
@@ -606,9 +604,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   <div className="flex shrink-0 items-center gap-1.5">
                     {report.moatRating && (
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                           report.moatRating.toLowerCase() === "wide"
-                            ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
+                            ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
                             : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
                         }`}
                         title={ts.colMoatTooltip}
@@ -617,7 +615,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         <span>{report.moatRating}</span>
                         {report.moatTrend && (
                           <span
-                            className="font-mono text-[9px]"
+                            className="font-mono text-[11px]"
                             title={`${report.moatTrend} Moat Trend`}
                           >
                             {report.moatTrend === "Widening"
@@ -640,7 +638,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                           pillars={report.snowflakePillars}
                           size={22}
                         />
-                        <span className="font-mono text-xs font-bold text-white">
+                        <span className="font-mono text-xs font-bold text-foreground">
                           {report.snowflakeScore}
                         </span>
                       </div>
@@ -651,7 +649,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 {/* Pricing Grid */}
                 <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-lg border border-border bg-surface-0/60 p-2.5">
                   <div title={ts.colPriceTooltip}>
-                    <div className="text-[10px] font-medium text-slate-400">
+                    <div className="text-[11px] font-medium text-slate-400">
                       {ts.colPrice}
                     </div>
                     <div className="font-mono text-xs font-bold text-slate-200">
@@ -659,7 +657,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                     </div>
                   </div>
                   <div title={ts.colBaseFairValueTooltip}>
-                    <div className="text-[10px] font-medium text-slate-400">
+                    <div className="text-[11px] font-medium text-slate-400">
                       {ts.colBaseFairValue}
                     </div>
                     <div className="font-mono text-xs font-semibold text-slate-300">
@@ -667,7 +665,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                     </div>
                     {baseFv > 0 && (
                       <div
-                        className={`font-mono text-[10px] ${
+                        className={`font-mono text-[11px] ${
                           baseUpside >= 0 ? "text-emerald-400" : "text-rose-400"
                         }`}
                       >
@@ -680,15 +678,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                     className="text-right"
                     title={ts.colWeightedFairValueTooltip}
                   >
-                    <div className="text-[10px] font-bold text-accent">
+                    <div className="text-[11px] font-bold text-accent">
                       {ts.colWeightedFairValue}
                     </div>
-                    <div className="font-mono text-xs font-extrabold text-white">
+                    <div className="font-mono text-xs font-extrabold text-foreground">
                       {wfv > 0 ? formatCurrency(wfv) : "—"}
                     </div>
                     {wfv > 0 && (
                       <div
-                        className={`py-0.2 inline-flex items-center gap-0.5 rounded px-1 font-mono text-[10px] font-bold ${
+                        className={`py-0.2 inline-flex items-center gap-0.5 rounded px-1 font-mono text-[11px] font-bold ${
                           isPositive ? "text-green-400" : "text-rose-400"
                         }`}
                       >
@@ -716,11 +714,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       />
                       <div
                         style={{ left: `${pricePos}%` }}
-                        className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                        className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
                         title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
                       />
                     </div>
-                    <div className="flex items-center justify-between font-mono text-[9px] tabular-nums text-slate-500">
+                    <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
                       <span>${Math.round(bear)}</span>
                       <span className="flex items-center gap-1 text-slate-400">
                         <span className="size-1.5 rounded-full bg-sky-400" />$
@@ -734,7 +732,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
               {/* Secondary stats & quick actions footer */}
               <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5 text-[11px]">
-                <div className="flex items-center gap-2.5 font-mono text-[10px] text-slate-400">
+                <div className="flex items-center gap-2.5 font-mono text-[11px] text-slate-400">
                   {report.operatingMarginPct !== undefined && (
                     <span>
                       OpM:{" "}
@@ -760,7 +758,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       e.stopPropagation();
                       onSelectReport(report.slug, "memo");
                     }}
-                    className="rounded px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+                    className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
                   >
                     {ts.openMemo}
                   </button>
@@ -770,7 +768,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       e.stopPropagation();
                       onSelectReport(report.slug, "cockpit");
                     }}
-                    className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[10px] font-bold text-accent transition-colors hover:bg-accent/25"
+                    className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[11px] font-bold text-accent transition-colors hover:bg-accent/25"
                   >
                     {ts.openCockpit}
                   </button>
@@ -790,7 +788,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         <div>
           <div className="flex items-center gap-2.5">
             <BarChart3 className="size-5 text-accent" />
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               {ts.title}
             </h1>
           </div>
@@ -810,13 +808,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
+      {/* KPI Telemetry Strip */}
       {!isWatchlistEmpty && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+        <div className="glass-panel shadow-xs grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/90 sm:grid-cols-4 sm:divide-x sm:divide-y-0">
           {/* Coverage Count */}
-          <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5 sm:p-4">
+          <div className="p-3.5 sm:p-4">
             <div className="text-slate-400">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {ts.statsCoverage}
               </span>
             </div>
@@ -827,7 +825,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               </>
             ) : (
               <>
-                <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
                   {stats.count}
                 </div>
                 <p className="mt-1 text-[11px] text-slate-400">
@@ -838,9 +836,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           </div>
 
           {/* Avg Upside */}
-          <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5 sm:p-4">
+          <div className="p-3.5 sm:p-4">
             <div className="text-slate-400">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {ts.statsAvgUpside}
               </span>
             </div>
@@ -870,9 +868,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
           {/* Highest Upside Pick */}
           <div
-            className={`glass-panel shadow-xs rounded-xl border border-border p-3.5 sm:p-4 ${
+            className={`p-3.5 sm:p-4 ${
               stats.topPick && !isLoading
-                ? "cursor-pointer transition-all hover:border-accent/40 hover:bg-surface-2/40"
+                ? "cursor-pointer transition-colors hover:bg-surface-2/40"
                 : ""
             }`}
             onClick={() =>
@@ -889,7 +887,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             }
           >
             <div className="text-slate-400">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {ts.statsTopPick}
               </span>
             </div>
@@ -901,7 +899,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             ) : (
               <>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-black text-white sm:text-3xl">
+                  <span className="font-mono text-2xl font-black text-foreground sm:text-3xl">
                     {stats.topPick?.ticker || "—"}
                   </span>
                   {stats.topPick?.upsidePct !== undefined && (
@@ -925,9 +923,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
           </div>
 
           {/* Wide Moat Share */}
-          <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5 sm:p-4">
+          <div className="p-3.5 sm:p-4">
             <div className="text-slate-400">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[11px]">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {ts.statsWideMoat}
               </span>
             </div>
@@ -938,7 +936,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               </>
             ) : (
               <>
-                <div className="mt-2 font-mono text-2xl font-black text-white sm:text-3xl">
+                <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
                   {stats.count > 0
                     ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
                     : "0%"}
@@ -963,12 +961,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={ts.searchPlaceholder}
-              className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
+              className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-foreground"
               >
                 ✕
               </button>
@@ -985,7 +983,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
                   watchlistOnly
                     ? "shadow-xs border-amber-500/50 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
-                    : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-white"
+                    : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-foreground"
                 }`}
                 title={ts.filterWatchlist}
               >
@@ -999,7 +997,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 <span>{ts.filterWatchlist}</span>
                 {watchlistCount > 0 && (
                   <span
-                    className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
+                    className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] ${
                       watchlistOnly
                         ? "bg-amber-400 font-bold text-slate-950"
                         : "bg-surface-3 text-slate-400"
@@ -1019,7 +1017,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`rounded px-2.5 py-1 transition-colors ${
                   moatFilter === "all"
                     ? "bg-accent/20 font-semibold text-accent"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.allMoatsTooltip}
               >
@@ -1031,7 +1029,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`rounded px-2.5 py-1 transition-colors ${
                   moatFilter === "wide"
                     ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.wideMoatTooltip}
               >
@@ -1043,7 +1041,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`rounded px-2.5 py-1 transition-colors ${
                   moatFilter === "narrow"
                     ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.narrowMoatTooltip}
               >
@@ -1057,9 +1055,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 type="button"
                 onClick={() => setUpsideFilter("all")}
                 className={`rounded px-2.5 py-1 transition-colors ${
-                  upsideFilter === "all"
+                  moatFilter === "all"
                     ? "bg-accent/20 font-semibold text-accent"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.filterAllTooltip}
               >
@@ -1071,7 +1069,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`rounded px-2.5 py-1 transition-colors ${
                   upsideFilter === "undervalued"
                     ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.filterUndervaluedTooltip}
               >
@@ -1083,7 +1081,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`rounded px-2.5 py-1 transition-colors ${
                   upsideFilter === "high-upside"
                     ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.filterHighUpsideTooltip}
               >
@@ -1102,7 +1100,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
                   viewMode === "cards"
                     ? "bg-accent/20 font-bold text-accent"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.viewCards}
               >
@@ -1115,7 +1113,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
                   viewMode === "table"
                     ? "bg-accent/20 font-bold text-accent"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={ts.viewTable}
               >
@@ -1154,7 +1152,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             <Star className="size-6 fill-amber-400" />
           </div>
           <div className="space-y-1.5">
-            <h3 className="font-mono text-lg font-bold text-white sm:text-xl">
+            <h3 className="font-mono text-lg font-bold text-foreground sm:text-xl">
               {ts.watchlistEmptyTitle}
             </h3>
             <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-400 sm:text-sm">
@@ -1173,8 +1171,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         renderCardsView()
       ) : (
         <div className="glass-panel overflow-hidden rounded-xl border border-border">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm">
+          <div className="custom-scrollbar overflow-x-auto">
+            <table className="w-full min-w-[1200px] text-left text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-2/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {/* Watchlist Star */}
@@ -1188,15 +1186,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Ticker & Company */}
                   <th
                     onClick={() => handleSort("ticker")}
-                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-foreground"
                     title={ts.colTickerTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colTicker}</span>
                       {renderSortIcon("ticker")}
                     </div>
-                    <div className="pointer-events-none absolute left-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute left-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colTicker}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1208,15 +1206,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Moat */}
                   <th
                     onClick={() => handleSort("moat")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-foreground"
                     title={ts.colMoatTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colMoat}</span>
                       {renderSortIcon("moat")}
                     </div>
-                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colMoat}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1228,15 +1226,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Snowflake 30-Point Audit Radar */}
                   <th
                     onClick={() => handleSort("snowflake")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-foreground"
                     title={ts.colSnowflakeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colSnowflake}</span>
                       {renderSortIcon("snowflake")}
                     </div>
-                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colSnowflake}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1248,15 +1246,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Price */}
                   <th
                     onClick={() => handleSort("price")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colPriceTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colPrice}</span>
                       {renderSortIcon("price")}
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-52 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-52 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colPrice}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1268,15 +1266,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Analyst Consensus Target */}
                   <th
                     onClick={() => handleSort("analystTarget")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colAnalystTargetTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colAnalystTarget}</span>
                       {renderSortIcon("analystTarget")}
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colAnalystTarget}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1288,15 +1286,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Base Fair Value */}
                   <th
                     onClick={() => handleSort("baseUpside")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colBaseFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colBaseFairValue}</span>
                       {renderSortIcon("baseUpside")}
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colBaseFairValue}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1308,15 +1306,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Weighted Fair Value & Upside */}
                   <th
                     onClick={() => handleSort("upside")}
-                    className="group/th relative cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-white"
+                    className="group/th relative cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-foreground"
                     title={ts.colWeightedFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colWeightedFairValue}</span>
                       {renderSortIcon("upside")}
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-64 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-64 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colWeightedFairValue}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1327,17 +1325,17 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                   {/* Valuation Spectrum / Stress Range */}
                   <th
-                    className="group/th relative hidden min-w-[170px] max-w-[210px] whitespace-nowrap p-3 lg:table-cell"
+                    className="group/th relative min-w-[170px] max-w-[210px] whitespace-nowrap p-3"
                     title={ts.rangeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colValuationRange}</span>
-                      <span className="hidden font-mono text-[9px] font-normal lowercase tracking-normal text-slate-500 xl:inline">
+                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-500 sm:inline">
                         {ts.rangeBearBullHint}
                       </span>
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colValuationRange}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1349,15 +1347,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Operating Margin */}
                   <th
                     onClick={() => handleSort("opMargin")}
-                    className="group/th relative hidden cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-white xl:table-cell"
+                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colOperatingMarginTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colOperatingMargin}</span>
                       {renderSortIcon("opMargin")}
                     </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colOperatingMargin}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1369,15 +1367,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Revenue Growth */}
                   <th
                     onClick={() => handleSort("revGrowth")}
-                    className="group/th relative hidden cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-white xl:table-cell"
+                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-foreground"
                     title={ts.colRevenueGrowthTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>{ts.colRevenueGrowth}</span>
                       {renderSortIcon("revGrowth")}
                     </div>
-                    <div className="pointer-events-none absolute right-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-2xl backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-white">
+                    <div className="pointer-events-none absolute right-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                      <div className="font-semibold text-foreground">
                         {ts.colRevenueGrowth}
                       </div>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
@@ -1388,7 +1386,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-white/[0.05]">
+              <tbody className="divide-y divide-border/60">
                 {isLoading ? (
                   <>
                     {SKELETON_ROWS.map((row, idx) => (
@@ -1454,7 +1452,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Valuation Spectrum / Stress Range */}
-                        <td className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell">
+                        <td className="min-w-[170px] max-w-[210px] px-3 py-2.5">
                           <div className="space-y-1.5">
                             <div className="flex justify-between">
                               <Skeleton className="h-2 w-8" />
@@ -1465,12 +1463,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Operating Margin */}
-                        <td className="hidden whitespace-nowrap p-2.5 text-right xl:table-cell">
+                        <td className="whitespace-nowrap p-2.5 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
                         </td>
 
                         {/* Revenue Growth */}
-                        <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right xl:table-cell">
+                        <td className="whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
                         </td>
                       </tr>
@@ -1483,20 +1481,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       className="px-4 py-16 text-center text-slate-400"
                     >
                       {watchlistOnly ? (
-                        <div className="flex flex-col items-center">
-                          <div className="flex size-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-glow">
-                            <Star className="size-6 fill-amber-400" />
-                          </div>
-                          <h3 className="mt-3 text-base font-bold text-white">
+                        <div className="flex flex-col items-center gap-2">
+                          <Star className="size-6 text-amber-400" />
+                          <h3 className="text-base font-bold text-foreground">
                             {ts.watchlistEmptyTitle}
                           </h3>
-                          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-slate-400">
+                          <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
                             {ts.watchlistEmptyDesc}
                           </p>
                           <button
                             type="button"
                             onClick={() => handleToggleWatchlistOnly(false)}
-                            className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
                           >
                             {ts.viewAllReports}
                           </button>
@@ -1573,7 +1569,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                             <Star
                               className={`size-4 transition-colors ${
                                 isFavorite(report.ticker || report.slug)
-                                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
+                                  ? "fill-amber-400 text-amber-400"
                                   : "text-slate-600 hover:text-amber-400"
                               }`}
                             />
@@ -1583,16 +1579,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         {/* Ticker & Company */}
                         <td className="py-2.5 pl-2 pr-3">
                           <div className="flex items-center gap-2.5">
-                            <span className="shadow-xs flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-white group-hover:border-accent/50 group-hover:text-accent">
+                            <span className="shadow-xs flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent">
                               {report.ticker || report.slug.split("-")[0]}
                             </span>
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-white group-hover:text-accent">
+                                <span className="font-bold text-foreground group-hover:text-accent">
                                   {report.ticker || report.slug}
                                 </span>
                                 {report.quarter && (
-                                  <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[9px] font-medium text-slate-400">
+                                  <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
                                     {report.quarter}
                                   </span>
                                 )}
@@ -1609,9 +1605,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                           {report.moatRating ? (
                             <div className="flex items-center gap-1.5">
                               <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[11px] ${
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                                   report.moatRating.toLowerCase() === "wide"
-                                    ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
+                                    ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
                                     : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
                                 }`}
                               >
@@ -1620,7 +1616,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               </span>
                               {report.moatTrend && (
                                 <span
-                                  className={`hidden font-mono text-[10px] font-bold sm:inline ${
+                                  className={`hidden font-mono text-[11px] font-bold sm:inline ${
                                     report.moatTrend === "Widening"
                                       ? "text-emerald-400"
                                       : report.moatTrend === "Narrowing"
@@ -1661,15 +1657,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               />
                               <div className="flex flex-col">
                                 <div className="flex items-baseline gap-0.5">
-                                  <span className="font-mono text-xs font-bold text-white">
+                                  <span className="font-mono text-xs font-bold text-foreground">
                                     {report.snowflakeScore}
                                   </span>
-                                  <span className="font-mono text-[9px] text-slate-500">
+                                  <span className="font-mono text-[11px] text-slate-500">
                                     /30
                                   </span>
                                 </div>
                                 <span
-                                  className={`font-mono text-[9px] font-semibold uppercase tracking-wider ${
+                                  className={`font-mono text-[11px] font-semibold uppercase tracking-wider ${
                                     report.snowflakeScore >= 24
                                       ? "text-emerald-400"
                                       : report.snowflakeScore >= 18
@@ -1689,7 +1685,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Current Stock Price */}
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-white sm:text-sm">
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
                           {price > 0 ? formatCurrency(price) : "—"}
                         </td>
 
@@ -1710,7 +1706,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                               <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
                                 {formatCurrency(report.analystTarget)}
                               </div>
-                              <div className="flex items-center justify-end gap-1 font-mono text-[10px] tabular-nums sm:text-[11px]">
+                              <div className="flex items-center justify-end gap-1 font-mono text-[11px] tabular-nums">
                                 {report.analystUpsidePct !== undefined && (
                                   <span
                                     className={
@@ -1724,7 +1720,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   </span>
                                 )}
                                 {report.analystRating && (
-                                  <span className="hidden text-[9px] text-slate-500 sm:inline">
+                                  <span className="hidden text-[11px] text-slate-500 sm:inline">
                                     • {report.analystRating}
                                   </span>
                                 )}
@@ -1743,7 +1739,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 {formatCurrency(baseFv)}
                               </div>
                               <div
-                                className={`font-mono text-[10px] font-medium tabular-nums sm:text-[11px] ${
+                                className={`font-mono text-[11px] font-medium tabular-nums ${
                                   baseUpside >= 0
                                     ? "text-emerald-400"
                                     : "text-rose-400"
@@ -1762,11 +1758,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono">
                           {wfv > 0 ? (
                             <div>
-                              <div className="font-mono text-xs font-bold tabular-nums text-white sm:text-sm">
+                              <div className="font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
                                 {formatCurrency(wfv)}
                               </div>
                               <span
-                                className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums sm:text-[11px] ${
+                                className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
                                   isPositive
                                     ? "border border-green-500/30 bg-green-500/10 text-green-400"
                                     : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
@@ -1788,7 +1784,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                         {/* Stress Range Bar */}
                         <td
-                          className="hidden min-w-[170px] max-w-[210px] px-3 py-2.5 lg:table-cell"
+                          className="min-w-[170px] max-w-[210px] px-3 py-2.5"
                           title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
                         >
                           {price > 0 && bull > bear ? (
@@ -1807,18 +1803,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                 {/* Current Price Marker */}
                                 <div
                                   style={{ left: `${pricePos}%` }}
-                                  className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                                  className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
                                   title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
                                 />
                               </div>
-                              <div className="flex items-center justify-between font-mono text-[10px] tabular-nums text-slate-500">
+                              <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
                                 <span
                                   title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
                                 >
                                   ${Math.round(bear)}
                                 </span>
                                 <span
-                                  className="flex items-center gap-1 font-mono text-[9px] text-slate-400"
+                                  className="flex items-center gap-1 font-mono text-[11px] text-slate-400"
                                   title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
                                 >
                                   <span className="size-1.5 rounded-full bg-sky-400" />
@@ -1837,7 +1833,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Operating Margin */}
-                        <td className="hidden whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm xl:table-cell">
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
                           {report.operatingMarginPct !== undefined ? (
                             <span>{report.operatingMarginPct.toFixed(1)}%</span>
                           ) : (
@@ -1846,7 +1842,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Revenue Growth */}
-                        <td className="hidden whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm xl:table-cell">
+                        <td className="whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm">
                           {report.revenueGrowthPct !== undefined ? (
                             <span
                               className={

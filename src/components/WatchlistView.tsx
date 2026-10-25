@@ -320,18 +320,16 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
     let badgeClass = "border-slate-500/30 bg-slate-500/10 text-slate-300";
     if (tier === "extreme_divergence") {
-      badgeClass =
-        "border-fuchsia-500/30 bg-fuchsia-500/15 text-fuchsia-300 shadow-[0_0_12px_rgba(217,70,239,0.15)]";
+      badgeClass = "border-fuchsia-500/30 bg-fuchsia-500/15 text-fuchsia-300";
     } else if (tier === "high_conviction_alpha") {
-      badgeClass =
-        "border-emerald-500/30 bg-emerald-500/15 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.15)]";
+      badgeClass = "border-emerald-500/30 bg-emerald-500/15 text-emerald-300";
     } else if (tier === "moderate_alpha") {
       badgeClass = "border-sky-500/30 bg-sky-500/15 text-sky-300";
     }
 
     return (
       <span
-        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wide ${badgeClass}`}
+        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide ${badgeClass}`}
       >
         <Sparkles className="size-2.5 shrink-0" />
         <span>{label}</span>
@@ -351,8 +349,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-sm">
-              <Star className="size-5 fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <div className="shadow-xs flex size-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
+              <Star className="size-5 fill-amber-400 text-amber-400" />
             </div>
             <div>
               <h1 className="font-mono text-xl font-black tracking-tight text-white sm:text-2xl">
@@ -368,14 +366,14 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
         {/* View Mode Segmented Switcher */}
         {tickerGroups.length > 0 && (
           <div className="flex items-center gap-2 self-start sm:self-center">
-            <div className="flex items-center rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 shadow-sm">
+            <div className="shadow-xs flex items-center rounded-xl border border-border bg-surface-1/80 p-1">
               <button
                 type="button"
                 onClick={() => handleSetViewMode("cards")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   viewMode === "cards"
-                    ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-                    : "text-slate-400 hover:text-white"
+                    ? "shadow-xs bg-surface-3 font-bold text-accent ring-1 ring-border"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={tw.viewCards}
               >
@@ -387,8 +385,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                 onClick={() => handleSetViewMode("table")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   viewMode === "table"
-                    ? "bg-surface-3 font-bold text-accent shadow-sm ring-1 ring-white/10"
-                    : "text-slate-400 hover:text-white"
+                    ? "shadow-xs bg-surface-3 font-bold text-accent ring-1 ring-border"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
                 title={tw.viewTable}
               >
@@ -402,24 +400,24 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
       {/* Top Portfolio Summary KPI Strip (when watchlist has items) */}
       {tickerGroups.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="glass-panel shadow-xs grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/90 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
           {/* 1. Tracked Equities */}
-          <div className="glass-panel flex flex-col justify-between rounded-xl border border-white/[0.08] p-3.5 shadow-sm">
+          <div className="flex flex-col justify-between p-3.5">
             <span className="text-[11px] font-medium text-slate-400">
               {tw.statsTracked}
             </span>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-black text-white">
+              <span className="font-mono text-2xl font-black text-foreground">
                 {portfolioStats.trackedCount}
               </span>
-              <span className="font-mono text-[10px] text-amber-400">
+              <span className="font-mono text-[11px] text-amber-400">
                 ★ Core
               </span>
             </div>
           </div>
 
           {/* 2. Avg Fair Value Upside */}
-          <div className="glass-panel flex flex-col justify-between rounded-xl border border-white/[0.08] p-3.5 shadow-sm">
+          <div className="flex flex-col justify-between p-3.5">
             <span className="text-[11px] font-medium text-slate-400">
               {tw.statsAvgUpside}
             </span>
@@ -438,14 +436,14 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
           </div>
 
           {/* 3. Conviction Leader */}
-          <div className="glass-panel flex flex-col justify-between rounded-xl border border-white/[0.08] p-3.5 shadow-sm">
+          <div className="flex flex-col justify-between p-3.5">
             <span className="text-[11px] font-medium text-slate-400">
               {tw.statsConvictionLeader}
             </span>
             <div className="mt-1 flex items-baseline gap-1.5 truncate">
               {portfolioStats.convictionLeader ? (
                 <>
-                  <span className="font-mono text-lg font-black text-white">
+                  <span className="font-mono text-lg font-black text-foreground">
                     {portfolioStats.convictionLeader.ticker}
                   </span>
                   <span className="font-mono text-xs font-bold text-emerald-400">
@@ -463,24 +461,24 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
           </div>
 
           {/* 4. Wide Moat Share */}
-          <div className="glass-panel flex flex-col justify-between rounded-xl border border-white/[0.08] p-3.5 shadow-sm">
+          <div className="flex flex-col justify-between p-3.5">
             <span className="text-[11px] font-medium text-slate-400">
               {tw.statsWideMoat}
             </span>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="font-mono text-2xl font-black text-purple-300">
+              <span className="font-mono text-2xl font-black text-foreground">
                 {portfolioStats.wideMoatShare}%
               </span>
             </div>
           </div>
 
           {/* 5. Avg Snowflake Health */}
-          <div className="glass-panel col-span-2 flex flex-col justify-between rounded-xl border border-white/[0.08] p-3.5 shadow-sm sm:col-span-1">
+          <div className="col-span-2 flex flex-col justify-between p-3.5 sm:col-span-1">
             <span className="text-[11px] font-medium text-slate-400">
               {tw.statsAvgSnowflake}
             </span>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="font-mono text-2xl font-black text-cyan-300">
+              <span className="font-mono text-2xl font-black text-foreground">
                 {portfolioStats.avgSnowflake}
               </span>
               <span className="font-mono text-xs text-slate-500">/ 30</span>
@@ -491,7 +489,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
       {/* Filter and Search Bar */}
       {tickerGroups.length > 0 && (
-        <div className="glass-panel flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] p-3 sm:p-4">
+        <div className="glass-panel shadow-xs flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface-1/90 p-3 sm:p-4">
           {/* Search Input */}
           <div className="relative min-w-[220px] flex-1 sm:max-w-md">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -500,20 +498,20 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={tw.searchPlaceholder}
-              className="w-full rounded-xl border border-white/[0.08] bg-surface-1/90 py-2 pl-9 pr-3 text-xs text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full rounded-xl border border-border bg-surface-1/90 py-2 pl-9 pr-3 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
 
           {/* Moat & Divergence Filter Chips */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Moat Filter */}
-            <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-surface-1/80 p-1 text-xs">
+            <div className="flex items-center gap-1 rounded-xl border border-border bg-surface-1/80 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setMoatFilter("all")}
                 className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                   moatFilter === "all"
-                    ? "bg-surface-3 text-white"
+                    ? "bg-surface-3 text-foreground"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
@@ -549,7 +547,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
               onChange={(e) =>
                 setDivergenceFilter(e.target.value as DivergenceFilter)
               }
-              className="rounded-xl border border-white/[0.08] bg-surface-1/90 px-3 py-1.5 font-mono text-[11px] text-slate-300 focus:border-accent focus:outline-none"
+              className="rounded-xl border border-border bg-surface-1/90 px-3 py-1.5 font-mono text-[11px] text-slate-300 focus:border-accent focus:outline-none"
             >
               <option value="all">All Divergence Tiers</option>
               <option value="extreme_divergence">
@@ -573,7 +571,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="glass-panel space-y-4 rounded-2xl border border-white/[0.08] p-5"
+              className="glass-panel shadow-xs space-y-4 rounded-2xl border border-border bg-surface-1/90 p-5"
             >
               <div className="flex items-center justify-between">
                 <Skeleton className="h-6 w-24" />
@@ -588,31 +586,30 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
       {/* Empty State Experience (0 items in watchlist) */}
       {!isLoading && !isSyncing && tickerGroups.length === 0 && (
-        <div className="glass-panel mx-auto my-8 flex max-w-2xl flex-col items-center gap-6 rounded-3xl border border-white/[0.08] p-8 text-center shadow-2xl sm:p-12">
-          <div className="flex size-16 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
-            <Star className="size-8 fill-amber-400 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="font-mono text-2xl font-black tracking-tight text-white">
+        <div className="glass-panel shadow-xs mx-auto my-8 max-w-2xl rounded-2xl border border-border bg-surface-1/90 p-8 text-center sm:p-12">
+          <div className="mx-auto flex max-w-md flex-col items-center gap-3">
+            <Star className="size-8 text-amber-400" />
+            <h2 className="font-mono text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               {tw.emptyTitle}
             </h2>
-            <p className="max-w-lg text-sm leading-relaxed text-slate-400">
+            <p className="text-pretty text-sm leading-relaxed text-slate-400">
               {tw.emptyDesc}
             </p>
           </div>
 
-          <Link
-            href="/screener"
-            className="flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 font-mono text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent/90 active:scale-[0.98]"
-          >
-            <BarChart3 className="size-4" />
-            <span>{tw.exploreScreenerBtn}</span>
-          </Link>
+          <div className="mt-6 flex justify-center">
+            <Link
+              href="/screener"
+              className="shadow-xs inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
+            >
+              <BarChart3 className="size-4" />
+              <span>{tw.exploreScreenerBtn}</span>
+            </Link>
+          </div>
 
           {/* Quick-add popular recommendations */}
           {popularSuggestions.length > 0 && (
-            <div className="mt-4 w-full border-t border-white/[0.08] pt-6">
+            <div className="mt-4 w-full border-t border-border pt-6">
               <div className="mb-3 font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 {tw.quickAddSuggestions}
               </div>
@@ -624,10 +621,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       key={report.slug}
                       type="button"
                       onClick={() => toggleFavorite(symbol)}
-                      className="group flex items-center gap-2 rounded-xl border border-white/[0.08] bg-surface-1/90 px-3 py-2 text-xs transition-all hover:border-amber-500/40 hover:bg-surface-2 hover:text-white"
+                      className="group flex items-center gap-2 rounded-xl border border-border bg-surface-1/90 px-3 py-2 text-xs transition-all hover:border-amber-500/40 hover:bg-surface-2 hover:text-foreground"
                     >
                       <Plus className="size-3.5 text-amber-400 transition-transform group-hover:scale-125" />
-                      <span className="font-mono font-bold text-white">
+                      <span className="font-mono font-bold text-foreground">
                         {symbol}
                       </span>
                       {report.company && (
@@ -637,7 +634,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       )}
                       {report.upsidePct !== undefined && (
                         <span
-                          className={`font-mono text-[10px] font-bold ${
+                          className={`font-mono text-[11px] font-bold ${
                             report.upsidePct >= 0
                               ? "text-emerald-400"
                               : "text-rose-400"
@@ -658,7 +655,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
       {/* No results for current filter */}
       {!isLoading && tickerGroups.length > 0 && filteredGroups.length === 0 && (
-        <div className="glass-panel my-8 rounded-2xl border border-white/[0.08] p-8 text-center text-slate-400">
+        <div className="glass-panel shadow-xs my-8 rounded-2xl border border-border bg-surface-1/90 p-8 text-center text-slate-400">
           <p className="text-sm">No tracked equities match your filters.</p>
           <button
             type="button"
@@ -667,7 +664,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
               setMoatFilter("all");
               setDivergenceFilter("all");
             }}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] px-3 py-1.5 text-xs text-white hover:bg-surface-2"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-foreground hover:bg-surface-2"
           >
             Clear Filters
           </button>
@@ -713,7 +710,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
             return (
               <div
                 key={group.ticker}
-                className="glass-panel group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 shadow-lg transition-[border-color,background-color] duration-150 hover:border-amber-500/40 hover:bg-surface-2/60"
+                className="glass-panel shadow-xs group relative flex flex-col justify-between rounded-2xl border border-border bg-surface-1/90 p-5 transition-[border-color,background-color] duration-150 hover:border-amber-500/40 hover:bg-surface-2/60"
               >
                 <div>
                   {/* Card Header: Ticker, Company, Moat, Divergence Badge, Star */}
@@ -729,15 +726,15 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                         title={tw.removeFromWatchlist}
                         aria-label={tw.removeFromWatchlist}
                       >
-                        <Star className="size-5 fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                        <Star className="size-5 fill-amber-400 text-amber-400" />
                       </button>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-lg font-black tracking-tight text-white group-hover:text-accent">
+                          <span className="font-mono text-lg font-black tracking-tight text-foreground group-hover:text-accent">
                             {group.ticker}
                           </span>
                           {report.quarter && (
-                            <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-300">
+                            <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-slate-300">
                               {report.quarter}
                             </span>
                           )}
@@ -752,7 +749,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <div className="flex shrink-0 flex-col items-end gap-1.5">
                       {report.moatRating && (
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                             report.moatRating.toLowerCase() === "wide"
                               ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
                               : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
@@ -762,7 +759,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           <span>{report.moatRating} Moat</span>
                           {report.moatTrend && (
                             <span
-                              className="font-mono text-[9px]"
+                              className="font-mono text-[11px]"
                               title={`${report.moatTrend} Moat Trend`}
                             >
                               {report.moatTrend === "Widening"
@@ -779,8 +776,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
                   {/* Consensus Divergence Tier Ribbon */}
                   {report.divergenceClassification && (
-                    <div className="mt-3 flex items-center justify-between border-t border-white/[0.05] pt-2.5">
-                      <span className="text-[10px] font-medium text-slate-400">
+                    <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5">
+                      <span className="text-[11px] font-medium text-slate-400">
                         {tw.consensusDivergence}
                       </span>
                       {getDivergenceBadge(
@@ -791,18 +788,18 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   )}
 
                   {/* 4-Regime Pricing Telemetry Grid */}
-                  <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl border border-white/[0.06] bg-surface-0/60 p-3">
+                  <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl border border-border/60 bg-surface-0/60 p-3">
                     <div>
-                      <div className="text-[10px] font-medium text-slate-400">
+                      <div className="text-[11px] font-medium text-slate-400">
                         {tw.colPrice}
                       </div>
-                      <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                      <div className="mt-0.5 font-mono text-sm font-bold text-foreground">
                         {price > 0 ? formatCurrency(price) : "—"}
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-[10px] font-medium text-slate-400">
+                      <div className="text-[11px] font-medium text-slate-400">
                         {tw.colBaseFv}
                       </div>
                       <div className="mt-0.5 font-mono text-sm font-semibold text-slate-200">
@@ -810,7 +807,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </div>
                       {baseFv > 0 && (
                         <div
-                          className={`font-mono text-[10px] font-bold ${
+                          className={`font-mono text-[11px] font-bold ${
                             baseUpside >= 0
                               ? "text-emerald-400"
                               : "text-rose-400"
@@ -823,7 +820,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <div className="text-[10px] font-bold text-accent">
+                      <div className="text-[11px] font-bold text-accent">
                         {tw.colWfv}
                       </div>
                       <div className="mt-0.5 font-mono text-sm font-black text-accent">
@@ -831,7 +828,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </div>
                       {wfv > 0 && (
                         <div
-                          className={`inline-flex items-center gap-0.5 font-mono text-[10px] font-bold ${
+                          className={`inline-flex items-center gap-0.5 font-mono text-[11px] font-bold ${
                             isPositive ? "text-emerald-400" : "text-rose-400"
                           }`}
                         >
@@ -849,15 +846,15 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
                   {/* 4-Regime Valuation Bounds Spectrum Bar */}
                   {price > 0 && bull > bear && (
-                    <div className="mt-3.5 space-y-1.5 rounded-lg border border-white/[0.04] bg-surface-0/40 p-2.5">
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500">
+                    <div className="mt-3.5 space-y-1.5 rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
                           {tw.regimeSpectrum}
                         </span>
                         {report.analystTarget && report.analystTarget > 0 && (
-                          <span className="font-mono text-[10px] text-slate-300">
+                          <span className="font-mono text-[11px] text-slate-300">
                             Consensus:{" "}
-                            <strong className="text-white">
+                            <strong className="text-foreground">
                               ${Math.round(report.analystTarget)}
                             </strong>
                           </span>
@@ -880,11 +877,11 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                         {/* Current price marker */}
                         <div
                           style={{ left: `${pricePos}%` }}
-                          className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-accent shadow ring-2 ring-accent/30"
+                          className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
                           title={`Price: ${formatCurrency(price)}`}
                         />
                       </div>
-                      <div className="flex items-center justify-between font-mono text-[9px] tabular-nums text-slate-500">
+                      <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
                         <span>Bear ${Math.round(bear)}</span>
                         <span className="flex items-center gap-1 text-sky-400">
                           <span className="size-1.5 rounded-full bg-sky-400" />
@@ -896,14 +893,14 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   )}
 
                   {/* 5-Pillar Snowflake Radar & Score Breakdown */}
-                  <div className="mt-3.5 rounded-xl border border-white/[0.06] bg-surface-0/60 p-3">
-                    <div className="flex items-center justify-between border-b border-white/[0.05] pb-2 text-[10px]">
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="mt-3.5 rounded-xl border border-border/60 bg-surface-0/60 p-3">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-2 text-[11px]">
+                      <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {tw.snowflakeBreakdown}
                       </span>
-                      <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-white">
+                      <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
                         <span>{report.snowflakeScore ?? 0}</span>
-                        <span className="text-[10px] text-slate-500">/ 30</span>
+                        <span className="text-[11px] text-slate-500">/ 30</span>
                       </div>
                     </div>
 
@@ -919,7 +916,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </div>
 
                       {/* Right: 5 Individual Pillar Progress Bars */}
-                      <div className="flex-1 space-y-1 font-mono text-[10px]">
+                      <div className="flex-1 space-y-1 font-mono text-[11px]">
                         {/* Valuation */}
                         <div className="flex items-center justify-between gap-1.5">
                           <span className="truncate text-slate-400">
@@ -934,7 +931,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                                 className="h-full rounded-full bg-emerald-400"
                               />
                             </div>
-                            <span className="text-[9px] text-slate-300">
+                            <span className="text-[11px] text-slate-300">
                               {pillars.valuation ?? 0}/6
                             </span>
                           </div>
@@ -954,7 +951,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                                 className="h-full rounded-full bg-cyan-400"
                               />
                             </div>
-                            <span className="text-[9px] text-slate-300">
+                            <span className="text-[11px] text-slate-300">
                               {pillars.future ?? 0}/6
                             </span>
                           </div>
@@ -974,7 +971,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                                 className="h-full rounded-full bg-indigo-400"
                               />
                             </div>
-                            <span className="text-[9px] text-slate-300">
+                            <span className="text-[11px] text-slate-300">
                               {pillars.earnings ?? 0}/6
                             </span>
                           </div>
@@ -994,7 +991,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                                 className="h-full rounded-full bg-amber-400"
                               />
                             </div>
-                            <span className="text-[9px] text-slate-300">
+                            <span className="text-[11px] text-slate-300">
                               {pillars.moat ?? 0}/6
                             </span>
                           </div>
@@ -1014,7 +1011,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                                 className="h-full rounded-full bg-rose-400"
                               />
                             </div>
-                            <span className="text-[9px] text-slate-300">
+                            <span className="text-[11px] text-slate-300">
                               {pillars.resilience ?? 0}/6
                             </span>
                           </div>
@@ -1024,7 +1021,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   </div>
 
                   {/* Growth & Operating Margins */}
-                  <div className="mt-3 flex items-center justify-between rounded-lg border border-white/[0.04] bg-surface-0/40 px-3 py-2 font-mono text-[11px]">
+                  <div className="mt-3 flex items-center justify-between rounded-lg border border-border/40 bg-surface-0/40 px-3 py-2 font-mono text-[11px]">
                     <div className="flex items-center gap-1.5 text-slate-400">
                       <span>Rev Growth:</span>
                       <strong
@@ -1052,7 +1049,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   {/* Historical Quarters Pills (if multi-quarter exists) */}
                   {group.allReports.length > 1 && (
                     <div className="mt-3 space-y-1">
-                      <div className="font-mono text-[9px] uppercase tracking-wider text-slate-500">
+                      <div className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
                         {tw.quarterlyHistory} ({group.allReports.length})
                       </div>
                       <div className="flex flex-wrap items-center gap-1">
@@ -1065,10 +1062,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                               onClick={() =>
                                 onSelectReport(qRep.slug, "cockpit")
                               }
-                              className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold transition-all ${
+                              className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold transition-all ${
                                 isLatest
                                   ? "bg-accent/20 text-accent ring-1 ring-accent/30 hover:bg-accent/30"
-                                  : "bg-surface-3 text-slate-400 hover:bg-surface-2 hover:text-white"
+                                  : "bg-surface-3 text-slate-400 hover:bg-surface-2 hover:text-foreground"
                               }`}
                               title={`Open ${qRep.quarter || qRep.slug}`}
                             >
@@ -1083,7 +1080,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                 </div>
 
                 {/* Footer Action Buttons */}
-                <div className="mt-4 flex items-center justify-between border-t border-white/[0.08] pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
                   <button
                     type="button"
                     onClick={() => toggleFavorite(group.ticker)}
@@ -1098,7 +1095,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => onSelectReport(report.slug, "memo")}
-                      className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-surface-2/80 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:bg-surface-3 hover:text-white"
+                      className="flex items-center gap-1 rounded-lg border border-border bg-surface-2/80 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:bg-surface-3 hover:text-foreground"
                     >
                       <FileText className="size-3 text-slate-400" />
                       <span>{tw.openMemo}</span>
@@ -1107,7 +1104,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => onSelectReport(report.slug, "cockpit")}
-                      className="flex items-center gap-1 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-bold text-accent ring-1 ring-accent/30 transition-all hover:bg-accent/25 hover:text-white"
+                      className="flex items-center gap-1 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-bold text-accent ring-1 ring-accent/30 transition-all hover:bg-accent/25 hover:text-foreground"
                     >
                       <SlidersHorizontal className="size-3" />
                       <span>{tw.openCockpit}</span>
@@ -1122,11 +1119,11 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 
       {/* MATRIX TABLE VIEW MODE */}
       {!isLoading && viewMode === "table" && filteredGroups.length > 0 && (
-        <div className="glass-panel overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl">
+        <div className="glass-panel shadow-xs overflow-hidden rounded-2xl border border-border bg-surface-1/90">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left font-mono text-xs">
               <thead>
-                <tr className="border-b border-white/[0.08] bg-surface-1/90 text-[11px] font-semibold text-slate-400">
+                <tr className="border-b border-border bg-surface-1/90 text-[11px] font-semibold text-slate-400">
                   <th
                     className="py-3 pl-4 pr-2"
                     title={t.screener.colTickerTooltip}
@@ -1134,7 +1131,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("ticker")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>Ticker</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1147,7 +1144,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("price")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colPrice}</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1160,7 +1157,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("baseUpside")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colBaseFv}</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1173,7 +1170,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("upside")}
-                      className="flex items-center gap-1 text-accent hover:text-white"
+                      className="flex items-center gap-1 text-accent hover:text-foreground"
                     >
                       <span>{tw.colWfv}</span>
                       <ArrowUpDown className="size-3 text-accent" />
@@ -1192,7 +1189,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("divergence")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colDivergence}</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1205,7 +1202,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("opMargin")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colGrowthMargin}</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1218,7 +1215,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSort("snowflake")}
-                      className="flex items-center gap-1 hover:text-white"
+                      className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colSnowflake}</span>
                       <ArrowUpDown className="size-3 text-slate-500" />
@@ -1228,7 +1225,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   <th className="py-3 pl-2 pr-4 text-right">{tw.colActions}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.05]">
+              <tbody className="divide-y divide-border/60">
                 {filteredGroups.map((group) => {
                   const report = group.latestReport;
                   const price = report.currentPrice ?? 0;
@@ -1258,7 +1255,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             <div className="font-bold text-white group-hover:text-accent">
                               {group.ticker}
                             </div>
-                            <div className="max-w-[120px] truncate text-[10px] text-slate-400">
+                            <div className="max-w-[120px] truncate text-[11px] text-slate-400">
                               {group.company}
                             </div>
                           </div>
@@ -1269,7 +1266,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <td className="px-2 py-3">
                         {report.moatRating ? (
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                               report.moatRating.toLowerCase() === "wide"
                                 ? "border border-purple-500/30 bg-purple-500/10 text-purple-300"
                                 : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
@@ -1278,7 +1275,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             {report.moatRating}
                             {report.moatTrend && (
                               <span
-                                className="font-mono text-[9px]"
+                                className="font-mono text-[11px]"
                                 title={`${report.moatTrend} Moat Trend`}
                               >
                                 {report.moatTrend === "Widening"
@@ -1306,7 +1303,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                         </div>
                         {baseFv > 0 && (
                           <div
-                            className={`text-[10px] ${
+                            className={`text-[11px] ${
                               baseUpside >= 0
                                 ? "text-emerald-400"
                                 : "text-rose-400"
@@ -1325,7 +1322,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                         </div>
                         {wfv > 0 && (
                           <div
-                            className={`text-[10px] font-bold ${
+                            className={`text-[11px] font-bold ${
                               isPositive ? "text-emerald-400" : "text-rose-400"
                             }`}
                           >
@@ -1343,7 +1340,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                               ${Math.round(report.analystTarget)}
                             </span>
                             {report.analystRating && (
-                              <div className="text-[9px] text-slate-400">
+                              <div className="text-[11px] text-slate-400">
                                 {report.analystRating}
                               </div>
                             )}
@@ -1362,7 +1359,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Growth & Op Margin */}
-                      <td className="px-2 py-3 text-[10px]">
+                      <td className="px-2 py-3 text-[11px]">
                         <div className="text-slate-300">
                           Rev:{" "}
                           <span
@@ -1412,7 +1409,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                               onClick={() =>
                                 onSelectReport(qRep.slug, "cockpit")
                               }
-                              className={`rounded px-1.5 py-0.5 text-[9px] font-semibold transition-all ${
+                              className={`rounded px-1.5 py-0.5 text-[11px] font-semibold transition-all ${
                                 idx === 0
                                   ? "bg-accent/20 text-accent ring-1 ring-accent/30"
                                   : "bg-surface-3 text-slate-400 hover:text-white"
@@ -1422,7 +1419,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             </button>
                           ))}
                           {group.allReports.length > 3 && (
-                            <span className="text-[9px] text-slate-500">
+                            <span className="text-[11px] text-slate-500">
                               +{group.allReports.length - 3}
                             </span>
                           )}
@@ -1435,7 +1432,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onSelectReport(report.slug, "memo")}
-                            className="rounded px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+                            className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
                           >
                             {tw.openMemo}
                           </button>
@@ -1444,7 +1441,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             onClick={() =>
                               onSelectReport(report.slug, "cockpit")
                             }
-                            className="rounded bg-accent/15 px-2.5 py-1 text-[10px] font-bold text-accent ring-1 ring-accent/30 hover:bg-accent/25 hover:text-white"
+                            className="rounded bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent ring-1 ring-accent/30 hover:bg-accent/25 hover:text-white"
                           >
                             {tw.openCockpit}
                           </button>

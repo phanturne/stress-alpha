@@ -322,7 +322,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 <button
                   type="button"
                   onClick={onOpenSnowflake}
-                  className="no-print rounded-lg border border-white/[0.08] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-slate-300 transition-colors hover:bg-surface-3 hover:text-white"
+                  className="no-print rounded-lg border border-border bg-surface-2 px-2.5 py-1 text-xs font-semibold text-slate-300 transition-colors hover:bg-surface-3 hover:text-foreground"
                 >
                   {t.snowflakeView30}
                 </button>
@@ -347,7 +347,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               {snowflakeScore.pillarList.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-surface-1/60 px-3.5 py-2"
+                  className="flex items-center justify-between rounded-xl border border-border bg-surface-1/60 px-3.5 py-2"
                 >
                   <div className="flex items-center gap-2.5">
                     <span
@@ -355,7 +355,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                       style={{ backgroundColor: p.color }}
                     />
                     <div>
-                      <div className="text-xs font-bold text-white">
+                      <div className="text-xs font-bold text-foreground">
                         {p.label}
                       </div>
                       <div className="line-clamp-1 text-[11px] text-slate-400">

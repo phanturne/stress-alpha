@@ -145,7 +145,7 @@ export function WatchlistClientPage({
   const t = getTranslations(locale);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-slate-100">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Top Navigation */}
       <Header
         currentSlug={null}
@@ -186,9 +186,9 @@ export function WatchlistClientPage({
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-2xl border border-white/[0.12] p-6 shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div className="flex items-center gap-2 text-white">
+          <div className="glass-panel shadow-xs w-full max-w-md rounded-2xl border border-border p-6 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+              <div className="flex items-center gap-2 text-foreground">
                 <Keyboard className="size-5 text-accent" />
                 <h3 className="font-mono text-base font-bold">
                   {t.header.shortcuts}
@@ -197,7 +197,7 @@ export function WatchlistClientPage({
               <button
                 type="button"
                 onClick={() => setIsShortcutsOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-surface-2 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:bg-surface-2 hover:text-foreground"
               >
                 <X className="size-4" />
               </button>
@@ -206,7 +206,7 @@ export function WatchlistClientPage({
             <div className="mt-4 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.language}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 text-foreground">
                   L
                 </kbd>
               </div>
@@ -215,20 +215,20 @@ export function WatchlistClientPage({
                   <span className="text-slate-400">
                     {t.shortcuts.returnToModel}
                   </span>
-                  <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 text-foreground">
                     M
                   </kbd>
                 </div>
               )}
               <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.screener}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 text-foreground">
                   S
                 </kbd>
               </div>
               <div className="flex items-center justify-between py-1">
                 <span className="text-slate-400">{t.header.shortcuts}</span>
-                <kbd className="rounded border border-white/[0.1] bg-surface-2 px-2 py-0.5 text-white shadow">
+                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 text-foreground">
                   ?
                 </kbd>
               </div>

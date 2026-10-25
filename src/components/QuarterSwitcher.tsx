@@ -62,9 +62,9 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium shadow-sm transition-all sm:px-3 ${
+        className={`shadow-xs flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all sm:px-3 ${
           isLatest
-            ? "border-white/[0.08] bg-surface-1/90 hover:border-accent/50 hover:bg-surface-2"
+            ? "border-border bg-surface-1/90 hover:border-accent/50 hover:bg-surface-2"
             : "border-amber-500/40 bg-amber-500/10 text-amber-200 hover:border-amber-500/60 hover:bg-amber-500/20"
         }`}
         title={`${t.quarterHistory} — ${ticker ?? ""} ${currentQuarter}`}
@@ -74,7 +74,9 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
             isLatest ? "text-accent" : "text-amber-400"
           }`}
         />
-        <span className="font-mono font-bold text-white">{currentQuarter}</span>
+        <span className="font-mono font-bold text-foreground">
+          {currentQuarter}
+        </span>
         <span
           className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold ${
             isLatest
@@ -97,7 +99,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="glass-panel absolute left-0 z-50 mt-2 w-72 max-w-[calc(100vw-24px)] divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-80">
+          <div className="glass-panel shadow-xs absolute left-0 z-50 mt-2 w-72 max-w-[calc(100vw-24px)] divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/95 backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-80">
             <div className="flex items-center justify-between bg-surface-0/70 px-3.5 py-2.5 text-xs font-semibold text-slate-300">
               <span className="flex items-center gap-1.5">
                 <History className="size-3.5 text-accent" />
@@ -127,12 +129,12 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                     className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
                       isSelected
                         ? "bg-accent/10 font-semibold text-accent"
-                        : "text-slate-300 hover:bg-surface-2 hover:text-white"
+                        : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
                     }`}
                   >
                     <div className="flex min-w-0 flex-col gap-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-white">
+                        <span className="font-mono font-bold text-foreground">
                           {r.quarter || r.slug}
                         </span>
                         <span
@@ -182,7 +184,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
             </div>
 
             {displayReports.length <= 1 && (
-              <div className="flex items-center gap-2 border-t border-white/[0.06] bg-surface-0/60 px-3.5 py-2 text-[11px] text-slate-400">
+              <div className="flex items-center gap-2 border-t border-border/60 bg-surface-0/60 px-3.5 py-2 text-[11px] text-slate-400">
                 <Info className="size-3.5 shrink-0 text-accent/80" />
                 <span>{t.noEarlierQuarters}</span>
               </div>

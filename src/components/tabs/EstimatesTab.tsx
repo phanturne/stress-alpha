@@ -78,7 +78,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       };
     }
     return {
-      className: "bg-surface-2 text-slate-300 border-white/[0.08]",
+      className: "bg-surface-2 text-slate-300 border-border",
       label: rating,
     };
   };
@@ -106,7 +106,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       };
     }
     return {
-      className: "bg-surface-2 text-slate-400 border-white/[0.06]",
+      className: "bg-surface-2 text-slate-400 border-border",
       icon: Minus,
     };
   };
@@ -216,7 +216,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="glass-panel flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] p-5 md:flex-row md:items-center">
+      <div className="glass-panel shadow-xs flex flex-col justify-between gap-4 rounded-2xl border border-border bg-surface-1/90 p-5 md:flex-row md:items-center">
         <div>
           <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
             <Target className="size-4" />
@@ -232,13 +232,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
         {/* Global Summary Metric Badges */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-surface-2 px-3 py-1.5">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1.5">
             <span className="text-slate-400">{t.totalAnalysts}:</span>
-            <span className="font-mono font-bold text-white">
+            <span className="font-mono font-bold text-foreground">
               {consensus.totalAnalysts}
             </span>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-surface-2 px-3 py-1.5">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1.5">
             <span className="text-slate-400">{t.avgUpside}:</span>
             <span
               className={`font-mono font-bold ${
@@ -255,12 +255,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       {/* Top 2 Cards: Consensus Breakdown & 52W Price Targets Slider */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* Card 1: Analyst Consensus (5 cols) */}
-        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 lg:col-span-5">
+        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border bg-surface-1/90 p-5 lg:col-span-5">
           <div>
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="size-4 text-accent" />
-                <h3 className="text-sm font-semibold tracking-wide text-white">
+                <h3 className="text-sm font-semibold tracking-wide text-foreground">
                   {t.consensusTitle}
                 </h3>
               </div>
@@ -300,7 +300,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <div className="size-2 rounded-full bg-emerald-500" />
                   <span className="font-medium">{t.bullish}</span>
                 </div>
-                <div className="font-mono text-lg font-bold text-white">
+                <div className="font-mono text-lg font-bold text-foreground">
                   {consensus.bullishCount}
                 </div>
                 <div className="font-mono text-[11px] text-emerald-400/80">
@@ -314,7 +314,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <div className="size-2 rounded-full bg-amber-400" />
                   <span className="font-medium">{t.neutral}</span>
                 </div>
-                <div className="font-mono text-lg font-bold text-white">
+                <div className="font-mono text-lg font-bold text-foreground">
                   {consensus.neutralCount}
                 </div>
                 <div className="font-mono text-[11px] text-amber-400/80">
@@ -328,7 +328,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <div className="size-2 rounded-full bg-rose-500" />
                   <span className="font-medium">{t.bearish}</span>
                 </div>
-                <div className="font-mono text-lg font-bold text-white">
+                <div className="font-mono text-lg font-bold text-foreground">
                   {consensus.bearishCount}
                 </div>
                 <div className="font-mono text-[11px] text-rose-400/80">
@@ -338,7 +338,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
+          <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3 text-[11px] text-slate-400">
             <span>{t.sentimentMomentum}</span>
             <span className="font-medium text-slate-300">
               {consensus.bullishPct >= 70
@@ -351,19 +351,19 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         </div>
 
         {/* Card 2: Analyst 52W Price Targets (7 cols) */}
-        <div className="glass-panel flex flex-col justify-between rounded-2xl border border-white/[0.08] p-5 lg:col-span-7">
+        <div className="glass-panel shadow-xs flex flex-col justify-between rounded-2xl border border-border bg-surface-1/90 p-5 lg:col-span-7">
           <div>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <TrendingUp className="size-4 text-accent" />
-                <h3 className="text-sm font-semibold tracking-wide text-white">
+                <h3 className="text-sm font-semibold tracking-wide text-foreground">
                   {t.priceTargetsTitle}
                 </h3>
               </div>
               <div className="flex items-center gap-3 text-xs">
                 <div className="text-slate-400">
                   {t.currentPrice}:{" "}
-                  <span className="font-mono font-bold text-white">
+                  <span className="font-mono font-bold text-foreground">
                     ${current.toFixed(2)}
                   </span>
                 </div>
@@ -425,7 +425,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   >
                     <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent ring-2 ring-accent/25" />
                     <div className="absolute -top-7 flex flex-col items-center whitespace-nowrap">
-                      <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
+                      <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground">
                         {t.currentPriceLabel}: ${current.toFixed(2)}
                       </span>
                     </div>
@@ -466,7 +466,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
           </div>
 
-          <div className="mt-2 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] text-slate-400">
+          <div className="mt-2 flex items-center justify-between border-t border-border/60 pt-3 text-[11px] text-slate-400">
             <span>
               {t.consensusMean}: ${average.toFixed(2)} (
               {avgUpsidePct >= 0 ? "+" : ""}
@@ -482,11 +482,11 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
       {/* Main Grid: Estimates Table (8 cols) + Ratings Synthesis Narrative (4 cols) */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         {/* Left: Analyst Estimates Table (lg:col-span-8) */}
-        <div className="glass-panel flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] lg:col-span-8">
+        <div className="glass-panel shadow-xs flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-1/90 lg:col-span-8">
           {/* Table Header & Controls */}
-          <div className="flex flex-col justify-between gap-3 border-b border-white/[0.08] bg-surface-1/40 p-4 sm:flex-row sm:items-center sm:p-5">
+          <div className="flex flex-col justify-between gap-3 border-b border-border bg-surface-1/40 p-4 sm:flex-row sm:items-center sm:p-5">
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-white">
+              <h3 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground">
                 <span>{t.tableTitle}</span>
                 <span className="rounded-full bg-surface-3 px-2 py-0.5 font-mono text-xs text-slate-300">
                   {filteredEstimates.length}
@@ -504,12 +504,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   placeholder={t.searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-36 rounded-lg border border-white/[0.08] bg-surface-2/80 py-1.5 pl-8 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-accent/50 focus:outline-none sm:w-44"
+                  className="w-36 rounded-lg border border-border bg-surface-2/80 py-1.5 pl-8 pr-3 text-xs text-foreground placeholder-slate-500 focus:border-accent/50 focus:outline-none sm:w-44"
                 />
               </div>
 
               {/* Rating Filter Pills */}
-              <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-2/80 p-0.5 text-xs">
+              <div className="flex items-center rounded-lg border border-border bg-surface-2/80 p-0.5 text-xs">
                 {(["all", "buy", "hold", "sell"] as const).map((mode) => (
                   <button
                     key={mode}
@@ -518,7 +518,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                     className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
                       ratingFilter === mode
                         ? "bg-accent/20 font-semibold text-accent"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-foreground"
                     }`}
                   >
                     {mode === "all"
@@ -535,7 +535,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
 
           {/* Mobile View: Cards */}
-          <div className="divide-y divide-white/[0.06] md:hidden">
+          <div className="divide-y divide-border/60 md:hidden">
             {filteredEstimates.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-500">
                 {t.emptySearch}
@@ -640,7 +640,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-surface-0/40 font-medium text-slate-400">
+                <tr className="border-b border-border bg-surface-0/40 font-medium text-slate-400">
                   <th className="px-4 py-3">{t.colFirm}</th>
                   <th className="p-3">{t.colRating}</th>
                   <th className="px-4 py-3 text-right">{t.colTarget}</th>
@@ -648,7 +648,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <th className="px-4 py-3 text-right">{t.colDate}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-border/60">
                 {filteredEstimates.length === 0 ? (
                   <tr>
                     <td
@@ -671,7 +671,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         {/* Firm & Analyst */}
                         <td className="px-4 py-3.5">
                           <div className="flex flex-col">
-                            <div className="flex items-center gap-1.5 font-semibold text-white">
+                            <div className="flex items-center gap-1.5 font-semibold text-foreground">
                               <a
                                 href={`https://www.google.com/search?q=${encodeURIComponent(`${item.firm} equity research`)}`}
                                 target="_blank"
@@ -758,12 +758,10 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
         {/* Right: Analyst Ratings Synthesis Card (lg:col-span-4) */}
         <div className="flex flex-col gap-5 lg:col-span-4">
           {/* Narrative Card */}
-          <div className="glass-panel flex h-full flex-col rounded-2xl border border-white/[0.08] p-5">
-            <div className="mb-3 flex items-center gap-2 border-b border-white/[0.08] pb-3">
-              <div className="rounded-lg border border-accent/20 bg-accent/10 p-1.5 text-accent">
-                <Sparkles className="size-4" />
-              </div>
-              <h3 className="text-sm font-semibold tracking-wide text-white">
+          <div className="glass-panel shadow-xs flex h-full flex-col rounded-2xl border border-border bg-surface-1/90 p-5">
+            <div className="mb-3 flex items-center gap-2 border-b border-border pb-3">
+              <Sparkles className="size-4 text-accent" />
+              <h3 className="text-sm font-semibold tracking-wide text-foreground">
                 {t.synthesisTitle}
               </h3>
             </div>
@@ -775,12 +773,12 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             </div>
 
             {/* Quick Synthesis Highlights */}
-            <div className="mt-auto space-y-2.5 border-t border-white/[0.06] pt-4">
+            <div className="mt-auto space-y-2.5 border-t border-border/60 pt-4">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {t.consensusAnatomy}
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">{t.streetHigh}</span>
                 <span className="font-mono font-bold text-emerald-400">
                   ${high.toFixed(2)}{" "}
@@ -794,7 +792,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">{t.streetLow}</span>
                 <span className="font-mono font-bold text-slate-300">
                   ${low.toFixed(2)}{" "}
@@ -808,7 +806,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-surface-2/60 p-2.5 text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-2/60 p-2.5 text-xs">
                 <span className="text-slate-400">{t.targetSpread}</span>
                 <span className="font-mono font-bold text-accent">
                   ${(high - low).toFixed(2)}
@@ -821,7 +819,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
       {/* Sources & Citations Section if Available */}
       {sources && sources.length > 0 && (
-        <div className="glass-panel rounded-2xl border border-white/[0.08] p-5">
+        <div className="glass-panel shadow-xs rounded-2xl border border-border bg-surface-1/90 p-5">
           <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-300">
             <ExternalLink className="size-3.5 text-accent" />
             <span>{t.sourcesTitle}</span>
@@ -833,7 +831,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 href={source.url || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col justify-between rounded-xl border border-white/[0.06] bg-surface-1 p-3 transition-all hover:border-accent/40 hover:bg-surface-2"
+                className="group flex flex-col justify-between rounded-xl border border-border bg-surface-1 p-3 transition-all hover:border-accent/40 hover:bg-surface-2"
               >
                 <div>
                   <div className="line-clamp-2 text-xs font-semibold text-slate-200 transition-colors group-hover:text-accent">

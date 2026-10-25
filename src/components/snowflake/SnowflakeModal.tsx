@@ -61,16 +61,16 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
       />
 
       {/* Modal Container */}
-      <div className="relative z-10 flex h-full max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-white/[0.12] bg-surface-0 shadow-2xl">
+      <div className="shadow-xs relative z-10 flex h-full max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-border bg-surface-0">
         {/* Modal Top Header Bar */}
-        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.08] bg-surface-1/60 px-5 py-4 backdrop-blur-md sm:px-6">
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-surface-1/60 px-5 py-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent shadow-sm">
+            <div className="shadow-xs flex size-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
               <Sparkles className="size-4.5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-extrabold tracking-tight text-white sm:text-lg">
+                <h2 className="text-base font-extrabold tracking-tight text-foreground sm:text-lg">
                   {ticker} &bull; {company}
                 </h2>
                 <span className="rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
@@ -96,7 +96,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                   onClose();
                   onOpenSocialCard();
                 }}
-                className="hidden items-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent shadow-sm transition-all hover:bg-accent/20 hover:text-white sm:flex"
+                className="shadow-xs hidden items-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent/20 hover:text-foreground sm:flex"
               >
                 <Share2 className="size-3.5" />
                 <span>{t.exportCard}</span>
@@ -105,7 +105,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex size-8 items-center justify-center rounded-xl border border-white/[0.08] bg-surface-2 text-slate-400 transition-all hover:border-white/20 hover:bg-surface-3 hover:text-white"
+              className="flex size-8 items-center justify-center rounded-xl border border-border bg-surface-2 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-foreground"
             >
               <X className="size-4" />
             </button>
@@ -115,14 +115,14 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
         {/* Modal Main Content: Split Radar & 30-Point Audit */}
         <div className="custom-scrollbar flex flex-1 flex-col overflow-y-auto lg:flex-row">
           {/* Left Column: Interactive Radar & Pillar Filter */}
-          <div className="flex w-full flex-col items-center border-b border-white/[0.08] bg-surface-1/30 p-6 lg:w-[380px] lg:shrink-0 lg:border-b-0 lg:border-r xl:w-[420px]">
+          <div className="flex w-full flex-col items-center border-b border-border bg-surface-1/30 p-6 lg:w-[380px] lg:shrink-0 lg:border-b-0 lg:border-r xl:w-[420px]">
             {/* Overall Score Badge */}
             <div className="mb-3 flex flex-col items-center text-center">
-              <div className="flex items-baseline gap-1 font-mono text-3xl font-black text-white sm:text-4xl">
+              <div className="flex items-baseline gap-1 font-mono text-3xl font-black text-foreground sm:text-4xl">
                 <span className="text-accent">{scoreResult.totalScore}</span>
                 <span className="text-slate-500">/ 30</span>
               </div>
-              <div className="mt-1 rounded-full border border-white/[0.08] bg-surface-2 px-3 py-0.5 text-xs font-semibold text-slate-300">
+              <div className="mt-1 rounded-full border border-border bg-surface-2 px-3 py-0.5 text-xs font-semibold text-slate-300">
                 {scoreResult.ratingLabel}
               </div>
             </div>
@@ -153,8 +153,8 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                   onClick={() => setSelectedPillarId("all")}
                   className={`flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all ${
                     selectedPillarId === "all"
-                      ? "border border-white/30 bg-white/10 text-white shadow-sm"
-                      : "border border-white/[0.06] bg-surface-2/60 text-slate-400 hover:border-white/15 hover:text-slate-200"
+                      ? "shadow-xs border border-accent/40 bg-accent/15 text-accent"
+                      : "border border-border bg-surface-2/60 text-slate-400 hover:border-accent/30 hover:text-foreground"
                   }`}
                 >
                   <span>{t.filterAll}</span>
@@ -172,8 +172,8 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                       onClick={() => setSelectedPillarId(p.id)}
                       className={`flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all ${
                         isActive
-                          ? "border text-white shadow-sm"
-                          : "border border-white/[0.06] bg-surface-2/60 text-slate-400 hover:border-white/15 hover:text-slate-200"
+                          ? "shadow-xs border text-foreground"
+                          : "border border-border bg-surface-2/60 text-slate-400 hover:border-accent/30 hover:text-foreground"
                       }`}
                       style={{
                         borderColor: isActive ? p.color : undefined,
@@ -207,16 +207,16 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                 return (
                   <div
                     key={pillar.id}
-                    className="glass-panel overflow-hidden rounded-2xl border border-white/[0.08] bg-surface-1/40 p-4 shadow-sm sm:p-5"
+                    className="glass-panel shadow-xs overflow-hidden rounded-2xl border border-border bg-surface-1/40 p-4 sm:p-5"
                   >
                     {/* Pillar Title Bar */}
-                    <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                    <div className="flex items-center justify-between border-b border-border pb-3">
                       <div className="flex items-center gap-2.5">
                         <span
-                          className="size-3 rounded-full shadow-sm"
+                          className="shadow-xs size-3 rounded-full"
                           style={{ backgroundColor: pillar.color }}
                         />
-                        <h3 className="text-sm font-bold text-white sm:text-base">
+                        <h3 className="text-sm font-bold text-foreground sm:text-base">
                           {pillar.label}
                         </h3>
                       </div>
@@ -241,12 +241,12 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                     </p>
 
                     {/* 6 Criteria List */}
-                    <div className="mt-4 flex flex-col divide-y divide-white/[0.05]">
+                    <div className="mt-4 flex flex-col divide-y divide-border/60">
                       {pillar.criteria.map((crit, idx) => {
                         return (
                           <div
                             key={crit.id}
-                            className="flex flex-col justify-between gap-2 py-2.5 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-4"
+                            className="flex flex-col justify-between gap-2 py-2.5 transition-colors hover:bg-surface-2/40 sm:flex-row sm:items-center sm:gap-4"
                           >
                             <div className="flex items-start gap-2.5">
                               {crit.passed ? (
@@ -270,7 +270,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                                 className={`rounded-md px-2 py-0.5 font-mono text-[11px] font-bold ${
                                   crit.passed
                                     ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
-                                    : "border border-white/[0.06] bg-surface-3 text-slate-400"
+                                    : "border border-border bg-surface-3 text-slate-400"
                                 }`}
                               >
                                 {crit.valueDisplay}
@@ -278,7 +278,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                               <span className="font-mono text-[10px] text-slate-500">
                                 vs
                               </span>
-                              <span className="rounded-md border border-white/[0.06] bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                              <span className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
                                 {crit.benchmarkDisplay}
                               </span>
                             </div>
@@ -294,12 +294,12 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="flex shrink-0 items-center justify-between border-t border-white/[0.08] bg-surface-1/70 px-6 py-3 text-xs text-slate-400">
+        <div className="flex shrink-0 items-center justify-between border-t border-border bg-surface-1/70 px-6 py-3 text-xs text-slate-400">
           <div>{t.footerNotice}</div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-white/[0.08] bg-surface-2 px-4 py-1.5 font-semibold text-slate-200 transition-all hover:border-white/20 hover:bg-surface-3 hover:text-white"
+            className="rounded-xl border border-border bg-surface-2 px-4 py-1.5 font-semibold text-slate-200 transition-all hover:border-border hover:bg-surface-3 hover:text-foreground"
           >
             {t.close}
           </button>

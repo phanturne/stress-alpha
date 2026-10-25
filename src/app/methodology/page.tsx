@@ -68,27 +68,27 @@ export default function MethodologyPage() {
   const isZh = locale === "zh";
 
   return (
-    <div className="min-h-screen bg-background text-slate-100 selection:bg-accent/20 selection:text-accent">
+    <div className="min-h-screen bg-background text-foreground selection:bg-accent/20 selection:text-accent">
       <header className="glass-header sticky top-0 z-40 flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-8">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft className="size-3.5" />
             <span>{isZh ? "返回模型" : "Back to Model"}</span>
           </Link>
 
-          <div className="hidden h-4 w-px bg-white/[0.08] sm:block" />
+          <div className="hidden h-4 w-px bg-border sm:block" />
 
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-lg border border-accent/40 bg-accent/20 font-mono text-xs font-black text-accent">
               Sα
             </div>
-            <span className="hidden text-sm font-bold tracking-tight text-white sm:inline">
+            <span className="hidden text-sm font-bold tracking-tight text-foreground sm:inline">
               Stress<span className="text-accent">Alpha</span>
             </span>
-            <span className="rounded border border-white/[0.08] bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase text-slate-400">
+            <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-slate-400">
               {isZh ? "模型算法原理" : "METHODOLOGY"}
             </span>
           </div>
@@ -97,14 +97,14 @@ export default function MethodologyPage() {
         {/* Right controls: Language & GitHub Button */}
         <div className="flex items-center gap-2.5">
           {/* Language Toggle */}
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-1/90 p-0.5 text-xs">
+          <div className="flex items-center rounded-lg border border-border bg-surface-1/90 p-0.5 text-xs">
             <button
               type="button"
               onClick={() => toggleLocale("en")}
               className={`rounded px-2.5 py-1 font-bold transition-all ${
                 locale === "en"
                   ? "bg-accent font-extrabold text-slate-950 shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               EN
@@ -115,7 +115,7 @@ export default function MethodologyPage() {
               className={`rounded px-2.5 py-1 font-bold transition-all ${
                 locale === "zh"
                   ? "bg-accent font-extrabold text-slate-950 shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               中文
@@ -127,7 +127,7 @@ export default function MethodologyPage() {
             href="https://github.com/phanturne/stress-alpha"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-white/[0.12] bg-surface-2 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:border-accent/60 hover:bg-surface-3 hover:text-accent"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-all hover:border-accent/60 hover:bg-surface-3 hover:text-accent"
             title="View StressAlpha repository on GitHub"
           >
             <GithubIcon className="size-4" />
@@ -140,7 +140,7 @@ export default function MethodologyPage() {
       {/* Main Container */}
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-12">
         {/* Hero Title Section */}
-        <div className="border-b border-white/[0.08] pb-8 text-center sm:text-left">
+        <div className="border-b border-border/60 pb-8 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
             <Calculator className="size-3.5" />
             <span>
@@ -150,13 +150,13 @@ export default function MethodologyPage() {
             </span>
           </div>
 
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-4 text-balance text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
             {isZh
               ? "StressAlpha 财务与压力估值模型计算原理"
               : "Deterministic Valuation & Stress Simulation Methodology"}
           </h1>
 
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400 sm:text-base">
+          <p className="mt-3 max-w-prose text-pretty text-sm leading-relaxed text-slate-400 sm:text-base">
             {isZh
               ? "不同于传统大模型的黑盒幻觉推测，StressAlpha 将 LLM 严密限制在上游财报事实抽取与情景锚定阶段，所有 P&L 传导、经营杠杆、核心经营 EPS 与加权估值均由客户端纯确定性算术引擎毫秒级实时计算。"
               : "Unlike black-box AI financial chatbots, StressAlpha confines LLMs exclusively to structured artifact extraction and risk disclosure audits. All P&L flow-through calculations, operating leverage, EPS normalization, and scenario valuation trees are executed by a client-side deterministic arithmetic engine in sub-milliseconds."}
@@ -166,44 +166,44 @@ export default function MethodologyPage() {
           <div className="mt-6 flex flex-wrap gap-2 text-xs">
             <a
               href="#revenue-shock"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               1. {isZh ? "需求驱动与业务量冲击" : "Demand & Volume Drivers"}
             </a>
             <a
               href="#operating-leverage"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               2. {isZh ? "经营杠杆与固定成本" : "Operating Leverage"}
             </a>
             <a
               href="#income-guardrail"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               3. {isZh ? "盈利质量与核心EPS" : "Earnings Quality & EPS"}
             </a>
             <a
               href="#valuation-regimes"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               4.{" "}
               {isZh ? "情景目标价与盈亏比" : "Scenario Targets & Risk/Reward"}
             </a>
             <a
               href="#base-vs-wfv"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               5. {isZh ? "基准公允价 vs 加权公允价" : "Base FV vs. WFV"}
             </a>
             <a
               href="#economic-moat"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               6. {isZh ? "五维经济护城河评级" : "Economic Moat"}
             </a>
             <a
               href="#qpce-calibration"
-              className="rounded-lg border border-white/[0.08] bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
               7.{" "}
               {isZh
@@ -219,7 +219,7 @@ export default function MethodologyPage() {
           <section id="revenue-shock" className="scroll-mt-24 space-y-4">
             <div className="flex items-center gap-2.5 text-accent">
               <SlidersHorizontal className="size-5" />
-              <h2 className="text-lg font-bold text-white sm:text-xl">
+              <h2 className="text-lg font-bold text-foreground sm:text-xl">
                 1.{" "}
                 {isZh
                   ? "上游需求扰动传导模型"
@@ -227,22 +227,22 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "大型科技巨头（如英伟达、亚马逊）的营收极度依赖上游资本开支或终端市场预算。模型为每一个上游宏观驱动因子（如云厂商AI资本开支、CoWoS先进封装良率、企业IT预算）配置了业务暴露比例（Exposure）与传导弹性系数（Elasticity）。"
                 : "Hyper-growth tech enterprises are tethered to upstream capital spending or enterprise budget trends. StressAlpha pairs each upstream macroeconomic driver (e.g. Big-4 Hyperscaler CapEx, CoWoS packaging yield, enterprise IT budgets) with an Exposure share and an Elasticity coefficient."}
             </p>
 
             {/* Formula Card */}
-            <div className="glass-panel overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/90 p-4 font-mono text-xs text-slate-200 shadow-inner">
-              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-accent">
+            <div className="glass-panel shadow-xs overflow-hidden rounded-xl border border-border bg-surface-1/90 p-4 font-mono text-xs text-slate-200">
+              <div className="mb-2 text-xs font-bold uppercase tracking-wider text-accent">
                 {isZh ? "数学公式" : "FORMULA"}
               </div>
-              <div className="font-semibold text-white sm:text-sm">
+              <div className="font-semibold text-foreground sm:text-sm">
                 Stressed_Revenue = Base_Revenue × [ 1 + ∑ (Shock_i × Exposure_i
                 × Elasticity_i) ]
               </div>
-              <div className="mt-3 grid grid-cols-1 gap-1 text-[11px] text-slate-400 sm:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-1 text-xs text-slate-400 sm:grid-cols-3">
                 <div>
                   <span className="text-accent">Shock_i:</span>{" "}
                   {isZh ? "滑块调整幅度 (%)" : "Adjustment (%)"}
@@ -259,8 +259,8 @@ export default function MethodologyPage() {
             </div>
 
             {/* Worked Example */}
-            <div className="rounded-xl border border-white/[0.06] bg-surface-0/60 p-4 text-xs text-slate-300">
-              <div className="mb-1.5 flex items-center gap-1.5 font-semibold text-white">
+            <div className="rounded-xl border border-border bg-surface-0/60 p-4 text-xs text-slate-300">
+              <div className="mb-1.5 flex items-center gap-1.5 font-semibold text-foreground">
                 <Sparkles className="size-3.5 text-amber-400" />
                 <span>
                   {isZh
@@ -308,25 +308,25 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "当营收下滑时，固定开支（研发折旧、数据中心租金、固定薪酬）并不会同比例减少，这导致利润率呈现非线性的剧烈下挫（经营杠杆效应）。StressAlpha 将营业费用（OpEx）拆分为变动成本与刚性固定成本，并允许在毛利率基点（Bps）和固定支出变动（%）上施加压力。"
                 : "When top-line sales decline, fixed overhead (R&D amortization, data center leases, base compensation) does not scale down linearly. This triggers an amplified collapse in operating profit (operating leverage). StressAlpha decomposes costs into variable COGS and rigid fixed OpEx, enabling independent margin stress tests."}
             </p>
 
             {/* Formula Card */}
-            <div className="glass-panel space-y-2 overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/90 p-4 font-mono text-xs text-slate-200 shadow-inner">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-accent">
+            <div className="glass-panel shadow-xs space-y-2 overflow-hidden rounded-xl border border-border bg-surface-1/90 p-4 font-mono text-xs text-slate-200">
+              <div className="text-xs font-bold uppercase tracking-wider text-accent">
                 {isZh ? "数学公式" : "FORMULAS"}
               </div>
-              <div className="text-white">
+              <div className="text-foreground">
                 Stressed_Gross_Margin = Base_Gross_Margin + (ΔGross_Margin_Bps /
                 10,000)
               </div>
-              <div className="text-white">
+              <div className="text-foreground">
                 Stressed_Gross_Profit = Stressed_Revenue × Stressed_Gross_Margin
               </div>
-              <div className="text-white">
+              <div className="text-foreground">
                 Stressed_Fixed_OpEx = Base_Fixed_OpEx × (1 + ΔFixed_OpEx_Pct /
                 100)
               </div>
@@ -341,7 +341,7 @@ export default function MethodologyPage() {
           <section id="income-guardrail" className="scroll-mt-24 space-y-4">
             <div className="flex items-center gap-2.5 text-accent">
               <ShieldCheck className="size-5" />
-              <h2 className="text-lg font-bold text-white sm:text-xl">
+              <h2 className="text-lg font-bold text-foreground sm:text-xl">
                 3.{" "}
                 {isZh
                   ? "盈利质量防线与核心经营 EPS 净化"
@@ -349,7 +349,7 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "GAAP 会计准则下的财报净利润经常包含巨额的非经常性纸面公允价值重估收益或投资浮盈。如果直接采用 GAAP EPS 进行估值倍数测算，将严重扭曲真实价值。"
                 : "Headline GAAP diluted earnings are frequently distorted by non-operating mark-to-market revaluations, litigation settlements, or paper investment marks. Valuing a company on contaminated headline EPS produces severe mispricings."}
@@ -365,7 +365,7 @@ export default function MethodologyPage() {
                     : "Case Study: Amazon (AMZN Q2 2026) ASU 2016-01 Distortion"}
                 </span>
               </div>
-              <p className="mt-2 leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
                     亚马逊 Q2 2026 财报 GAAP 稀释每股收益达到{" "}
@@ -396,8 +396,8 @@ export default function MethodologyPage() {
             </div>
 
             {/* Formula Card */}
-            <div className="glass-panel overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/90 p-4 font-mono text-xs text-slate-200 shadow-inner">
-              <div className="font-semibold text-white sm:text-sm">
+            <div className="glass-panel shadow-xs overflow-hidden rounded-xl border border-border bg-surface-1/90 p-4 font-mono text-xs text-slate-200">
+              <div className="font-semibold text-foreground sm:text-sm">
                 Clean_Operating_EPS = [ Reported_Net_Income - NonOperating_Gains
                 × (1 - Tax_Rate) ] / Diluted_Shares
               </div>
@@ -416,64 +416,67 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "投资决策不是预测一个孤立的价格点，而是评估不同市场情境下的盈亏不对称性。系统将经受压力测试后的预期 EPS 映射到三个市场周期估值倍数中："
                 : "Disciplined equity investing is not about predicting a single target point; it is about quantifying risk/reward asymmetry across multiple market regimes:"}
             </p>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="glass-panel rounded-xl border-l-2 border-emerald-400 p-3.5">
-                <div className="text-xs font-bold text-emerald-400">
-                  🐂 {isZh ? "乐观周期 (Bull Regime)" : "Bull Regime"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  <span>{isZh ? "乐观周期 (Bull Regime)" : "Bull Regime"}</span>
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "企业业绩加速增长，估值倍数大幅扩张 (P/E Expansion)。"
                     : "Accelerating growth with multiple expansion."}
                 </p>
-                <div className="mt-2 font-mono text-xs font-semibold text-white">
+                <div className="mt-2 font-mono text-xs font-semibold text-foreground">
                   Target = Stressed_EPS × Multiple_Bull
                 </div>
               </div>
 
-              <div className="glass-panel rounded-xl border-l-2 border-sky-400 p-3.5">
-                <div className="text-xs font-bold text-sky-400">
-                  ⚖️ {isZh ? "基准周期 (Base Regime)" : "Base Regime"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-sky-400">
+                  <span className="size-2 rounded-full bg-sky-400" />
+                  <span>{isZh ? "基准周期 (Base Regime)" : "Base Regime"}</span>
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "管理层正常兑现前瞻指引，市场维持历史平均估值倍数。"
                     : "Execution on baseline guidance at normalized historical P/E."}
                 </p>
-                <div className="mt-2 font-mono text-xs font-semibold text-white">
+                <div className="mt-2 font-mono text-xs font-semibold text-foreground">
                   Target = Stressed_EPS × Multiple_Base
                 </div>
               </div>
 
-              <div className="glass-panel rounded-xl border-l-2 border-rose-400 p-3.5">
-                <div className="text-xs font-bold text-rose-400">
-                  🚨 {isZh ? "恐慌底线 (Panic Floor)" : "Panic Floor"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400">
+                  <span className="size-2 rounded-full bg-rose-400" />
+                  <span>{isZh ? "恐慌底线 (Panic Floor)" : "Panic Floor"}</span>
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "宏观衰退与需求冰封，估值压缩至历史周期极值底部。"
                     : "Macro recession and multiple compression to cycle trough."}
                 </p>
-                <div className="mt-2 font-mono text-xs font-semibold text-white">
+                <div className="mt-2 font-mono text-xs font-semibold text-foreground">
                   Target = Stressed_EPS × Multiple_Panic
                 </div>
               </div>
             </div>
 
             {/* Asymmetry Ratio Card */}
-            <div className="glass-panel rounded-xl border border-white/[0.08] p-4">
-              <div className="text-xs font-bold text-white sm:text-sm">
+            <div className="glass-panel shadow-xs rounded-xl border border-border p-4">
+              <div className="text-xs font-bold text-foreground sm:text-sm">
                 {isZh
                   ? "盈亏收益比 (Risk/Reward Ratio)"
                   : "Risk / Reward Ratio"}
               </div>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 max-w-prose text-pretty text-xs text-slate-400">
                 {isZh
                   ? "衡量向上乐观空间与向下极端恐慌回撤的倍数关系。比率大于 2.0x 意味着潜在收益显著高于下行风险，具备极高配置安全边际。"
                   : "Measures the ratio of upside gain potential in the Bull regime versus drawdown exposure to the Panic Floor. A skew above 2.0x indicates an attractive margin of safety."}
@@ -488,7 +491,7 @@ export default function MethodologyPage() {
           <section id="base-vs-wfv" className="scroll-mt-24 space-y-4">
             <div className="flex items-center gap-2.5 text-accent">
               <TrendingUp className="size-5" />
-              <h2 className="text-lg font-bold text-white sm:text-xl">
+              <h2 className="text-lg font-bold text-foreground sm:text-xl">
                 5.{" "}
                 {isZh
                   ? "基准公允价 vs 加权公允价 (WFV)"
@@ -496,19 +499,19 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "这是股票筛选器（Screener）与估值模型中最核心的两个指标："
                 : "These are the two anchor valuation figures featured in the Stock Screener and Valuation Model:"}
             </p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="glass-panel rounded-xl border border-white/[0.08] p-4">
-                <div className="flex items-center justify-between text-xs font-bold text-white sm:text-sm">
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-4">
+                <div className="flex items-center justify-between text-xs font-bold text-foreground sm:text-sm">
                   <span>
                     {isZh ? "基准公允价 (Base Fair Value)" : "Base Fair Value"}
                   </span>
-                  <span className="font-mono text-[11px] text-slate-400">
+                  <span className="font-mono text-xs text-slate-400">
                     单点基准
                   </span>
                 </div>
@@ -522,14 +525,14 @@ export default function MethodologyPage() {
                 </div>
               </div>
 
-              <div className="glass-panel rounded-xl border border-white/[0.08] p-4">
-                <div className="flex items-center justify-between text-xs font-bold text-white sm:text-sm">
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-4">
+                <div className="flex items-center justify-between text-xs font-bold text-foreground sm:text-sm">
                   <span>
                     {isZh
                       ? "加权公允价 (Weighted Fair Value)"
                       : "Weighted Fair Value (WFV)"}
                   </span>
-                  <span className="font-mono text-[11px] text-accent">
+                  <span className="font-mono text-xs text-accent">
                     期望概率全景
                   </span>
                 </div>
@@ -544,7 +547,7 @@ export default function MethodologyPage() {
               </div>
             </div>
 
-            <p className="text-xs text-slate-400">
+            <p className="max-w-prose text-pretty text-xs text-slate-400">
               {isZh
                 ? "💡 当公司面临极大的正向期权收益（如英伟达受 AI 算力指数级爆发驱动）时，加权公允价会因乐观端的大幅拉动而高于基准公允价；反之，若公司面临严重债务违约或行业被颠覆风险，加权公允价将低于基准公允价。"
                 : "💡 When an enterprise possesses positive skew (e.g. NVIDIA's open-ended AI compute tailwind), the Weighted Fair Value exceeds Base Fair Value because the massive Bull upside pulls the probability distribution up."}
@@ -563,7 +566,7 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "纯财务数据只能反映过去一个季度的结果，唯有经济护城河才能决定高超额利润（ROIC > WACC）的持久性。StressAlpha 遵循晨星（Morningstar）与巴菲特护城河标准，从五个维度量化评估竞争壁垒与其演进趋势："
                 : "Financial figures only record backward-looking quarterly performance. Economic moats determine how long a firm can defend excess returns (ROIC > WACC). StressAlpha evaluates moats across five structural pillars:"}
@@ -574,7 +577,7 @@ export default function MethodologyPage() {
                 <div className="font-bold text-white">
                   1. {isZh ? "无形资产" : "Intangible Assets"}
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "专利微架构、品牌定价权、独家许可"
                     : "Patents, proprietary tech, brands."}
@@ -584,7 +587,7 @@ export default function MethodologyPage() {
                 <div className="font-bold text-white">
                   2. {isZh ? "转换成本" : "Switching Costs"}
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "CUDA生态绑定、企业核心业务深度嵌合"
                     : "Developer lock-in, deep integrations."}
@@ -594,7 +597,7 @@ export default function MethodologyPage() {
                 <div className="font-bold text-white">
                   3. {isZh ? "成本优势" : "Cost Advantage"}
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "台积电先进制程采购规模、独占良率"
                     : "Purchasing scale, superior unit economics."}
@@ -604,7 +607,7 @@ export default function MethodologyPage() {
                 <div className="font-bold text-white">
                   4. {isZh ? "网络效应" : "Network Effects"}
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "开发者-云厂商双向增强飞轮"
                     : "Two-sided developer & hardware flywheels."}
@@ -614,7 +617,7 @@ export default function MethodologyPage() {
                 <div className="font-bold text-white">
                   5. {isZh ? "有效规模" : "Efficient Scale"}
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {isZh
                     ? "百亿研发开支筑起自然垄断护城河"
                     : "Capital intensity deterring new entrants."}
@@ -635,24 +638,24 @@ export default function MethodologyPage() {
               </h2>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
                 ? "传统定性估值模型通常给乐观（Bull）、基准（Base）和悲观（Panic）情景赋予机械对称的先验权重（如 25% / 50% / 25%）。当公司面临严重审计师辞职、司法部调查或薄弱毛利率时，未校准的模型会给出脱离现实的“虚假阿尔法（False Alpha）”。StressAlpha 引入 QPCE 引擎，将先验概率转换至多项对数几率空间（Multinomial Log-Odds），通过四维制度性锚点执行纯确定性校准并以 Softmax 闭合映射。"
                 : "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha's QPCE engine maps scenario priors into Multinomial Log-Odds space, performs 4-pillar deterministic adjustments, and resolves posteriors via temperature-controlled Softmax with simplex contraction."}
             </p>
 
             {/* Formula Card */}
-            <div className="glass-panel space-y-2 overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/90 p-4 font-mono text-xs text-slate-200 shadow-inner">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-accent">
+            <div className="glass-panel shadow-xs space-y-2 overflow-hidden rounded-xl border border-border bg-surface-1/90 p-4 font-mono text-xs text-slate-200">
+              <div className="text-xs font-bold uppercase tracking-wider text-accent">
                 {isZh
                   ? "对数几率变换与 Softmax 闭合"
                   : "LOG-ODDS & SOFTMAX PROBABILITY SIMPLEX"}
               </div>
-              <div className="text-white">
+              <div className="text-foreground">
                 z_i = ln(p_i^prior) + Δz_i^governance + Δz_i^moat +
                 Δz_i^consensus + Δz_i^market
               </div>
-              <div className="text-white">
+              <div className="text-foreground">
                 p_i^* = exp(z_i / T) / ∑ exp(z_j / T) &nbsp;&nbsp;&nbsp; (T =
                 1.0)
               </div>
@@ -663,56 +666,64 @@ export default function MethodologyPage() {
 
             {/* 4 Pillars Grid */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="glass-panel rounded-xl border-l-2 border-rose-400 p-3.5">
-                <div className="text-xs font-bold text-rose-400">
-                  ⚖️{" "}
-                  {isZh
-                    ? "支柱一：司法审计与治理否决权"
-                    : "Pillar 1: Forensic & Governance Veto"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400">
+                  <span className="size-2 rounded-full bg-rose-400" />
+                  <span>
+                    {isZh
+                      ? "支柱一：司法审计与治理否决权"
+                      : "Pillar 1: Forensic & Governance Veto"}
+                  </span>
                 </div>
-                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {isZh
                     ? "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，施加非线性对数惩罚（Panic +1.8，Bull -1.2），并触发硬性字典序否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利缓冲），杜绝 Wirecard/Enron 陷阱。"
                     : "Severe governance flags or forensic accounting probes trigger a non-linear logit shift (+1.8 Panic, -1.2 Bull) and a lexicographic veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled), preventing the Wirecard/Enron trap."}
                 </p>
               </div>
 
-              <div className="glass-panel rounded-xl border-l-2 border-amber-400 p-3.5">
-                <div className="text-xs font-bold text-amber-400">
-                  🛡️{" "}
-                  {isZh
-                    ? "支柱二：商业范式校准与现金跑道护栏（复合/扩张/创投三分类）"
-                    : "Pillar 2: Archetype-Aware Resilience & Capital Runway"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                  <span className="size-2 rounded-full bg-amber-400" />
+                  <span>
+                    {isZh
+                      ? "支柱二：商业范式校准与现金跑道护栏（复合/扩张/创投三分类）"
+                      : "Pillar 2: Archetype-Aware Resilience & Capital Runway"}
+                  </span>
                 </div>
-                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {isZh
                     ? "将标的划分为三类范式：1) 现金复合型 (Compounder)：营业利润率 >30% 奖赏，<15% 施加去杠杆惩罚（好市多高周转宽护城河豁免）；2) 经营杠杆型 (Operating Scaler)：增速 ≥25% 且毛利 ≥60% 奖赏经营杠杆释放速度；3) 创投极速扩张型 (Venture Hypergrowth)：如 ONDS 增速 ≥50% 且营业亏损。若毛利率 ≥35% 判定单位经济模型成立，豁免营业亏损惩罚；同时审计净流动现金跑道：若跑道 <9 个月，施加 +1.25 恐慌对数惩罚，真实反映股权增发与破发折价稀释风险。"
                     : "Categorizes equities into 3 valuation archetypes: 1) Compounder: Operating margins >30% rewarded, <15% penalized unless protected by Wide Moat (Costco Exemption); 2) Operating Scaler: Growth ≥25% and gross margin ≥60% rewarded for operating leverage acceleration; 3) Venture Hypergrowth: High growth (≥50%) scale-ups with negative operating income (e.g. ONDS). Gated by a ≥35% gross margin floor to grant the Unit Economics Exemption; audited for Net Liquid Cash Runway: runways <9 months incur an acute +1.25 Panic logit penalty to reflect emergency secondary equity dilution."}
                 </p>
               </div>
 
-              <div className="glass-panel rounded-xl border-l-2 border-sky-400 p-3.5">
-                <div className="text-xs font-bold text-sky-400">
-                  📊{" "}
-                  {isZh
-                    ? "支柱三：华尔街卖方预期偏度与离散度"
-                    : "Pillar 3: Sell-Side Consensus Skew & Dispersion"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-sky-400">
+                  <span className="size-2 rounded-full bg-sky-400" />
+                  <span>
+                    {isZh
+                      ? "支柱三：华尔街卖方预期偏度与离散度"
+                      : "Pillar 3: Sell-Side Consensus Skew & Dispersion"}
+                  </span>
                 </div>
-                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                <p className="mt-1 text-pretty text-xs leading-relaxed text-slate-400">
                   {isZh
                     ? "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 70% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.60，则对称提升极端情景权重，反映市场认知巨大分歧。"
-                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture market disagreement."}
+                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture market\u00A0disagreement."}
                 </p>
               </div>
 
-              <div className="glass-panel rounded-xl border-l-2 border-emerald-400 p-3.5">
-                <div className="text-xs font-bold text-emerald-400">
-                  ⚓{" "}
-                  {isZh
-                    ? "支柱四：内生市场价贝叶斯收缩锚"
-                    : "Pillar 4: Market Bayesian Shrinkage Anchor"}
+              <div className="glass-panel shadow-xs rounded-xl border border-border p-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  <span>
+                    {isZh
+                      ? "支柱四：内生市场价贝叶斯收缩锚"
+                      : "Pillar 4: Market Bayesian Shrinkage Anchor"}
+                  </span>
                 </div>
-                <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {isZh
                     ? "根据当前市场成交价反推市场隐含的恐慌折价概率，并以 w_mkt = 0.20 的经验贝叶斯收缩权重锚定，使模型既扎根于真实市场定价，又不会退化为失去独立阿尔法发现能力的被动跟风模型。"
                     : "Reverse-engineers the market-implied disaster probability from real-time stock price and applies a 20% empirical Bayesian shrinkage weight (w_mkt = 0.20), grounding the scenario distribution in market pricing without losing fundamental alpha discovery."}
@@ -730,7 +741,7 @@ export default function MethodologyPage() {
                     : "Case Study: Super Micro Computer (SMCI Q4 2026) Governance Calibration"}
                 </span>
               </div>
-              <p className="mt-2 leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
                     SMCI 现价 <strong>$41.54</strong>。原始模型在未校准时分配{" "}
@@ -793,7 +804,7 @@ export default function MethodologyPage() {
               <div className="flex shrink-0 items-center gap-3">
                 <Link
                   href="/"
-                  className="rounded-lg border border-white/[0.1] bg-surface-2 px-4 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-surface-3 hover:text-white"
+                  className="shadow-xs rounded-lg border border-border bg-surface-2 px-4 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-surface-3 hover:text-foreground"
                 >
                   {isZh ? "返回测算模型" : "Open Model"}
                 </Link>
@@ -802,7 +813,7 @@ export default function MethodologyPage() {
                   href="https://github.com/phanturne/stress-alpha"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-accent/20 transition-all hover:bg-accent-hover active:scale-95"
+                  className="shadow-xs flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-bold text-slate-950 transition-all hover:bg-accent-hover active:scale-95"
                 >
                   <GithubIcon className="size-4" />
                   <span>{isZh ? "访问 GitHub 仓库" : "View on GitHub"}</span>

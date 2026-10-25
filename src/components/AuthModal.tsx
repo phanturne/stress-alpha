@@ -163,12 +163,12 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
       />
 
       {/* Dialog Card */}
-      <div className="glass-panel relative w-full max-w-md overflow-hidden rounded-2xl border border-white/[0.12] bg-surface-1/95 p-6 shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in zoom-in-95">
+      <div className="glass-panel shadow-xs relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface-1/95 p-6 backdrop-blur-2xl duration-200 animate-in fade-in zoom-in-95">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+          className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-surface-2 hover:text-foreground"
           aria-label="Close"
         >
           <X className="size-4" />
@@ -176,11 +176,11 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
 
         {/* Header Branding & Title */}
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl border border-accent/40 bg-accent/15 text-accent shadow-glow">
+          <div className="shadow-xs flex size-10 items-center justify-center rounded-xl border border-accent/40 bg-accent/15 text-accent">
             <Shield className="size-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight text-white">
+            <h2 className="text-base font-bold tracking-tight text-foreground">
               {mode === "signIn" ? t.signInTitle : t.signUpTitle}
             </h2>
             <p className="mt-0.5 text-xs leading-relaxed text-slate-400">
@@ -222,7 +222,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                     if (error) setError(null);
                   }}
                   placeholder={t.namePlaceholder}
-                  className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder={t.emailPlaceholder}
-                className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />
             </div>
           </div>
@@ -269,7 +269,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder={t.passwordPlaceholder}
-                className="w-full rounded-lg border border-white/[0.1] bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-2.5 text-xs font-bold text-slate-950 shadow-md transition-all hover:bg-accent/90 active:scale-[0.99] disabled:opacity-50"
+            className="shadow-xs flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-2.5 text-xs font-bold text-slate-950 transition-all hover:bg-accent/90 active:scale-[0.99] disabled:opacity-50"
           >
             {loading && <Loader2 className="size-3.5 animate-spin" />}
             <span>
@@ -292,7 +292,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         </form>
 
         {/* Mode Toggle Switcher */}
-        <div className="mt-5 border-t border-white/[0.08] pt-4 text-center">
+        <div className="mt-5 border-t border-border pt-4 text-center">
           <button
             type="button"
             onClick={() => {

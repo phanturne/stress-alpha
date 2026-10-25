@@ -268,15 +268,15 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
       />
 
       {/* Main Modal Window */}
-      <div className="glass-panel relative flex size-full max-h-[92vh] max-w-7xl flex-col overflow-hidden rounded-3xl border border-white/[0.12] bg-surface-1 shadow-2xl animate-in zoom-in-95">
+      <div className="glass-panel shadow-xs relative flex size-full max-h-[92vh] max-w-7xl flex-col overflow-hidden rounded-3xl border border-border bg-surface-1 animate-in zoom-in-95">
         {/* Top Modal Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.08] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl border border-accent/40 bg-accent/10 text-accent shadow-glow">
+            <div className="shadow-xs flex size-9 items-center justify-center rounded-xl border border-accent/40 bg-accent/10 text-accent">
               <Sparkles className="size-4.5" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold tracking-tight text-white sm:text-lg">
+              <h2 className="text-base font-extrabold tracking-tight text-foreground sm:text-lg">
                 {t.modalTitle}
               </h2>
               <p className="text-xs text-slate-400">{t.modalSubtitle}</p>
@@ -285,14 +285,14 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
 
           <div className="flex items-center gap-2">
             {/* Quick Language Toggle inside modal */}
-            <div className="flex items-center rounded-lg border border-white/[0.08] bg-surface-0/80 p-0.5 text-xs">
+            <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5 text-xs">
               <button
                 type="button"
                 onClick={() => setSelectedLocale("en")}
                 className={`rounded px-2 py-1 font-bold transition-colors ${
                   cardLocale === "en"
                     ? "bg-accent font-extrabold text-slate-950"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
               >
                 EN
@@ -303,7 +303,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                 className={`rounded px-2 py-1 font-bold transition-colors ${
                   cardLocale === "zh"
                     ? "bg-accent font-extrabold text-slate-950"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-foreground"
                 }`}
               >
                 中文
@@ -313,7 +313,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex size-9 items-center justify-center rounded-xl border border-white/[0.08] bg-surface-2 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
+              className="flex size-9 items-center justify-center rounded-xl border border-border bg-surface-2 text-slate-400 transition-colors hover:border-accent/40 hover:text-foreground"
               title={t.actions.close}
             >
               <X className="size-4.5" />
@@ -400,10 +400,10 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
           </div>
 
           {/* Right: Controls & Customization Sidebar */}
-          <div className="custom-scrollbar flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-white/[0.08] bg-surface-1 p-5 sm:p-6 lg:w-[420px] lg:border-l lg:border-t-0 xl:w-[460px]">
+          <div className="custom-scrollbar flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-border bg-surface-1 p-5 sm:p-6 lg:w-[420px] lg:border-l lg:border-t-0 xl:w-[460px]">
             <div className="flex flex-col gap-5">
               {/* Scenario Link Sharing Box */}
-              <div className="rounded-2xl border border-white/[0.08] bg-surface-0/70 p-3.5 shadow-sm">
+              <div className="shadow-xs rounded-2xl border border-border bg-surface-0/70 p-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
                     <Link2 className="size-3.5 text-accent" />
@@ -415,7 +415,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                 </div>
 
                 <div className="mt-2.5 flex items-center gap-2">
-                  <div className="flex flex-1 items-center gap-2 overflow-hidden rounded-xl border border-white/[0.06] bg-surface-2/80 px-3 py-2 font-mono text-xs text-slate-300">
+                  <div className="flex flex-1 items-center gap-2 overflow-hidden rounded-xl border border-border/60 bg-surface-2/80 px-3 py-2 font-mono text-xs text-slate-300">
                     <span className="truncate text-slate-400">
                       {currentUrl}
                     </span>
@@ -423,7 +423,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   <button
                     type="button"
                     onClick={handleCopyLink}
-                    className="flex shrink-0 items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/15 px-3 py-2 text-xs font-bold text-accent shadow-sm transition-all hover:bg-accent/25 hover:text-white active:scale-95"
+                    className="shadow-xs flex shrink-0 items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/15 px-3 py-2 text-xs font-bold text-accent transition-all hover:bg-accent/25 hover:text-foreground active:scale-95"
                   >
                     {isLinkCopied ? (
                       <>
@@ -466,7 +466,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                         className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
                           isActive
                             ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30"
-                            : "border-white/[0.08] bg-surface-2/70 text-slate-400 hover:border-slate-500 hover:text-white"
+                            : "border-border bg-surface-2/70 text-slate-400 hover:border-accent/40 hover:text-foreground"
                         }`}
                       >
                         {t.templates[preset]}
@@ -494,10 +494,10 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                         key={section}
                         className={`flex items-center gap-2.5 rounded-xl border p-2 transition-all ${
                           !isAvailable
-                            ? "cursor-not-allowed border-white/[0.04] bg-surface-2/20 opacity-40"
+                            ? "cursor-not-allowed border-border/40 bg-surface-2/20 opacity-40"
                             : isChecked
                               ? "cursor-pointer border-accent/40 bg-accent/10"
-                              : "cursor-pointer border-white/[0.06] bg-surface-2/50 hover:border-slate-500"
+                              : "cursor-pointer border-border/60 bg-surface-2/50 hover:border-accent/40"
                         }`}
                       >
                         <input
@@ -553,8 +553,8 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     onClick={() => setAspectRatio("landscape")}
                     className={`rounded-xl border p-2 text-center transition-all ${
                       aspectRatio === "landscape"
-                        ? "border-accent bg-accent/15 font-bold text-accent shadow-sm"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-300 hover:border-slate-500 hover:text-white"
+                        ? "shadow-xs border-accent bg-accent/15 font-bold text-accent"
+                        : "border-border bg-surface-2/70 text-slate-300 hover:border-accent/40 hover:text-foreground"
                     }`}
                   >
                     <div className="font-mono font-bold">16:9</div>
@@ -568,8 +568,8 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     onClick={() => setAspectRatio("square")}
                     className={`rounded-xl border p-2 text-center transition-all ${
                       aspectRatio === "square"
-                        ? "border-accent bg-accent/15 font-bold text-accent shadow-sm"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-300 hover:border-slate-500 hover:text-white"
+                        ? "shadow-xs border-accent bg-accent/15 font-bold text-accent"
+                        : "border-border bg-surface-2/70 text-slate-300 hover:border-accent/40 hover:text-foreground"
                     }`}
                   >
                     <div className="font-mono font-bold">1:1</div>
@@ -583,8 +583,8 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     onClick={() => setAspectRatio("portrait")}
                     className={`rounded-xl border p-2 text-center transition-all ${
                       aspectRatio === "portrait"
-                        ? "border-accent bg-accent/15 font-bold text-accent shadow-sm"
-                        : "border-white/[0.08] bg-surface-2/70 text-slate-300 hover:border-slate-500 hover:text-white"
+                        ? "shadow-xs border-accent bg-accent/15 font-bold text-accent"
+                        : "border-border bg-surface-2/70 text-slate-300 hover:border-accent/40 hover:text-foreground"
                     }`}
                   >
                     <div className="font-mono font-bold">4:5</div>
@@ -612,12 +612,12 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                           onClick={() => setTheme(thm)}
                           className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
                             isSelected
-                              ? "border-accent bg-accent/15 font-bold text-white shadow-sm ring-1 ring-accent/30"
-                              : "border-white/[0.08] bg-surface-2/70 text-slate-300 hover:border-slate-500 hover:text-white"
+                              ? "shadow-xs border-accent bg-accent/15 font-bold text-foreground ring-1 ring-accent/30"
+                              : "border-border bg-surface-2/70 text-slate-300 hover:border-accent/40 hover:text-foreground"
                           }`}
                         >
                           <div
-                            className="size-3.5 rounded-full border border-white/20 shadow-sm"
+                            className="shadow-xs size-3.5 rounded-full border border-border"
                             style={{ background: cfg.accentColor }}
                           />
                           <span className="truncate">
@@ -650,7 +650,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   placeholder={t.controls.customNotePlaceholder}
                   rows={2}
                   maxLength={160}
-                  className="mt-1.5 w-full rounded-xl border border-white/[0.08] bg-surface-0/90 p-3 text-xs text-white placeholder-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-surface-0/90 p-3 text-xs text-foreground placeholder-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                 />
                 <div className="mt-1 text-right font-mono text-[10px] text-slate-500">
                   {customNote.length}/160
@@ -658,7 +658,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
               </div>
 
               {/* 5. Toggles */}
-              <div className="flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-surface-0/60 p-3 text-xs">
+              <div className="flex flex-col gap-2 rounded-xl border border-border/60 bg-surface-0/60 p-3 text-xs">
                 {/* Include Stressed Parameters */}
                 <label className="flex cursor-pointer items-center justify-between">
                   <span className="text-slate-300">
@@ -715,7 +715,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   type="button"
                   onClick={handleCopyImage}
                   disabled={isCopying}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.12] bg-surface-2 px-4 py-3 text-xs font-bold text-white shadow-md transition-all hover:border-accent/40 hover:bg-surface-3 active:scale-[0.98] disabled:opacity-50"
+                  className="shadow-xs flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-4 py-3 text-xs font-bold text-foreground transition-all hover:border-accent/40 hover:bg-surface-3 active:scale-[0.98] disabled:opacity-50"
                 >
                   {isCopying ? (
                     <>
@@ -735,7 +735,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
               <button
                 type="button"
                 onClick={handleCopyPostText}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-surface-0/90 py-2.5 text-xs font-semibold text-slate-300 transition-all hover:border-slate-500 hover:text-white"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-0/90 py-2.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:text-foreground"
               >
                 {isTextCopied ? (
                   <>

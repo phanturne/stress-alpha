@@ -44,7 +44,7 @@ export const FilingTab: React.FC<FilingTabProps> = ({
             href={`https://www.sec.gov/edgar/searchedgar/companysearch?companySearchBox=${encodeURIComponent(ticker)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-surface-1 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-accent/10"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-accent/10"
             title={
               locale === "zh"
                 ? `在 SEC EDGAR 查看 ${ticker} 官方 10-Q/10-K 文件`
@@ -122,20 +122,24 @@ export const FilingTab: React.FC<FilingTabProps> = ({
                     return (
                       <div
                         key={fIdx}
-                        className="flex items-start justify-between gap-3 rounded-r-lg border-l-2 bg-surface-0/40 py-1 pl-3.5 text-xs text-slate-300"
-                        style={{
-                          borderColor: isGrowth
-                            ? "#10b981"
-                            : isRisk
-                              ? "#f43f5e"
-                              : "#38bdf8",
-                        }}
+                        className="flex items-start justify-between gap-3 rounded-lg border border-border/80 bg-surface-0/40 p-2.5 text-xs text-slate-300"
                       >
-                        <span className="leading-relaxed">
-                          {finding.finding}
-                        </span>
+                        <div className="flex items-start gap-2">
+                          <span
+                            className={`mt-1.5 size-1.5 shrink-0 rounded-full ${
+                              isGrowth
+                                ? "bg-emerald-400"
+                                : isRisk
+                                  ? "bg-rose-400"
+                                  : "bg-sky-400"
+                            }`}
+                          />
+                          <span className="leading-relaxed">
+                            {finding.finding}
+                          </span>
+                        </div>
                         {isNew && (
-                          <span className="bg-fintech-amberGlow/20 inline-flex shrink-0 items-center rounded border border-fintech-amber/30 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-fintech-amber">
+                          <span className="bg-fintech-amberGlow/20 inline-flex shrink-0 items-center rounded border border-fintech-amber/30 px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-fintech-amber">
                             {t.newBadge}
                           </span>
                         )}

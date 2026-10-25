@@ -17,3 +17,7 @@ coverage
 
 # Local report staging artifacts (reports are stored directly in Neon Database)
 /reports/
+
+# Local agent / tool configs
+.codex/
+.impeccable/*.local.json

@@ -158,7 +158,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-slate-300">
+          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-slate-300">
             <FileText className="size-3" />
             {t.channels.none}
           </span>
@@ -247,11 +247,11 @@ export const NewsTab: React.FC<NewsTabProps> = ({
 
       {/* Hero: Latest Market Pulse Banner */}
       {latestPulseEvent && (
-        <div className="relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-surface-1/95 via-surface-2/90 to-accent/5 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
+        <div className="shadow-xs relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-surface-1/95 via-surface-2/90 to-accent/5 p-5 backdrop-blur-xl sm:p-6">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 size-48 rounded-full bg-accent/10 blur-3xl" />
 
           <div className="relative flex flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <span className="flex size-2 animate-ping rounded-full bg-accent" />
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
@@ -306,7 +306,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             </div>
 
             <div>
-              <h4 className="text-base font-bold leading-snug text-white sm:text-lg">
+              <h4 className="text-base font-bold leading-snug text-foreground sm:text-lg">
                 {latestPulseEvent.title}
               </h4>
               <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
@@ -315,14 +315,14 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             </div>
 
             {/* Transmission Vector Card */}
-            <div className="mt-1 flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-surface-0/80 p-4 shadow-inner sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-1 flex flex-col gap-3 rounded-xl border border-border bg-surface-0/80 p-4 shadow-inner sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-3">
                 {renderChannelBadge(latestPulseEvent.transmissionType)}
 
                 {latestPulseEvent.transmissionPayload?.driverId && (
                   <div className="flex items-center gap-1.5 font-mono text-xs text-slate-300">
                     <span className="text-slate-400">Driver:</span>
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-foreground">
                       {latestPulseEvent.transmissionPayload.driverId}
                     </span>
                     {(() => {
@@ -375,7 +375,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                     href={latestPulseEvent.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-surface-2/90 px-3 py-1.5 font-mono text-xs font-medium text-slate-300 transition-all hover:border-white/20 hover:text-white"
+                    className="flex items-center gap-1 rounded-lg border border-border bg-surface-2/90 px-3 py-1.5 font-mono text-xs font-medium text-slate-300 transition-all hover:border-accent/40 hover:text-foreground"
                   >
                     <span>{t.viewSource}</span>
                     <ExternalLink className="size-3" />
@@ -389,8 +389,8 @@ export const NewsTab: React.FC<NewsTabProps> = ({
 
       {/* Upstream Supply Chain Dependencies Strip (if available) */}
       {upstreamDependencies.length > 0 && (
-        <div className="rounded-xl border border-white/[0.08] bg-surface-1/80 p-4 shadow-sm backdrop-blur-md">
-          <div className="flex items-center gap-2 border-b border-white/[0.06] pb-2 text-xs font-bold uppercase tracking-wider text-slate-300">
+        <div className="shadow-xs rounded-xl border border-border bg-surface-1/80 p-4 backdrop-blur-md">
+          <div className="flex items-center gap-2 border-b border-border pb-2 text-xs font-bold uppercase tracking-wider text-slate-300">
             <Layers className="size-3.5 text-accent" />
             <span>
               Cross-Company Supply Chain Dependencies (
@@ -401,7 +401,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             {upstreamDependencies.map((dep, i) => (
               <div
                 key={dep.id || i}
-                className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-surface-2/60 p-2.5 font-mono text-xs"
+                className="flex items-center justify-between rounded-lg border border-border bg-surface-2/60 p-2.5 font-mono text-xs"
               >
                 <div className="min-w-0 pr-2">
                   <div className="flex items-center gap-1.5">
@@ -409,7 +409,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                       {dep.sourceTicker}
                     </span>
                     <ArrowRight className="size-3 text-slate-500" />
-                    <span className="font-bold text-white">
+                    <span className="font-bold text-foreground">
                       {dep.targetTicker}
                     </span>
                   </div>
@@ -449,7 +449,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             return (
               <div
                 key={event.id}
-                className="group relative flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-surface-1/90 p-4 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-2/95"
+                className="shadow-xs group relative flex flex-col gap-2.5 rounded-xl border border-border bg-surface-1/90 p-4 transition-all hover:border-accent/40 hover:bg-surface-2/95"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">

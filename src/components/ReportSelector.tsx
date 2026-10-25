@@ -262,7 +262,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
             <Star
               className={`size-3.5 transition-colors ${
                 isFav
-                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                  ? "fill-amber-400 text-amber-400"
                   : "text-slate-600 hover:text-amber-400"
               }`}
             />
@@ -284,10 +284,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
     const isExpanded = Boolean(searchQuery.trim() || expandedTickers[g.ticker]);
 
     return (
-      <div
-        key={g.ticker}
-        className="border-b border-white/[0.04] last:border-b-0"
-      >
+      <div key={g.ticker} className="border-b border-border/40 last:border-b-0">
         {/* Compact Single-Row Ticker Item - Full-row clickable */}
         <div
           role="button"
@@ -308,13 +305,15 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           className={`flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
             isSelected
               ? "bg-accent/10 font-semibold text-accent"
-              : "text-slate-300 hover:bg-surface-2 hover:text-white"
+              : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
           }`}
           title={g.company || g.ticker}
         >
           <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono font-bold text-white">{g.ticker}</span>
+              <span className="font-mono font-bold text-foreground">
+                {g.ticker}
+              </span>
               <span className="font-mono text-[11px] text-slate-400">
                 {featuredReport.quarter || ""}
               </span>
@@ -342,7 +341,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold transition-all ${
                 isExpanded
                   ? "border border-accent/40 bg-accent/20 text-accent"
-                  : "border border-white/[0.08] bg-surface-2 text-slate-400 hover:border-white/20 hover:bg-surface-3 hover:text-slate-200"
+                  : "border border-border bg-surface-2 text-slate-400 hover:border-border-light hover:bg-surface-3 hover:text-slate-200"
               }`}
               title={
                 isExpanded
@@ -375,7 +374,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               <Star
                 className={`size-3.5 transition-colors ${
                   g.isFav
-                    ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]"
+                    ? "fill-amber-400 text-amber-400"
                     : "text-slate-600 hover:text-amber-400"
                 }`}
               />
@@ -385,7 +384,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
 
         {/* Indented Sub-quarters: ONLY visible when expanded */}
         {isExpanded && (
-          <div className="border-t border-white/[0.04] bg-surface-0/30 py-1 pl-6 pr-3 duration-150 animate-in fade-in">
+          <div className="border-t border-border/40 bg-surface-0/30 py-1 pl-6 pr-3 duration-150 animate-in fade-in">
             {g.reports.map((r, idx) => {
               const isQuarterSelected = r.slug === currentSlug;
               const isQuarterLatest = idx === 0;
@@ -401,7 +400,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                   className={`flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-xs transition-colors ${
                     isQuarterSelected
                       ? "bg-accent/15 font-semibold text-accent"
-                      : "text-slate-400 hover:bg-surface-2 hover:text-white"
+                      : "text-slate-400 hover:bg-surface-2 hover:text-foreground"
                   }`}
                 >
                   <div className="flex items-center gap-1.5 font-mono text-[11px]">
@@ -459,7 +458,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         className={`group flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium shadow-sm transition-all sm:gap-2 sm:px-3 ${
           !isLatest
             ? "border-amber-500/40 bg-amber-500/10 text-amber-200 hover:border-amber-500/60 hover:bg-amber-500/20"
-            : "border-white/[0.08] bg-surface-1/90 text-slate-200 hover:border-accent/50 hover:bg-surface-2"
+            : "border-border bg-surface-1/90 text-slate-200 hover:border-accent/50 hover:bg-surface-2"
         }`}
         title={
           displayCompany
@@ -470,7 +469,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         <FolderOpen
           className={`size-3.5 shrink-0 ${!isLatest ? "text-amber-400" : "text-accent"}`}
         />
-        <span className="font-mono font-bold text-white">
+        <span className="font-mono font-bold text-foreground">
           {displayTicker || t.selectReport}
         </span>
         {displayQuarter && (
@@ -498,7 +497,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="glass-panel absolute left-0 z-50 mt-2 w-80 max-w-[calc(100vw-24px)] divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.1] bg-surface-1/95 shadow-2xl backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-96">
+        <div className="glass-panel shadow-xs absolute left-0 z-50 mt-2 w-80 max-w-[calc(100vw-24px)] divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/95 backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 sm:w-96">
           {/* Search Input Bar */}
           <div className="bg-surface-0/80 p-2.5">
             <div className="relative flex items-center">
@@ -512,14 +511,14 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                     ? "搜索代码、公司或季度..."
                     : "Search ticker, company or quarter..."
                 }
-                className="w-full rounded-lg border border-white/[0.08] bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-white placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                 autoFocus
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 text-slate-400 hover:text-white"
+                  className="absolute right-2 text-slate-400 hover:text-foreground"
                 >
                   <X className="size-3.5" />
                 </button>
@@ -529,7 +528,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
 
           {/* Quick Quarter Switcher Bar for Current Stock (Ultra-compact single horizontal line) */}
           {activeSiblingReports.length > 1 && !searchQuery && (
-            <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-surface-0/60 px-3 py-1.5 text-xs">
+            <div className="flex items-center gap-1.5 border-b border-border/60 bg-surface-0/60 px-3 py-1.5 text-xs">
               <div className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-slate-400">
                 <Calendar className="size-3 text-accent" />
                 <span>{displayTicker}:</span>
@@ -550,7 +549,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                       className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold transition-all ${
                         isCurrent
                           ? "border border-accent/60 bg-accent/25 font-bold text-accent shadow-sm"
-                          : "border border-white/[0.08] bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+                          : "border border-border bg-surface-1 text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
                       }`}
                       title={`${r.quarter}${r.reportDate ? ` (${r.reportDate})` : ""}`}
                     >
@@ -584,7 +583,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               <>
                 {pinnedGroups.length > 0 && (
                   <div>
-                    <div className="flex items-center gap-1.5 border-b border-white/[0.04] bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    <div className="flex items-center gap-1.5 border-b border-border/40 bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
                       <Star className="size-3 fill-amber-400 text-amber-400" />
                       <span>
                         {t.watchlistSection} ({pinnedGroups.length})
@@ -597,7 +596,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 {otherGroups.length > 0 && (
                   <div>
                     {pinnedGroups.length > 0 && (
-                      <div className="flex items-center gap-1.5 border-y border-white/[0.04] bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      <div className="flex items-center gap-1.5 border-y border-border/40 bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                         <span>{t.allReportsSection}</span>
                       </div>
                     )}
@@ -610,7 +609,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
 
           {/* Screener Action Footer */}
           {onOpenScreener && (
-            <div className="border-t border-white/[0.06] bg-surface-0/90 p-2">
+            <div className="border-t border-border/60 bg-surface-0/90 p-2">
               <button
                 type="button"
                 onClick={() => {

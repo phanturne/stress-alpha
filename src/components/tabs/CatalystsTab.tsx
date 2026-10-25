@@ -102,8 +102,8 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
 
               {/* Evidence list */}
               {catalyst.evidence && catalyst.evidence.length > 0 && (
-                <div className="mt-3.5 rounded-lg border-l-2 border-accent/40 bg-surface-0/60 p-3">
-                  <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="mt-3.5 rounded-lg border border-border/80 bg-surface-0/60 p-3">
+                  <div className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     {t.evidenceTitle}
                   </div>
                   <ul className="space-y-1.5 text-xs text-slate-300">
