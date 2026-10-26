@@ -411,7 +411,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                     <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-400">
                       ${average.toFixed(2)}
                     </span>
-                    <span className="text-[10px] font-medium text-slate-400">
+                    <span className="text-[11px] font-medium text-slate-400">
                       {t.average}
                     </span>
                   </div>
@@ -425,7 +425,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   >
                     <div className="size-3.5 rounded-full border-2 border-surface-0 bg-accent ring-2 ring-accent/25" />
                     <div className="absolute -top-7 flex flex-col items-center whitespace-nowrap">
-                      <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground">
+                      <span className="shadow-xs rounded border border-border bg-surface-1 px-1.5 py-0.5 font-mono text-[11px] font-bold text-foreground">
                         {t.currentPriceLabel}: ${current.toFixed(2)}
                       </span>
                     </div>
@@ -436,13 +436,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               {/* Min and Max Target Labels */}
               <div className="mt-5 flex justify-between pt-2 font-mono text-xs text-slate-400">
                 <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-500">
+                  <span className="text-[11px] uppercase tracking-wider text-slate-400">
                     {t.low}
                   </span>
                   <span className="font-semibold text-slate-200">
                     ${low.toFixed(2)}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[11px] text-slate-400">
                     {current > 0
                       ? `${(((low - current) / current) * 100).toFixed(1)}%`
                       : ""}
@@ -450,13 +450,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 </div>
 
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-500">
+                  <span className="text-[11px] uppercase tracking-wider text-slate-400">
                     {t.high}
                   </span>
                   <span className="font-semibold text-slate-200">
                     ${high.toFixed(2)}
                   </span>
-                  <span className="text-[10px] text-emerald-400">
+                  <span className="text-[11px] text-emerald-400">
                     {current > 0
                       ? `+${(((high - current) / current) * 100).toFixed(1)}%`
                       : ""}
@@ -562,7 +562,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                           </a>
                           {actionStyle && item.action && (
                             <span
-                              className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-medium ${actionStyle.className}`}
+                              className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[11px] font-medium ${actionStyle.className}`}
                             >
                               <actionStyle.icon className="size-2.5" />
                               {item.action}
@@ -577,7 +577,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                       </div>
 
                       <span
-                        className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${ratingStyle.className}`}
+                        className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${ratingStyle.className}`}
                       >
                         {ratingStyle.label}
                       </span>
@@ -585,13 +585,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
                     <div className="flex items-center justify-between rounded-lg bg-surface-0/60 p-2.5">
                       <div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           {t.colTarget}
                         </div>
                         <div className="font-mono text-sm font-bold text-white">
                           ${item.priceTarget.toFixed(2)}
                           {item.priorPriceTarget && (
-                            <span className="ml-1 text-[10px] font-normal text-slate-500">
+                            <span className="ml-1 text-[11px] font-normal text-slate-400">
                               ({t.fromPrior} ${item.priorPriceTarget.toFixed(2)}
                               )
                             </span>
@@ -600,7 +600,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                       </div>
 
                       <div className="text-right">
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           {t.colUpside}
                         </div>
                         <span
@@ -616,7 +616,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                       </div>
 
                       <div className="text-right">
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           {t.colDate}
                         </div>
                         <span className="font-mono text-xs text-slate-400">
@@ -684,7 +684,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                               </a>
                               {actionStyle && item.action && (
                                 <span
-                                  className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-medium ${actionStyle.className}`}
+                                  className={`inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 text-[11px] font-medium ${actionStyle.className}`}
                                 >
                                   <actionStyle.icon className="size-2.5" />
                                   {item.action}
@@ -697,7 +697,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                               </span>
                             )}
                             {item.notes && (
-                              <span className="mt-1 line-clamp-1 text-[10px] italic text-slate-500 transition-all group-hover:line-clamp-none">
+                              <span className="mt-1 line-clamp-1 text-[11px] italic text-slate-400 transition-all group-hover:line-clamp-none">
                                 &quot;{item.notes}&quot;
                               </span>
                             )}
@@ -782,7 +782,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 <span className="text-slate-400">{t.streetHigh}</span>
                 <span className="font-mono font-bold text-emerald-400">
                   ${high.toFixed(2)}{" "}
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[11px] text-slate-400">
                     (
                     {current > 0
                       ? `+${(((high - current) / current) * 100).toFixed(0)}%`
@@ -796,7 +796,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 <span className="text-slate-400">{t.streetLow}</span>
                 <span className="font-mono font-bold text-slate-300">
                   ${low.toFixed(2)}{" "}
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[11px] text-slate-400">
                     (
                     {current > 0
                       ? `${(((low - current) / current) * 100).toFixed(0)}%`
@@ -844,7 +844,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   )}
                 </div>
                 {source.date && (
-                  <div className="mt-2 font-mono text-[10px] text-slate-500">
+                  <div className="mt-2 font-mono text-[11px] text-slate-400">
                     {source.date}
                   </div>
                 )}

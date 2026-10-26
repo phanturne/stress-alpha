@@ -152,7 +152,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAuditModalOpen(true)}
-                className="group/audit inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/20"
+                className="group/audit inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/20"
                 title={t.variantPerceptionTitle}
               >
                 <ShieldCheck className="size-3 text-accent" />
@@ -164,7 +164,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                       ]
                     : `${valuation.sanityAudit.dataCompletenessScore}%`}
                 </span>
-                <span className="text-[9px] text-accent/70 group-hover/audit:text-accent">
+                <span className="text-[11px] text-accent/70 group-hover/audit:text-accent">
                   ↗
                 </span>
               </button>
@@ -247,7 +247,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
               {/* Hero Target Price */}
               <div className="flex flex-col gap-0.5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   {t.targetPrice}
                 </span>
                 <div className="flex items-baseline gap-2">
@@ -306,7 +306,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                 {/* 2-Column EPS & Multiple Inline Inputs */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface-0/80 p-2.5">
-                    <span className="font-mono text-[10px] uppercase text-slate-400">
+                    <span className="font-mono text-[11px] uppercase text-slate-400">
                       {t.fwdEps}
                     </span>
                     <div className="flex items-center gap-1">
@@ -328,7 +328,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                   </div>
 
                   <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface-0/80 p-2.5">
-                    <span className="font-mono text-[10px] uppercase text-slate-400">
+                    <span className="font-mono text-[11px] uppercase text-slate-400">
                       {t.exitPe}
                     </span>
                     <div className="flex items-center gap-1">
@@ -353,7 +353,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
 
               {/* Key Qualitative Assumptions Bullet List */}
               <div className="flex flex-1 flex-col gap-2 border-t border-border/60 pt-2">
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {t.assumptionsTitle}
                 </span>
                 <ul className="space-y-1.5 text-xs leading-relaxed text-slate-300">
@@ -431,7 +431,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         {scenario.name}
                       </span>
                     </div>
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                       Δ Fair Value
                     </span>
                   </div>
@@ -449,7 +449,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                             <span className="text-xs font-semibold text-slate-200">
                               {it.parameter}
                             </span>
-                            <span className="font-mono text-[10px] text-slate-400">
+                            <span className="font-mono text-[11px] text-slate-400">
                               {it.baseValue} → {it.altValue}
                             </span>
                           </div>
@@ -484,7 +484,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                 <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
                   {t.revisionsLedgerTitle}
                 </h4>
-                <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-400">
                   {revisions.length}
                 </span>
               </div>
@@ -520,7 +520,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         <Clock className="size-3" />
                         {dateStr}
                       </span>
-                      <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-slate-300">
+                      <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-slate-300">
                         {rev.triggerType}
                       </span>
                     </div>

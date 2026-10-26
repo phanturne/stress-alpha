@@ -88,7 +88,7 @@ export const AuditTab: React.FC<AuditTabProps> = ({
                 <span>{item.label}</span>
                 {item.countBadge && (
                   <span
-                    className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
+                    className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] tabular-nums ${
                       isActive
                         ? "bg-accent/15 font-bold text-accent"
                         : "bg-surface-2 text-slate-400"

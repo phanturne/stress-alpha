@@ -409,7 +409,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     <Link2 className="size-3.5 text-accent" />
                     <span>{t.controls.scenarioLinkLabel}</span>
                   </div>
-                  <span className="font-mono text-[10px] text-slate-400">
+                  <span className="font-mono text-[11px] text-slate-400">
                     {t.controls.liveStressParams}
                   </span>
                 </div>
@@ -523,12 +523,12 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                               {t.sections[section]}
                             </span>
                             {!isAvailable && (
-                              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500">
+                              <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                                 {t.labels.noDataAvailable}
                               </span>
                             )}
                           </div>
-                          <div className="truncate text-[10px] text-slate-500">
+                          <div className="truncate text-[11px] text-slate-400">
                             {
                               t.sections[
                                 `${section}Desc` as keyof typeof t.sections
@@ -558,7 +558,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     }`}
                   >
                     <div className="font-mono font-bold">16:9</div>
-                    <div className="mt-0.5 text-[10px] text-slate-400">
+                    <div className="mt-0.5 text-[11px] text-slate-400">
                       X / LinkedIn
                     </div>
                   </button>
@@ -573,7 +573,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     }`}
                   >
                     <div className="font-mono font-bold">1:1</div>
-                    <div className="mt-0.5 text-[10px] text-slate-400">
+                    <div className="mt-0.5 text-[11px] text-slate-400">
                       Instagram / Feed
                     </div>
                   </button>
@@ -588,7 +588,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                     }`}
                   >
                     <div className="font-mono font-bold">4:5</div>
-                    <div className="mt-0.5 text-[10px] text-slate-400">
+                    <div className="mt-0.5 text-[11px] text-slate-400">
                       Mobile / Stories
                     </div>
                   </button>
@@ -639,7 +639,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setUserNote("")}
-                    className="text-[10px] text-slate-400 hover:text-slate-200"
+                    className="text-[11px] text-slate-400 hover:text-slate-200"
                   >
                     {t.controls.clear}
                   </button>
@@ -652,7 +652,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                   maxLength={160}
                   className="mt-1.5 w-full rounded-xl border border-border bg-surface-0/90 p-3 text-xs text-foreground placeholder-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                 />
-                <div className="mt-1 text-right font-mono text-[10px] text-slate-500">
+                <div className="mt-1 text-right font-mono text-[11px] text-slate-400">
                   {customNote.length}/160
                 </div>
               </div>

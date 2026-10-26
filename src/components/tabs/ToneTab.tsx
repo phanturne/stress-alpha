@@ -139,7 +139,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
           <div className="custom-scrollbar hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-border bg-surface-2/70 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <tr className="border-b border-border bg-surface-2/70 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   <th className="p-3 font-semibold">{t.colTopic}</th>
                   <th className="p-3 text-right font-semibold">
                     {t.colMentions}
@@ -217,7 +217,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
                       — {q.speaker}
                     </span>
                     <span
-                      className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase ${badgeClass}`}
+                      className={`rounded border px-2 py-0.5 text-[11px] font-bold uppercase ${badgeClass}`}
                     >
                       {sentimentLabel}
                     </span>

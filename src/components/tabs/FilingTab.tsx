@@ -79,11 +79,11 @@ export const FilingTab: React.FC<FilingTabProps> = ({
                   <span className="text-xs font-semibold leading-relaxed text-slate-200">
                     {r.risk}
                   </span>
-                  <span className="font-mono text-[10px] text-slate-400">
+                  <span className="font-mono text-[11px] text-slate-400">
                     {r.priorLanguage === "new" ? t.newTag : t.expandedTag}
                   </span>
                 </div>
-                <span className="bg-fintech-redGlow/20 shadow-xs shrink-0 rounded-full border border-fintech-red/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-fintech-red">
+                <span className="bg-fintech-redGlow/20 shadow-xs shrink-0 rounded-full border border-fintech-red/40 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-fintech-red">
                   {r.severity}
                 </span>
               </div>

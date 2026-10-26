@@ -423,7 +423,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                       ? `${(parseNumber(dep.exposureShare)! * 100).toFixed(0)}% Exp`
                       : "0% Exp"}
                   </div>
-                  <div className="text-[10px] text-slate-400">
+                  <div className="text-[11px] text-slate-400">
                     {parseNumber(dep.elasticity) !== null
                       ? `${parseNumber(dep.elasticity)!.toFixed(2)}x Elas`
                       : "0.00x Elas"}

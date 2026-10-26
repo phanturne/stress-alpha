@@ -263,7 +263,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                   {/* Financials Grid */}
                   <div className="grid grid-cols-3 gap-2 rounded-lg bg-surface-0/60 p-2.5 text-center font-mono">
                     <div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[11px] text-slate-400">
                         {t.colRevenue}
                       </div>
                       <div className="text-xs font-semibold text-slate-200">
@@ -273,7 +273,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                       </div>
                       {peer.revenueGrowthPct !== undefined && (
                         <div
-                          className={`text-[10px] ${
+                          className={`text-[11px] ${
                             peer.revenueGrowthPct >= 0
                               ? "text-fintech-green"
                               : "text-fintech-red"
@@ -286,7 +286,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                     </div>
 
                     <div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[11px] text-slate-400">
                         {t.colOperatingMargin}
                       </div>
                       <div className="text-xs font-semibold text-slate-200">
@@ -295,14 +295,14 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                           : "—"}
                       </div>
                       {peer.grossMarginPct !== undefined && (
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           GM: {peer.grossMarginPct.toFixed(0)}%
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[11px] text-slate-400">
                         {t.colFwdPe}
                       </div>
                       <div className="text-xs font-semibold text-slate-200">
@@ -311,7 +311,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                           : "—"}
                       </div>
                       {peer.marketSharePct !== undefined && (
-                        <div className="text-[10px] text-accent">
+                        <div className="text-[11px] text-accent">
                           {peer.marketSharePct.toFixed(0)}% Share
                         </div>
                       )}
@@ -325,11 +325,11 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                     <div className="space-y-2 border-t border-border/40 pt-2.5 text-xs">
                       {peer.pricingPower && (
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] uppercase tracking-wider text-slate-400">
+                          <span className="text-[11px] uppercase tracking-wider text-slate-400">
                             {t.colPricingPower}:
                           </span>
                           <span
-                            className={`rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${pricingClass}`}
+                            className={`rounded border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${pricingClass}`}
                           >
                             {peer.pricingPower}
                           </span>
@@ -337,7 +337,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                       )}
                       {peer.productComparison && (
                         <div>
-                          <span className="text-[10px] font-bold uppercase text-slate-400">
+                          <span className="text-[11px] font-bold uppercase text-slate-400">
                             {t.colProductComparison}:{" "}
                           </span>
                           <span className="text-[11px] leading-relaxed text-slate-300">
@@ -347,7 +347,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                       )}
                       {peer.keyAdvantageOrVulnerability && (
                         <div>
-                          <span className="text-[10px] font-bold uppercase text-slate-400">
+                          <span className="text-[11px] font-bold uppercase text-slate-400">
                             {t.colAdvantageVulnerability}:{" "}
                           </span>
                           <span className="text-[11px] leading-relaxed text-slate-300">
@@ -471,7 +471,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                         <td className="whitespace-nowrap p-3">
                           {peer.pricingPower ? (
                             <span
-                              className={`rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${pricingClass}`}
+                              className={`rounded border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${pricingClass}`}
                             >
                               {peer.pricingPower}
                             </span>

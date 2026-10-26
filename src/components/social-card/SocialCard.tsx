@@ -198,7 +198,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -258,51 +258,23 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           {/* Middle: 4-Metric Valuation Multiples & Safety Matrix */}
-          <div
-            className={`${
-              isLandscape ? "my-2 gap-1.5" : "my-2.5 gap-2"
-            } grid grid-cols-4 font-mono`}
-          >
-            <div
-              className={`rounded-xl border ${
-                isLandscape ? "p-1.5" : "p-2"
-              } text-center`}
-              style={{
-                borderColor: "rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
-              <div className="text-[10px] uppercase text-slate-400">
+          <div className="my-2 grid grid-cols-4 divide-x divide-white/10 py-1 font-mono">
+            <div className="pr-2 text-center">
+              <div className="text-xs uppercase text-slate-400">
                 {labels.trailingPeLabel}
               </div>
               <div className="mt-0.5 text-xs font-bold text-white">
                 {trailingPe ?? "N/A"}
               </div>
             </div>
-            <div
-              className={`rounded-xl border ${
-                isLandscape ? "p-1.5" : "p-2"
-              } text-center`}
-              style={{
-                borderColor: "rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
-              <div className="text-[10px] uppercase text-slate-400">
+            <div className="px-2 text-center">
+              <div className="text-xs uppercase text-slate-400">
                 {labels.forwardPeLabel}
               </div>
               <div className="mt-0.5 text-xs font-bold text-white">{fwdPe}</div>
             </div>
-            <div
-              className={`rounded-xl border ${
-                isLandscape ? "p-1.5" : "p-2"
-              } text-center`}
-              style={{
-                borderColor: "rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
-              <div className="text-[10px] uppercase text-slate-400">
+            <div className="px-2 text-center">
+              <div className="text-xs uppercase text-slate-400">
                 {labels.fairPeLabel}
               </div>
               <div
@@ -312,16 +284,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 {fairPe}
               </div>
             </div>
-            <div
-              className={`rounded-xl border ${
-                isLandscape ? "p-1.5" : "p-2"
-              } text-center`}
-              style={{
-                borderColor: "rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
-              <div className="text-[10px] uppercase text-slate-400">
+            <div className="pl-2 text-center">
+              <div className="text-xs uppercase text-slate-400">
                 {labels.marginOfSafetyLabel}
               </div>
               <div className="mt-0.5 text-xs font-bold text-emerald-400">
@@ -331,22 +295,14 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           {/* Bottom section: Asymmetry Skew Gauge + Consensus Target + Stress status */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 border-t border-white/10 pt-2">
             {/* Risk / Reward & Panic Defense */}
-            <div className="grid grid-cols-2 gap-2 font-mono">
-              <div
-                className={`rounded-2xl border ${
-                  isLandscape ? "p-2" : "p-2.5"
-                }`}
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.08)",
-                  background: "rgba(255, 255, 255, 0.03)",
-                }}
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-slate-400">
+            <div className="grid grid-cols-2 divide-x divide-white/10 font-mono">
+              <div className="pr-3">
+                <div className="flex items-center justify-between text-xs uppercase tracking-wider text-slate-400">
                   <span>{labels.riskRewardLabel}</span>
                   <span
-                    className="text-[9px] font-semibold"
+                    className="text-xs font-semibold"
                     style={{ color: themeConfig.accentColor }}
                   >
                     {labels.asymmetrySkewLabel}
@@ -363,18 +319,10 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     : "N/A"}
                 </div>
               </div>
-              <div
-                className={`rounded-2xl border ${
-                  isLandscape ? "p-2" : "p-2.5"
-                }`}
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.08)",
-                  background: "rgba(255, 255, 255, 0.03)",
-                }}
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="pl-3">
+                <div className="flex items-center justify-between text-xs uppercase tracking-wider text-slate-400">
                   <span>{labels.panicDefenseLabel}</span>
-                  <span className="text-[9px] font-semibold text-rose-400">
+                  <span className="text-xs font-semibold text-rose-400">
                     {formatCurrency(bands.panic.targetPrice)}
                   </span>
                 </div>
@@ -389,15 +337,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </div>
 
             {/* Asymmetry Visual Skew Bar */}
-            <div
-              className={`rounded-xl border ${
-                isLandscape ? "px-2.5 py-1" : "px-3 py-1.5"
-              } font-mono text-[10px]`}
-              style={{
-                borderColor: "rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
+            <div className="pt-1 font-mono text-xs">
               <div className="mb-0.5 flex items-center justify-between text-slate-400">
                 <span className="font-bold text-emerald-400">
                   {labels.bullUpsideLabel}:{" "}
@@ -420,59 +360,47 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               </div>
             </div>
 
-            {/* Wall Street Consensus Target Benchmark */}
-            {valuation?.consensusTarget ? (
+            {/* Wall Street Consensus Target Benchmark & Stress Tag */}
+            <div className="flex items-center justify-between gap-2 border-t border-white/10 pt-2 font-mono text-xs">
+              {valuation?.consensusTarget ? (
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <span className="shrink-0 text-slate-400">
+                    {labels.consensusLabel}:{" "}
+                    <strong className="text-slate-200">
+                      {formatCurrency(valuation.consensusTarget)}
+                    </strong>
+                  </span>
+                  <span
+                    className="truncate font-bold"
+                    style={{ color: themeConfig.accentColor }}
+                  >
+                    {valuation.verdictVsConsensus ??
+                      formatPercent(
+                        ((valuation.weightedFairValue -
+                          valuation.consensusTarget) /
+                          valuation.consensusTarget) *
+                          100
+                      )}
+                  </span>
+                </div>
+              ) : (
+                <div />
+              )}
+
+              {/* Stress Scenario Badge */}
               <div
-                className={`flex items-center justify-between rounded-xl border ${
-                  isLandscape ? "px-2.5 py-1" : "px-3 py-1.5"
-                } font-mono text-xs`}
+                className="flex shrink-0 items-center gap-1 text-xs font-semibold"
                 style={{
-                  borderColor: "rgba(255, 255, 255, 0.08)",
-                  background: "rgba(255, 255, 255, 0.02)",
+                  color: hasActiveStress ? "#f59e0b" : themeConfig.accentColor,
                 }}
               >
-                <span className="text-[10px] text-slate-400">
-                  {labels.consensusLabel}:{" "}
-                  <strong className="text-slate-200">
-                    {formatCurrency(valuation.consensusTarget)}
-                  </strong>
-                </span>
-                <span
-                  className="max-w-[220px] truncate text-[10px] font-bold"
-                  style={{ color: themeConfig.accentColor }}
-                >
-                  {valuation.verdictVsConsensus ??
-                    formatPercent(
-                      ((valuation.weightedFairValue -
-                        valuation.consensusTarget) /
-                        valuation.consensusTarget) *
-                        100
-                    )}
+                <Zap className="size-3 shrink-0" />
+                <span className="max-w-[150px] truncate">
+                  {hasActiveStress
+                    ? labels.activeStressTag
+                    : labels.neutralStressTag}
                 </span>
               </div>
-            ) : null}
-
-            {/* Stress Scenario Badge */}
-            <div
-              className={`flex items-center gap-1.5 rounded-xl border ${
-                isLandscape ? "px-2.5 py-1" : "px-3 py-1.5"
-              } text-xs font-semibold`}
-              style={{
-                borderColor: hasActiveStress
-                  ? "rgba(245, 158, 11, 0.3)"
-                  : "rgba(56, 189, 248, 0.2)",
-                background: hasActiveStress
-                  ? "rgba(245, 158, 11, 0.08)"
-                  : "rgba(56, 189, 248, 0.05)",
-                color: hasActiveStress ? "#f59e0b" : themeConfig.accentColor,
-              }}
-            >
-              <Zap className="size-3 shrink-0" />
-              <span className="truncate text-[11px]">
-                {hasActiveStress
-                  ? labels.activeStressTag
-                  : labels.neutralStressTag}
-              </span>
             </div>
           </div>
         </div>
@@ -493,7 +421,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -526,16 +454,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           {/* 1. Visual Valuation Spectrum Range Track (Eliminates empty space) */}
-          <div
-            className={`${
-              isLandscape ? "my-1 p-2.5" : "my-1.5 p-3"
-            } rounded-2xl border`}
-            style={{
-              borderColor: "rgba(255, 255, 255, 0.06)",
-              background: "rgba(255, 255, 255, 0.02)",
-            }}
-          >
-            <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-slate-400">
+          <div className="py-1">
+            <div className="mb-1 flex items-center justify-between font-mono text-xs text-slate-400">
               <span className="font-bold uppercase tracking-wider">
                 {labels.priceSpectrumTrackLabel}
               </span>
@@ -571,12 +491,12 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </div>
 
             {/* Range Milestones */}
-            <div className="flex items-center justify-between font-mono text-[10px]">
+            <div className="flex items-center justify-between font-mono text-xs">
               <div>
                 <span className="font-black text-rose-400">
                   {formatCurrency(bands.panic.targetPrice)}
                 </span>
-                <span className="ml-1 text-[9px] text-slate-500">
+                <span className="ml-1 text-xs text-slate-400">
                   ({bands.panic.multiple}x)
                 </span>
               </div>
@@ -587,7 +507,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <span className="font-bold text-slate-200">
                   {formatCurrency(bands.base.targetPrice)}
                 </span>
-                <span className="ml-1 text-[9px] text-slate-500">
+                <span className="ml-1 text-xs text-slate-400">
                   ({bands.base.multiple}x)
                 </span>
               </div>
@@ -595,7 +515,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <span className="font-black text-emerald-400">
                   {formatCurrency(bands.bull.targetPrice)}
                 </span>
-                <span className="ml-1 text-[9px] text-slate-500">
+                <span className="ml-1 text-xs text-slate-400">
                   ({bands.bull.multiple}x)
                 </span>
               </div>
@@ -603,32 +523,20 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           {/* 2. Three Enriched Regime Cards */}
-          <div
-            className={`${
-              isLandscape ? "my-1 gap-2" : "my-1.5 gap-2.5"
-            } grid grid-cols-3`}
-          >
+          <div className="my-auto grid grid-cols-3 divide-x divide-white/10 py-1">
             {/* Bull */}
-            <div
-              className={`flex flex-col justify-between rounded-2xl border ${
-                isLandscape ? "p-2.5" : "p-3"
-              } transition-all`}
-              style={{
-                borderColor: "rgba(52, 211, 153, 0.3)",
-                background: "rgba(52, 211, 153, 0.06)",
-              }}
-            >
+            <div className="flex flex-col justify-between pr-3">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs">🐂</span>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-xs font-bold text-emerald-400">
                     {bands.bull.multiple}x P/E
                   </span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-white">
                   {labels.bullRegimeLabel}
                 </div>
-                <div className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
+                <div className="mt-0.5 line-clamp-1 text-xs text-slate-400">
                   {labels.bullRegimeDesc}
                 </div>
               </div>
@@ -636,33 +544,25 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="font-mono text-lg font-black text-emerald-400">
                   {formatCurrency(bands.bull.targetPrice)}
                 </div>
-                <div className="font-mono text-[11px] font-bold text-emerald-500">
+                <div className="font-mono text-xs font-bold text-emerald-500">
                   {formatPercent(bands.bull.deltaFromCurrentPct)}
                 </div>
               </div>
             </div>
 
             {/* Base */}
-            <div
-              className={`flex flex-col justify-between rounded-2xl border ${
-                isLandscape ? "p-2.5" : "p-3"
-              } transition-all`}
-              style={{
-                borderColor: themeConfig.borderColor,
-                background: "rgba(255, 255, 255, 0.04)",
-              }}
-            >
+            <div className="flex flex-col justify-between px-3">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs">🎯</span>
-                  <span className="rounded-full bg-slate-700/60 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-300">
+                  <span className="rounded-full bg-slate-700/60 px-2 py-0.5 font-mono text-xs font-bold text-slate-300">
                     {bands.base.multiple}x P/E
                   </span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-white">
                   {labels.baseCaseLabel}
                 </div>
-                <div className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
+                <div className="mt-0.5 line-clamp-1 text-xs text-slate-400">
                   {labels.baseRegimeDesc}
                 </div>
               </div>
@@ -670,33 +570,25 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="font-mono text-lg font-black text-white">
                   {formatCurrency(bands.base.targetPrice)}
                 </div>
-                <div className="font-mono text-[11px] font-bold text-slate-400">
+                <div className="font-mono text-xs font-bold text-slate-400">
                   {formatPercent(bands.base.deltaFromCurrentPct)}
                 </div>
               </div>
             </div>
 
             {/* Panic */}
-            <div
-              className={`flex flex-col justify-between rounded-2xl border ${
-                isLandscape ? "p-2.5" : "p-3"
-              } transition-all`}
-              style={{
-                borderColor: "rgba(244, 63, 94, 0.3)",
-                background: "rgba(244, 63, 94, 0.06)",
-              }}
-            >
+            <div className="flex flex-col justify-between pl-3">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs">🚨</span>
-                  <span className="rounded-full bg-rose-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-rose-400">
+                  <span className="rounded-full bg-rose-500/20 px-2 py-0.5 font-mono text-xs font-bold text-rose-400">
                     {bands.panic.multiple}x P/E
                   </span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-white">
                   {labels.panicFloorLabel}
                 </div>
-                <div className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
+                <div className="mt-0.5 line-clamp-1 text-xs text-slate-400">
                   {labels.panicRegimeDesc}
                 </div>
               </div>
@@ -704,7 +596,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="font-mono text-lg font-black text-rose-400">
                   {formatCurrency(bands.panic.targetPrice)}
                 </div>
-                <div className="font-mono text-[11px] font-bold text-rose-500">
+                <div className="font-mono text-xs font-bold text-rose-500">
                   {formatPercent(bands.panic.deltaFromCurrentPct)}
                 </div>
               </div>
@@ -712,17 +604,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           {/* 3. Stressed Operational Flow-Through Baseline Strip (Eliminates bottom void) */}
-          <div
-            className={`flex items-center justify-between rounded-xl border ${
-              isLandscape
-                ? "px-2.5 py-1.5 text-[10px]"
-                : "px-3 py-2 text-[11px]"
-            } font-mono text-slate-400`}
-            style={{
-              borderColor: "rgba(255, 255, 255, 0.06)",
-              background: "rgba(255, 255, 255, 0.02)",
-            }}
-          >
+          <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs text-slate-400">
             <span>
               {labels.stressedRevLabel}:{" "}
               <strong className="text-white">
@@ -772,7 +654,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -791,29 +673,23 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-md border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+              <span className="rounded-md border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 font-mono text-xs font-bold text-emerald-400">
                 {labels.earningsBeatLabel}
               </span>
             </div>
           </div>
 
           {/* Operational Execution Grid & Clean EPS Breakdown */}
-          <div className="my-auto flex flex-col gap-2.5 py-2">
-            <div className="grid grid-cols-2 gap-2.5">
+          <div className="my-auto flex flex-col gap-2.5 py-1">
+            <div className="grid grid-cols-2 divide-x divide-white/10 py-1">
               {/* Revenue Card */}
-              <div
-                className="rounded-2xl border p-3"
-                style={{
-                  borderColor: themeConfig.borderColor,
-                  background: "rgba(255, 255, 255, 0.03)",
-                }}
-              >
+              <div className="pr-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase text-slate-400">
+                  <span className="font-mono text-xs uppercase text-slate-400">
                     {labels.revenueLabel}
                   </span>
                   {facts.revenueEstimateBillions ? (
-                    <span className="font-mono text-[9px] text-slate-400">
+                    <span className="font-mono text-xs text-slate-400">
                       Est ${facts.revenueEstimateBillions}B
                     </span>
                   ) : null}
@@ -821,25 +697,19 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="mt-0.5 font-mono text-xl font-extrabold text-white">
                   {formatBillions(facts.revenueBillions)}
                 </div>
-                <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[11px] font-bold text-emerald-400">
+                <div className="mt-0.5 flex items-center gap-1.5 font-mono text-xs font-bold text-emerald-400">
                   <span>{formatPercent(facts.revenueGrowthPct)} YoY</span>
                 </div>
               </div>
 
               {/* Operating Income Card */}
-              <div
-                className="rounded-2xl border p-3"
-                style={{
-                  borderColor: themeConfig.borderColor,
-                  background: "rgba(255, 255, 255, 0.03)",
-                }}
-              >
+              <div className="pl-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase text-slate-400">
+                  <span className="font-mono text-xs uppercase text-slate-400">
                     {labels.operatingIncomeLabel}
                   </span>
                   {facts.operatingIncomeGrowthPct ? (
-                    <span className="font-mono text-[9px] text-emerald-400">
+                    <span className="font-mono text-xs text-emerald-400">
                       {formatPercent(facts.operatingIncomeGrowthPct)} YoY
                     </span>
                   ) : null}
@@ -847,22 +717,16 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="mt-0.5 font-mono text-xl font-extrabold text-white">
                   {formatBillions(facts.operatingIncomeBillions)}
                 </div>
-                <div className="mt-0.5 font-mono text-[11px] font-bold text-emerald-400">
+                <div className="mt-0.5 font-mono text-xs font-bold text-emerald-400">
                   {facts.operatingMarginPct.toFixed(1)}% {labels.marginLabel}
                 </div>
               </div>
             </div>
 
             {/* Income Quality Guardrail: Clean Operating EPS & GAAP Reconciliation */}
-            <div
-              className="rounded-2xl border p-3.5"
-              style={{
-                borderColor: "rgba(16, 185, 129, 0.3)",
-                background: "rgba(16, 185, 129, 0.05)",
-              }}
-            >
-              <div className="flex items-center justify-between border-b border-emerald-500/15 pb-2">
-                <span className="font-mono text-[11px] font-extrabold uppercase tracking-wide text-slate-200">
+            <div className="border-t border-white/10 pt-2.5">
+              <div className="flex items-center justify-between pb-1">
+                <span className="font-mono text-xs font-extrabold uppercase tracking-wide text-slate-200">
                   {labels.cleanConversionTitle}
                 </span>
                 <span className="font-mono text-xs text-slate-400">
@@ -870,17 +734,17 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 </span>
               </div>
 
-              <div className="mt-2 grid grid-cols-3 items-center gap-2">
+              <div className="mt-1.5 grid grid-cols-3 items-center gap-2">
                 {/* Clean Operating EPS */}
                 <div>
-                  <div className="font-mono text-[10px] uppercase text-slate-400">
+                  <div className="font-mono text-xs uppercase text-slate-400">
                     {labels.cleanOperatingEpsLabel}
                   </div>
                   <div className="mt-0.5 font-mono text-2xl font-black text-white">
                     {formatCurrency(facts.epsOperating)}
                   </div>
                   {facts.epsConsensus > 0 && (
-                    <div className="font-mono text-[10px] font-bold text-emerald-400">
+                    <div className="font-mono text-xs font-bold text-emerald-400">
                       {formatPercent(
                         ((facts.epsOperating - facts.epsConsensus) /
                           facts.epsConsensus) *
@@ -893,20 +757,20 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
                 {/* GAAP Reported EPS */}
                 <div className="border-l border-white/5 pl-2.5">
-                  <div className="font-mono text-[10px] uppercase text-slate-400">
+                  <div className="font-mono text-xs uppercase text-slate-400">
                     {labels.gaapReportedEpsLabel}
                   </div>
                   <div className="mt-0.5 font-mono text-lg font-bold text-slate-200">
                     {formatCurrency(facts.epsReported)}
                   </div>
-                  <div className="font-mono text-[10px] text-slate-400">
+                  <div className="font-mono text-xs text-slate-400">
                     SEC GAAP
                   </div>
                 </div>
 
                 {/* GAAP vs Clean Adjustment Spread */}
                 <div className="border-l border-white/5 pl-2.5">
-                  <div className="font-mono text-[10px] uppercase text-slate-400">
+                  <div className="font-mono text-xs uppercase text-slate-400">
                     {labels.adjustedSpreadLabel}
                   </div>
                   <div
@@ -922,7 +786,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                       ? "$0.00"
                       : `${epsVariance > 0 ? "+" : ""}${formatCurrency(epsVariance)}`}
                   </div>
-                  <div className="font-mono text-[10px] text-slate-400">
+                  <div className="font-mono text-xs text-slate-400">
                     {Math.abs(epsVariance) < 0.005
                       ? "Clean Conversion"
                       : "Filtered One-Off"}
@@ -932,7 +796,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
               {/* One-time filter note audit */}
               {facts.oneTimeItems && facts.oneTimeItems.length > 0 ? (
-                <div className="mt-2 line-clamp-1 truncate border-t border-emerald-500/10 pt-1.5 text-[10px] text-slate-300">
+                <div className="mt-2 line-clamp-1 truncate border-t border-emerald-500/10 pt-1.5 text-xs text-slate-300">
                   <span className="font-semibold text-emerald-400">
                     {labels.incomeQualityFilterLabel}:
                   </span>{" "}
@@ -944,13 +808,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
             {/* Bottom Strip: Guidance Corridor or Capital Multiples Strip */}
             {hasGuidance ? (
-              <div
-                className="flex items-center justify-between rounded-xl border px-3 py-2 font-mono text-xs"
-                style={{
-                  borderColor: "rgba(56, 189, 248, 0.25)",
-                  background: "rgba(56, 189, 248, 0.05)",
-                }}
-              >
+              <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs">
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-cyan-400" />
                   <span className="text-slate-400">
@@ -967,15 +825,9 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 </div>
               </div>
             ) : (
-              <div
-                className="grid grid-cols-3 gap-2 rounded-xl border p-2 text-center font-mono text-[11px]"
-                style={{
-                  borderColor: themeConfig.borderColor,
-                  background: "rgba(255, 255, 255, 0.02)",
-                }}
-              >
+              <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-2 text-center font-mono text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     {labels.marketCapLabel}:
                   </span>{" "}
                   <strong className="text-white">
@@ -983,7 +835,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   </strong>
                 </div>
                 <div className="border-l border-white/5">
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     {labels.trailingPeLabel}:
                   </span>{" "}
                   <strong className="text-slate-200">
@@ -991,7 +843,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   </strong>
                 </div>
                 <div className="border-l border-white/5">
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     {labels.forwardPeLabel}:
                   </span>{" "}
                   <strong className="text-slate-200">{fwdPe ?? "N/A"}</strong>
@@ -1002,7 +854,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
           {/* Card Bottom Footer */}
           <div
-            className="flex items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>
@@ -1029,7 +881,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -1055,7 +907,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </span>
           </div>
 
-          <div className="my-auto flex flex-col gap-2.5 py-2.5">
+          <div className="my-auto divide-y divide-white/10 py-1">
             {displayedSegments.map((seg) => {
               const share =
                 facts.revenueBillions > 0
@@ -1064,11 +916,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               return (
                 <div
                   key={seg.name}
-                  className="rounded-2xl border p-2.5 transition-all"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.03)",
-                  }}
+                  className="py-2.5 transition-all first:pt-0 last:pb-0"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-xs font-bold text-white">
@@ -1089,7 +937,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     />
                   </div>
 
-                  <div className="mt-1.5 flex items-center justify-between font-mono text-[10px] text-slate-400">
+                  <div className="mt-1.5 flex items-center justify-between font-mono text-xs text-slate-400">
                     <span>
                       {share.toFixed(1)}% {labels.ofTotalRevenueLabel}
                     </span>
@@ -1100,7 +948,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
                   {/* Enrich with segment margin if available */}
                   {segCount <= 2 && seg.operatingMarginPct !== undefined ? (
-                    <div className="mt-1 flex items-center justify-between border-t border-white/5 pt-1 font-mono text-[10px] text-slate-400">
+                    <div className="mt-1 flex items-center justify-between border-t border-white/5 pt-1 font-mono text-xs text-slate-400">
                       <span>{labels.operatingMarginLabel}:</span>
                       <span className="font-bold text-slate-200">
                         {seg.operatingMarginPct.toFixed(1)}% (
@@ -1116,13 +964,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             {segCount <= 2 &&
             facts.guidanceRevenueLowBillions &&
             facts.guidanceRevenueHighBillions ? (
-              <div
-                className="flex items-center justify-between rounded-xl border px-3 py-1.5 font-mono text-[11px]"
-                style={{
-                  borderColor: "rgba(56, 189, 248, 0.2)",
-                  background: "rgba(56, 189, 248, 0.05)",
-                }}
-              >
+              <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs">
                 <span className="text-slate-400">
                   {labels.revenueGuidanceLabel}:
                 </span>
@@ -1138,7 +980,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           <div
-            className="flex items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>
@@ -1165,7 +1007,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -1178,19 +1020,13 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
                 {labels.competitiveAdvantageTitle}
               </span>
-              <span className="rounded-md border border-purple-500/30 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">
+              <span className="rounded-md border border-purple-500/30 bg-purple-500/15 px-2 py-0.5 font-mono text-xs font-bold text-purple-300">
                 {moatData?.overallMoatRating ?? "Wide"} Moat
               </span>
             </div>
 
-            <div
-              className="mt-3 flex items-center gap-3 rounded-2xl border p-3"
-              style={{
-                borderColor: themeConfig.borderColor,
-                background: "rgba(255, 255, 255, 0.03)",
-              }}
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400">
+            <div className="mt-2.5 flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-purple-500/15 text-purple-400">
                 <Award className="size-4.5" />
               </div>
               <div className="min-w-0 flex-1">
@@ -1198,7 +1034,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   {moatData?.overallMoatRating ?? "Wide"}{" "}
                   {labels.moatRatingLabel}
                 </div>
-                <div className="font-mono text-[11px] text-slate-400">
+                <div className="font-mono text-xs text-slate-400">
                   {labels.moatTrendLabel}:{" "}
                   <strong className="text-purple-300">
                     {moatData?.moatTrend ?? "Widening"}
@@ -1209,21 +1045,17 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
             {/* Strategic thesis quote */}
             {moatData?.competitiveDynamicsSummary ? (
-              <div className="mt-2.5 line-clamp-2 rounded-xl border border-purple-500/20 bg-purple-500/5 p-2.5 text-[11px] italic text-slate-300">
+              <div className="my-2 text-pretty border-l-2 border-purple-500/40 py-1 pl-3 text-xs italic text-slate-300">
                 &ldquo;{moatData.competitiveDynamicsSummary}&rdquo;
               </div>
             ) : null}
 
             {/* Moat Sources with strength pill */}
-            <div className="mt-2.5 flex flex-col gap-1.5">
+            <div className="mt-2 divide-y divide-white/10 border-t border-white/10 pt-1">
               {sources.map((source) => (
                 <div
                   key={source.source}
-                  className="flex items-center justify-between rounded-xl border px-2.5 py-1.5 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
+                  className="flex items-center justify-between py-1.5 text-xs first:pt-0 last:pb-0"
                 >
                   <div className="flex items-center gap-2 truncate">
                     <span className="size-1.5 shrink-0 rounded-full bg-purple-400" />
@@ -1231,12 +1063,12 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                       {source.source}
                     </span>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2 font-mono text-[10px]">
+                  <div className="flex shrink-0 items-center gap-2 font-mono text-xs">
                     <span className="text-slate-400">
                       {source.durabilityYears}y {labels.durabilityLabel}
                     </span>
                     <span
-                      className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${
+                      className={`rounded px-1.5 py-0.5 text-xs font-bold ${
                         source.strength === "Strong"
                           ? "bg-emerald-500/20 text-emerald-400"
                           : "bg-amber-500/20 text-amber-400"
@@ -1251,7 +1083,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
             {/* Competitor Benchmarking preview */}
             {competitors.length > 0 ? (
-              <div className="mt-2 flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.01] px-2.5 py-1 font-mono text-[10px] text-slate-400">
+              <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs text-slate-400">
                 <span>{labels.peerBenchmarkLabel}:</span>
                 <span className="truncate text-slate-300">
                   {competitors
@@ -1263,7 +1095,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           <div
-            className="flex items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>
@@ -1291,7 +1123,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
       return (
         <div
-          className={`flex flex-col justify-between rounded-3xl border shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border ${
             isLandscape ? `${spanClass} p-4` : "w-full p-5"
           }`}
           style={{
@@ -1314,21 +1146,11 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             </span>
           </div>
 
-          <div className="my-auto flex flex-col gap-2 py-2.5">
+          <div className="my-auto divide-y divide-white/10 py-1">
             {displayed.map((cat, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl border p-2.5 transition-all"
-                style={{
-                  borderColor:
-                    cat.direction === "growth"
-                      ? "rgba(52, 211, 153, 0.25)"
-                      : "rgba(244, 63, 94, 0.25)",
-                  background:
-                    cat.direction === "growth"
-                      ? "rgba(52, 211, 153, 0.04)"
-                      : "rgba(244, 63, 94, 0.04)",
-                }}
+                className="py-2.5 transition-all first:pt-0 last:pb-0"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -1336,7 +1158,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                       {cat.direction === "growth" ? "🚀" : "⚠️"}
                     </span>
                     <span
-                      className="font-mono text-[10px] font-bold uppercase tracking-wider"
+                      className="font-mono text-xs font-bold uppercase tracking-wider"
                       style={{
                         color:
                           cat.direction === "growth" ? "#34d399" : "#f43f5e",
@@ -1347,25 +1169,25 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                         : labels.downsideRiskLabel}
                     </span>
                     {cat.horizon ? (
-                      <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
+                      <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-xs text-slate-400">
                         {cat.horizon}
                       </span>
                     ) : null}
                   </div>
-                  <span className="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+                  <span className="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-xs text-slate-300">
                     {(cat.probability * 100).toFixed(0)}% {labels.probLabel}
                   </span>
                 </div>
                 <div className="mt-1 line-clamp-1 truncate text-xs font-bold text-white">
                   {cat.title}
                 </div>
-                <p className="mt-0.5 line-clamp-1 text-[10px] text-slate-400">
+                <p className="mt-0.5 line-clamp-1 text-xs text-slate-400">
                   {cat.description}
                 </p>
 
                 {/* If only 1-2 catalysts exist, display probability anchor evidence */}
                 {displayed.length <= 2 && cat.probabilityAnchor ? (
-                  <div className="mt-1.5 line-clamp-2 border-t border-white/5 pt-1 text-[10px] italic text-slate-400">
+                  <div className="mt-1.5 line-clamp-2 border-t border-white/5 pt-1 text-xs italic text-slate-400">
                     &ldquo;{cat.probabilityAnchor}&rdquo;
                   </div>
                 ) : null}
@@ -1374,7 +1196,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           <div
-            className="flex items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>
@@ -1423,7 +1245,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 {labels.snowflake30Label}
               </span>
             </div>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-emerald-400">
               {snowflakeScore.ratingLabel}
             </span>
           </div>
@@ -1441,7 +1263,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           </div>
 
           <div
-            className="flex w-full items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex w-full items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>
@@ -1461,7 +1283,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
         {/* Right Column: 5 Pillars Detailed Audit Score */}
         <div
-          className={`flex flex-col justify-between rounded-3xl border p-5 shadow-xl ${
+          className={`flex flex-col justify-between rounded-3xl border p-5 ${
             isLandscape ? "col-span-7 h-full" : "w-full"
           }`}
           style={{
@@ -1486,19 +1308,15 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               >
                 {snowflakeScore.totalScore}
               </strong>
-              <span className="text-slate-500"> / 30</span>
+              <span className="text-slate-400"> / 30</span>
             </div>
           </div>
 
-          <div className="my-auto flex flex-col gap-2 py-2.5">
+          <div className="my-auto divide-y divide-white/10 py-1">
             {snowflakeScore.pillarList.map((pillar) => (
               <div
                 key={pillar.id}
-                className="flex items-center justify-between rounded-2xl border p-2.5 transition-all"
-                style={{
-                  borderColor: themeConfig.borderColor,
-                  background: "rgba(255, 255, 255, 0.03)",
-                }}
+                className="flex items-center justify-between py-2.5 transition-all first:pt-0 last:pb-0"
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <div
@@ -1509,28 +1327,21 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     <div className="truncate text-xs font-bold text-white">
                       {pillar.label}
                     </div>
-                    <div className="line-clamp-1 text-[10px] text-slate-400">
+                    <div className="line-clamp-1 text-xs text-slate-400">
                       {pillar.summary}
                     </div>
                   </div>
                 </div>
-                <div
-                  className="flex shrink-0 items-center gap-1 rounded-xl border px-2.5 py-0.5 font-mono text-xs font-black"
-                  style={{
-                    borderColor: `${pillar.color}40`,
-                    background: `${pillar.color}15`,
-                    color: pillar.color,
-                  }}
-                >
+                <div className="flex shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-0.5 font-mono text-xs font-bold text-white">
                   <span>{pillar.score}</span>
-                  <span className="text-[9px] opacity-60">/ 6</span>
+                  <span className="text-xs text-slate-400">/ 6</span>
                 </div>
               </div>
             ))}
           </div>
 
           <div
-            className="flex items-center justify-between border-t pt-2.5 font-mono text-[11px] text-slate-400"
+            className="flex items-center justify-between border-t pt-2.5 font-mono text-xs text-slate-400"
             style={{ borderColor: themeConfig.borderColor }}
           >
             <span>{labels.secDisclosuresVerified}</span>
@@ -1567,7 +1378,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
         <div className="flex h-full flex-col justify-between gap-3.5">
           {/* Top Hero Strip */}
           <div
-            className="grid grid-cols-4 gap-3 rounded-2xl border p-3.5 shadow-xl"
+            className="grid grid-cols-4 gap-3 rounded-2xl border p-3.5"
             style={{
               borderColor: themeConfig.borderColor,
               background: themeConfig.cardBg,
@@ -1632,7 +1443,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           <div className="grid flex-1 grid-cols-2 gap-4">
             {/* Left Column: Regimes with Visual Spectrum Track & Flow-through */}
             <div
-              className="flex flex-col justify-between rounded-2xl border p-4 shadow-xl"
+              className="flex flex-col justify-between rounded-2xl border p-4"
               style={{
                 borderColor: themeConfig.borderColor,
                 background: themeConfig.cardBg,
@@ -1651,7 +1462,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     {labels.valuationSpectrumLabel}
                   </span>
                 </div>
-                <div className="font-mono text-[11px] text-slate-400">
+                <div className="font-mono text-xs text-slate-400">
                   {labels.marketPricingLabel}:{" "}
                   <strong className="text-white">
                     {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
@@ -1660,14 +1471,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               </div>
 
               {/* Visual Valuation Spectrum Range Track */}
-              <div
-                className="my-1 rounded-xl border p-2.5"
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.06)",
-                  background: "rgba(255, 255, 255, 0.02)",
-                }}
-              >
-                <div className="mb-1 flex items-center justify-between font-mono text-[9px] text-slate-400">
+              <div className="my-1 py-1">
+                <div className="mb-1 flex items-center justify-between font-mono text-xs text-slate-400">
                   <span className="font-bold uppercase tracking-wider">
                     {labels.priceSpectrumTrackLabel}
                   </span>
@@ -1696,12 +1501,12 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 </div>
 
                 {/* Range Milestones */}
-                <div className="flex items-center justify-between font-mono text-[9px]">
+                <div className="flex items-center justify-between font-mono text-xs">
                   <div>
                     <span className="font-bold text-rose-400">
                       {formatCurrency(bands.panic.targetPrice)}
                     </span>
-                    <span className="ml-0.5 text-slate-500">
+                    <span className="ml-0.5 text-slate-400">
                       ({bands.panic.multiple}x)
                     </span>
                   </div>
@@ -1712,7 +1517,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     <span className="font-bold text-slate-200">
                       {formatCurrency(bands.base.targetPrice)}
                     </span>
-                    <span className="ml-0.5 text-slate-500">
+                    <span className="ml-0.5 text-slate-400">
                       ({bands.base.multiple}x)
                     </span>
                   </div>
@@ -1720,7 +1525,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                     <span className="font-bold text-emerald-400">
                       {formatCurrency(bands.bull.targetPrice)}
                     </span>
-                    <span className="ml-0.5 text-slate-500">
+                    <span className="ml-0.5 text-slate-400">
                       ({bands.bull.multiple}x)
                     </span>
                   </div>
@@ -1728,15 +1533,9 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               </div>
 
               {/* 3 Regime Cards */}
-              <div className="my-1 grid grid-cols-3 gap-2">
-                <div
-                  className="flex flex-col justify-between rounded-xl border p-2 transition-all"
-                  style={{
-                    borderColor: "rgba(52, 211, 153, 0.3)",
-                    background: "rgba(52, 211, 153, 0.06)",
-                  }}
-                >
-                  <div className="flex items-center justify-between font-mono text-[9px]">
+              <div className="my-1 grid grid-cols-3 divide-x divide-white/10 py-1">
+                <div className="flex flex-col justify-between pr-2">
+                  <div className="flex items-center justify-between font-mono text-xs">
                     <span className="font-bold text-emerald-400">
                       🐂 {labels.bullRegimeLabel}
                     </span>
@@ -1747,19 +1546,13 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   <div className="mt-1 font-mono text-base font-black text-white">
                     {formatCurrency(bands.bull.targetPrice)}
                   </div>
-                  <div className="font-mono text-[10px] font-bold text-emerald-400">
+                  <div className="font-mono text-xs font-bold text-emerald-400">
                     {formatPercent(bands.bull.deltaFromCurrentPct)}
                   </div>
                 </div>
 
-                <div
-                  className="flex flex-col justify-between rounded-xl border p-2"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.03)",
-                  }}
-                >
-                  <div className="flex items-center justify-between font-mono text-[9px]">
+                <div className="flex flex-col justify-between px-2">
+                  <div className="flex items-center justify-between font-mono text-xs">
                     <span className="font-bold text-slate-300">
                       🎯 {labels.baseCaseLabel}
                     </span>
@@ -1770,19 +1563,13 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   <div className="mt-1 font-mono text-base font-black text-white">
                     {formatCurrency(bands.base.targetPrice)}
                   </div>
-                  <div className="font-mono text-[10px] font-bold text-slate-300">
+                  <div className="font-mono text-xs font-bold text-slate-300">
                     {formatPercent(bands.base.deltaFromCurrentPct)}
                   </div>
                 </div>
 
-                <div
-                  className="flex flex-col justify-between rounded-xl border p-2 transition-all"
-                  style={{
-                    borderColor: "rgba(244, 63, 94, 0.3)",
-                    background: "rgba(244, 63, 94, 0.06)",
-                  }}
-                >
-                  <div className="flex items-center justify-between font-mono text-[9px]">
+                <div className="flex flex-col justify-between pl-2">
+                  <div className="flex items-center justify-between font-mono text-xs">
                     <span className="font-bold text-rose-400">
                       🚨 {labels.panicFloorLabel}
                     </span>
@@ -1793,20 +1580,14 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   <div className="mt-1 font-mono text-base font-black text-rose-400">
                     {formatCurrency(bands.panic.targetPrice)}
                   </div>
-                  <div className="font-mono text-[10px] font-bold text-rose-400">
+                  <div className="font-mono text-xs font-bold text-rose-400">
                     {formatPercent(bands.panic.deltaFromCurrentPct)}
                   </div>
                 </div>
               </div>
 
               {/* Stressed Operational Flow-through Footer */}
-              <div
-                className="flex items-center justify-between rounded-lg border px-2.5 py-1 font-mono text-[10px] text-slate-400"
-                style={{
-                  borderColor: themeConfig.borderColor,
-                  background: "rgba(255, 255, 255, 0.02)",
-                }}
-              >
+              <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs text-slate-400">
                 <span>
                   Stressed Rev:{" "}
                   <strong className="text-white">
@@ -1830,7 +1611,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
 
             {/* Right Column: 6-Metric Highlights Grid + Guidance Banner */}
             <div
-              className="flex flex-col justify-between rounded-2xl border p-4 shadow-xl"
+              className="flex flex-col justify-between rounded-2xl border p-4"
               style={{
                 borderColor: themeConfig.borderColor,
                 background: themeConfig.cardBg,
@@ -1843,7 +1624,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
                   {labels.financialHighlightsLabel}
                 </div>
-                <div className="font-mono text-[10px] text-slate-400">
+                <div className="font-mono text-xs text-slate-400">
                   {labels.nextFyConsensusLabel}:{" "}
                   <strong className="text-white">
                     {formatCurrency(facts.forwardEpsConsensus)}
@@ -1851,146 +1632,110 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 </div>
               </div>
 
-              <div className="my-auto grid grid-cols-2 gap-2 py-1">
-                {/* Revenue */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>{labels.revenueLabel}</span>
-                    {facts.revenueEstimateBillions ? (
-                      <span className="text-[9px] text-slate-500">
-                        vs ${facts.revenueEstimateBillions}B
+              <div className="my-auto grid grid-cols-2 divide-x divide-white/10 py-1">
+                {/* Left 3 metrics */}
+                <div className="flex flex-col divide-y divide-white/10 pr-3">
+                  {/* Revenue */}
+                  <div className="py-1.5 first:pt-0">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span>{labels.revenueLabel}</span>
+                      {facts.revenueEstimateBillions ? (
+                        <span className="text-xs text-slate-400">
+                          vs ${facts.revenueEstimateBillions}B
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                      {formatBillions(facts.revenueBillions)}
+                    </div>
+                    <div className="font-mono text-xs text-emerald-400">
+                      {formatPercent(facts.revenueGrowthPct)} YoY
+                    </div>
+                  </div>
+
+                  {/* Clean Operating EPS */}
+                  <div className="py-1.5">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span>{labels.cleanOperatingEpsLabel}</span>
+                      <span className="text-xs text-slate-400">
+                        Est {formatCurrency(facts.epsConsensus)}
                       </span>
-                    ) : null}
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                      {formatCurrency(facts.epsOperating)}
+                    </div>
+                    <div className="font-mono text-xs text-emerald-400">
+                      {facts.epsConsensus > 0
+                        ? `${formatPercent(((facts.epsOperating - facts.epsConsensus) / facts.epsConsensus) * 100)} beat`
+                        : "Audited"}
+                    </div>
                   </div>
-                  <div className="mt-0.5 font-mono text-sm font-bold text-white">
-                    {formatBillions(facts.revenueBillions)}
-                  </div>
-                  <div className="font-mono text-[10px] text-emerald-400">
-                    {formatPercent(facts.revenueGrowthPct)} YoY
+
+                  {/* Operating Margin */}
+                  <div className="py-1.5 last:pb-0">
+                    <div className="text-xs text-slate-400">
+                      {labels.operatingMarginLabel}
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                      {facts.operatingMarginPct.toFixed(1)}%
+                    </div>
+                    <div className="font-mono text-xs text-slate-400">
+                      {facts.operatingIncomeGrowthPct
+                        ? `${formatPercent(facts.operatingIncomeGrowthPct)} YoY`
+                        : formatBillions(facts.operatingIncomeBillions)}
+                    </div>
                   </div>
                 </div>
 
-                {/* Clean Operating EPS */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>{labels.cleanOperatingEpsLabel}</span>
-                    <span className="text-[9px] text-slate-500">
-                      Est {formatCurrency(facts.epsConsensus)}
-                    </span>
+                {/* Right 3 metrics */}
+                <div className="flex flex-col divide-y divide-white/10 pl-3">
+                  {/* Economic Moat */}
+                  <div className="py-1.5 first:pt-0">
+                    <div className="text-xs text-slate-400">
+                      {labels.moatRatingLabel}
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-purple-300">
+                      {moatData?.overallMoatRating ?? "Wide"}
+                    </div>
+                    <div className="truncate font-mono text-xs text-slate-400">
+                      {moatData?.moatTrend ?? "Widening"} Trend
+                    </div>
                   </div>
-                  <div className="mt-0.5 font-mono text-sm font-bold text-white">
-                    {formatCurrency(facts.epsOperating)}
-                  </div>
-                  <div className="font-mono text-[10px] text-emerald-400">
-                    {facts.epsConsensus > 0
-                      ? `${formatPercent(((facts.epsOperating - facts.epsConsensus) / facts.epsConsensus) * 100)} beat`
-                      : "Audited"}
-                  </div>
-                </div>
 
-                {/* Operating Margin */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="text-[10px] text-slate-400">
-                    {labels.operatingMarginLabel}
+                  {/* Snowflake Score */}
+                  <div className="py-1.5">
+                    <div className="text-xs text-slate-400">
+                      {labels.snowflake30Label}
+                    </div>
+                    <div
+                      className="mt-0.5 font-mono text-sm font-bold"
+                      style={{ color: themeConfig.accentColor }}
+                    >
+                      {snowflakeScore.totalScore} / 30
+                    </div>
+                    <div className="truncate font-mono text-xs text-emerald-400">
+                      {snowflakeScore.ratingLabel}
+                    </div>
                   </div>
-                  <div className="mt-0.5 font-mono text-sm font-bold text-white">
-                    {facts.operatingMarginPct.toFixed(1)}%
-                  </div>
-                  <div className="font-mono text-[10px] text-slate-400">
-                    {facts.operatingIncomeGrowthPct
-                      ? `${formatPercent(facts.operatingIncomeGrowthPct)} YoY`
-                      : formatBillions(facts.operatingIncomeBillions)}
-                  </div>
-                </div>
 
-                {/* Economic Moat */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="text-[10px] text-slate-400">
-                    {labels.moatRatingLabel}
-                  </div>
-                  <div className="mt-0.5 font-mono text-sm font-bold text-purple-300">
-                    {moatData?.overallMoatRating ?? "Wide"}
-                  </div>
-                  <div className="truncate font-mono text-[10px] text-slate-400">
-                    {moatData?.moatTrend ?? "Widening"} Trend
-                  </div>
-                </div>
-
-                {/* Snowflake Score */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="text-[10px] text-slate-400">
-                    {labels.snowflake30Label}
-                  </div>
-                  <div
-                    className="mt-0.5 font-mono text-sm font-bold"
-                    style={{ color: themeConfig.accentColor }}
-                  >
-                    {snowflakeScore.totalScore} / 30
-                  </div>
-                  <div className="truncate font-mono text-[10px] text-emerald-400">
-                    {snowflakeScore.ratingLabel}
-                  </div>
-                </div>
-
-                {/* Panic Defense */}
-                <div
-                  className="rounded-xl border p-2 text-xs"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
-                  <div className="text-[10px] text-slate-400">
-                    {labels.panicDefenseLabel}
-                  </div>
-                  <div className="mt-0.5 font-mono text-sm font-bold text-rose-400">
-                    {formatPercent(asymmetry.downsideToPanicPct)}
-                  </div>
-                  <div className="font-mono text-[10px] text-slate-400">
-                    Floor {formatCurrency(bands.panic.targetPrice)}
+                  {/* Panic Defense */}
+                  <div className="py-1.5 last:pb-0">
+                    <div className="text-xs text-slate-400">
+                      {labels.panicDefenseLabel}
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-rose-400">
+                      {formatPercent(asymmetry.downsideToPanicPct)}
+                    </div>
+                    <div className="font-mono text-xs text-slate-400">
+                      Floor {formatCurrency(bands.panic.targetPrice)}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Guidance Corridor or Capital Multiples Strip */}
               {hasGuidance ? (
-                <div
-                  className="flex items-center justify-between rounded-lg border px-2.5 py-1 font-mono text-[10px]"
-                  style={{
-                    borderColor: "rgba(56, 189, 248, 0.25)",
-                    background: "rgba(56, 189, 248, 0.05)",
-                  }}
-                >
+                <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="size-1.5 rounded-full bg-cyan-400" />
                     <span className="text-slate-400">
@@ -2007,13 +1752,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                   </div>
                 </div>
               ) : (
-                <div
-                  className="flex items-center justify-between rounded-lg border px-2.5 py-1 font-mono text-[10px] text-slate-400"
-                  style={{
-                    borderColor: themeConfig.borderColor,
-                    background: "rgba(255, 255, 255, 0.02)",
-                  }}
-                >
+                <div className="flex items-center justify-between border-t border-white/10 pt-2 font-mono text-xs text-slate-400">
                   <span>
                     Market Cap:{" "}
                     <strong className="text-white">
@@ -2052,7 +1791,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           fontFamily:
             'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif',
         }}
-        className={`relative flex flex-col justify-between overflow-hidden text-slate-100 shadow-2xl ${
+        className={`relative flex flex-col justify-between overflow-hidden text-slate-100 ${
           isLandscape ? "px-6 py-4.5" : isSquare ? "p-7" : "p-8"
         }`}
       >
@@ -2103,7 +1842,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <span className="max-w-[440px] truncate text-base font-extrabold tracking-tight text-white">
                   {facts.company}
                 </span>
-                <span className="hidden items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400 sm:inline-flex">
+                <span className="hidden items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-bold text-emerald-400 sm:inline-flex">
                   <ShieldCheck className="size-3" />
                   <span>{labels.secAuditVerified}</span>
                 </span>
@@ -2133,8 +1872,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
               <span className="text-xs font-bold tracking-tight text-slate-200">
                 StressAlpha
               </span>
-              <span className="text-[10px] text-slate-500">|</span>
-              <span className="font-mono text-[10px] text-slate-400">
+              <span className="text-xs text-slate-400">|</span>
+              <span className="font-mono text-xs text-slate-400">
                 stressalpha.vercel.app
               </span>
             </div>
@@ -2273,7 +2012,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
           {/* Watermark Strip */}
           {effectiveShowWatermark && (
             <div
-              className="flex shrink-0 items-center justify-between border-t pt-2 font-mono text-[11px] text-slate-400"
+              className="flex shrink-0 items-center justify-between border-t pt-2 font-mono text-xs text-slate-400"
               style={{ borderColor: themeConfig.borderColor }}
             >
               <div className="flex items-center gap-2">
@@ -2286,7 +2025,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 text-slate-500">
+              <div className="flex items-center gap-2 text-slate-400">
                 <span>{facts.analysisDate ?? "2026-09"}</span>
                 <span>·</span>
                 <span className="uppercase">{labels.auditGrade}</span>
