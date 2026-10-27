@@ -251,7 +251,14 @@ describe("StressResultSchema Unit Tests", () => {
   });
 
   it("parses backward-compatible stress result without optional cash flow metrics", () => {
-    const { freeCashFlowBillions, stressFreeCashFlowBillions, fcfConversionPct, fcfPerShare, fcfYieldPct, ...legacy } = minimalStressResult;
+    const {
+      freeCashFlowBillions,
+      stressFreeCashFlowBillions,
+      fcfConversionPct,
+      fcfPerShare,
+      fcfYieldPct,
+      ...legacy
+    } = minimalStressResult;
     void freeCashFlowBillions;
     void stressFreeCashFlowBillions;
     void fcfConversionPct;

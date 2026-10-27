@@ -29,9 +29,10 @@ export async function fetchReportData(slug: string): Promise<ReportData> {
   return data;
 }
 
-export async function fetchNews(
-  ticker: string
-): Promise<{ events: MarketEvent[]; upstreamDependencies: UpstreamDependency[] }> {
+export async function fetchNews(ticker: string): Promise<{
+  events: MarketEvent[];
+  upstreamDependencies: UpstreamDependency[];
+}> {
   const res = await fetch(`/api/news?ticker=${encodeURIComponent(ticker)}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch news for ${ticker}`);
@@ -46,7 +47,9 @@ export async function fetchNews(
 export async function fetchRevisions(
   ticker: string
 ): Promise<{ revisions: ValuationRevision[] }> {
-  const res = await fetch(`/api/revisions?ticker=${encodeURIComponent(ticker)}`);
+  const res = await fetch(
+    `/api/revisions?ticker=${encodeURIComponent(ticker)}`
+  );
   if (!res.ok) {
     throw new Error(`Failed to fetch revisions for ${ticker}`);
   }
@@ -161,7 +164,8 @@ export function useReportData({
     upstreamDependencies: newsQuery.data?.upstreamDependencies ?? [],
     valuationRevisions: revisionsQuery.data?.revisions ?? [],
     isNewsLoading:
-      (newsQuery.isLoading || revisionsQuery.isLoading) && Boolean(activeTicker),
+      (newsQuery.isLoading || revisionsQuery.isLoading) &&
+      Boolean(activeTicker),
     refetchReports: reportsQuery.refetch,
     refetchReport: reportQuery.refetch,
   };

@@ -67,7 +67,9 @@ export interface CockpitDualPaneProps {
   nextTab: WorkspaceTabDescriptor | null;
   switchWorkspace: (tabId: string) => void;
   tabScrollRef: React.RefObject<HTMLDivElement | null>;
-  tabButtonRefs: React.MutableRefObject<Record<string, HTMLButtonElement | null>>;
+  tabButtonRefs: React.MutableRefObject<
+    Record<string, HTMLButtonElement | null>
+  >;
   workspaceScrollRef: React.RefObject<HTMLDivElement | null>;
   onWheelTabScroll: (e: React.WheelEvent<HTMLDivElement>) => void;
   onViewModeChange: (

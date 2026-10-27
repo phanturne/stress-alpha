@@ -205,10 +205,7 @@ export default function MethodologyPage() {
               href="#qpce-calibration"
               className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
             >
-              7.{" "}
-              {isZh
-                ? "确定性情景校准矩阵"
-                : "Scenario Calibration Matrix"}
+              7. {isZh ? "确定性情景校准矩阵" : "Scenario Calibration Matrix"}
             </a>
           </div>
         </div>
@@ -335,11 +332,13 @@ export default function MethodologyPage() {
                 Stressed_Fixed_OpEx
               </div>
               <div className="text-foreground">
-                Free_Cash_Flow = Stressed_Operating_Income × (1 - Tax_Rate) + D&A - CapEx
+                Free_Cash_Flow = Stressed_Operating_Income × (1 - Tax_Rate) +
+                D&A - CapEx
               </div>
               <div className="pt-1 font-semibold text-emerald-400 sm:text-sm">
                 FCF_Conversion_% = (Free_Cash_Flow / Stressed_Net_Income) × 100
-                &nbsp;|&nbsp; FCF_Yield_% = (FCF_Per_Share / Current_Price) × 100
+                &nbsp;|&nbsp; FCF_Yield_% = (FCF_Per_Share / Current_Price) ×
+                100
               </div>
             </div>
           </section>
@@ -775,9 +774,9 @@ export default function MethodologyPage() {
                     <strong>$60.45 (+45.5% False Alpha)</strong> despite active
                     forensic accounting investigations.
                     <br />
-                    The Scenario Calibration Matrix detected severe governance risk and thin 13.5% gross
-                    margins, triggering the Lexicographic Veto to calibrate
-                    probabilities to:{" "}
+                    The Scenario Calibration Matrix detected severe governance
+                    risk and thin 13.5% gross margins, triggering the
+                    Lexicographic Veto to calibrate probabilities to:{" "}
                     <strong>Panic 75.0% / Base 17.0% / Bull 8.0%</strong>. This
                     adjusted Weighted Fair Value to{" "}
                     <strong>$31.91 (-23.2% real downside risk)</strong>,
@@ -800,13 +799,39 @@ export default function MethodologyPage() {
               <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
-                    <strong>为什么采用对数几率启发式偏置而非机械拟合？</strong> 在买方基本面研究与量化面试中，最忌讳在无共轭先验的场景下伪称“严谨贝叶斯后验”。StressAlpha 坦诚说明：当前的 Δz 调整量是基于买方风控经验提炼的<strong>确定性启发式界限</strong>（如审计师辞职属于制度性否决，稀释跑道不足 9 个月面临股权破发）。<br />
-                    <strong>未来实证校准路径：</strong> 在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier Score: B = 1/N ∑ (p_i - o_i)²) 与多项对数损失（Multinomial Log-Loss）实现实证最优化校准。
+                    <strong>为什么采用对数几率启发式偏置而非机械拟合？</strong>{" "}
+                    在买方基本面研究与量化面试中，最忌讳在无共轭先验的场景下伪称“严谨贝叶斯后验”。StressAlpha
+                    坦诚说明：当前的 Δz 调整量是基于买方风控经验提炼的
+                    <strong>确定性启发式界限</strong>
+                    （如审计师辞职属于制度性否决，稀释跑道不足 9
+                    个月面临股权破发）。
+                    <br />
+                    <strong>未来实证校准路径：</strong>{" "}
+                    在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier
+                    Score: B = 1/N ∑ (p_i - o_i)²) 与多项对数损失（Multinomial
+                    Log-Loss）实现实证最优化校准。
                   </>
                 ) : (
                   <>
-                    <strong>Why use heuristic logit shifts over unproven academic priors?</strong> In buy-side investment committee and quant research interviews, claiming an unsubstantiated &ldquo;Bayesian posterior&rdquo; without empirical distributions invites immediate skepticism. StressAlpha is intellectually honest: the baseline logit shifts (Δz) represent <strong>transparent institutional heuristic bounds</strong> modeling structural downside asymmetries (governance tail vetoes, acute dilution overhang).<br />
-                    <strong>Empirical Calibration Roadmap:</strong> In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.
+                    <strong>
+                      Why use heuristic logit shifts over unproven academic
+                      priors?
+                    </strong>{" "}
+                    In buy-side investment committee and quant research
+                    interviews, claiming an unsubstantiated &ldquo;Bayesian
+                    posterior&rdquo; without empirical distributions invites
+                    immediate skepticism. StressAlpha is intellectually honest:
+                    the baseline logit shifts (Δz) represent{" "}
+                    <strong>transparent institutional heuristic bounds</strong>{" "}
+                    modeling structural downside asymmetries (governance tail
+                    vetoes, acute dilution overhang).
+                    <br />
+                    <strong>Empirical Calibration Roadmap:</strong> In
+                    systematic institutional production, these log-odds
+                    coefficients can be empirically tuned via multi-quarter
+                    historical earnings outturns, minimizing Brier scores (B =
+                    1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage
+                    constituents to achieve data-driven parameter convergence.
                   </>
                 )}
               </p>

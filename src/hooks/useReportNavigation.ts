@@ -34,7 +34,9 @@ export interface UseReportNavigationReturn {
   >;
   showBackToTop: boolean;
   tabScrollRef: React.RefObject<HTMLDivElement | null>;
-  tabButtonRefs: React.MutableRefObject<Record<string, HTMLButtonElement | null>>;
+  tabButtonRefs: React.MutableRefObject<
+    Record<string, HTMLButtonElement | null>
+  >;
   workspaceScrollRef: React.RefObject<HTMLDivElement | null>;
   switchWorkspace: (tabId: string, smoothScroll?: boolean) => void;
   handleScrollToTop: () => void;

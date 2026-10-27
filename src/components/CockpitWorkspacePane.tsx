@@ -1,12 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  Sliders,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Sliders } from "lucide-react";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { WorkspaceTabDescriptor } from "@/lib/workspace-tabs";
@@ -43,7 +38,9 @@ export interface CockpitWorkspacePaneProps {
   nextTab: WorkspaceTabDescriptor | null;
   switchWorkspace: (tabId: string) => void;
   tabScrollRef: React.RefObject<HTMLDivElement | null>;
-  tabButtonRefs: React.MutableRefObject<Record<string, HTMLButtonElement | null>>;
+  tabButtonRefs: React.MutableRefObject<
+    Record<string, HTMLButtonElement | null>
+  >;
   workspaceScrollRef: React.RefObject<HTMLDivElement | null>;
   onWheelTabScroll: (e: React.WheelEvent<HTMLDivElement>) => void;
   onViewModeChange: (

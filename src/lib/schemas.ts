@@ -213,7 +213,9 @@ export const StressResultSchema = z.object({
   stressFreeCashFlowBillions: z
     .number()
     .optional()
-    .describe("Alias for freeCashFlowBillions matching stress prefix conventions"),
+    .describe(
+      "Alias for freeCashFlowBillions matching stress prefix conventions"
+    ),
   fcfConversionPct: z
     .number()
     .optional()

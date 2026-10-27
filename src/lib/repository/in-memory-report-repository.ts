@@ -374,8 +374,7 @@ export class InMemoryReportRepository implements IReportRepository {
         freeCashFlow: m.freeCashFlow != null ? String(m.freeCashFlow) : null,
         capex: m.capex != null ? String(m.capex) : null,
         dilutedEps: String(m.dilutedEps),
-        dilutedShares:
-          m.dilutedShares != null ? String(m.dilutedShares) : null,
+        dilutedShares: m.dilutedShares != null ? String(m.dilutedShares) : null,
         grossMarginPct: String(m.grossMarginPct),
         operatingMarginPct: String(m.operatingMarginPct),
         createdAt: m.createdAt instanceof Date ? m.createdAt : new Date(),

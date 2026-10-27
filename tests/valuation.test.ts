@@ -102,7 +102,11 @@ describe("computeStressedValuation", () => {
       dnaBillions: 5,
       capexBillions: 8,
     };
-    const result = computeStressedValuation(baselineWithCapex, currentPrice, {});
+    const result = computeStressedValuation(
+      baselineWithCapex,
+      currentPrice,
+      {}
+    );
 
     // Operating Income: 30, Tax: 20% -> NOPAT = 24
     // FCF = 24 + 5 - 8 = 21B
@@ -117,7 +121,11 @@ describe("computeStressedValuation", () => {
       ...mockBaseline,
       fcfConversionRatio: 0.9,
     };
-    const result = computeStressedValuation(baselineWithRatio, currentPrice, {});
+    const result = computeStressedValuation(
+      baselineWithRatio,
+      currentPrice,
+      {}
+    );
 
     // Net Income = 24 -> FCF = 24 * 0.9 = 21.6
     expect(result.freeCashFlowBillions).toBe(21.6);

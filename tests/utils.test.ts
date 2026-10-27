@@ -97,7 +97,9 @@ describe("Report Recency & Deduplication Engine", () => {
     expect(getReportRecencyWeight({ quarter: "Q2 2027" })).toBe(20272);
     expect(getReportRecencyWeight({ quarter: "1Q2026" })).toBe(20261);
     expect(getReportRecencyWeight({ quarter: "4Q 2026" })).toBe(20264);
-    expect(getReportRecencyWeight({ slug: "ONDS-Q4-2026-analysis" })).toBe(20264);
+    expect(getReportRecencyWeight({ slug: "ONDS-Q4-2026-analysis" })).toBe(
+      20264
+    );
     expect(getReportRecencyWeight({ reportDate: "2026-08-14" })).toBe(20263); // August = Q3
   });
 

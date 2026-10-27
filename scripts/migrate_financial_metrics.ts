@@ -109,7 +109,9 @@ function normalizeStatementToMetric(
   );
 
   // Revenue in dollars
-  let revenue = stmt["Total Revenue"] ?? (stmt.revenueBillions ? stmt.revenueBillions * 1e9 : 0);
+  let revenue =
+    stmt["Total Revenue"] ??
+    (stmt.revenueBillions ? stmt.revenueBillions * 1e9 : 0);
   if (revenue <= 0) return null;
 
   // Operating income
@@ -140,7 +142,9 @@ function normalizeStatementToMetric(
 
   // EPS
   const dilutedEps =
-    stmt["Diluted EPS"] ?? stmt.dilutedEps ?? (revenue > 0 ? operatingIncome / 1e10 : 1.0);
+    stmt["Diluted EPS"] ??
+    stmt.dilutedEps ??
+    (revenue > 0 ? operatingIncome / 1e10 : 1.0);
 
   // Shares
   const dilutedShares =
@@ -183,7 +187,10 @@ async function main() {
   const repo = getReportRepository();
   const db = getDb();
 
-  const metricsByTicker = new Map<string, Map<string, FinancialMetricsInsert>>();
+  const metricsByTicker = new Map<
+    string,
+    Map<string, FinancialMetricsInsert>
+  >();
 
   function addMetric(metric: FinancialMetricsInsert) {
     const key = `${metric.fiscalYear}-${metric.fiscalQuarter}`;
@@ -210,7 +217,9 @@ async function main() {
       if (fs.existsSync(profPath)) {
         try {
           const profile = JSON.parse(fs.readFileSync(profPath, "utf-8"));
-          const ticker = (profile.ticker || entry.name.split("-")[0]).toUpperCase();
+          const ticker = (
+            profile.ticker || entry.name.split("-")[0]
+          ).toUpperCase();
           if (targetTicker && ticker !== targetTicker) continue;
 
           if (Array.isArray(profile.quarterlyStatements)) {
@@ -333,16 +342,24 @@ async function main() {
     console.warn("⚠️ Notice querying db reportsTable:", err);
   }
 
-  console.log(`Discovered ${metricsByTicker.size} tickers with financial statements:`);
+  console.log(
+    `Discovered ${metricsByTicker.size} tickers with financial statements:`
+  );
   let totalStatements = 0;
   for (const [ticker, map] of metricsByTicker.entries()) {
-    console.log(`  • ${ticker}: ${map.size} quarters (${Array.from(map.keys()).join(", ")})`);
+    console.log(
+      `  • ${ticker}: ${map.size} quarters (${Array.from(map.keys()).join(", ")})`
+    );
     totalStatements += map.size;
   }
-  console.log(`\nTotal time-series quarterly records to persist: ${totalStatements}\n`);
+  console.log(
+    `\nTotal time-series quarterly records to persist: ${totalStatements}\n`
+  );
 
   if (dryRun) {
-    console.log("✅ Dry run completed successfully without writing to database.");
+    console.log(
+      "✅ Dry run completed successfully without writing to database."
+    );
     return;
   }
 
@@ -353,13 +370,17 @@ async function main() {
     try {
       await repo.saveFinancialMetrics(list);
       savedCount += list.length;
-      console.log(`✅ [${ticker}] Persisted ${list.length} quarterly statements.`);
+      console.log(
+        `✅ [${ticker}] Persisted ${list.length} quarterly statements.`
+      );
     } catch (err) {
       console.error(`❌ [${ticker}] Failed to persist metrics:`, err);
     }
   }
 
-  console.log(`\n🎉 Backfill Complete! Successfully persisted ${savedCount} records into financialMetricsTable.\n`);
+  console.log(
+    `\n🎉 Backfill Complete! Successfully persisted ${savedCount} records into financialMetricsTable.\n`
+  );
 }
 
 main().catch((err) => {

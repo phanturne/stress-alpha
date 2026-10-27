@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { compareReportsByRecency } from "@/lib/utils";
 import { Header } from "@/components/Header";
 import { CockpitSkeleton } from "@/components/CockpitSkeleton";
@@ -36,7 +42,9 @@ export default function HomePage() {
   // Restore saved language preference on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("stress_alpha_locale") as Locale | null;
+      const saved = localStorage.getItem(
+        "stress_alpha_locale"
+      ) as Locale | null;
       if (saved === "en" || saved === "zh") {
         Promise.resolve().then(() => {
           setLocale(saved);
@@ -146,7 +154,10 @@ export default function HomePage() {
   });
 
   // Localized artifacts resolution
-  const artifacts = useMemo(() => getLocalizedArtifacts(reportData, locale), [reportData, locale]);
+  const artifacts = useMemo(
+    () => getLocalizedArtifacts(reportData, locale),
+    [reportData, locale]
+  );
 
   // 5-Pillar Snowflake Score calculation
   const snowflakeScore = useMemo(() => {
@@ -160,7 +171,11 @@ export default function HomePage() {
       estimates: artifacts.estimates,
       valuation: dynamicValuation ?? reportData.valuation,
     };
-    return computeSnowflakeScore(effectiveReportData, stressResult ?? undefined, locale);
+    return computeSnowflakeScore(
+      effectiveReportData,
+      stressResult ?? undefined,
+      locale
+    );
   }, [reportData, artifacts, dynamicValuation, stressResult, locale]);
 
   // 7 Focused Intelligence Workspaces (+ Report Tab)
@@ -175,7 +190,10 @@ export default function HomePage() {
   }, [tabItems, activeTab]);
 
   const prevTab = currentTabIndex > 0 ? tabItems[currentTabIndex - 1] : null;
-  const nextTab = currentTabIndex < tabItems.length - 1 ? tabItems[currentTabIndex + 1] : null;
+  const nextTab =
+    currentTabIndex < tabItems.length - 1
+      ? tabItems[currentTabIndex + 1]
+      : null;
 
   // 4. Global Keyboard Shortcuts
   useKeyboardShortcuts({
@@ -183,7 +201,8 @@ export default function HomePage() {
     currentTabIndex,
     switchWorkspace,
     onResetDefaults: handleResetDefaults,
-    onToggleMemo: () => setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit")),
+    onToggleMemo: () =>
+      setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit")),
     onOpenScreener: () => handleViewModeChange("screener"),
     onToggleLocale: () => handleToggleLocale(locale === "zh" ? "en" : "zh"),
     onToggleSocialCard: () => setIsSocialCardOpen((prev) => !prev),
@@ -197,7 +216,11 @@ export default function HomePage() {
           return;
         }
         const added = toggleFavorite(symbol);
-        showToast(added ? t.header.addedToWatchlistToast(symbol) : t.header.removedFromWatchlistToast(symbol));
+        showToast(
+          added
+            ? t.header.addedToWatchlistToast(symbol)
+            : t.header.removedFromWatchlistToast(symbol)
+        );
       }
     },
     onToggleShortcuts: () => setIsShortcutsOpen((prev) => !prev),
@@ -213,14 +236,20 @@ export default function HomePage() {
   const currentTicker = reportData?.facts?.ticker;
   const siblingReports = useMemo(() => {
     if (!reports || reports.length === 0 || !currentTicker) return [];
-    return reports.filter((r) => r.ticker === currentTicker).sort(compareReportsByRecency);
+    return reports
+      .filter((r) => r.ticker === currentTicker)
+      .sort(compareReportsByRecency);
   }, [reports, currentTicker]);
 
   const latestReport = siblingReports[0];
-  const isViewingHistorical = Boolean(latestReport && currentSlug && latestReport.slug !== currentSlug);
+  const isViewingHistorical = Boolean(
+    latestReport && currentSlug && latestReport.slug !== currentSlug
+  );
 
   return (
-    <div className={`flex min-h-screen flex-col bg-background text-foreground ${viewMode === "cockpit" ? "lg:h-screen lg:overflow-hidden" : ""}`}>
+    <div
+      className={`flex min-h-screen flex-col bg-background text-foreground ${viewMode === "cockpit" ? "lg:h-screen lg:overflow-hidden" : ""}`}
+    >
       <Header
         facts={artifacts.facts}
         valuation={dynamicValuation ?? reportData?.valuation}
@@ -239,15 +268,25 @@ export default function HomePage() {
         onToggleLocale={handleToggleLocale}
       />
 
-      <main className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${viewMode === "cockpit" ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5" : ""}`}>
+      <main
+        className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${viewMode === "cockpit" ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5" : ""}`}
+      >
         {viewMode === "screener" ? (
-          <ScreenerView reports={reports} onSelectReport={handleSelectReport} locale={locale} isLoading={isReportsLoading} />
+          <ScreenerView
+            reports={reports}
+            onSelectReport={handleSelectReport}
+            locale={locale}
+            isLoading={isReportsLoading}
+          />
         ) : !currentSlug && !reportData ? (
           <div className="min-h-[60vh]" />
         ) : isReportLoading ? (
           <CockpitSkeleton />
         ) : !reportData || !stressResult ? (
-          <NoReportSelected onOpenScreener={() => handleViewModeChange("screener")} locale={locale} />
+          <NoReportSelected
+            onOpenScreener={() => handleViewModeChange("screener")}
+            locale={locale}
+          />
         ) : viewMode === "memo" ? (
           <MemoView
             reportData={{

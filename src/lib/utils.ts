@@ -169,7 +169,7 @@ export function compareReportsByRecency<T extends ReportRecencyItem>(
  * Deduplicates reports by unique ticker symbol, selecting the latest earnings report as primary.
  */
 export function deduplicateReportsToLatest<
-  T extends ReportRecencyItem & { ticker?: string; slug?: string }
+  T extends ReportRecencyItem & { ticker?: string; slug?: string },
 >(reports: T[]): T[] {
   const groupMap = new Map<string, T[]>();
 

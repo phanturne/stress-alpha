@@ -63,17 +63,23 @@ describe("Resilient HTTP Client (resilientFetch)", () => {
     it("retries on transient 500/503 errors and succeeds", async () => {
       const mockFetch = vi
         .fn()
-        .mockResolvedValueOnce(new Response("Service Unavailable", { status: 503 }))
+        .mockResolvedValueOnce(
+          new Response("Service Unavailable", { status: 503 })
+        )
         .mockResolvedValueOnce(new Response("Internal Error", { status: 500 }))
         .mockResolvedValueOnce(
           new Response(JSON.stringify({ success: true }), { status: 200 })
         );
       global.fetch = mockFetch;
 
-      const res = await resilientFetch("https://api.example.com/data", undefined, {
-        baseDelayMs: 5,
-        maxRetries: 3,
-      });
+      const res = await resilientFetch(
+        "https://api.example.com/data",
+        undefined,
+        {
+          baseDelayMs: 5,
+          maxRetries: 3,
+        }
+      );
 
       expect(res.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(3);
@@ -93,25 +99,33 @@ describe("Resilient HTTP Client (resilientFetch)", () => {
         );
       global.fetch = mockFetch;
 
-      const res = await resilientFetch("https://api.example.com/data", undefined, {
-        baseDelayMs: 5,
-        maxDelayMs: 50,
-      });
+      const res = await resilientFetch(
+        "https://api.example.com/data",
+        undefined,
+        {
+          baseDelayMs: 5,
+          maxDelayMs: 50,
+        }
+      );
 
       expect(res.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
     it("returns last response when retries are exhausted", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("Bad Gateway", { status: 502 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response("Bad Gateway", { status: 502 }));
       global.fetch = mockFetch;
 
-      const res = await resilientFetch("https://api.example.com/data", undefined, {
-        baseDelayMs: 5,
-        maxRetries: 2,
-      });
+      const res = await resilientFetch(
+        "https://api.example.com/data",
+        undefined,
+        {
+          baseDelayMs: 5,
+          maxRetries: 2,
+        }
+      );
 
       expect(res.status).toBe(502);
       expect(mockFetch).toHaveBeenCalledTimes(3); // attempt 0, 1, 2
@@ -121,13 +135,19 @@ describe("Resilient HTTP Client (resilientFetch)", () => {
       const mockFetch = vi
         .fn()
         .mockRejectedValueOnce(new TypeError("Failed to fetch"))
-        .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ ok: true }), { status: 200 })
+        );
       global.fetch = mockFetch;
 
-      const res = await resilientFetch("https://api.example.com/data", undefined, {
-        baseDelayMs: 5,
-        maxRetries: 2,
-      });
+      const res = await resilientFetch(
+        "https://api.example.com/data",
+        undefined,
+        {
+          baseDelayMs: 5,
+          maxRetries: 2,
+        }
+      );
 
       expect(res.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(2);

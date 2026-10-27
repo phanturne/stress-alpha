@@ -129,7 +129,8 @@ export async function resilientFetch(
             parsed ??
             Math.min(
               maxDelayMs,
-              baseDelayMs * 2 ** attempt + Math.random() * (isTestEnv ? 10 : 200)
+              baseDelayMs * 2 ** attempt +
+                Math.random() * (isTestEnv ? 10 : 200)
             );
         } else {
           delay = Math.min(
