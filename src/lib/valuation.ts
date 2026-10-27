@@ -22,6 +22,9 @@ import { auditReportData, computeSanityAudit } from "./sanity";
 
 export { computeSanityAudit } from "./sanity";
 
+export type StressedValuationResult = StressResult;
+export type ValuationSchemaType = Valuation;
+
 export interface StressTestParams {
   driverShocks?: Record<string, number>; // driverId -> shock percentage (e.g. -20 for -20%)
   grossMarginBpsDelta?: number; // e.g. -250 for -250 bps (-2.5%)
@@ -50,7 +53,7 @@ export function round2(n: number): number {
 
 /**
  * Deterministic stress-testing engine (StressAlpha flow-through accounting).
- * Upstream shocks -> ΔRevenue -> Gross Profit -> OpEx leverage -> Net Income -> EPS -> Valuation Bands
+ * Upstream shocks -> ΔRevenue -> Gross Profit -> OpEx leverage -> Net Income / EPS -> FCF Conversion & Yield -> Valuation Bands
  */
 export function computeStressedValuation(
   baseline: FinancialModelBaseline,
@@ -128,6 +131,38 @@ export function computeStressedValuation(
       : 0
   );
 
+  // 4b. Cash flow metrics & Free Cash Flow (FCF) conversion telemetry
+  // Operating income * (1 - taxRate) + D&A - CapEx (or simplified FCF conversion ratio)
+  let rawFcf = 0;
+  if (
+    baseline.dnaBillions !== undefined &&
+    baseline.capexBillions !== undefined
+  ) {
+    const nopat = stressOperatingIncomeBillions * (1 - taxRate);
+    rawFcf = nopat + baseline.dnaBillions - baseline.capexBillions;
+  } else if (baseline.fcfConversionRatio !== undefined) {
+    rawFcf = stressNetIncomeBillions * baseline.fcfConversionRatio;
+  } else {
+    // Standard institutional fallback for mature compounders/scalers: 85% Net Income conversion
+    rawFcf = stressNetIncomeBillions * 0.85;
+  }
+
+  const freeCashFlowBillions = round2(rawFcf);
+  const stressFreeCashFlowBillions = freeCashFlowBillions;
+  const fcfConversionPct =
+    stressNetIncomeBillions > 0
+      ? round2((freeCashFlowBillions / stressNetIncomeBillions) * 100)
+      : 0;
+  const fcfPerShare =
+    baseline.dilutedSharesBillions > 0
+      ? round2(
+          (freeCashFlowBillions * 1000) /
+            (baseline.dilutedSharesBillions * 1000)
+        )
+      : 0;
+  const fcfYieldPct =
+    currentPrice > 0 ? round2((fcfPerShare / currentPrice) * 100) : 0;
+
   // 5. Valuation Bands across Regimes
   const targetBull = round2(stressEps * baseline.multipleRegimes.bull);
   const targetBase = round2(stressEps * baseline.multipleRegimes.base);
@@ -163,6 +198,11 @@ export function computeStressedValuation(
     stressOperatingIncomeBillions,
     stressNetIncomeBillions,
     stressEps,
+    freeCashFlowBillions,
+    stressFreeCashFlowBillions,
+    fcfConversionPct,
+    fcfPerShare,
+    fcfYieldPct,
     valuationBands: {
       bull: {
         regime: "bull",
@@ -214,13 +254,35 @@ export interface CalibrationResult {
 }
 
 /**
- * Quantitative Probability Calibration Engine (QPCE).
- * Dynamically modulates scenario probability distributions using:
- * Pillar 1: Governance & Event-Risk Haircut (Lexicographic Governance Veto)
- * Pillar 2: Moat & Margin Resilience (Costco Compounder Exemption)
- * Pillar 3: Sell-Side Consensus Skew & Dispersion
- * Pillar 4: Market-Implied Reality Check (Bayesian Shrinkage, w_mkt = 0.20)
- * All operations executed in Multinomial Log-Odds (Softmax) space.
+ * Deterministic Scenario Calibration Matrix (Scenario Probability Heuristic Matrix).
+ *
+ * Replaces naive symmetrical priors (e.g. 25% Bull / 50% Base / 25% Panic) with a
+ * transparent, deterministic log-odds calibration framework that models non-linear downside tails.
+ *
+ * Methodological Framework: Softmax Multi-Regime Weighting with Tail Risk Heuristics
+ * Rather than claiming an unobservable Bayesian posterior distribution, the calibration matrix operates
+ * as a bounded heuristic transformation in log-odds space (softmax transformation) across 4 pillars:
+ *
+ * - Pillar 1: Governance & Accounting Flags (Lexicographic Tail Risk Veto)
+ *   When existential governance flags (auditor resignation, DOJ probe, multiple accounting red flags) appear,
+ *   asymmetric shifts (d_panic = +1.35, d_bull = -1.60) immediately elevate panic risk (forcing Panic >= 45%)
+ *   and disable operating margin cushions. This reflects institutional fiduciary reality: no fundamental margin
+ *   of safety can offset fraudulent or un-auditable governance.
+ *
+ * - Pillar 2: Moat Durability & Capital Runway Calibration
+ *   Tailors operating resilience to business archetype (Compounder, Operating Scaler, Venture Hypergrowth).
+ *   Audits net liquid cash runway to prevent valuation base inflation when dilutive secondary offerings are imminent.
+ *
+ * - Pillar 3: Street Consensus Skew & Dispersion
+ *   Extracts sell-side skew and target dispersion to identify street overcrowding vs variant perception.
+ *
+ * - Pillar 4: Market-Implied Risk Anchor (Dampening Regularization with w_mkt = 0.20)
+ *   Reverse-engineers the panic probability currently discounted by the market.
+ *   The weight w_mkt = 0.20 acts as an empirical dampening regularization parameter: it anchors the scenario
+ *   distribution against extreme model divergence while preserving 80% weight for independent fundamental alpha.
+ *
+ * All shifts sum deterministically into softmax exponentiation, normalized over a simplex invariant
+ * ensuring probabilities strictly remain within [0.05, 0.85] and sum to 1.000.
  */
 export function calibrateScenarioProbabilities(
   input: CalibrationInput
@@ -309,7 +371,12 @@ export function calibrateScenarioProbabilities(
     },
   ];
 
-  // 2. Pillar 1: Governance & Accounting Flags (Lexicographic Governance Veto)
+  // 2. Pillar 1: Governance & Accounting Flags (Lexicographic Tail Risk Veto)
+  // Severe governance failures (auditor resignation, special committee probes, DOJ litigation)
+  // represent existential downside tail risk that cannot be offset by high operating margins.
+  // In logit space, we impose an asymmetric shift: d_panic = +1.35 and d_bull = -1.60.
+  // This sharply curtails Bull probability (capped <= 8%) and guarantees Panic probability >= 45%,
+  // implementing a deterministic fiduciary veto heuristic.
   const govRisk = facts.governanceRisk ?? "none";
   const accountingFlagsCount = (facts.accountingFlags ?? []).length;
   const isDoj = facts.materialLitigationOrDoj ?? false;
@@ -334,7 +401,7 @@ export function calibrateScenarioProbabilities(
       deltaBullLogit: d_bull_p1,
       deltaBaseLogit: d_base_p1,
       deltaPanicLogit: d_panic_p1,
-      rationale: `Severe corporate governance risk detected (${accountingFlagsCount} accounting flag(s), DOJ/litigation: ${isDoj}). Asymmetric panic floor imposed; gross margin defense cushions disabled.`,
+      rationale: `Severe corporate governance risk detected (${accountingFlagsCount} accounting flag(s), DOJ/litigation: ${isDoj}). Asymmetric panic floor imposed (d_panic = +1.35, d_bull = -1.60); gross margin defense cushions disabled by fiduciary veto.`,
     });
   } else if (isModerate) {
     d_panic_p1 = 0.7;
@@ -658,7 +725,10 @@ export function calibrateScenarioProbabilities(
   z_base += d_base_p3;
   z_panic += d_panic_p3;
 
-  // 5. Pillar 4: Market-Implied Reality Check (Bayesian Shrinkage, w_mkt = 0.20)
+  // 5. Pillar 4: Market-Implied Risk Anchor (Dampening Regularization, w_mkt = 0.20)
+  // Why w_mkt = 0.20? This is not an unproven prior distribution, but a practical dampening regularization weight.
+  // It anchors the model 20% toward market pricing to avoid dogmatic detachment from reality,
+  // while retaining 80% weight on fundamental analysis.
   const fairBull = scenarios[bullIdx].forwardEps * scenarios[bullIdx].multiple;
   const fairBase = scenarios[baseIdx].forwardEps * scenarios[baseIdx].multiple;
   const fairPanic =
@@ -710,13 +780,13 @@ export function calibrateScenarioProbabilities(
 
     steps.push({
       pillar: "market_implied",
-      label: "Market-Implied Bayesian Shrinkage",
+      label: "Market-Implied Risk Anchor",
       deltaBullLogit: round2(d_bull_p4),
       deltaBaseLogit: round2(d_base_p4),
       deltaPanicLogit: round2(d_panic_p4),
-      rationale: `Applied 20% Bayesian shrinkage anchor against market-implied pricing (market implied panic probability: ${round2(
+      rationale: `Applied 20% dampening regularization weight against market-implied pricing (market-implied panic probability: ${round2(
         impliedPanic * 100
-      )}%).`,
+      )}%). Anchors extreme model divergence while preserving 80% fundamental perception.`,
     });
   }
 
@@ -815,7 +885,7 @@ export function computeValuation(input: ValuationInput): Valuation {
     }
   }
 
-  // Determine scenario probabilities (QPCE Calibrated vs Manual/Raw)
+  // Determine scenario probabilities (Calibrated vs Manual/Raw)
   let calibrationAudit: CalibrationAudit | undefined = input.calibrationAudit;
   let scenarioProbabilities = scenarios.scenarios.map((s) => s.probability);
 
@@ -982,6 +1052,7 @@ export function deriveEffectiveBaseline(facts: Facts): FinancialModelBaseline {
     taxRatePct: 16.5,
     dilutedSharesBillions: round2(shares),
     multipleRegimes: { bull: 34, base: 28, panic: 18 },
+    fcfConversionRatio: 0.85,
     upstreamDrivers: [
       {
         id: "hyperscaler-capex",

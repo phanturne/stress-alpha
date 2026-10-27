@@ -87,6 +87,43 @@ describe("computeStressedValuation", () => {
     expect(result.asymmetry.riskRewardRatio).toBe(7);
     // Market priced-in multiple: 150 / 12 = 12.5x
     expect(result.asymmetry.marketPricedInMultiple).toBe(12.5);
+
+    // Free Cash Flow & Yield telemetry
+    expect(result.freeCashFlowBillions).toBe(20.4); // 24 * 0.85 fallback
+    expect(result.stressFreeCashFlowBillions).toBe(20.4);
+    expect(result.fcfConversionPct).toBe(85.0);
+    expect(result.fcfPerShare).toBe(10.2); // 20.4 / 2 shares
+    expect(result.fcfYieldPct).toBe(6.8); // (10.2 / 150) * 100
+  });
+
+  it("calculates exact NOPAT + D&A - CapEx when capex and dna are specified", () => {
+    const baselineWithCapex: FinancialModelBaseline = {
+      ...mockBaseline,
+      dnaBillions: 5,
+      capexBillions: 8,
+    };
+    const result = computeStressedValuation(baselineWithCapex, currentPrice, {});
+
+    // Operating Income: 30, Tax: 20% -> NOPAT = 24
+    // FCF = 24 + 5 - 8 = 21B
+    expect(result.freeCashFlowBillions).toBe(21);
+    expect(result.fcfConversionPct).toBe(87.5); // (21 / 24) * 100
+    expect(result.fcfPerShare).toBe(10.5); // 21 / 2 shares
+    expect(result.fcfYieldPct).toBe(7.0); // (10.5 / 150) * 100
+  });
+
+  it("supports custom fcfConversionRatio when provided", () => {
+    const baselineWithRatio: FinancialModelBaseline = {
+      ...mockBaseline,
+      fcfConversionRatio: 0.9,
+    };
+    const result = computeStressedValuation(baselineWithRatio, currentPrice, {});
+
+    // Net Income = 24 -> FCF = 24 * 0.9 = 21.6
+    expect(result.freeCashFlowBillions).toBe(21.6);
+    expect(result.fcfConversionPct).toBe(90.0);
+    expect(result.fcfPerShare).toBe(10.8);
+    expect(result.fcfYieldPct).toBe(7.2);
   });
 
   it("correctly models upstream driver shocks with elasticity", () => {
@@ -387,7 +424,7 @@ describe("deriveEffectiveBaseline", () => {
   });
 });
 
-describe("Quantitative Probability Calibration Engine (QPCE)", () => {
+describe("Deterministic Scenario Calibration Matrix", () => {
   const baseScenarios = [
     {
       name: "Bull",

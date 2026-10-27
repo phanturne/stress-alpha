@@ -207,8 +207,8 @@ export default function MethodologyPage() {
             >
               7.{" "}
               {isZh
-                ? "量化概率校准引擎 (QPCE)"
-                : "Probability Calibration (QPCE)"}
+                ? "确定性情景校准矩阵"
+                : "Scenario Calibration Matrix"}
             </a>
           </div>
         </div>
@@ -310,8 +310,8 @@ export default function MethodologyPage() {
 
             <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
-                ? "当营收下滑时，固定开支（研发折旧、数据中心租金、固定薪酬）并不会同比例减少，这导致利润率呈现非线性的剧烈下挫（经营杠杆效应）。StressAlpha 将营业费用（OpEx）拆分为变动成本与刚性固定成本，并允许在毛利率基点（Bps）和固定支出变动（%）上施加压力。"
-                : "When top-line sales decline, fixed overhead (R&D amortization, data center leases, base compensation) does not scale down linearly. This triggers an amplified collapse in operating profit (operating leverage). StressAlpha decomposes costs into variable COGS and rigid fixed OpEx, enabling independent margin stress tests."}
+                ? "当营收下滑时，固定开支（研发折旧、数据中心租金、固定薪酬）并不会同比例减少，这导致利润率呈现非线性的剧烈下挫（经营杠杆效应）。StressAlpha 将营业费用（OpEx）拆分为变动成本与刚性固定成本，并允许在毛利率基点（Bps）和固定支出变动（%）上施加压力。除损益表外，投资委员会高度关注自由现金流（FCF）转化率、资本开支密集度与运营资金拖累，模型同步推导 NOPAT、折旧摊销与 CapEx 压力对真实每股现金流及自由现金流收益率的传导。"
+                : "When top-line sales decline, fixed overhead (R&D amortization, data center leases, base compensation) does not scale down linearly. This triggers an amplified collapse in operating profit (operating leverage). StressAlpha decomposes costs into variable COGS and rigid fixed OpEx, enabling independent margin stress tests. Crucially for institutional investment committees, StressAlpha extends beyond P&L accounting to quantify Free Cash Flow (FCF) conversion, CapEx intensity, and working capital drag across all stress regimes."}
             </p>
 
             {/* Formula Card */}
@@ -330,9 +330,16 @@ export default function MethodologyPage() {
                 Stressed_Fixed_OpEx = Base_Fixed_OpEx × (1 + ΔFixed_OpEx_Pct /
                 100)
               </div>
-              <div className="pt-1 font-semibold text-emerald-400 sm:text-sm">
+              <div className="text-foreground">
                 Stressed_Operating_Income = Stressed_Gross_Profit -
                 Stressed_Fixed_OpEx
+              </div>
+              <div className="text-foreground">
+                Free_Cash_Flow = Stressed_Operating_Income × (1 - Tax_Rate) + D&A - CapEx
+              </div>
+              <div className="pt-1 font-semibold text-emerald-400 sm:text-sm">
+                FCF_Conversion_% = (Free_Cash_Flow / Stressed_Net_Income) × 100
+                &nbsp;|&nbsp; FCF_Yield_% = (FCF_Per_Share / Current_Price) × 100
               </div>
             </div>
           </section>
@@ -626,22 +633,22 @@ export default function MethodologyPage() {
             </div>
           </section>
 
-          {/* SECTION 7: Quantitative Probability Calibration Engine (QPCE) */}
+          {/* SECTION 7: Deterministic Scenario Calibration Matrix */}
           <section id="qpce-calibration" className="scroll-mt-24 space-y-4">
             <div className="flex items-center gap-2.5 text-accent">
               <Calculator className="size-5" />
               <h2 className="text-lg font-bold text-white sm:text-xl">
                 7.{" "}
                 {isZh
-                  ? "量化情景概率校准引擎 (QPCE)"
-                  : "Quantitative Probability Calibration Engine (QPCE)"}
+                  ? "确定性情景概率校准矩阵 (Deterministic Scenario Calibration Matrix)"
+                  : "Deterministic Scenario Calibration Matrix"}
               </h2>
             </div>
 
             <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
               {isZh
-                ? "传统定性估值模型通常给乐观（Bull）、基准（Base）和悲观（Panic）情景赋予机械对称的先验权重（如 25% / 50% / 25%）。当公司面临严重审计师辞职、司法部调查或薄弱毛利率时，未校准的模型会给出脱离现实的“虚假阿尔法（False Alpha）”。StressAlpha 引入 QPCE 引擎，将先验概率转换至多项对数几率空间（Multinomial Log-Odds），通过四维制度性锚点执行纯确定性校准并以 Softmax 闭合映射。"
-                : "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha's QPCE engine maps scenario priors into Multinomial Log-Odds space, performs 4-pillar deterministic adjustments, and resolves posteriors via temperature-controlled Softmax with simplex contraction."}
+                ? "传统定性估值模型通常给乐观（Bull）、基准（Base）和悲观（Panic）情景赋予机械对称的先验权重（如 25% / 50% / 25%）。当公司面临严重审计师辞职、司法部调查或薄弱毛利率时，未校准的模型会给出脱离现实的“虚假阿尔法（False Alpha）”。StressAlpha 摒弃空洞的学术包装，采用纯确定性 TypeScript 编写的 Softmax 多状态加权与尾部风险启发式矩阵：将先验转换至对数几率空间（Log-Odds），基于四大制度性支柱施加确定性非线性偏置，并通过凸收缩确保概率落在 [0.05, 0.85] 概率单纯形闭环区间。"
+                : "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha rejects academic window dressing in favor of a pure deterministic TypeScript Softmax Multi-Regime Weighting with Tail Risk Heuristics: scenario priors are mapped into Log-Odds space, modified across 4 institutional pillars with deterministic shifts, and resolved via temperature-controlled Softmax with simplex contraction."}
             </p>
 
             {/* Formula Card */}
@@ -672,13 +679,13 @@ export default function MethodologyPage() {
                   <span>
                     {isZh
                       ? "支柱一：司法审计与治理否决权"
-                      : "Pillar 1: Forensic & Governance Veto"}
+                      : "Pillar 1: Forensic & Governance Tail Veto"}
                   </span>
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {isZh
-                    ? "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，施加非线性对数惩罚（Panic +1.8，Bull -1.2），并触发硬性字典序否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利缓冲），杜绝 Wirecard/Enron 陷阱。"
-                    : "Severe governance flags or forensic accounting probes trigger a non-linear logit shift (+1.8 Panic, -1.2 Bull) and a lexicographic veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled), preventing the Wirecard/Enron trap."}
+                    ? "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，模型施加非对称对数偏置（Δz_panic = +1.35, Δz_bull = -1.60），并触发硬性受托否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利防御缓冲）。治理失信属于存在性下行风险，无法被任何经营毛利抵消。"
+                    : "Severe governance flags or forensic accounting probes impose asymmetric log-odds shifts (Δz_panic = +1.35, Δz_bull = -1.60) and enforce an institutional fiduciary veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled). Governance failures are existential downside tail events that no operational margin cushion can offset."}
                 </p>
               </div>
 
@@ -709,8 +716,8 @@ export default function MethodologyPage() {
                 </div>
                 <p className="mt-1 text-pretty text-xs leading-relaxed text-slate-400">
                   {isZh
-                    ? "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 70% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.60，则对称提升极端情景权重，反映市场认知巨大分歧。"
-                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (>70%) boosts Bull logits, while extreme target dispersion (>0.60) widens tail regime weights to capture market\u00A0disagreement."}
+                    ? "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 80% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.80，则提升极端情景权重，反映市场认知巨大分歧与交易拥挤度。"
+                    : "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (≥80%) boosts Bull logits, while extreme target dispersion (>0.80) widens tail regime weights to capture market disagreement and consensus overcrowding."}
                 </p>
               </div>
 
@@ -719,14 +726,14 @@ export default function MethodologyPage() {
                   <span className="size-2 rounded-full bg-emerald-400" />
                   <span>
                     {isZh
-                      ? "支柱四：内生市场价贝叶斯收缩锚"
-                      : "Pillar 4: Market Bayesian Shrinkage Anchor"}
+                      ? "支柱四：内生市场风险锚与阻尼正则化"
+                      : "Pillar 4: Market-Implied Risk Anchor & Regularization"}
                   </span>
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {isZh
-                    ? "根据当前市场成交价反推市场隐含的恐慌折价概率，并以 w_mkt = 0.20 的经验贝叶斯收缩权重锚定，使模型既扎根于真实市场定价，又不会退化为失去独立阿尔法发现能力的被动跟风模型。"
-                    : "Reverse-engineers the market-implied disaster probability from real-time stock price and applies a 20% empirical Bayesian shrinkage weight (w_mkt = 0.20), grounding the scenario distribution in market pricing without losing fundamental alpha discovery."}
+                    ? "根据当前市场成交价反推市场隐含的恐慌折价概率。参数 w_mkt = 0.20 并非假设的先验分布，而是实用的阻尼正则化权重：将模型向市场实际定价锚定 20%，避免脱离现实的主观教条主义，同时保留 80% 权重用于发现独立的非共识阿尔法。"
+                    : "Reverse-engineers the disaster probability priced in by the current market. The parameter w_mkt = 0.20 functions as an empirical dampening regularization weight rather than an unproven prior distribution: it anchors 20% to real-time market pricing to prevent dogmatic detachment from reality while preserving 80% model weight for independent fundamental alpha."}
                 </p>
               </div>
             </div>
@@ -750,8 +757,7 @@ export default function MethodologyPage() {
                     </strong>
                     ，计算出加权公允价高达{" "}
                     <strong>$60.45 (+45.5% 虚假虚高空间)</strong>。<br />
-                    QPCE
-                    引擎检测到审计师辞职与调查，自动触发治理否决权与薄利（13.5%
+                    情景校准矩阵检测到审计师辞职与调查，自动触发治理否决权与薄利（13.5%
                     GM）惩罚，将概率校准为：
                     <strong>Panic 75.0% / Base 17.0% / Bull 8.0%</strong>
                     ，测得实际加权公允价为{" "}
@@ -769,13 +775,38 @@ export default function MethodologyPage() {
                     <strong>$60.45 (+45.5% False Alpha)</strong> despite active
                     forensic accounting investigations.
                     <br />
-                    QPCE detected severe governance risk and thin 13.5% gross
+                    The Scenario Calibration Matrix detected severe governance risk and thin 13.5% gross
                     margins, triggering the Lexicographic Veto to calibrate
                     probabilities to:{" "}
                     <strong>Panic 75.0% / Base 17.0% / Bull 8.0%</strong>. This
                     adjusted Weighted Fair Value to{" "}
                     <strong>$31.91 (-23.2% real downside risk)</strong>,
                     accurately identifying asymmetric capital impairment danger.
+                  </>
+                )}
+              </p>
+            </div>
+
+            {/* Institutional Interview Guidance & Methodology Alignment Box */}
+            <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 text-xs">
+              <div className="flex items-center gap-2 font-bold text-sky-300">
+                <Sparkles className="size-4" />
+                <span>
+                  {isZh
+                    ? "方法论释疑与买方投研面试指引：启发式设计与经验回测演进"
+                    : "Methodology Note & Interview Guidance: Heuristic Framing vs. Empirical Backtesting"}
+                </span>
+              </div>
+              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
+                {isZh ? (
+                  <>
+                    <strong>为什么采用对数几率启发式偏置而非机械拟合？</strong> 在买方基本面研究与量化面试中，最忌讳在无共轭先验的场景下伪称“严谨贝叶斯后验”。StressAlpha 坦诚说明：当前的 Δz 调整量是基于买方风控经验提炼的<strong>确定性启发式界限</strong>（如审计师辞职属于制度性否决，稀释跑道不足 9 个月面临股权破发）。<br />
+                    <strong>未来实证校准路径：</strong> 在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier Score: B = 1/N ∑ (p_i - o_i)²) 与多项对数损失（Multinomial Log-Loss）实现实证最优化校准。
+                  </>
+                ) : (
+                  <>
+                    <strong>Why use heuristic logit shifts over unproven academic priors?</strong> In buy-side investment committee and quant research interviews, claiming an unsubstantiated &ldquo;Bayesian posterior&rdquo; without empirical distributions invites immediate skepticism. StressAlpha is intellectually honest: the baseline logit shifts (Δz) represent <strong>transparent institutional heuristic bounds</strong> modeling structural downside asymmetries (governance tail vetoes, acute dilution overhang).<br />
+                    <strong>Empirical Calibration Roadmap:</strong> In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.
                   </>
                 )}
               </p>

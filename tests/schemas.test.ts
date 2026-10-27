@@ -4,6 +4,7 @@ import {
   ScenariosSchema,
   CatalystsSchema,
   FinancialModelBaselineSchema,
+  StressResultSchema,
   ValuationSchema,
   MoatCompetitorsSchema,
   EarningsSentimentSchema,
@@ -177,6 +178,89 @@ describe("FinancialModelBaselineSchema Unit Tests", () => {
         multipleRegimes: { bull: 32, base: 26, panic: -5 },
       }).success
     ).toBe(false);
+  });
+
+  it("parses valid baseline with optional cash flow metrics (capex, dna, fcfConversionRatio)", () => {
+    const withCashFlow = {
+      ...validBaseline,
+      capexBillions: 12.5,
+      dnaBillions: 8.2,
+      fcfConversionRatio: 0.88,
+    };
+    const parsed = FinancialModelBaselineSchema.parse(withCashFlow);
+    expect(parsed.capexBillions).toBe(12.5);
+    expect(parsed.dnaBillions).toBe(8.2);
+    expect(parsed.fcfConversionRatio).toBe(0.88);
+  });
+});
+
+describe("StressResultSchema Unit Tests", () => {
+  const minimalStressResult = {
+    stressRevenueBillions: 100,
+    stressGrossProfitBillions: 50,
+    stressOperatingIncomeBillions: 30,
+    stressNetIncomeBillions: 24,
+    stressEps: 12,
+    freeCashFlowBillions: 20.4,
+    stressFreeCashFlowBillions: 20.4,
+    fcfConversionPct: 85.0,
+    fcfPerShare: 10.2,
+    fcfYieldPct: 6.8,
+    valuationBands: {
+      bull: {
+        regime: "bull",
+        label: "Bull (30x)",
+        multiple: 30,
+        targetPrice: 360,
+        deltaFromCurrentPct: 140,
+      },
+      base: {
+        regime: "base",
+        label: "Base (20x)",
+        multiple: 20,
+        targetPrice: 240,
+        deltaFromCurrentPct: 60,
+      },
+      panic: {
+        regime: "panic",
+        label: "Panic (10x)",
+        multiple: 10,
+        targetPrice: 120,
+        deltaFromCurrentPct: -20,
+      },
+    },
+    asymmetry: {
+      downsideToBasePct: 60,
+      downsideToPanicPct: -20,
+      upsideToBullPct: 140,
+      marketPricedInMultiple: 12.5,
+      riskRewardRatio: 7.0,
+    },
+    driverShocksApplied: { "driver-a": 0 },
+    grossMarginBpsDeltaApplied: 0,
+    fixedOpexShiftPctApplied: 0,
+  };
+
+  it("parses valid stress result including cash flow metrics", () => {
+    const parsed = StressResultSchema.parse(minimalStressResult);
+    expect(parsed.freeCashFlowBillions).toBe(20.4);
+    expect(parsed.stressFreeCashFlowBillions).toBe(20.4);
+    expect(parsed.fcfConversionPct).toBe(85.0);
+    expect(parsed.fcfPerShare).toBe(10.2);
+    expect(parsed.fcfYieldPct).toBe(6.8);
+  });
+
+  it("parses backward-compatible stress result without optional cash flow metrics", () => {
+    const { freeCashFlowBillions, stressFreeCashFlowBillions, fcfConversionPct, fcfPerShare, fcfYieldPct, ...legacy } = minimalStressResult;
+    void freeCashFlowBillions;
+    void stressFreeCashFlowBillions;
+    void fcfConversionPct;
+    void fcfPerShare;
+    void fcfYieldPct;
+
+    const parsed = StressResultSchema.parse(legacy);
+    expect(parsed.stressRevenueBillions).toBe(100);
+    expect(parsed.freeCashFlowBillions).toBeUndefined();
   });
 });
 

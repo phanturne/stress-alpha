@@ -74,14 +74,14 @@ export const FactsSchema = z.object({
   sources: z.array(SourceSchema).optional().default([]),
   analysisDate: z.string().optional(),
 
-  // Qualitative risk & governance indicators (QPCE)
+  // Qualitative risk & governance indicators (Scenario Calibration)
   governanceRisk: z.enum(["none", "low", "moderate", "severe"]).optional(),
   accountingFlags: z.array(z.string()).optional(),
   materialLitigationOrDoj: z.boolean().optional(),
   customerConcentrationPct: z.number().min(0).max(100).optional(),
   shortInterestPct: z.number().min(0).max(100).optional(),
 
-  // Valuation Archetype & Capital Runway (QPCE)
+  // Valuation Archetype & Capital Runway (Scenario Calibration)
   valuationArchetype: z
     .enum(["compounder", "operating_scaler", "venture_hypergrowth"])
     .optional(),
@@ -161,6 +161,22 @@ export const FinancialModelBaselineSchema = z.object({
   dilutedSharesBillions: z.number().positive(),
   multipleRegimes: MultipleRegimesSchema,
   upstreamDrivers: z.array(UpstreamDriverSchema).default([]),
+  capexBillions: z
+    .number()
+    .nonnegative()
+    .optional()
+    .describe("Baseline annualized capital expenditures (billions)"),
+  dnaBillions: z
+    .number()
+    .nonnegative()
+    .optional()
+    .describe("Baseline depreciation & amortization (billions)"),
+  fcfConversionRatio: z
+    .number()
+    .min(0)
+    .max(2)
+    .optional()
+    .describe("FCF / Net Income conversion ratio (e.g. 0.85)"),
 });
 export type FinancialModelBaseline = z.infer<
   typeof FinancialModelBaselineSchema
@@ -190,6 +206,26 @@ export const StressResultSchema = z.object({
   stressOperatingIncomeBillions: z.number(),
   stressNetIncomeBillions: z.number(),
   stressEps: z.number(),
+  freeCashFlowBillions: z
+    .number()
+    .optional()
+    .describe("Stressed free cash flow in billions"),
+  stressFreeCashFlowBillions: z
+    .number()
+    .optional()
+    .describe("Alias for freeCashFlowBillions matching stress prefix conventions"),
+  fcfConversionPct: z
+    .number()
+    .optional()
+    .describe("FCF conversion percentage relative to Net Income"),
+  fcfPerShare: z
+    .number()
+    .optional()
+    .describe("Free cash flow per diluted share"),
+  fcfYieldPct: z
+    .number()
+    .optional()
+    .describe("FCF yield percentage relative to current stock price"),
   valuationBands: z.object({
     bull: ValuationBandSchema,
     base: ValuationBandSchema,
@@ -376,7 +412,7 @@ export const SensitivityEntrySchema = z.object({
 });
 export type SensitivityEntry = z.infer<typeof SensitivityEntrySchema>;
 
-// --- QPCE Calibration Audit Schema ---
+// --- Deterministic Scenario Calibration Audit Schema (formerly QPCE) ---
 export const CalibrationStepSchema = z.object({
   pillar: z.enum([
     "prior",
@@ -699,6 +735,12 @@ export const ValuationRevisionSchema = z.object({
   createdAt: z.string().or(z.date()).optional(),
 });
 export type ValuationRevision = z.infer<typeof ValuationRevisionSchema>;
+
+// Convenience type aliases for UI modules
+export type Moat = MoatCompetitors;
+export type Estimates = AnalystEstimates;
+export type Filing = FilingExtracts;
+export type Sentiment = EarningsSentiment;
 
 export const ValuationRevisionsListSchema = z.object({
   ticker: z.string(),

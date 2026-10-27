@@ -183,11 +183,11 @@ export interface Translations {
   };
   tabs: {
     valuation: string;
-    estimates?: string;
+    estimates: string;
     moat: string;
     segments: string;
     catalysts: string;
-    news?: string;
+    news: string;
     audit: string;
     report: string;
     scenarios?: string;
@@ -1912,11 +1912,11 @@ export const translations: Record<Locale, Translations> = {
         title: "Valuation & Stress Defaults",
         description:
           "Underlying mathematical models, probability calibration regimes, and accounting guardrails.",
-        qpceTitle: "Quantitative Probability Calibration Engine (QPCE)",
+        qpceTitle: "Deterministic Scenario Calibration Matrix",
         qpceDesc:
-          "Scenario probabilities are regularized in multinomial logit (softmax) space across 4 valuation regimes: Bull, Base, Bear, and Panic Floor.",
+          "Scenario probabilities are calibrated using Softmax Multi-Regime Weighting with Tail Risk Heuristics across Bull, Base, Bear, and Panic Floor.",
         qpceFormula:
-          "Simplex Invariant: Σ P_i = 1.000, P_i ∈ [0.05, 0.85] with 20% Bayesian market shrinkage anchor.",
+          "Simplex Invariant: Σ P_i = 1.000, P_i ∈ [0.05, 0.85] with 20% market-implied dampening regularization anchor.",
         guardrailTitle: "Income Quality & Operating EPS Guardrail",
         guardrailDesc:
           "Enforces non-GAAP operating purity by isolating core epsOperating from ASU 2016-01 mark-to-market fluctuations and non-operating windfalls.",
@@ -2905,11 +2905,11 @@ export const translations: Record<Locale, Translations> = {
       valuation: {
         title: "估值模型与压力预设",
         description: "底层金融数学模型、情景概率校准引擎与会计防欺诈护栏。",
-        qpceTitle: "定量概率校准引擎 (QPCE)",
+        qpceTitle: "确定性情景概率校准矩阵",
         qpceDesc:
-          "情景发生概率在多项式 Logit (Softmax) 空间中经过严格校准，覆盖四大估值区间：乐观成长、基准指引、悲观承压与极限流动性恐慌底。",
+          "情景发生概率基于 Softmax 多状态加权与尾部风险启发式矩阵进行确定性校准，覆盖四大估值区间：乐观成长、基准指引、悲观承压与极限流动性恐慌底。",
         qpceFormula:
-          "单纯形不变性：Σ P_i = 1.000，P_i ∈ [0.05, 0.85]，融入 20% 贝叶斯市场收缩锚点。",
+          "单纯形不变性：Σ P_i = 1.000，P_i ∈ [0.05, 0.85]，融入 20% 市场隐含风险阻尼正则化锚点。",
         guardrailTitle: "收益质量与核心经营 EPS 护栏",
         guardrailDesc:
           "严格剔除 ASU 2016-01 公允价值变动与一次性非经常损益，以规范化核心经营 EPS 作为估值基准，防止基础虚高。",
