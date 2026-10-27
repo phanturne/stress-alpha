@@ -1,19 +1,17 @@
-import { getReportRepository, type ReportSummary } from "@/lib/repository";
-import { ScreenerClientPage } from "./ScreenerClientPage";
+import { redirect } from "next/navigation";
 
-export const revalidate = 60;
-
-export default async function ScreenerPage() {
-  let initialReports: ReportSummary[] = [];
-  try {
-    const repo = getReportRepository();
-    initialReports = await repo.listReports();
-  } catch (err) {
-    console.error(
-      "Failed to load initial reports for screener on server:",
-      err
-    );
+export default async function ScreenerPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const query = new URLSearchParams();
+  query.set("mode", "screener");
+  for (const [key, val] of Object.entries(params)) {
+    if (typeof val === "string" && key !== "mode") {
+      query.set(key, val);
+    }
   }
-
-  return <ScreenerClientPage initialReports={initialReports} />;
+  redirect(`/?${query.toString()}`);
 }

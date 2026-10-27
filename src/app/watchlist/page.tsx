@@ -1,19 +1,17 @@
-import { getReportRepository, type ReportSummary } from "@/lib/repository";
-import { WatchlistClientPage } from "./WatchlistClientPage";
+import { redirect } from "next/navigation";
 
-export const revalidate = 60;
-
-export default async function WatchlistPage() {
-  let initialReports: ReportSummary[] = [];
-  try {
-    const repo = getReportRepository();
-    initialReports = await repo.listReports();
-  } catch (err) {
-    console.error(
-      "Failed to load initial reports for watchlist on server:",
-      err
-    );
+export default async function WatchlistPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const query = new URLSearchParams();
+  query.set("mode", "watchlist");
+  for (const [key, val] of Object.entries(params)) {
+    if (typeof val === "string" && key !== "mode") {
+      query.set(key, val);
+    }
   }
-
-  return <WatchlistClientPage initialReports={initialReports} />;
+  redirect(`/?${query.toString()}`);
 }

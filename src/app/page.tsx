@@ -14,6 +14,7 @@ import { Header } from "@/components/Header";
 import { CockpitSkeleton } from "@/components/CockpitSkeleton";
 import { MemoView } from "@/components/MemoView";
 import { ScreenerView } from "@/components/ScreenerView";
+import { WatchlistView } from "@/components/WatchlistView";
 import { NoReportSelected } from "@/components/NoReportSelected";
 import { CockpitDualPane } from "@/components/CockpitDualPane";
 import { CockpitModals } from "@/components/CockpitModals";
@@ -32,8 +33,9 @@ function HomePageContent() {
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("report") || null;
   const initialMode =
-    (searchParams.get("mode") as "cockpit" | "memo" | "screener" | null) ||
-    "cockpit";
+    (searchParams.get("mode") as
+      "cockpit" | "memo" | "screener" | "watchlist" | null) ||
+    (!initialSlug ? "screener" : "cockpit");
   const initialTab = searchParams.get("tab") || "valuation";
 
   const [currentSlug, setCurrentSlug] = useState<string | null>(initialSlug);
@@ -284,6 +286,13 @@ function HomePageContent() {
       >
         {viewMode === "screener" ? (
           <ScreenerView
+            reports={reports}
+            onSelectReport={handleSelectReport}
+            locale={locale}
+            isLoading={isReportsLoading}
+          />
+        ) : viewMode === "watchlist" ? (
+          <WatchlistView
             reports={reports}
             onSelectReport={handleSelectReport}
             locale={locale}

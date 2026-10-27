@@ -80,6 +80,20 @@ describe("URL State Parser & Serializer", () => {
     expect(parsed.lang).toBe("zh");
   });
 
+  it("handles watchlist mode parsing and serialization", () => {
+    const state: ScenarioUrlState = {
+      mode: "watchlist",
+      lang: "en",
+    };
+    const serialized = serializeScenarioUrlState(state);
+    expect(serialized).toContain("mode=watchlist");
+    expect(serialized).toContain("lang=en");
+
+    const parsed = parseScenarioUrlState(serialized);
+    expect(parsed.mode).toBe("watchlist");
+    expect(parsed.lang).toBe("en");
+  });
+
   it("round-trips scenario state seamlessly", () => {
     const original: ScenarioUrlState = {
       report: "NVDA-Q2-2027-analysis",

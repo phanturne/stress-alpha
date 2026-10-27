@@ -4,7 +4,7 @@ import type { Locale } from "./i18n";
 export interface ScenarioUrlState {
   report?: string;
   tab?: string;
-  mode?: "cockpit" | "memo" | "screener";
+  mode?: "cockpit" | "memo" | "screener" | "watchlist";
   lang?: Locale;
   stressParams?: StressTestParams;
 }
@@ -29,7 +29,12 @@ export function parseScenarioUrlState(
   if (tab) state.tab = tab;
 
   const mode = params.get("mode");
-  if (mode === "cockpit" || mode === "memo" || mode === "screener") {
+  if (
+    mode === "cockpit" ||
+    mode === "memo" ||
+    mode === "screener" ||
+    mode === "watchlist"
+  ) {
     state.mode = mode;
   }
 

@@ -12,7 +12,7 @@ import {
 export interface UseReportNavigationOptions {
   currentSlug: string | null;
   setCurrentSlug: (slug: string | null) => void;
-  initialMode?: "cockpit" | "memo" | "screener";
+  initialMode?: "cockpit" | "memo" | "screener" | "watchlist";
   initialTab?: string;
   locale: Locale;
   setLocale: (locale: Locale) => void;
@@ -24,9 +24,9 @@ export interface UseReportNavigationOptions {
 }
 
 export interface UseReportNavigationReturn {
-  viewMode: "cockpit" | "memo" | "screener";
+  viewMode: "cockpit" | "memo" | "screener" | "watchlist";
   setViewMode: React.Dispatch<
-    React.SetStateAction<"cockpit" | "memo" | "screener">
+    React.SetStateAction<"cockpit" | "memo" | "screener" | "watchlist">
   >;
   activeTab: string;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
@@ -65,9 +65,9 @@ export function useReportNavigation({
   isLoading,
 }: UseReportNavigationOptions): UseReportNavigationReturn {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<"cockpit" | "memo" | "screener">(
-    initialMode || "cockpit"
-  );
+  const [viewMode, setViewMode] = useState<
+    "cockpit" | "memo" | "screener" | "watchlist"
+  >(initialMode || "cockpit");
   const [activeTab, setActiveTab] = useState<string>(initialTab || "valuation");
   const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
     "cockpit"
@@ -89,7 +89,7 @@ export function useReportNavigation({
       if (urlState.tab) {
         setActiveTab((prev) => (prev !== urlState.tab ? urlState.tab! : prev));
       }
-      if (urlState.mode === "memo" || urlState.mode === "cockpit") {
+      if (urlState.mode) {
         setViewMode((prev) => (prev !== urlState.mode ? urlState.mode! : prev));
       }
       if (urlState.lang) {
@@ -107,9 +107,11 @@ export function useReportNavigation({
         }
       }
 
-      // Screener redirect when no report is specified or explicitly in screener mode
+      // Default to screener view when explicitly requested or when no report is specified
       if (urlState.mode === "screener" || !urlState.report) {
-        router.replace("/screener");
+        if (!urlState.report) {
+          setViewMode((prev) => (prev !== "screener" ? "screener" : prev));
+        }
         return;
       }
 
@@ -170,7 +172,8 @@ export function useReportNavigation({
       typeof window === "undefined" ||
       isLoading ||
       !currentSlug ||
-      viewMode === "screener"
+      viewMode === "screener" ||
+      viewMode === "watchlist"
     ) {
       return;
     }
@@ -199,15 +202,6 @@ export function useReportNavigation({
     ) => {
       if (mode === "settings") {
         router.push("/settings");
-        return;
-      }
-      if (mode === "watchlist") {
-        router.push("/watchlist");
-        return;
-      }
-      if (mode === "screener") {
-        const query = options?.watchlistOnly ? "?watchlist=true" : "";
-        router.push(`/screener${query}`);
         return;
       }
       setViewMode(mode);
