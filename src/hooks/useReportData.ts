@@ -127,7 +127,9 @@ export function useReportData({
   }, [reportQuery.error, onError]);
 
   const activeTicker =
-    reportData?.facts?.ticker || reportQuery.data?.facts?.ticker;
+    reportData?.facts?.ticker ||
+    reportQuery.data?.facts?.ticker ||
+    (currentSlug ? currentSlug.split("-")[0]?.toUpperCase() : undefined);
 
   // Query 3: Market news & upstream dependencies for active ticker
   const newsQuery = useQuery({

@@ -6,7 +6,9 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  Suspense,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import { compareReportsByRecency } from "@/lib/utils";
 import { Header } from "@/components/Header";
 import { CockpitSkeleton } from "@/components/CockpitSkeleton";
@@ -26,8 +28,15 @@ import { useReportNavigation } from "@/hooks/useReportNavigation";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import type { ReportData } from "@/lib/schemas";
 
-export default function HomePage() {
-  const [currentSlug, setCurrentSlug] = useState<string | null>(null);
+function HomePageContent() {
+  const searchParams = useSearchParams();
+  const initialSlug = searchParams.get("report") || null;
+  const initialMode =
+    (searchParams.get("mode") as "cockpit" | "memo" | "screener" | null) ||
+    "cockpit";
+  const initialTab = searchParams.get("tab") || "valuation";
+
+  const [currentSlug, setCurrentSlug] = useState<string | null>(initialSlug);
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
@@ -144,6 +153,8 @@ export default function HomePage() {
   } = useReportNavigation({
     currentSlug,
     setCurrentSlug,
+    initialMode,
+    initialTab,
     locale,
     setLocale,
     onSetReportDocLang: setReportDocLang,
@@ -376,5 +387,13 @@ export default function HomePage() {
         onOpenSocialCard={() => setIsSocialCardOpen(true)}
       />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<CockpitSkeleton />}>
+      <HomePageContent />
+    </Suspense>
   );
 }

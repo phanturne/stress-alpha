@@ -48,6 +48,7 @@ function GithubIcon({ className = "size-3.5" }: { className?: string }) {
 import { ReportSelector } from "./ReportSelector";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 import type { Facts, Valuation } from "@/lib/schemas";
 
 interface HeaderProps {
@@ -133,14 +134,20 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [isMobileMenuOpen]);
 
+  const { prefetchReport } = useReportPrefetch();
   const { recentReport } = useRecentReport(currentSlug, facts?.ticker);
-  const currentTicker = facts?.ticker;
-  const activeSlug = currentSlug || recentReport?.slug || null;
+  const currentTicker =
+    facts?.ticker ||
+    (currentSlug ? currentSlug.split("-")[0].toUpperCase() : undefined);
+  const defaultReport = reports && reports.length > 0 ? reports[0] : null;
+  const activeSlug =
+    currentSlug || recentReport?.slug || defaultReport?.slug || "NVDA-2025Q4";
   const activeTicker =
     currentTicker ||
     recentReport?.ticker ||
     reports.find((r) => r.slug === activeSlug)?.ticker ||
-    (activeSlug ? activeSlug.split("-")[0].toUpperCase() : null);
+    (activeSlug ? activeSlug.split("-")[0].toUpperCase() : null) ||
+    "NVDA";
   const siblingReports = React.useMemo(() => {
     if (!reports || reports.length === 0) return [];
     if (currentTicker) {
@@ -208,30 +215,29 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Center Nav: Segmented Primary Navigation Bar (Model + Screener + Watchlist) */}
       <nav className="shadow-xs hidden items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1 md:flex">
-        {activeSlug && activeTicker && (
-          <button
-            type="button"
-            onClick={() => {
-              if (currentSlug !== activeSlug) {
-                onSelectReport(activeSlug);
-              }
-              onViewModeChange("cockpit");
-            }}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-              viewMode === "cockpit" || viewMode === "memo"
-                ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
-                : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
-            }`}
-            title={
-              viewMode === "cockpit" || viewMode === "memo"
-                ? `${activeTicker} ${t.cockpit} (M)`
-                : t.modelNavTooltip(activeTicker)
+        <button
+          type="button"
+          onClick={() => {
+            if (currentSlug !== activeSlug) {
+              onSelectReport(activeSlug);
             }
-          >
-            <SlidersHorizontal className="size-3.5 text-accent" />
-            <span>{`${activeTicker} · ${t.cockpit}`}</span>
-          </button>
-        )}
+            onViewModeChange("cockpit");
+          }}
+          onMouseEnter={() => prefetchReport(activeSlug)}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+            viewMode === "cockpit" || viewMode === "memo"
+              ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
+              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
+          }`}
+          title={
+            viewMode === "cockpit" || viewMode === "memo"
+              ? `${activeTicker} ${t.cockpit} (M)`
+              : t.modelNavTooltip(activeTicker)
+          }
+        >
+          <SlidersHorizontal className="size-3.5 text-accent" />
+          <span>{`${activeTicker} · ${t.cockpit}`}</span>
+        </button>
 
         <button
           type="button"
@@ -826,48 +832,44 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
 
-                {activeSlug && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (currentSlug !== activeSlug) {
-                          onSelectReport(activeSlug);
-                        }
-                        onViewModeChange("cockpit");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                        viewMode === "cockpit"
-                          ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                          : "text-slate-300 hover:bg-surface-2"
-                      }`}
-                    >
-                      <SlidersHorizontal className="size-4 text-accent" />
-                      <span>
-                        {activeTicker
-                          ? `${activeTicker} · ${t.cockpit}`
-                          : t.cockpit}
-                      </span>
-                    </button>
-                    {(viewMode === "cockpit" || viewMode === "memo") && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onViewModeChange("memo");
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                          viewMode === "memo"
-                            ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                            : "text-slate-300 hover:bg-surface-2"
-                        }`}
-                      >
-                        <FileText className="size-4 text-accent" />
-                        <span>{t.memo}</span>
-                      </button>
-                    )}
-                  </>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (currentSlug !== activeSlug) {
+                      onSelectReport(activeSlug);
+                    }
+                    onViewModeChange("cockpit");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                    viewMode === "cockpit"
+                      ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                      : "text-slate-300 hover:bg-surface-2"
+                  }`}
+                >
+                  <SlidersHorizontal className="size-4 text-accent" />
+                  <span>
+                    {activeTicker
+                      ? `${activeTicker} · ${t.cockpit}`
+                      : t.cockpit}
+                  </span>
+                </button>
+                {(viewMode === "cockpit" || viewMode === "memo") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onViewModeChange("memo");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                      viewMode === "memo"
+                        ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
+                        : "text-slate-300 hover:bg-surface-2"
+                    }`}
+                  >
+                    <FileText className="size-4 text-accent" />
+                    <span>{t.memo}</span>
+                  </button>
                 )}
               </div>
             </div>

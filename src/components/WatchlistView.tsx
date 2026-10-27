@@ -33,6 +33,7 @@ import {
 } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
+import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 import Link from "next/link";
 
 export interface WatchlistViewProps {
@@ -78,6 +79,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
 }) => {
   const t = getTranslations(locale);
   const tw = t.watchlistPage;
+  const { prefetchReport } = useReportPrefetch();
 
   const {
     isFavorite,
@@ -708,6 +710,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
             return (
               <div
                 key={group.ticker}
+                onMouseEnter={() => prefetchReport(report.slug)}
                 className="glass-panel shadow-xs group relative flex flex-col justify-between rounded-2xl border border-border bg-surface-1/90 p-5 transition-[border-color,background-color] duration-150 hover:border-amber-500/40 hover:bg-surface-2/60"
               >
                 <div>
@@ -1060,6 +1063,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                               onClick={() =>
                                 onSelectReport(qRep.slug, "cockpit")
                               }
+                              onMouseEnter={() => prefetchReport(qRep.slug)}
                               className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold transition-all ${
                                 isLatest
                                   ? "bg-accent/20 text-accent ring-1 ring-accent/30 hover:bg-accent/30"
@@ -1236,6 +1240,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   return (
                     <tr
                       key={group.ticker}
+                      onMouseEnter={() => prefetchReport(report.slug)}
                       className="group transition-colors hover:bg-surface-2/60"
                     >
                       {/* Ticker & Company */}

@@ -36,6 +36,7 @@ export {
 };
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
+import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 
 interface ScreenerViewProps {
   reports: ReportSummary[];
@@ -161,6 +162,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 }) => {
   const t = getTranslations(locale);
   const ts = t.screener;
+  const { prefetchReport } = useReportPrefetch();
 
   const { isFavorite, toggleFavorite, count: watchlistCount } = useWatchlist();
   const [searchQuery, setSearchQuery] = useState("");
@@ -497,6 +499,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
             <div
               key={report.slug}
               onClick={() => onSelectReport(report.slug, "cockpit")}
+              onMouseEnter={() => prefetchReport(report.slug)}
+              onFocus={() => prefetchReport(report.slug)}
               className="glass-panel group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-[border-color,background-color] duration-150 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
             >
               {/* Top Row: Ticker, Company, Favorite Star, Moat, Snowflake */}
@@ -824,6 +828,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               stats.topPick &&
               onSelectReport(stats.topPick.slug, "cockpit")
             }
+            onMouseEnter={() => {
+              if (stats.topPick && !isLoading) {
+                prefetchReport(stats.topPick.slug);
+              }
+            }}
             title={
               stats.topPick && !isLoading
                 ? ts.openCockpitTooltip(
@@ -1488,6 +1497,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         key={report.slug}
                         className="group cursor-pointer transition-colors hover:bg-surface-2/70"
                         onClick={() => onSelectReport(report.slug, "cockpit")}
+                        onMouseEnter={() => prefetchReport(report.slug)}
+                        onFocus={() => prefetchReport(report.slug)}
                       >
                         {/* Watchlist Star Toggle */}
                         <td

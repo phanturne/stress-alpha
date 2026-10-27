@@ -15,6 +15,7 @@ import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { compareReportsByRecency } from "@/lib/utils";
+import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 
 export interface ReportSelectorProps {
   currentSlug: string | null;
@@ -52,6 +53,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const t = translations.selector;
   const tHeader = translations.header;
   const { isFavorite, toggleFavorite } = useWatchlist();
+  const { prefetchReport } = useReportPrefetch();
   const [internalReports, setInternalReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -385,6 +387,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 <button
                   key={r.slug}
                   type="button"
+                  onMouseEnter={() => prefetchReport(r.slug)}
                   onClick={() => {
                     onSelectReport(r.slug);
                     setIsOpen(false);
@@ -534,6 +537,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                     <button
                       key={r.slug}
                       type="button"
+                      onMouseEnter={() => prefetchReport(r.slug)}
                       onClick={() => {
                         onSelectReport(r.slug);
                         setIsOpen(false);

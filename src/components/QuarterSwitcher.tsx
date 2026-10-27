@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Calendar, ChevronDown, Check, History, Info } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 
 interface QuarterSwitcherProps {
   currentSlug: string | null;
@@ -25,6 +26,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
   locale = "zh",
 }) => {
   const t = getTranslations(locale).header;
+  const { prefetchReport } = useReportPrefetch();
   const [isOpen, setIsOpen] = useState(false);
 
   if (!currentQuarter) return null;
@@ -122,6 +124,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                   <button
                     key={r.slug}
                     type="button"
+                    onMouseEnter={() => prefetchReport(r.slug)}
                     onClick={() => {
                       onSelectReport(r.slug);
                       setIsOpen(false);

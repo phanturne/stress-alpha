@@ -12,6 +12,8 @@ import {
 export interface UseReportNavigationOptions {
   currentSlug: string | null;
   setCurrentSlug: (slug: string | null) => void;
+  initialMode?: "cockpit" | "memo" | "screener";
+  initialTab?: string;
   locale: Locale;
   setLocale: (locale: Locale) => void;
   onSetReportDocLang?: (locale: Locale) => void;
@@ -55,6 +57,8 @@ export function useReportNavigation({
   locale,
   setLocale,
   onSetReportDocLang,
+  initialMode,
+  initialTab,
   stressParams,
   setPendingStressOverrides,
   setStressParams,
@@ -62,9 +66,9 @@ export function useReportNavigation({
 }: UseReportNavigationOptions): UseReportNavigationReturn {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"cockpit" | "memo" | "screener">(
-    "cockpit"
+    initialMode || "cockpit"
   );
-  const [activeTab, setActiveTab] = useState<string>("valuation");
+  const [activeTab, setActiveTab] = useState<string>(initialTab || "valuation");
   const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
     "cockpit"
   );
@@ -83,10 +87,10 @@ export function useReportNavigation({
 
     Promise.resolve().then(() => {
       if (urlState.tab) {
-        setActiveTab(urlState.tab);
+        setActiveTab((prev) => (prev !== urlState.tab ? urlState.tab! : prev));
       }
       if (urlState.mode === "memo" || urlState.mode === "cockpit") {
-        setViewMode(urlState.mode);
+        setViewMode((prev) => (prev !== urlState.mode ? urlState.mode! : prev));
       }
       if (urlState.lang) {
         setLocale(urlState.lang);
@@ -109,10 +113,13 @@ export function useReportNavigation({
         return;
       }
 
-      setCurrentSlug(urlState.report);
+      if (urlState.report !== currentSlug) {
+        setCurrentSlug(urlState.report);
+      }
     });
   }, [
     router,
+    currentSlug,
     setCurrentSlug,
     setLocale,
     onSetReportDocLang,

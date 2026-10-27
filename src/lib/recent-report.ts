@@ -93,11 +93,21 @@ export function useRecentReport(
 } {
   const [recentReport, setRecentReportState] = useState<VisitedReport | null>(
     () => {
-      if (currentSlug && currentTicker) {
-        return {
-          slug: currentSlug,
-          ticker: currentTicker.toUpperCase(),
-        };
+      if (currentSlug) {
+        const derivedTicker = (
+          currentTicker ||
+          currentSlug.split("-")[0] ||
+          ""
+        ).toUpperCase();
+        if (derivedTicker) {
+          return {
+            slug: currentSlug,
+            ticker: derivedTicker,
+          };
+        }
+      }
+      if (typeof window !== "undefined") {
+        return getStoredLastReport();
       }
       return null;
     }
