@@ -62,7 +62,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t.overallConfidence}
             </div>
-            <div className="mt-0.5 font-mono text-3xl font-extrabold tabular-nums text-white">
+            <div className="mt-0.5 font-mono text-3xl font-extrabold tabular-nums text-foreground">
               {managementTone.overallConfidence}{" "}
               <span className="text-sm font-normal text-slate-400">/ 10</span>
             </div>
@@ -108,7 +108,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
 
       {/* Analyst Concern Topics Table */}
       {analystConcerns?.topTopics && analystConcerns.topTopics.length > 0 && (
-        <div className="glass-panel overflow-hidden rounded-xl border border-border/80 shadow-lg">
+        <div className="glass-panel shadow-xs overflow-hidden rounded-xl border border-border/80">
           <div className="flex items-center gap-2 border-b border-border bg-surface-0/80 p-3.5">
             <MessageSquare className="size-4 text-accent" />
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -121,7 +121,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
             {analystConcerns.topTopics.map((top) => (
               <div key={top.topic} className="space-y-2 p-3.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-sm font-bold text-foreground">
                     {top.topic}
                   </span>
                   <span className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 font-mono text-xs font-bold text-accent">
@@ -153,7 +153,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
                     key={top.topic}
                     className="transition-colors hover:bg-surface-2/40"
                   >
-                    <td className="whitespace-nowrap p-3 text-sm font-bold text-white">
+                    <td className="whitespace-nowrap p-3 text-sm font-bold text-foreground">
                       {top.topic}
                     </td>
                     <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-accent">
@@ -213,7 +213,7 @@ export const ToneTab: React.FC<ToneTabProps> = ({
                     &ldquo;{q.quote}&rdquo;
                   </p>
                   <div className="flex items-center justify-between border-t border-border/60 pt-2 text-[11px]">
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-foreground">
                       — {q.speaker}
                     </span>
                     <span

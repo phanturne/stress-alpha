@@ -93,13 +93,17 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
     useState<DivergenceFilter>("all");
   const [sortField, setSortField] = useState<SortField>("upside");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [viewMode, setViewMode] = useState<"cards" | "table">(() => {
-    if (typeof window !== "undefined") {
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+
+  // Restore saved viewMode preference on client mount to prevent SSR hydration mismatch
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem("stress_alpha_watchlist_view_mode");
-      if (saved === "cards" || saved === "table") return saved;
-    }
-    return "cards";
-  });
+      if (saved === "cards" || saved === "table") {
+        Promise.resolve().then(() => setViewMode(saved));
+      }
+    } catch {}
+  }, []);
 
   const handleSetViewMode = (mode: "cards" | "table") => {
     setViewMode(mode);
@@ -349,11 +353,9 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="shadow-xs flex size-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-              <Star className="size-5 fill-amber-400 text-amber-400" />
-            </div>
+            <Star className="size-5 shrink-0 fill-amber-400 text-amber-400" />
             <div>
-              <h1 className="font-mono text-xl font-black tracking-tight text-white sm:text-2xl">
+              <h1 className="font-mono text-xl font-black tracking-tight text-foreground sm:text-2xl">
                 {tw.title}
               </h1>
               <p className="mt-0.5 text-xs text-slate-400 sm:text-sm">
@@ -1265,7 +1267,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             <Star className="size-4 fill-amber-400 text-amber-400" />
                           </button>
                           <div>
-                            <div className="font-bold text-white group-hover:text-accent">
+                            <div className="font-bold text-foreground group-hover:text-accent">
                               {group.ticker}
                             </div>
                             <div className="max-w-[120px] truncate text-[11px] text-slate-400">
@@ -1406,7 +1408,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             pillars={report.snowflakePillars}
                             size={24}
                           />
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-foreground">
                             {report.snowflakeScore ?? 0}
                           </span>
                         </div>
@@ -1425,7 +1427,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                               className={`rounded px-1.5 py-0.5 text-[11px] font-semibold transition-all ${
                                 idx === 0
                                   ? "bg-accent/20 text-accent ring-1 ring-accent/30"
-                                  : "bg-surface-3 text-slate-400 hover:text-white"
+                                  : "bg-surface-3 text-slate-400 hover:text-foreground"
                               }`}
                             >
                               {qRep.quarter || "Q"}
@@ -1445,7 +1447,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onSelectReport(report.slug, "memo")}
-                            className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+                            className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-foreground"
                           >
                             {tw.openMemo}
                           </button>
@@ -1454,7 +1456,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             onClick={() =>
                               onSelectReport(report.slug, "cockpit")
                             }
-                            className="rounded bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent ring-1 ring-accent/30 hover:bg-accent/25 hover:text-white"
+                            className="rounded bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent ring-1 ring-accent/30 hover:bg-accent/25 hover:text-foreground"
                           >
                             {tw.openCockpit}
                           </button>

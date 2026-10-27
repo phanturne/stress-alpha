@@ -588,6 +588,7 @@ export interface Translations {
     noResults: string;
     resetFilters: string;
     resultsCount: (shown: number, total: number) => string;
+    loadAll: (total: number) => string;
     filterWatchlist: string;
     colFavorite: string;
     watchlistEmptyTitle: string;
@@ -1576,6 +1577,7 @@ export const translations: Record<Locale, Translations> = {
       resetFilters: "Reset Filters",
       resultsCount: (shown: number, total: number) =>
         `Showing ${shown} of ${total} tickers`,
+      loadAll: (total: number) => `Load all (${total})`,
       filterWatchlist: "Watchlist",
       colFavorite: "Watch",
       watchlistEmptyTitle: "Your Watchlist is Empty",
@@ -2576,6 +2578,7 @@ export const translations: Record<Locale, Translations> = {
       resetFilters: "重置筛选条件",
       resultsCount: (shown: number, total: number) =>
         `显示 ${shown} / 共 ${total} 家标的`,
+      loadAll: (total: number) => `加载全部 (${total})`,
       filterWatchlist: "自选关注",
       colFavorite: "关注",
       watchlistEmptyTitle: "自选列表暂无标的",

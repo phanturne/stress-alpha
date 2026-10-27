@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export interface TabItem {
   id: string;
@@ -24,27 +24,15 @@ export interface UseKeyboardShortcutsOptions {
   setIsSocialCardOpen: (open: boolean) => void;
   isShortcutsOpen: boolean;
   setIsShortcutsOpen: (open: boolean) => void;
+  viewMode?: "cockpit" | "memo" | "screener" | "watchlist";
 }
 
-export function useKeyboardShortcuts({
-  tabItems,
-  currentTabIndex,
-  switchWorkspace,
-  onResetDefaults,
-  onToggleMemo,
-  onOpenScreener,
-  onToggleLocale,
-  onToggleSocialCard,
-  onToggleSnowflake,
-  onToggleFavorite,
-  onToggleShortcuts,
-  isSnowflakeOpen,
-  setIsSnowflakeOpen,
-  isSocialCardOpen,
-  setIsSocialCardOpen,
-  isShortcutsOpen,
-  setIsShortcutsOpen,
-}: UseKeyboardShortcutsOptions) {
+export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions) {
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Never intercept browser-native shortcuts (Cmd+R, Ctrl+R, Cmd+W, etc.)
@@ -69,33 +57,57 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      const num = parseInt(e.key, 10);
-      if (num >= 1 && num <= tabItems.length) {
-        e.preventDefault();
-        switchWorkspace(tabItems[num - 1].id);
-        return;
-      }
+      const {
+        tabItems,
+        currentTabIndex,
+        switchWorkspace,
+        onResetDefaults,
+        onToggleMemo,
+        onOpenScreener,
+        onToggleLocale,
+        onToggleSocialCard,
+        onToggleSnowflake,
+        onToggleFavorite,
+        onToggleShortcuts,
+        isSnowflakeOpen,
+        setIsSnowflakeOpen,
+        isSocialCardOpen,
+        setIsSocialCardOpen,
+        isShortcutsOpen,
+        setIsShortcutsOpen,
+        viewMode = "cockpit",
+      } = optionsRef.current;
 
-      if (e.key === "[" || e.key === "PageUp") {
-        e.preventDefault();
-        if (currentTabIndex > 0) {
-          switchWorkspace(tabItems[currentTabIndex - 1].id);
+      // Workspace tabs and model resets only apply in Cockpit view
+      if (viewMode === "cockpit") {
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= tabItems.length) {
+          e.preventDefault();
+          switchWorkspace(tabItems[num - 1].id);
+          return;
         }
-        return;
-      }
 
-      if (e.key === "]" || e.key === "PageDown") {
-        e.preventDefault();
-        if (currentTabIndex < tabItems.length - 1) {
-          switchWorkspace(tabItems[currentTabIndex + 1].id);
+        if (e.key === "[" || e.key === "PageUp") {
+          e.preventDefault();
+          if (currentTabIndex > 0) {
+            switchWorkspace(tabItems[currentTabIndex - 1].id);
+          }
+          return;
         }
-        return;
-      }
 
-      if (e.key === "r" || e.key === "R") {
-        e.preventDefault();
-        onResetDefaults();
-        return;
+        if (e.key === "]" || e.key === "PageDown") {
+          e.preventDefault();
+          if (currentTabIndex < tabItems.length - 1) {
+            switchWorkspace(tabItems[currentTabIndex + 1].id);
+          }
+          return;
+        }
+
+        if (e.key === "r" || e.key === "R") {
+          e.preventDefault();
+          onResetDefaults();
+          return;
+        }
       }
 
       if (e.key === "m" || e.key === "M") {
@@ -161,23 +173,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    tabItems,
-    currentTabIndex,
-    switchWorkspace,
-    onResetDefaults,
-    onToggleMemo,
-    onOpenScreener,
-    onToggleLocale,
-    onToggleSocialCard,
-    onToggleSnowflake,
-    onToggleFavorite,
-    onToggleShortcuts,
-    isSnowflakeOpen,
-    setIsSnowflakeOpen,
-    isSocialCardOpen,
-    setIsSocialCardOpen,
-    isShortcutsOpen,
-    setIsShortcutsOpen,
-  ]);
+  }, []);
 }

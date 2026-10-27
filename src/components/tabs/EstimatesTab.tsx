@@ -549,7 +549,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <div key={`${item.firm}-${idx}`} className="space-y-2.5 p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="flex items-center gap-1.5 font-semibold text-white">
+                        <div className="flex items-center gap-1.5 font-semibold text-foreground">
                           <a
                             href={`https://www.google.com/search?q=${encodeURIComponent(`${item.firm} equity research`)}`}
                             target="_blank"
@@ -588,7 +588,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         <div className="text-[11px] text-slate-400">
                           {t.colTarget}
                         </div>
-                        <div className="font-mono text-sm font-bold text-white">
+                        <div className="font-mono text-sm font-bold text-foreground">
                           ${item.priceTarget.toFixed(2)}
                           {item.priorPriceTarget && (
                             <span className="ml-1 text-[11px] font-normal text-slate-400">
@@ -716,7 +716,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         {/* 52W Price Target */}
                         <td className="whitespace-nowrap px-4 py-3.5 text-right">
                           <div className="flex flex-col items-end">
-                            <span className="font-mono text-sm font-bold text-white">
+                            <span className="font-mono text-sm font-bold text-foreground">
                               ${item.priceTarget.toFixed(2)}
                             </span>
                             {item.priorPriceTarget && (

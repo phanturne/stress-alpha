@@ -34,7 +34,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
           <span className="font-semibold uppercase tracking-wider">
             {t.breakdownTitle}
           </span>
-          <span className="font-bold tabular-nums text-white">
+          <span className="font-bold tabular-nums text-foreground">
             {t.totalRevenue}: {formatBillions(totalRev)}
           </span>
         </div>
@@ -109,11 +109,11 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
                   key={s.name}
                   className="transition-colors hover:bg-surface-2/40"
                 >
-                  <td className="flex items-center gap-2 whitespace-nowrap p-3 text-sm font-bold text-white">
+                  <td className="flex items-center gap-2 whitespace-nowrap p-3 text-sm font-bold text-foreground">
                     <Layers className="size-3.5 shrink-0 text-accent" />
                     {s.name}
                   </td>
-                  <td className="whitespace-nowrap p-3 text-right font-mono text-sm font-bold tabular-nums text-white">
+                  <td className="whitespace-nowrap p-3 text-right font-mono text-sm font-bold tabular-nums text-foreground">
                     {formatBillions(s.revenueBillions)}
                   </td>
                   <td
@@ -151,7 +151,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {t.operatingIncomeRange}
                 </div>
-                <div className="mt-1 font-mono text-lg font-extrabold tabular-nums text-white">
+                <div className="mt-1 font-mono text-lg font-extrabold tabular-nums text-foreground">
                   {formatBillions(facts.guidanceOperatingIncomeLowBillions)} –{" "}
                   {facts.guidanceOperatingIncomeHighBillions
                     ? formatBillions(facts.guidanceOperatingIncomeHighBillions)
@@ -164,7 +164,7 @@ export const SegmentsTab: React.FC<SegmentsTabProps> = ({
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {t.revenueRange}
                 </div>
-                <div className="mt-1 font-mono text-lg font-extrabold tabular-nums text-white">
+                <div className="mt-1 font-mono text-lg font-extrabold tabular-nums text-foreground">
                   {formatBillions(facts.guidanceRevenueLowBillions)} –{" "}
                   {facts.guidanceRevenueHighBillions
                     ? formatBillions(facts.guidanceRevenueHighBillions)

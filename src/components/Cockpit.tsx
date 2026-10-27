@@ -189,7 +189,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
           <div className="flex min-w-0 items-center gap-2.5">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="font-mono text-base font-black uppercase tracking-tight text-white sm:text-lg">
+                <h2 className="font-mono text-base font-black uppercase tracking-tight text-foreground sm:text-lg">
                   {facts.ticker}
                 </h2>
                 <button
@@ -487,7 +487,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                     {t.regimes.bull}
                   </span>
                 </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
+                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
                   {formatCurrency(targetBull)}
                 </div>
                 <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-green">
@@ -505,7 +505,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                     {t.regimes.base}
                   </span>
                 </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
+                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
                   {formatCurrency(targetBase)}
                 </div>
                 <div
@@ -527,7 +527,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                     {t.regimes.bear}
                   </span>
                 </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-white">
+                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
                   {formatCurrency(targetBear)}
                 </div>
                 <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-red">
@@ -552,7 +552,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 </span>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className="text-xs font-extrabold tabular-nums text-white">
+                <span className="text-xs font-extrabold tabular-nums text-foreground">
                   {formatCurrency(panicTarget)}
                 </span>
                 <span className="font-mono text-[11px] font-bold tabular-nums text-fintech-red">

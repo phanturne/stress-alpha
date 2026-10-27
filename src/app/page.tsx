@@ -243,6 +243,7 @@ function HomePageContent() {
     setIsSocialCardOpen,
     isShortcutsOpen,
     setIsShortcutsOpen,
+    viewMode,
   });
 
   // Historical multi-quarter reporting state
@@ -284,30 +285,91 @@ function HomePageContent() {
       <main
         className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${viewMode === "cockpit" ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5" : ""}`}
       >
-        {viewMode === "screener" ? (
+        {/* Screener View */}
+        <div className={viewMode === "screener" ? "block" : "hidden"}>
           <ScreenerView
             reports={reports}
             onSelectReport={handleSelectReport}
             locale={locale}
             isLoading={isReportsLoading}
           />
-        ) : viewMode === "watchlist" ? (
+        </div>
+
+        {/* Watchlist View */}
+        <div className={viewMode === "watchlist" ? "block" : "hidden"}>
           <WatchlistView
             reports={reports}
             onSelectReport={handleSelectReport}
             locale={locale}
             isLoading={isReportsLoading}
           />
-        ) : !currentSlug && !reportData ? (
-          <div className="min-h-[60vh]" />
-        ) : isReportLoading ? (
-          <CockpitSkeleton />
-        ) : !reportData || !stressResult ? (
-          <NoReportSelected
-            onOpenScreener={() => handleViewModeChange("screener")}
-            locale={locale}
-          />
-        ) : viewMode === "memo" ? (
+        </div>
+
+        {/* Cockpit / Model View */}
+        <div
+          className={
+            viewMode === "cockpit"
+              ? "block lg:h-full lg:min-h-0 lg:overflow-hidden"
+              : "hidden"
+          }
+        >
+          {!currentSlug && !reportData ? (
+            <div className="min-h-[60vh]" />
+          ) : isReportLoading ? (
+            <CockpitSkeleton />
+          ) : !reportData || !stressResult ? (
+            <NoReportSelected
+              onOpenScreener={() => handleViewModeChange("screener")}
+              locale={locale}
+            />
+          ) : (
+            <CockpitDualPane
+              reportData={reportData}
+              artifacts={artifacts}
+              stressParams={stressParams}
+              stressResult={stressResult}
+              dynamicValuation={dynamicValuation}
+              snowflakeScore={snowflakeScore}
+              latestReport={latestReport}
+              isViewingHistorical={isViewingHistorical}
+              onSelectReport={handleSelectReport}
+              onDriverShockChange={handleDriverShockChange}
+              onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
+              onFixedOpexShiftChange={handleFixedOpexShiftChange}
+              onResetDefaults={handleResetDefaults}
+              onOpenSnowflake={() => setIsSnowflakeOpen(true)}
+              mobileSection={mobileSection}
+              setMobileSection={setMobileSection}
+              locale={locale}
+              tabItems={tabItems}
+              activeTab={activeTab}
+              currentTabIndex={currentTabIndex}
+              prevTab={prevTab}
+              nextTab={nextTab}
+              switchWorkspace={switchWorkspace}
+              tabScrollRef={tabScrollRef}
+              tabButtonRefs={tabButtonRefs}
+              workspaceScrollRef={workspaceScrollRef}
+              onWheelTabScroll={handleWheelTabScroll}
+              onViewModeChange={handleViewModeChange}
+              valuationRevisions={valuationRevisions}
+              marketEvents={marketEvents}
+              upstreamDependencies={upstreamDependencies}
+              onScenarioChange={handleScenarioChange}
+              onCatalystProbabilityChange={handleCatalystProbabilityChange}
+              onSimulateShock={handleSimulateShock}
+              onSimulateGrossMarginDelta={handleSimulateGrossMarginDelta}
+              onSimulateCatalystProb={handleSimulateCatalystProb}
+              onNavigateToModel={handleNavigateToModel}
+              reportDocLang={reportDocLang}
+              setReportDocLang={setReportDocLang}
+              showToast={showToast}
+            />
+          )}
+        </div>
+
+        {/* Research Memo View */}
+        {viewMode === "memo" && reportData && stressResult && (
           <MemoView
             reportData={{
               ...reportData,
@@ -327,49 +389,6 @@ function HomePageContent() {
             onOpenSnowflake={() => setIsSnowflakeOpen(true)}
             locale={locale}
             onLocaleChange={handleToggleLocale}
-          />
-        ) : (
-          <CockpitDualPane
-            reportData={reportData}
-            artifacts={artifacts}
-            stressParams={stressParams}
-            stressResult={stressResult}
-            dynamicValuation={dynamicValuation}
-            snowflakeScore={snowflakeScore}
-            latestReport={latestReport}
-            isViewingHistorical={isViewingHistorical}
-            onSelectReport={handleSelectReport}
-            onDriverShockChange={handleDriverShockChange}
-            onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
-            onFixedOpexShiftChange={handleFixedOpexShiftChange}
-            onResetDefaults={handleResetDefaults}
-            onOpenSnowflake={() => setIsSnowflakeOpen(true)}
-            mobileSection={mobileSection}
-            setMobileSection={setMobileSection}
-            locale={locale}
-            tabItems={tabItems}
-            activeTab={activeTab}
-            currentTabIndex={currentTabIndex}
-            prevTab={prevTab}
-            nextTab={nextTab}
-            switchWorkspace={switchWorkspace}
-            tabScrollRef={tabScrollRef}
-            tabButtonRefs={tabButtonRefs}
-            workspaceScrollRef={workspaceScrollRef}
-            onWheelTabScroll={handleWheelTabScroll}
-            onViewModeChange={handleViewModeChange}
-            valuationRevisions={valuationRevisions}
-            marketEvents={marketEvents}
-            upstreamDependencies={upstreamDependencies}
-            onScenarioChange={handleScenarioChange}
-            onCatalystProbabilityChange={handleCatalystProbabilityChange}
-            onSimulateShock={handleSimulateShock}
-            onSimulateGrossMarginDelta={handleSimulateGrossMarginDelta}
-            onSimulateCatalystProb={handleSimulateCatalystProb}
-            onNavigateToModel={handleNavigateToModel}
-            reportDocLang={reportDocLang}
-            setReportDocLang={setReportDocLang}
-            showToast={showToast}
           />
         )}
       </main>

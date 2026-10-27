@@ -175,18 +175,16 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         </button>
 
         {/* Header Branding & Title */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="shadow-xs flex size-10 items-center justify-center rounded-xl border border-accent/40 bg-accent/15 text-accent">
-            <Shield className="size-5" />
-          </div>
-          <div>
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            <Shield className="size-4.5 text-accent" />
             <h2 className="text-base font-bold tracking-tight text-foreground">
               {mode === "signIn" ? t.signInTitle : t.signUpTitle}
             </h2>
-            <p className="mt-0.5 text-xs leading-relaxed text-slate-400">
-              {mode === "signIn" ? t.signInSubtitle : t.signUpSubtitle}
-            </p>
           </div>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            {mode === "signIn" ? t.signInSubtitle : t.signUpSubtitle}
+          </p>
         </div>
 
         {/* Status Alerts */}
@@ -208,7 +206,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signUp" && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-300">
+              <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                 {t.name}
               </label>
               <div className="relative">
@@ -229,7 +227,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
           )}
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-300">
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
               {t.email}
             </label>
             <div className="relative">
@@ -250,7 +248,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
 
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                 {t.password}
               </label>
               <span className="text-[11px] text-slate-400">

@@ -215,13 +215,13 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         className={`flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
           isSelected
             ? "bg-accent/10 font-semibold text-accent"
-            : "text-slate-300 hover:bg-surface-2 hover:text-white"
+            : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
         }`}
         title={r.company || r.name}
       >
         <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="font-mono font-bold text-white">
+            <span className="font-mono font-bold text-foreground">
               {r.ticker || r.name}
             </span>
             {r.quarter && (

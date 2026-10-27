@@ -181,7 +181,7 @@ export function CockpitWorkspacePane({
             }}
             className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
               prevTab
-                ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
+                ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-foreground active:scale-95"
                 : "cursor-not-allowed text-slate-600 opacity-30"
             }`}
             title={
@@ -214,7 +214,7 @@ export function CockpitWorkspacePane({
                   title={`${tab.label} (${locale === "zh" ? "快捷键" : "Press"} ${tab.shortcut})`}
                   className={`group flex flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-2 py-1.5 text-xs font-semibold transition-all duration-150 xl:px-2.5 xl:py-2 ${
                     isActive
-                      ? "shadow-xs border border-border bg-surface-2 font-bold text-slate-100 dark:text-white"
+                      ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
                       : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
                   }`}
                 >
@@ -267,7 +267,7 @@ export function CockpitWorkspacePane({
             }}
             className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
               nextTab
-                ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
+                ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-foreground active:scale-95"
                 : "cursor-not-allowed text-slate-600 opacity-30"
             }`}
             title={
@@ -281,11 +281,11 @@ export function CockpitWorkspacePane({
           </button>
 
           {/* Research Memo Action Button docked next to chevrons */}
-          <div className="mx-1 hidden h-4 w-px bg-white/[0.08] lg:block" />
+          <div className="mx-1 hidden h-4 w-px bg-border lg:block" />
           <button
             type="button"
             onClick={() => onViewModeChange("memo")}
-            className="shadow-xs hidden shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95 lg:flex xl:px-3"
+            className="shadow-xs hidden shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-foreground active:scale-95 lg:flex xl:px-3"
             title={`${t.header.memo} (M)`}
           >
             <FileText className="size-3.5 text-accent" />

@@ -174,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="glass-header no-print sticky top-0 z-40 flex h-14 w-full shrink-0 flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+      <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Clickable Brand Logo -> Returns to Home (Screener) */}
         <button
           type="button"
@@ -184,17 +184,17 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <div className="shadow-xs flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent transition-transform group-hover:scale-105">
             <span className="font-mono text-sm font-extrabold tracking-tighter">
-              S<span className="text-white">α</span>
+              S<span className="text-foreground">α</span>
             </span>
           </div>
           <div className="hidden sm:block">
-            <span className="text-base font-extrabold tracking-tight text-white transition-colors group-hover:text-accent">
+            <span className="text-base font-extrabold tracking-tight text-foreground transition-colors group-hover:text-accent">
               Stress<span className="text-accent">Alpha</span>
             </span>
           </div>
         </button>
 
-        <div className="mx-0.5 hidden h-4 w-px bg-white/[0.08] sm:block" />
+        <div className="mx-0.5 hidden h-4 w-px bg-border sm:block" />
 
         {/* Unified Ticker · Quarter Financial Capsule */}
         <ReportSelector
@@ -213,80 +213,84 @@ export const Header: React.FC<HeaderProps> = ({
         />
       </div>
 
-      {/* Center Nav: Segmented Primary Navigation Bar (Model + Screener + Watchlist) */}
-      <nav className="shadow-xs hidden items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1 md:flex">
-        <button
-          type="button"
-          onClick={() => {
-            if (currentSlug !== activeSlug) {
-              onSelectReport(activeSlug);
-            }
-            onViewModeChange("cockpit");
-          }}
-          onMouseEnter={() => prefetchReport(activeSlug)}
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "cockpit" || viewMode === "memo"
-              ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
-              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
-          }`}
-          title={
-            viewMode === "cockpit" || viewMode === "memo"
-              ? `${activeTicker} ${t.cockpit} (M)`
-              : t.modelNavTooltip(activeTicker)
-          }
-        >
-          <SlidersHorizontal className="size-3.5 text-accent" />
-          <span>{`${activeTicker} · ${t.cockpit}`}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onViewModeChange("screener", { watchlistOnly: false })}
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "screener"
-              ? "text-primary shadow-xs border border-border bg-surface-2 font-bold"
-              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
-          }`}
-          title={`${t.screener} (S)`}
-        >
-          <BarChart3 className="size-3.5" />
-          <span>{t.screener}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onViewModeChange("watchlist")}
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-            viewMode === "watchlist"
-              ? "shadow-xs border border-amber-500/30 bg-amber-500/10 font-bold text-amber-400"
-              : "text-slate-400 hover:text-slate-200 dark:hover:text-white"
-          }`}
-          title={`${t.watchlist} (${watchlistCount})`}
-        >
-          <Star
-            className={`size-3.5 ${
-              viewMode === "watchlist"
-                ? "fill-amber-400 text-amber-400"
-                : "text-slate-400"
+      {/* Center Nav: Strictly Geometrically Centered (Zero Layout Shift) */}
+      <div className="pointer-events-none absolute inset-x-0 hidden items-center justify-center md:flex">
+        <nav className="shadow-xs pointer-events-auto flex items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1">
+          <button
+            type="button"
+            onClick={() => {
+              if (currentSlug !== activeSlug) {
+                onSelectReport(activeSlug);
+              }
+              onViewModeChange("cockpit");
+            }}
+            onMouseEnter={() => prefetchReport(activeSlug)}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "cockpit" || viewMode === "memo"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
             }`}
-          />
-          <span>{t.watchlist}</span>
-          {watchlistCount > 0 && (
-            <span
-              className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold ${
+            title={
+              viewMode === "cockpit" || viewMode === "memo"
+                ? `${activeTicker} ${t.cockpit} (M)`
+                : t.modelNavTooltip(activeTicker)
+            }
+          >
+            <SlidersHorizontal className="size-3.5 text-accent" />
+            <span>{`${activeTicker} · ${t.cockpit}`}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              onViewModeChange("screener", { watchlistOnly: false })
+            }
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "screener"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
+            }`}
+            title={`${t.screener} (S)`}
+          >
+            <BarChart3 className="size-3.5" />
+            <span>{t.screener}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onViewModeChange("watchlist")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "watchlist"
+                ? "shadow-xs border border-amber-500/30 bg-amber-500/10 font-bold text-amber-400"
+                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
+            }`}
+            title={`${t.watchlist} (${watchlistCount})`}
+          >
+            <Star
+              className={`size-3.5 ${
                 viewMode === "watchlist"
-                  ? "bg-amber-400 text-slate-950"
-                  : "bg-surface-3 text-slate-400"
+                  ? "fill-amber-400 text-amber-400"
+                  : "text-slate-400"
               }`}
-            >
-              {watchlistCount}
-            </span>
-          )}
-        </button>
-      </nav>
+            />
+            <span>{t.watchlist}</span>
+            {watchlistCount > 0 && (
+              <span
+                className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold ${
+                  viewMode === "watchlist"
+                    ? "bg-amber-400 text-slate-950"
+                    : "bg-surface-3 text-slate-400"
+                }`}
+              >
+                {watchlistCount}
+              </span>
+            )}
+          </button>
+        </nav>
+      </div>
 
       {/* Right Desktop: Share, Theme, and Settings & Resources Menu */}
-      <div className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
+      <div className="relative z-10 ml-auto hidden shrink-0 items-center gap-1.5 whitespace-nowrap sm:gap-2 md:flex">
         {/* Unified Share & Export Button - available when a report is selected */}
         {onShare &&
           viewMode !== "screener" &&
@@ -296,7 +300,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onShare}
-              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white sm:px-3"
+              className="shadow-xs group flex items-center gap-1.5 rounded-lg border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-foreground sm:px-3"
               title={t.shareTooltip}
             >
               <Share2 className="size-3.5 text-accent transition-transform duration-200 group-hover:scale-105" />
@@ -324,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
           href="https://github.com/phanturne/stress-alpha"
           target="_blank"
           rel="noopener noreferrer"
-          className="shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white"
+          className="shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 text-slate-400 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
           title={t.github}
           aria-label={t.github}
         >
@@ -339,7 +343,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`shadow-xs flex size-8 items-center justify-center rounded-lg border border-border bg-surface-1 transition-all hover:border-accent/40 hover:bg-surface-2 ${
               isSettingsOpen
                 ? "border-accent/40 bg-surface-2 text-accent"
-                : "text-slate-400 hover:text-white"
+                : "text-slate-400 hover:text-foreground"
             }`}
             title={t.settings}
             aria-label={t.settings}
@@ -650,7 +654,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Mobile: Quick Actions & Hamburger Menu */}
-      <div className="flex shrink-0 items-center gap-1.5 md:hidden">
+      <div className="relative z-10 flex shrink-0 items-center gap-1.5 md:hidden">
         {/* Quick Share (when a report is open) */}
         {onShare &&
           viewMode !== "screener" &&
@@ -745,7 +749,7 @@ export const Header: React.FC<HeaderProps> = ({
                         : "A"}
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate text-xs font-bold text-white">
+                      <div className="truncate text-xs font-bold text-foreground">
                         {session.user.name || tAuth.profile}
                       </div>
                       <div className="flex items-center gap-1 font-mono text-[11px] text-emerald-400">

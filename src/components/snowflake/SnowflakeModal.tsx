@@ -65,9 +65,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
         {/* Modal Top Header Bar */}
         <div className="flex shrink-0 items-center justify-between border-b border-border bg-surface-1/60 px-5 py-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="shadow-xs flex size-9 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
-              <Sparkles className="size-4.5" />
-            </div>
+            <Layers className="size-5 shrink-0 text-accent" />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-extrabold tracking-tight text-foreground sm:text-lg">

@@ -133,7 +133,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
           <ShieldCheck className="mt-1 size-5 shrink-0 text-accent" />
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <h3 className="text-base font-bold tracking-tight text-white">
+              <h3 className="text-base font-bold tracking-tight text-foreground">
                 {t.title}
               </h3>
               <span
@@ -181,7 +181,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <SourceIcon className="size-4 text-accent" />
-                      <span className="text-sm font-bold tracking-tight text-white">
+                      <span className="text-sm font-bold tracking-tight text-foreground">
                         {source.source}
                       </span>
                     </div>
@@ -254,7 +254,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                     </div>
 
                     {peer.marketCapBillions !== undefined && (
-                      <span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-xs font-bold text-white">
+                      <span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-xs font-bold text-foreground">
                         ${peer.marketCapBillions.toFixed(1)}B
                       </span>
                     )}
@@ -423,7 +423,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                             <ExternalLink className="size-2.5 text-slate-400 opacity-60 transition-opacity hover:opacity-100" />
                           </a>
                         </td>
-                        <td className="sticky left-[75px] z-10 whitespace-nowrap border-r border-border/70 bg-surface-1 p-3 font-medium text-white shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
+                        <td className="sticky left-[75px] z-10 whitespace-nowrap border-r border-border/70 bg-surface-1 p-3 font-medium text-foreground shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                           {peer.name}
                         </td>
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">

@@ -69,7 +69,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                   ) : (
                     <TrendingDown className="size-4 text-rose-400" />
                   )}
-                  <h4 className="text-sm font-bold tracking-tight text-white">
+                  <h4 className="text-sm font-bold tracking-tight text-foreground">
                     {catalyst.title}
                   </h4>
                 </div>
@@ -121,7 +121,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
               <div className="mt-4 flex items-center justify-between gap-4 border-t border-border/70 pt-3.5">
                 <div className="flex shrink-0 items-center gap-2 text-xs text-slate-400">
                   <span className="font-medium">{t.probabilityWeight}</span>
-                  <span className="font-mono text-sm font-bold tabular-nums text-white">
+                  <span className="font-mono text-sm font-bold tabular-nums text-foreground">
                     {probPct}%
                   </span>
                 </div>
@@ -146,7 +146,7 @@ export const CatalystsTab: React.FC<CatalystsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => onResetProbability(idx)}
-                    className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1.5 text-xs text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+                    className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1.5 text-xs text-slate-400 transition-colors hover:bg-surface-3 hover:text-foreground"
                     title={t.resetTooltip}
                   >
                     <RotateCcw className="size-3.5" />

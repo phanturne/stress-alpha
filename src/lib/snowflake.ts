@@ -698,7 +698,7 @@ export function computeSnowflakeScore(
     shortLabelZh: "质量",
     score: earnScore,
     maxScore: 6,
-    color: "#6366f1", // Indigo
+    color: "#818cf8", // Indigo-400 (accessible WCAG AA contrast)
     summary: isZh ? earnSummaryZh : earnSummaryEn,
     summaryZh: earnSummaryZh,
     criteria: localizeCriteria(rawEarnCriteria),

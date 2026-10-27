@@ -280,7 +280,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           cx={cx}
           cy={cy}
           r={size === "sm" ? 14 : 18}
-          className="fill-surface-0/90 stroke-white/20"
+          className="fill-surface-0/90 stroke-border"
           strokeWidth="1"
         />
         <text
@@ -290,7 +290,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           y={cy - 1}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none fill-white font-mono text-[11px] font-black text-white sm:text-xs"
+          className="pointer-events-none fill-foreground font-mono text-[11px] font-black sm:text-xs"
         >
           {scoreResult.totalScore}
         </text>
@@ -301,7 +301,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           y={cy + 8}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none fill-slate-400 font-mono text-[11px] font-semibold text-slate-400"
+          className="pointer-events-none fill-slate-400 font-mono text-[11px] font-semibold"
         >
           /30
         </text>
@@ -370,8 +370,8 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                     dominantBaseline="central"
                     className={`font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
                       isCurrent
-                        ? "fill-white text-[11px] font-extrabold"
-                        : "fill-slate-400 text-[11px] group-hover:fill-slate-200"
+                        ? "fill-foreground text-[11px] font-extrabold"
+                        : "fill-slate-300 text-[11px] group-hover:fill-foreground"
                     }`}
                     style={{ fontSize: isCurrent ? fontSize + 1 : fontSize }}
                   >
@@ -385,10 +385,10 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                     textAnchor={v.textAnchor}
                     dominantBaseline="central"
                     className={`font-mono text-[11px] transition-colors duration-200 ${
-                      isCurrent ? "font-bold" : "fill-slate-400 text-slate-400"
+                      isCurrent ? "font-bold" : "text-slate-300"
                     }`}
                     style={{
-                      fill: isCurrent ? v.pillar.color : undefined,
+                      fill: isCurrent ? v.pillar.color : "rgb(203, 213, 225)",
                     }}
                   >
                     {v.score}/6
@@ -403,7 +403,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
       {/* Hover Info Tooltip (Inline under chart if size is small/medium and not handled externally) */}
       {interactive && selectedOrHovered && (
         <div className="mt-2 text-center transition-all duration-200 animate-in fade-in">
-          <div className="flex items-center justify-center gap-1.5 font-mono text-xs font-bold text-white">
+          <div className="flex items-center justify-center gap-1.5 font-mono text-xs font-bold text-foreground">
             <span
               className="inline-block size-2 rounded-full shadow-sm"
               style={{

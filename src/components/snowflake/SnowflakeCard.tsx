@@ -38,7 +38,7 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-base font-bold text-white">
+          <span className="font-mono text-base font-bold text-foreground">
             {scoreResult.totalScore}
           </span>
           <span className="font-mono text-xs text-slate-400">/ 30</span>

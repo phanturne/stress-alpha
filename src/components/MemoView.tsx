@@ -5,9 +5,8 @@ import {
   Printer,
   ArrowLeft,
   ShieldCheck,
-  Zap,
+  FileText,
   Globe,
-  Sparkles,
   Share2,
   History,
 } from "lucide-react";
@@ -97,7 +96,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         <button
           type="button"
           onClick={onBackToCockpit}
-          className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-slate-500 hover:text-white"
+          className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-slate-500 hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
           {t.backToCockpit}
@@ -111,8 +110,8 @@ export const MemoView: React.FC<MemoViewProps> = ({
               onClick={() => handleLangChange("en")}
               className={`rounded-lg px-3 py-1 font-semibold transition-all ${
                 memoLang === "en"
-                  ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
-                  : "text-slate-400 hover:text-white"
+                  ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               {t.enMemoBtn}
@@ -122,8 +121,8 @@ export const MemoView: React.FC<MemoViewProps> = ({
               onClick={() => handleLangChange("zh")}
               className={`rounded-lg px-3 py-1 font-semibold transition-all ${
                 memoLang === "zh"
-                  ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
-                  : "text-slate-400 hover:text-white"
+                  ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                  : "text-slate-400 hover:text-foreground"
               }`}
             >
               {t.zhMemoBtn}
@@ -134,7 +133,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <button
               type="button"
               onClick={onOpenSocialCard}
-              className="shadow-xs flex items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:bg-surface-2 hover:text-white"
+              className="shadow-xs flex items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:bg-surface-2 hover:text-foreground"
               title={tHeader.exportCardTooltip}
             >
               <Share2 className="size-4 text-accent" />
@@ -194,10 +193,10 @@ export const MemoView: React.FC<MemoViewProps> = ({
         <div className="flex flex-col justify-between gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end">
           <div>
             <div className="mb-1.5 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-accent">
-              <Zap className="size-3.5" />
+              <FileText className="size-3.5" />
               {t.committeeMemo}
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-white md:text-3xl">
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
               {facts.ticker} ({facts.company}) &bull; {facts.quarter}{" "}
               {t.decisionAudit}
             </h1>
@@ -211,7 +210,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                 {t.currentStock}
               </div>
-              <div className="font-mono text-base font-bold tabular-nums text-white">
+              <div className="font-mono text-base font-bold tabular-nums text-foreground">
                 {formatCurrency(currentPrice)}
               </div>
             </div>
@@ -239,9 +238,9 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <>
               <p className="text-sm leading-relaxed text-slate-300">
                 本备忘录为针对{" "}
-                <strong className="text-white">{facts.ticker}</strong> (
+                <strong className="text-foreground">{facts.ticker}</strong> (
                 {facts.company}) 发布的{" "}
-                <strong className="text-white">{facts.quarter}</strong>{" "}
+                <strong className="text-foreground">{facts.quarter}</strong>{" "}
                 财报提供结构化的基本面决策审计。名义 GAAP 稀释每股收益为 $
                 {facts.epsReported}（彭博一致预期为 ${facts.epsConsensus}
                 ），经收益质量穿透并剔除非经营性一次性账面损益后，真实核心经营
@@ -253,7 +252,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               </p>
               <p className="text-sm leading-relaxed text-slate-300">
                 基于当前 StressAlpha 压力测试参数设定，测算得出的压力预测 EPS 为{" "}
-                <strong className="text-white">
+                <strong className="text-foreground">
                   {formatCurrency(stressResult.stressEps)}
                 </strong>
                 ，对应盈亏非对称比为{" "}
@@ -272,8 +271,9 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <p className="text-sm leading-relaxed text-slate-300">
                 This memorandum provides a structured fundamental equity
                 synthesis for{" "}
-                <strong className="text-white">{facts.ticker}</strong> following
-                the <strong className="text-white">{facts.quarter}</strong>{" "}
+                <strong className="text-foreground">{facts.ticker}</strong>{" "}
+                following the{" "}
+                <strong className="text-foreground">{facts.quarter}</strong>{" "}
                 release. While headline GAAP earnings showed an apparent beat ($
                 {facts.epsReported} vs ${facts.epsConsensus} est), intrinsic
                 cash operating earnings stand at{" "}
@@ -285,7 +285,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <p className="text-sm leading-relaxed text-slate-300">
                 Under active StressAlpha parameter assumptions, implied forward
                 stressed EPS is{" "}
-                <strong className="text-white">
+                <strong className="text-foreground">
                   {formatCurrency(stressResult.stressEps)}
                 </strong>
                 , yielding a risk/reward asymmetry ratio of{" "}
@@ -306,7 +306,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         <div className="memo-section flex break-inside-avoid flex-col gap-3 rounded-2xl border border-border/80 bg-surface-0/60 p-5 shadow-sm">
           <div className="flex flex-col justify-between gap-2 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-accent" />
+              <ShieldCheck className="size-4 text-accent" />
               <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-300">
                 {t.secSnowflakeTitle}
               </h2>
@@ -409,7 +409,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-white">
+                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-foreground">
                     {formatCurrency(
                       stressResult.valuationBands.bull.targetPrice
                     )}
@@ -440,7 +440,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-white">
+                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-foreground">
                     {formatCurrency(
                       stressResult.valuationBands.base.targetPrice
                     )}
@@ -477,7 +477,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                   <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums">
                     {formatCurrency(stressResult.stressEps)}
                   </td>
-                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-white">
+                  <td className="whitespace-nowrap p-3 text-right font-mono font-bold tabular-nums text-foreground">
                     {formatCurrency(
                       stressResult.valuationBands.panic.targetPrice
                     )}
@@ -564,7 +564,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             <ul className="list-disc space-y-1.5 pl-4 text-xs text-slate-300">
               {catalysts.catalysts.map((c, i) => (
                 <li key={i} className="leading-relaxed">
-                  <strong className="text-white">{c.title}</strong> (
+                  <strong className="text-foreground">{c.title}</strong> (
                   {(c.probability * 100).toFixed(0)}% {t.prob}, {c.horizon}):{" "}
                   {c.description}
                 </li>
@@ -603,7 +603,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                     className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-surface-0/80 p-3 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
-                      <strong className="font-medium text-white">
+                      <strong className="font-medium text-foreground">
                         {s.source}
                       </strong>
                       <span className="rounded border border-border/60 bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-accent">
@@ -654,7 +654,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                         <td className="whitespace-nowrap p-2.5 font-mono font-bold text-accent">
                           {peer.ticker}
                         </td>
-                        <td className="whitespace-nowrap p-2.5 font-medium text-white">
+                        <td className="whitespace-nowrap p-2.5 font-medium text-foreground">
                           {peer.name}
                         </td>
                         <td className="whitespace-nowrap p-2.5 text-right font-mono tabular-nums text-slate-300">
@@ -726,7 +726,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 </div>
                 <div className="font-mono text-xs text-slate-300">
                   {t.targetRange}
-                  <span className="font-bold text-white">
+                  <span className="font-bold text-foreground">
                     ${estimates.priceTargets.low} – $
                     {estimates.priceTargets.high}
                   </span>
@@ -766,7 +766,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                         key={i}
                         className="transition-colors hover:bg-surface-0/50"
                       >
-                        <td className="whitespace-nowrap p-2.5 font-medium text-white">
+                        <td className="whitespace-nowrap p-2.5 font-medium text-foreground">
                           {e.firm}
                         </td>
                         <td className="whitespace-nowrap p-2.5 text-slate-400">
@@ -777,7 +777,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                             {e.rating}
                           </span>
                         </td>
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono font-bold tabular-nums text-white">
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono font-bold tabular-nums text-foreground">
                           ${e.priceTarget.toFixed(2)}
                           {e.priorPriceTarget && (
                             <span className="ml-1 text-[11px] font-normal text-slate-400">
@@ -828,7 +828,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div className="flex flex-col justify-between gap-3 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-4 text-accent" />
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
                 {t.footerMethodologyTitle}
               </span>
             </div>

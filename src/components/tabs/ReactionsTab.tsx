@@ -70,7 +70,7 @@ export const ReactionsTab: React.FC<ReactionsTabProps> = ({
                   <td className="whitespace-nowrap p-3 font-mono text-xs text-slate-400">
                     {ev.date}
                   </td>
-                  <td className="whitespace-nowrap p-3 text-sm font-bold text-white">
+                  <td className="whitespace-nowrap p-3 text-sm font-bold text-foreground">
                     {ev.event}
                   </td>
                   <td

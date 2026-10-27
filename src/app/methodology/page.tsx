@@ -14,7 +14,6 @@ import {
   SlidersHorizontal,
   FileSpreadsheet,
   CheckCircle2,
-  Sparkles,
   ExternalLink,
   Code2,
 } from "lucide-react";
@@ -258,7 +257,7 @@ export default function MethodologyPage() {
             {/* Worked Example */}
             <div className="rounded-xl border border-border bg-surface-0/60 p-4 text-xs text-slate-300">
               <div className="mb-1.5 flex items-center gap-1.5 font-semibold text-foreground">
-                <Sparkles className="size-3.5 text-amber-400" />
+                <Calculator className="size-3.5 text-accent" />
                 <span>
                   {isZh
                     ? "以 NVIDIA (NVDA Q2 2027) 为例"
@@ -371,7 +370,7 @@ export default function MethodologyPage() {
                     : "Case Study: Amazon (AMZN Q2 2026) ASU 2016-01 Distortion"}
                 </span>
               </div>
-              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-[58ch] text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
                     亚马逊 Q2 2026 财报 GAAP 稀释每股收益达到{" "}
@@ -747,7 +746,7 @@ export default function MethodologyPage() {
                     : "Case Study: Super Micro Computer (SMCI Q4 2026) Governance Calibration"}
                 </span>
               </div>
-              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-[58ch] text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
                     SMCI 现价 <strong>$41.54</strong>。原始模型在未校准时分配{" "}
@@ -789,14 +788,14 @@ export default function MethodologyPage() {
             {/* Institutional Interview Guidance & Methodology Alignment Box */}
             <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 text-xs">
               <div className="flex items-center gap-2 font-bold text-sky-300">
-                <Sparkles className="size-4" />
+                <BookOpen className="size-4" />
                 <span>
                   {isZh
                     ? "方法论释疑与买方投研面试指引：启发式设计与经验回测演进"
                     : "Methodology Note & Interview Guidance: Heuristic Framing vs. Empirical Backtesting"}
                 </span>
               </div>
-              <p className="mt-2 max-w-prose text-pretty leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-[58ch] text-pretty leading-relaxed text-slate-300">
                 {isZh ? (
                   <>
                     <strong>为什么采用对数几率启发式偏置而非机械拟合？</strong>{" "}

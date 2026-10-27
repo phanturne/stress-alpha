@@ -192,7 +192,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             onClick={() => setFilterType("all")}
             className={`rounded-lg px-2.5 py-1 font-mono text-xs font-semibold transition-all ${
               filterType === "all"
-                ? "shadow-xs border border-border bg-surface-2 font-bold text-slate-100 dark:text-white"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -497,7 +497,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                 </div>
 
                 <div>
-                  <h5 className="font-semibold text-slate-100 group-hover:text-white">
+                  <h5 className="font-semibold text-foreground group-hover:text-accent">
                     {event.title}
                   </h5>
                   <p className="mt-1 text-xs leading-relaxed text-slate-400">
@@ -529,7 +529,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                         href={event.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-white"
+                        className="flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-foreground"
                       >
                         <span>{t.viewSource}</span>
                         <ExternalLink className="size-3" />

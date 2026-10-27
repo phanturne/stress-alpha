@@ -63,10 +63,8 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
       <div className="glass-panel shadow-xs relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-1/95 p-0">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-border p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="shadow-xs flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
-              <ShieldCheck className="size-5" />
-            </div>
+          <div className="flex items-start gap-2.5">
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-accent" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-bold text-accent">
