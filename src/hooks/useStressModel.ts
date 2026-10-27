@@ -12,7 +12,7 @@ import {
 
 export interface UseStressModelOptions {
   reportData: ReportData | null;
-  setReportData: React.Dispatch<React.SetStateAction<ReportData | null>>;
+  setReportData: (data: ReportData | null) => void;
   onShowToast?: (msg: string) => void;
   resetSlidersToastMsg?: string;
   onNavigateToCockpit?: () => void;
