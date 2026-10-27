@@ -301,7 +301,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           y={cy + 8}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none fill-slate-400 font-mono text-[8px] font-semibold text-slate-400"
+          className="pointer-events-none fill-slate-400 font-mono text-[11px] font-semibold text-slate-400"
         >
           /30
         </text>
@@ -371,7 +371,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                     className={`font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
                       isCurrent
                         ? "fill-white text-[11px] font-extrabold"
-                        : "fill-slate-400 text-[10px] group-hover:fill-slate-200"
+                        : "fill-slate-400 text-[11px] group-hover:fill-slate-200"
                     }`}
                     style={{ fontSize: isCurrent ? fontSize + 1 : fontSize }}
                   >
@@ -384,8 +384,8 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                     y={v.labelY + (v.dy < 0 ? -11 : 12)}
                     textAnchor={v.textAnchor}
                     dominantBaseline="central"
-                    className={`font-mono text-[9px] transition-colors duration-200 ${
-                      isCurrent ? "font-bold" : "fill-slate-500 text-slate-500"
+                    className={`font-mono text-[11px] transition-colors duration-200 ${
+                      isCurrent ? "font-bold" : "fill-slate-400 text-slate-400"
                     }`}
                     style={{
                       fill: isCurrent ? v.pillar.color : undefined,
@@ -412,7 +412,7 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
             />
             <span>{scoreResult.pillars[selectedOrHovered].label}</span>
             <span
-              className="py-0.2 rounded px-1.5 font-mono text-[11px] font-bold"
+              className="rounded px-1.5 py-0.5 font-mono text-[11px] font-bold"
               style={{
                 color: scoreResult.pillars[selectedOrHovered].color,
                 backgroundColor: `${scoreResult.pillars[selectedOrHovered].color}1a`,

@@ -514,7 +514,7 @@ export const SocialCardModal: React.FC<SocialCardModalProps> = ({
                             <span
                               className={`text-xs font-bold ${
                                 !isAvailable
-                                  ? "text-slate-500"
+                                  ? "text-slate-400 opacity-60"
                                   : isChecked
                                     ? "text-white"
                                     : "text-slate-400"

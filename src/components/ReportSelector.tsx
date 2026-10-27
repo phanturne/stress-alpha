@@ -14,6 +14,7 @@ import {
 import type { ReportSummary } from "@/app/api/reports/route";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
+import { compareReportsByRecency } from "@/lib/utils";
 
 export interface ReportSelectorProps {
   currentSlug: string | null;
@@ -124,11 +125,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
         (r) =>
           (r.ticker || r.slug).toUpperCase() === displayTicker.toUpperCase()
       )
-      .sort(
-        (a, b) =>
-          (b.reportDate || "").localeCompare(a.reportDate || "") ||
-          b.slug.localeCompare(a.slug)
-      );
+      .sort(compareReportsByRecency);
   }, [siblingReports, displayTicker, activeReports]);
 
   const isLatest =
@@ -173,13 +170,9 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       group.reports.push(r);
     }
 
-    // Sort reports within each group by reportDate desc
+    // Sort reports within each group by recency descending (latest first)
     for (const g of groupMap.values()) {
-      g.reports.sort(
-        (a, b) =>
-          (b.reportDate || "").localeCompare(a.reportDate || "") ||
-          b.slug.localeCompare(a.slug)
-      );
+      g.reports.sort(compareReportsByRecency);
     }
 
     const pinned: TickerReportGroup[] = [];
@@ -235,7 +228,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               </span>
             )}
             {r.company && (
-              <span className="truncate text-[11px] text-slate-500">
+              <span className="truncate text-[11px] text-slate-400">
                 {r.company}
               </span>
             )}
@@ -255,7 +248,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               e.stopPropagation();
               toggleFavorite(r.ticker || r.slug);
             }}
-            className="rounded p-1 text-slate-500 transition-all hover:scale-125"
+            className="rounded p-1 text-slate-400 transition-all hover:scale-125"
             title={t.starredTooltip}
             aria-label={t.starredTooltip}
           >
@@ -318,7 +311,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 {featuredReport.quarter || ""}
               </span>
               {g.company && (
-                <span className="truncate text-[11px] text-slate-500">
+                <span className="truncate text-[11px] text-slate-400">
                   {g.company}
                 </span>
               )}
@@ -338,7 +331,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
             <button
               type="button"
               onClick={(e) => toggleTickerExpanded(g.ticker, e)}
-              className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold transition-all ${
+              className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold transition-all ${
                 isExpanded
                   ? "border border-accent/40 bg-accent/20 text-accent"
                   : "border border-border bg-surface-2 text-slate-400 hover:border-border-light hover:bg-surface-3 hover:text-slate-200"
@@ -367,7 +360,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 e.stopPropagation();
                 toggleFavorite(g.ticker);
               }}
-              className="rounded p-1 text-slate-500 transition-all hover:scale-125"
+              className="rounded p-1 text-slate-400 transition-all hover:scale-125"
               title={t.starredTooltip}
               aria-label={t.starredTooltip}
             >
@@ -414,7 +407,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                       {r.quarter || r.slug}
                     </span>
                     <span
-                      className={`rounded px-1 font-mono text-[8px] font-bold ${
+                      className={`rounded px-1 font-mono text-[11px] font-bold ${
                         isQuarterLatest
                           ? "bg-emerald-500/20 text-emerald-400"
                           : "bg-amber-500/20 text-amber-400"
@@ -425,7 +418,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                         : tHeader.historicalBadge}
                     </span>
                     {r.reportDate && (
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[11px] text-slate-400">
                         {r.reportDate}
                       </span>
                     )}
@@ -479,7 +472,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               {displayQuarter}
             </span>
             <span
-              className={`hidden rounded px-1.5 py-0.5 font-mono text-[9px] font-bold sm:inline ${
+              className={`hidden rounded px-1.5 py-0.5 font-mono text-[11px] font-bold sm:inline ${
                 isLatest
                   ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
                   : "border border-amber-500/30 bg-amber-500/20 text-amber-400"
@@ -511,7 +504,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                     ? "搜索代码、公司或季度..."
                     : "Search ticker, company or quarter..."
                 }
-                className="w-full rounded-lg border border-border bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                 autoFocus
               />
               {searchQuery && (
@@ -529,7 +522,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           {/* Quick Quarter Switcher Bar for Current Stock (Ultra-compact single horizontal line) */}
           {activeSiblingReports.length > 1 && !searchQuery && (
             <div className="flex items-center gap-1.5 border-b border-border/60 bg-surface-0/60 px-3 py-1.5 text-xs">
-              <div className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-slate-400">
+              <div className="flex shrink-0 items-center gap-1 font-mono text-[11px] font-bold text-slate-400">
                 <Calendar className="size-3 text-accent" />
                 <span>{displayTicker}:</span>
               </div>
@@ -556,7 +549,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                       <span>{r.quarter}</span>
                       {isQuarterLatest && (
                         <span
-                          className={`ml-1 font-mono text-[8px] font-bold ${
+                          className={`ml-1 font-mono text-[11px] font-bold ${
                             isCurrent ? "text-accent" : "text-emerald-400"
                           }`}
                         >
@@ -576,14 +569,14 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
           {/* Available Reports / Universe List */}
           <div className="custom-scrollbar max-h-80 overflow-y-auto py-1">
             {filteredReports.length === 0 ? (
-              <div className="px-3 py-6 text-center text-xs text-slate-500">
+              <div className="px-3 py-6 text-center text-xs text-slate-400">
                 {t.noReportsFound}
               </div>
             ) : (
               <>
                 {pinnedGroups.length > 0 && (
                   <div>
-                    <div className="flex items-center gap-1.5 border-b border-border/40 bg-amber-500/5 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    <div className="flex items-center gap-1.5 border-b border-border/40 bg-amber-500/5 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-amber-400">
                       <Star className="size-3 fill-amber-400 text-amber-400" />
                       <span>
                         {t.watchlistSection} ({pinnedGroups.length})
@@ -596,7 +589,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 {otherGroups.length > 0 && (
                   <div>
                     {pinnedGroups.length > 0 && (
-                      <div className="flex items-center gap-1.5 border-y border-border/40 bg-surface-0/60 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      <div className="flex items-center gap-1.5 border-y border-border/40 bg-surface-0/60 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                         <span>{t.allReportsSection}</span>
                       </div>
                     )}

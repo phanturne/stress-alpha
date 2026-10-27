@@ -359,7 +359,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                 <ul className="space-y-1.5 text-xs leading-relaxed text-slate-300">
                   {scenario.assumptions?.map((assump, aIdx) => (
                     <li key={aIdx} className="flex items-start gap-2">
-                      <span className="mt-0.5 select-none font-mono text-slate-500">
+                      <span className="mt-0.5 select-none font-mono text-slate-400">
                         •
                       </span>
                       <span>{assump}</span>
@@ -541,7 +541,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                       <span className="text-slate-400">
                         {formatCurrency(Number(rev.priorWfv), 2)}
                       </span>
-                      <ArrowRight className="size-3 text-slate-500" />
+                      <ArrowRight className="size-3 text-slate-400" />
                       <span className="font-bold text-foreground">
                         {formatCurrency(Number(rev.newWfv), 2)}
                       </span>

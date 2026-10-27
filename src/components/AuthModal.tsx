@@ -212,7 +212,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                 {t.name}
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+                <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   required
@@ -222,7 +222,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                     if (error) setError(null);
                   }}
                   placeholder={t.namePlaceholder}
-                  className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-400 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
                 />
               </div>
             </div>
@@ -233,7 +233,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
               {t.email}
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+              <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="email"
                 required
@@ -243,7 +243,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder={t.emailPlaceholder}
-                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-400 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />
             </div>
           </div>
@@ -253,12 +253,12 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
               <label className="block text-xs font-medium text-slate-300">
                 {t.password}
               </label>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[11px] text-slate-400">
                 {t.passwordHint}
               </span>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+              <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="password"
                 required
@@ -269,7 +269,7 @@ const AuthModalContent: React.FC<AuthModalContentProps> = ({
                   if (error) setError(null);
                 }}
                 placeholder={t.passwordPlaceholder}
-                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-500 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
+                className="w-full rounded-lg border border-border bg-surface-2/80 py-2 pl-9 pr-3 text-xs text-foreground placeholder-slate-400 outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40"
               />
             </div>
           </div>

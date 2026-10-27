@@ -21,7 +21,19 @@ import {
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
 import type { ReportSummary } from "@/app/api/reports/route";
-import { formatCurrency, formatPercent } from "@/lib/utils";
+import {
+  formatCurrency,
+  formatPercent,
+  getReportRecencyWeight,
+  compareReportsByRecency,
+  deduplicateReportsToLatest,
+} from "@/lib/utils";
+
+export {
+  getReportRecencyWeight,
+  compareReportsByRecency,
+  deduplicateReportsToLatest,
+};
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 
@@ -138,72 +150,6 @@ const SKELETON_ROWS = [
     growthW: "w-12",
   },
 ];
-
-/**
- * Computes a deterministic integer score reflecting the quarter/date recency of a report.
- * Higher score = more recent earnings quarter.
- * e.g. "Q4 2026" -> 20264, "Q2 2027" -> 20272.
- */
-export function getReportRecencyWeight(r: ReportSummary): number {
-  if (r.quarter) {
-    const match = r.quarter.match(/Q([1-4])\s*(\d{4})/i);
-    if (match) {
-      const q = parseInt(match[1], 10);
-      const year = parseInt(match[2], 10);
-      return year * 10 + q;
-    }
-  }
-  if (r.reportDate && /^\d{4}-\d{2}-\d{2}/.test(r.reportDate)) {
-    const parts = r.reportDate.split("-");
-    const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10);
-    const q = Math.ceil(month / 3);
-    return year * 10 + q;
-  }
-  if ((r as any).publishedAt) {
-    const ts = new Date((r as any).publishedAt).getTime();
-    if (!isNaN(ts)) return ts;
-  }
-  return 0;
-}
-
-/**
- * Deduplicates reports by unique ticker symbol, selecting the latest earnings report as primary.
- */
-export function deduplicateReportsToLatest(
-  reports: ReportSummary[]
-): ReportSummary[] {
-  const groupMap = new Map<string, ReportSummary[]>();
-
-  for (const r of reports) {
-    const symbol = (r.ticker || r.slug.split("-")[0] || r.slug).toUpperCase();
-    const existing = groupMap.get(symbol);
-    if (existing) {
-      existing.push(r);
-    } else {
-      groupMap.set(symbol, [r]);
-    }
-  }
-
-  const uniqueReports: ReportSummary[] = [];
-
-  groupMap.forEach((reps) => {
-    // Sort descending by recency (latest first)
-    const sorted = [...reps].sort((a, b) => {
-      const scoreA = getReportRecencyWeight(a);
-      const scoreB = getReportRecencyWeight(b);
-      if (scoreA !== scoreB) return scoreB - scoreA;
-      const dateA = a.reportDate || "";
-      const dateB = b.reportDate || "";
-      if (dateA && dateB && dateA !== dateB) return dateB.localeCompare(dateA);
-      return b.slug.localeCompare(a.slug);
-    });
-
-    uniqueReports.push(sorted[0]);
-  });
-
-  return uniqueReports;
-}
 
 export const ScreenerView: React.FC<ScreenerViewProps> = ({
   reports,
@@ -453,7 +399,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
       );
     }
     return (
-      <ArrowUpDown className="size-3 shrink-0 text-slate-500 opacity-30 transition-opacity group-hover/th:opacity-100" />
+      <ArrowUpDown className="size-3 shrink-0 text-slate-400 opacity-40 transition-opacity group-hover/th:opacity-100" />
     );
   };
 
@@ -563,7 +509,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         e.stopPropagation();
                         toggleFavorite(report.ticker || report.slug);
                       }}
-                      className="-ml-1 shrink-0 p-1 text-slate-500 transition-colors hover:text-amber-400"
+                      className="-ml-1 shrink-0 p-1 text-slate-400 transition-colors hover:text-amber-400"
                       title={
                         isFavorite(report.ticker || report.slug)
                           ? t.header.removeFromWatchlist
@@ -686,7 +632,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                     </div>
                     {wfv > 0 && (
                       <div
-                        className={`py-0.2 inline-flex items-center gap-0.5 rounded px-1 font-mono text-[11px] font-bold ${
+                        className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 font-mono text-[11px] font-bold ${
                           isPositive ? "text-green-400" : "text-rose-400"
                         }`}
                       >
@@ -718,7 +664,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
                       />
                     </div>
-                    <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
+                    <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
                       <span>${Math.round(bear)}</span>
                       <span className="flex items-center gap-1 text-slate-400">
                         <span className="size-1.5 rounded-full bg-sky-400" />$
@@ -961,7 +907,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={ts.searchPlaceholder}
-              className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
+              className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
             />
             {searchQuery && (
               <button
@@ -1126,7 +1072,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
             {/* Results count & Reset */}
             <div className="flex items-center gap-2">
-              <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-500">
+              <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-400">
                 {ts.resultsCount(filteredReports.length, uniqueReports.length)}
               </span>
               {hasActiveFilters && (
@@ -1330,7 +1276,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colValuationRange}</span>
-                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-500 sm:inline">
+                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-400 sm:inline">
                         {ts.rangeBearBullHint}
                       </span>
                     </div>
@@ -1621,7 +1567,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                       ? "text-emerald-400"
                                       : report.moatTrend === "Narrowing"
                                         ? "text-rose-400"
-                                        : "text-slate-500"
+                                        : "text-slate-400"
                                   }`}
                                   title={`${report.moatTrend} Moat Trend`}
                                 >
@@ -1660,7 +1606,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   <span className="font-mono text-xs font-bold text-foreground">
                                     {report.snowflakeScore}
                                   </span>
-                                  <span className="font-mono text-[11px] text-slate-500">
+                                  <span className="font-mono text-[11px] text-slate-400">
                                     /30
                                   </span>
                                 </div>
@@ -1720,7 +1666,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   </span>
                                 )}
                                 {report.analystRating && (
-                                  <span className="hidden text-[11px] text-slate-500 sm:inline">
+                                  <span className="hidden text-[11px] text-slate-400 sm:inline">
                                     • {report.analystRating}
                                   </span>
                                 )}
@@ -1807,7 +1753,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
                                 />
                               </div>
-                              <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
+                              <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
                                 <span
                                   title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
                                 >

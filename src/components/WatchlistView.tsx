@@ -25,7 +25,12 @@ import {
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
 import type { ReportSummary } from "@/lib/repository";
-import { formatCurrency, formatPercent, normalizeTicker } from "@/lib/utils";
+import {
+  formatCurrency,
+  formatPercent,
+  normalizeTicker,
+  compareReportsByRecency,
+} from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import Link from "next/link";
@@ -125,15 +130,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
     const groups: WatchlistTickerGroup[] = [];
 
     groupMap.forEach((reps, symbol) => {
-      // Sort reports by quarter descending (latest first)
-      const sorted = [...reps].sort((a, b) => {
-        const dateA = a.reportDate || "";
-        const dateB = b.reportDate || "";
-        if (dateA && dateB) return dateB.localeCompare(dateA);
-        const qA = a.quarter || "";
-        const qB = b.quarter || "";
-        return qB.localeCompare(qA);
-      });
+      // Sort reports by recency descending (latest first)
+      const sorted = [...reps].sort(compareReportsByRecency);
 
       const latestReport = sorted[0];
       const historicalReports = sorted.slice(1);
@@ -455,7 +453,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   </span>
                 </>
               ) : (
-                <span className="font-mono text-sm text-slate-500">—</span>
+                <span className="font-mono text-sm text-slate-400">—</span>
               )}
             </div>
           </div>
@@ -481,7 +479,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
               <span className="font-mono text-2xl font-black text-foreground">
                 {portfolioStats.avgSnowflake}
               </span>
-              <span className="font-mono text-xs text-slate-500">/ 30</span>
+              <span className="font-mono text-xs text-slate-400">/ 30</span>
             </div>
           </div>
         </div>
@@ -498,7 +496,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={tw.searchPlaceholder}
-              className="w-full rounded-xl border border-border bg-surface-1/90 py-2 pl-9 pr-3 text-xs text-foreground placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full rounded-xl border border-border bg-surface-1/90 py-2 pl-9 pr-3 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
 
@@ -848,7 +846,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   {price > 0 && bull > bear && (
                     <div className="mt-3.5 space-y-1.5 rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
                       <div className="flex items-center justify-between text-[11px] text-slate-400">
-                        <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                           {tw.regimeSpectrum}
                         </span>
                         {report.analystTarget && report.analystTarget > 0 && (
@@ -881,7 +879,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                           title={`Price: ${formatCurrency(price)}`}
                         />
                       </div>
-                      <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500">
+                      <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
                         <span>Bear ${Math.round(bear)}</span>
                         <span className="flex items-center gap-1 text-sky-400">
                           <span className="size-1.5 rounded-full bg-sky-400" />
@@ -900,7 +898,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </span>
                       <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
                         <span>{report.snowflakeScore ?? 0}</span>
-                        <span className="text-[11px] text-slate-500">/ 30</span>
+                        <span className="text-[11px] text-slate-400">/ 30</span>
                       </div>
                     </div>
 
@@ -1049,7 +1047,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   {/* Historical Quarters Pills (if multi-quarter exists) */}
                   {group.allReports.length > 1 && (
                     <div className="mt-3 space-y-1">
-                      <div className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
+                      <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                         {tw.quarterlyHistory} ({group.allReports.length})
                       </div>
                       <div className="flex flex-wrap items-center gap-1">
@@ -1084,7 +1082,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleFavorite(group.ticker)}
-                    className="flex items-center gap-1 text-[11px] text-slate-500 transition-colors hover:text-rose-400"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 transition-colors hover:text-rose-400"
                     title={tw.removeFromWatchlist}
                   >
                     <Trash2 className="size-3" />
@@ -1134,7 +1132,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>Ticker</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th className="px-2 py-3" title={t.screener.colMoatTooltip}>
@@ -1147,7 +1145,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colPrice}</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th
@@ -1160,7 +1158,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colBaseFv}</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th
@@ -1192,7 +1190,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colDivergence}</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th
@@ -1205,7 +1203,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colGrowthMargin}</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th
@@ -1218,7 +1216,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="flex items-center gap-1 hover:text-foreground"
                     >
                       <span>{tw.colSnowflake}</span>
-                      <ArrowUpDown className="size-3 text-slate-500" />
+                      <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
                   <th className="px-2 py-3">{tw.quarterlyHistory}</th>
@@ -1419,7 +1417,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                             </button>
                           ))}
                           {group.allReports.length > 3 && (
-                            <span className="text-[11px] text-slate-500">
+                            <span className="text-[11px] text-slate-400">
                               +{group.allReports.length - 3}
                             </span>
                           )}

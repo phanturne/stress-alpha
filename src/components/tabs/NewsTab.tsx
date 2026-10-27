@@ -257,11 +257,11 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
                   {t.latestPulse}
                 </span>
-                <span className="text-slate-500">•</span>
+                <span className="text-slate-400">•</span>
                 <span className="font-mono text-xs text-slate-400">
                   {latestPulseEvent.publisher}
                 </span>
-                <span className="text-slate-500">•</span>
+                <span className="text-slate-400">•</span>
                 <span className="flex items-center gap-1 font-mono text-xs text-slate-400">
                   <Clock className="size-3" />
                   {formatDate(latestPulseEvent.publishedAt)}
@@ -408,7 +408,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                     <span className="font-bold text-accent">
                       {dep.sourceTicker}
                     </span>
-                    <ArrowRight className="size-3 text-slate-500" />
+                    <ArrowRight className="size-3 text-slate-400" />
                     <span className="font-bold text-foreground">
                       {dep.targetTicker}
                     </span>
@@ -457,7 +457,7 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                     <span className="font-mono text-xs font-semibold text-slate-300">
                       {event.publisher}
                     </span>
-                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">•</span>
                     <span className="flex items-center gap-1 font-mono text-xs text-slate-400">
                       <Clock className="size-3" />
                       {formatDate(event.publishedAt)}

@@ -222,7 +222,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
             <Target className="size-4" />
             <span>{t.title}</span>
             {estimatesData.asOfDate && (
-              <span className="font-mono text-[11px] lowercase text-slate-500">
+              <span className="font-mono text-[11px] lowercase text-slate-400">
                 • {estimatesData.asOfDate}
               </span>
             )}
@@ -537,7 +537,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           {/* Mobile View: Cards */}
           <div className="divide-y divide-border/60 md:hidden">
             {filteredEstimates.length === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-500">
+              <div className="py-8 text-center text-xs text-slate-400">
                 {t.emptySearch}
               </div>
             ) : (
@@ -558,7 +558,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                             title={t.searchGoogle(item.firm)}
                           >
                             <span>{item.firm}</span>
-                            <ExternalLink className="size-3 text-slate-500" />
+                            <ExternalLink className="size-3 text-slate-400" />
                           </a>
                           {actionStyle && item.action && (
                             <span
@@ -653,7 +653,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   <tr>
                     <td
                       colSpan={5}
-                      className="py-8 text-center text-xs text-slate-500"
+                      className="py-8 text-center text-xs text-slate-400"
                     >
                       {t.emptySearch}
                     </td>
@@ -680,7 +680,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                                 title={t.searchGoogle(item.firm)}
                               >
                                 <span>{item.firm}</span>
-                                <ExternalLink className="size-3 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />
+                                <ExternalLink className="size-3 text-slate-400 opacity-60 transition-opacity hover:opacity-100" />
                               </a>
                               {actionStyle && item.action && (
                                 <span

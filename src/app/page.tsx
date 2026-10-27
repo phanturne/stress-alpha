@@ -1,136 +1,52 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
-import { useRouter } from "next/navigation";
-import {
-  FolderOpen,
-  Sparkles,
-  TrendingUp,
-  Layers,
-  FileSearch,
-  FileText,
-  Check,
-  ShieldCheck,
-  Target,
-  Keyboard,
-  X,
-  Sliders,
-  ArrowRight,
-  BarChart3,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp,
-  Radio,
-} from "lucide-react";
-import { formatCurrency, formatPercent } from "@/lib/utils";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { compareReportsByRecency } from "@/lib/utils";
 import { Header } from "@/components/Header";
-import { Cockpit } from "@/components/Cockpit";
 import { CockpitSkeleton } from "@/components/CockpitSkeleton";
 import { MemoView } from "@/components/MemoView";
-import { EstimatesTab } from "@/components/tabs/EstimatesTab";
-import { CatalystsTab } from "@/components/tabs/CatalystsTab";
-import { MoatTab } from "@/components/tabs/MoatTab";
-import { ScenariosTab } from "@/components/tabs/ScenariosTab";
-import { SegmentsTab } from "@/components/tabs/SegmentsTab";
-import { AuditTab } from "@/components/tabs/AuditTab";
-import { NewsTab } from "@/components/tabs/NewsTab";
 import { ScreenerView } from "@/components/ScreenerView";
-import { SocialCardModal } from "@/components/social-card/SocialCardModal";
-import { SnowflakeModal } from "@/components/snowflake/SnowflakeModal";
+import { NoReportSelected } from "@/components/NoReportSelected";
+import { CockpitDualPane } from "@/components/CockpitDualPane";
+import { CockpitModals } from "@/components/CockpitModals";
+import { getWorkspaceTabs } from "@/lib/workspace-tabs";
+import { getLocalizedArtifacts } from "@/lib/localized-report";
 import { computeSnowflakeScore } from "@/lib/snowflake";
-import type {
-  ReportData,
-  Scenario,
-  MarketEvent,
-  UpstreamDependency,
-  ValuationRevision,
-} from "@/lib/schemas";
-import type { ReportSummary } from "@/app/api/reports/route";
-import {
-  computeStressedValuation,
-  computeValuation,
-  type StressTestParams,
-} from "@/lib/valuation";
 import { getTranslations, type Locale } from "@/lib/i18n";
-import {
-  parseScenarioUrlState,
-  serializeScenarioUrlState,
-} from "@/lib/url-state";
 import { useWatchlist } from "@/lib/watchlist";
-import { setStoredLastReport } from "@/lib/recent-report";
-
-const clientReportDataCache = new Map<string, ReportData>();
-let clientReportsListCache: ReportSummary[] | null = null;
+import { useReportData } from "@/hooks/useReportData";
+import { useStressModel } from "@/hooks/useStressModel";
+import { useReportNavigation } from "@/hooks/useReportNavigation";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import type { ReportData } from "@/lib/schemas";
 
 export default function HomePage() {
-  const router = useRouter();
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
-  const [reportData, setReportData] = useState<ReportData | null>(null);
-  const [reports, setReports] = useState<ReportSummary[]>([]);
-  const [isReportsLoading, setIsReportsLoading] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [viewMode, setViewMode] = useState<"cockpit" | "memo" | "screener">(
-    "cockpit"
-  );
-  const [activeTab, setActiveTab] = useState<string>("valuation");
-  const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
-    "cockpit"
-  );
   const [locale, setLocale] = useState<Locale>("en");
   const [reportDocLang, setReportDocLang] = useState<Locale>("en");
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-  const [isSocialCardOpen, setIsSocialCardOpen] = useState<boolean>(false);
-  const [isSnowflakeOpen, setIsSnowflakeOpen] = useState<boolean>(false);
-  const tabScrollRef = useRef<HTMLDivElement>(null);
-  const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const workspaceScrollRef = useRef<HTMLDivElement | null>(null);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isSocialCardOpen, setIsSocialCardOpen] = useState(false);
+  const [isSnowflakeOpen, setIsSnowflakeOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { isFavorite, toggleFavorite, isAuthenticated } = useWatchlist();
 
-  // News, Upstream Supply Chain, and Valuation Revision History state
-  const [marketEvents, setMarketEvents] = useState<MarketEvent[]>([]);
-  const [upstreamDependencies, setUpstreamDependencies] = useState<
-    UpstreamDependency[]
-  >([]);
-  const [valuationRevisions, setValuationRevisions] = useState<
-    ValuationRevision[]
-  >([]);
-  const [isNewsLoading, setIsNewsLoading] = useState<boolean>(false);
+  const { toggleFavorite, isAuthenticated } = useWatchlist();
+  const t = getTranslations(locale);
 
-  // Clean up toast timer on unmount
-  useEffect(() => {
-    return () => {
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Restore saved language preference from localStorage on mount
+  // Restore saved language preference on mount
   useEffect(() => {
     try {
-      const savedLocale = localStorage.getItem(
-        "stress_alpha_locale"
-      ) as Locale | null;
-      if (savedLocale === "en" || savedLocale === "zh") {
+      const saved = localStorage.getItem("stress_alpha_locale") as Locale | null;
+      if (saved === "en" || saved === "zh") {
         Promise.resolve().then(() => {
-          setLocale(savedLocale);
-          setReportDocLang(savedLocale);
+          setLocale(saved);
+          setReportDocLang(saved);
         });
       }
     } catch (e) {
       console.warn("Could not load locale preference:", e);
     }
   }, []);
-
-  const t = getTranslations(locale);
 
   const handleToggleLocale = useCallback((newLocale: Locale) => {
     setLocale(newLocale);
@@ -141,16 +57,8 @@ export default function HomePage() {
     }
   }, []);
 
-  const [stressParams, setStressParams] = useState<StressTestParams>({
-    driverShocks: {},
-    grossMarginBpsDelta: 0,
-    fixedOpexShiftPct: 0,
-  });
-
   const showToast = useCallback((msg: string) => {
-    if (toastTimeoutRef.current) {
-      clearTimeout(toastTimeoutRef.current);
-    }
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setToastMessage(msg);
     toastTimeoutRef.current = setTimeout(() => {
       setToastMessage(null);
@@ -158,666 +66,107 @@ export default function HomePage() {
     }, 2500);
   }, []);
 
-  // Load report from API with optional initial shock overrides & client cache
-  const loadReport = useCallback(
-    async (slug: string, initialOverrides?: StressTestParams) => {
-      const cached = clientReportDataCache.get(slug);
-      if (cached) {
-        setReportData(cached);
-        setCurrentSlug(slug);
-        if (cached.facts?.ticker) {
-          setStoredLastReport(slug, cached.facts.ticker);
-        }
-        const initialShocks: Record<string, number> = {};
-        if (cached.baseline?.upstreamDrivers) {
-          for (const d of cached.baseline.upstreamDrivers) {
-            initialShocks[d.id] =
-              initialOverrides?.driverShocks?.[d.id] ?? d.defaultShockPct ?? 0;
-          }
-        }
-        setStressParams({
-          driverShocks: initialShocks,
-          grossMarginBpsDelta: initialOverrides?.grossMarginBpsDelta ?? 0,
-          fixedOpexShiftPct: initialOverrides?.fixedOpexShiftPct ?? 0,
-        });
-        setIsLoading(false);
-        return;
-      }
+  // 1. TanStack Query for reports, active report, revisions, and market events
+  const {
+    reports,
+    isReportsLoading,
+    reportData,
+    setReportData,
+    isReportLoading,
+    marketEvents,
+    upstreamDependencies,
+    valuationRevisions,
+  } = useReportData({
+    currentSlug,
+    onError: (err) => showToast(`Failed to load report: ${err.message}`),
+  });
 
-      setIsLoading(true);
-      try {
-        const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
-        if (!res.ok) {
-          throw new Error(`Failed to fetch report ${slug}`);
-        }
-        const data: ReportData = await res.json();
-        clientReportDataCache.set(slug, data);
-        setReportData(data);
-        setCurrentSlug(slug);
-        if (data.facts?.ticker) {
-          setStoredLastReport(slug, data.facts.ticker);
-        }
+  // 2. Deterministic Stress Valuation Model & Live Sliders
+  const {
+    stressParams,
+    setStressParams,
+    initStressParamsFromReport,
+    setPendingStressOverrides,
+    handleDriverShockChange,
+    handleGrossMarginDeltaChange,
+    handleFixedOpexShiftChange,
+    handleResetDefaults,
+    handleSimulateShock,
+    handleSimulateGrossMarginDelta,
+    handleSimulateCatalystProb,
+    handleCatalystProbabilityChange,
+    handleScenarioChange,
+    handleNavigateToModel,
+    stressResult,
+    dynamicValuation,
+  } = useStressModel({
+    reportData,
+    setReportData,
+    onShowToast: showToast,
+    resetSlidersToastMsg: t.page.resetSlidersToast,
+    onNavigateToCockpit: () => setMobileSection("cockpit"),
+  });
 
-        // Initialize driver shocks from baseline, allowing initial overrides from URL
-        const initialShocks: Record<string, number> = {};
-        if (data.baseline?.upstreamDrivers) {
-          for (const d of data.baseline.upstreamDrivers) {
-            initialShocks[d.id] =
-              initialOverrides?.driverShocks?.[d.id] ?? d.defaultShockPct ?? 0;
-          }
-        }
-
-        setStressParams({
-          driverShocks: initialShocks,
-          grossMarginBpsDelta: initialOverrides?.grossMarginBpsDelta ?? 0,
-          fixedOpexShiftPct: initialOverrides?.fixedOpexShiftPct ?? 0,
-        });
-      } catch (err) {
-        console.error(err);
-        showToast(`Failed to load report: ${(err as Error).message}`);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
-
-  const fetchReportsList = useCallback(async () => {
-    if (clientReportsListCache) {
-      setReports(clientReportsListCache);
-      setIsReportsLoading(false);
-      return clientReportsListCache;
-    }
-    setIsReportsLoading(true);
-    try {
-      const res = await fetch("/api/reports");
-      if (res.ok) {
-        const data = await res.json();
-        const list: ReportSummary[] = data.reports || [];
-        clientReportsListCache = list;
-        setReports(list);
-        return list;
-      }
-    } catch (err) {
-      console.error("Failed to fetch reports list:", err);
-    } finally {
-      setIsReportsLoading(false);
-    }
-    return [];
-  }, []);
-
-  // Initial load: parse URL search or hash to restore exact scenario, report, tab, and mode
+  // Automatically initialize driver shocks when a fresh report loads
+  const lastInitSlugRef = useRef<string | null>(null);
   useEffect(() => {
-    const init = async () => {
-      const urlState = parseScenarioUrlState(
-        window.location.search || window.location.hash
-      );
-
-      if (urlState.tab) {
-        setActiveTab(urlState.tab);
-      }
-      if (urlState.mode === "memo" || urlState.mode === "cockpit") {
-        setViewMode(urlState.mode);
-      }
-      if (urlState.lang) {
-        setLocale(urlState.lang);
-        setReportDocLang(urlState.lang);
-      }
-
-      // Requirement 2: screener is a separate page and not associated with a specific report
-      if (urlState.mode === "screener" || !urlState.report) {
-        router.replace("/screener");
-        return;
-      }
-
-      // Parallelize: Load active report immediately without waiting for full reports list
-      const reportPromise = urlState.report
-        ? loadReport(urlState.report, urlState.stressParams)
-        : Promise.resolve();
-      const listPromise = fetchReportsList();
-      await Promise.all([reportPromise, listPromise]);
-    };
-    init();
-  }, [fetchReportsList, loadReport, router]);
-
-  // Handle browser Back / Forward history navigation (popstate)
-  useEffect(() => {
-    const handlePopState = () => {
-      const urlState = parseScenarioUrlState(
-        window.location.search || window.location.hash
-      );
-      if (urlState.tab) setActiveTab(urlState.tab);
-      if (urlState.mode) setViewMode(urlState.mode);
-      if (urlState.lang) setLocale(urlState.lang);
-      if (urlState.report && urlState.report !== currentSlug) {
-        loadReport(urlState.report, urlState.stressParams);
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [currentSlug, loadReport]);
-
-  // Handle URL search parameter synchronization for shareable deep linking
-  const syncStateToUrl = useCallback(() => {
-    if (
-      typeof window === "undefined" ||
-      isLoading ||
-      !currentSlug ||
-      viewMode === "screener"
-    )
-      return;
-
-    const queryString = serializeScenarioUrlState({
-      report: currentSlug ?? undefined,
-      tab: activeTab,
-      mode: viewMode,
-      lang: locale,
-      stressParams,
-    });
-
-    const newUrl = window.location.pathname + queryString;
-    window.history.replaceState(null, "", newUrl);
-  }, [currentSlug, activeTab, viewMode, locale, stressParams, isLoading]);
-
-  useEffect(() => {
-    syncStateToUrl();
-  }, [syncStateToUrl]);
-
-  // View mode navigation with browser history push
-  const handleViewModeChange = useCallback(
-    (
-      mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
-      options?: { watchlistOnly?: boolean }
-    ) => {
-      if (mode === "settings") {
-        router.push("/settings");
-        return;
-      }
-      if (mode === "watchlist") {
-        router.push("/watchlist");
-        return;
-      }
-      if (mode === "screener") {
-        const query = options?.watchlistOnly ? "?watchlist=true" : "";
-        router.push(`/screener${query}`);
-        return;
-      }
-      setViewMode(mode);
-      if (typeof window !== "undefined") {
-        const queryString = serializeScenarioUrlState({
-          report: currentSlug ?? undefined,
-          tab: activeTab,
-          mode,
-          lang: locale,
-          stressParams,
-        });
-        window.history.pushState(
-          null,
-          "",
-          window.location.pathname + queryString
-        );
-      }
-    },
-    [currentSlug, activeTab, locale, stressParams, router]
-  );
-
-  // Select report and navigate directly to Cockpit
-  const handleSelectReport = useCallback(
-    (slug: string, mode?: "cockpit" | "memo") => {
-      const nextMode = mode ?? "cockpit";
-      setViewMode(nextMode);
-      loadReport(slug);
-      if (typeof window !== "undefined") {
-        const queryString = serializeScenarioUrlState({
-          report: slug,
-          tab: activeTab,
-          mode: nextMode,
-          lang: locale,
-          stressParams,
-        });
-        window.history.pushState(
-          null,
-          "",
-          window.location.pathname + queryString
-        );
-      }
-    },
-    [loadReport, activeTab, locale, stressParams]
-  );
-
-  // Unified Share & Export action
-  const handleShare = () => {
-    syncStateToUrl();
-    setIsSocialCardOpen(true);
-  };
-
-  // Slider handlers
-  const handleDriverShockChange = (driverId: string, shockPct: number) => {
-    setStressParams((prev) => ({
-      ...prev,
-      driverShocks: {
-        ...(prev.driverShocks ?? {}),
-        [driverId]: shockPct,
-      },
-    }));
-  };
-
-  const handleGrossMarginDeltaChange = (bps: number) => {
-    setStressParams((prev) => ({
-      ...prev,
-      grossMarginBpsDelta: bps,
-    }));
-  };
-
-  const handleFixedOpexShiftChange = (shiftPct: number) => {
-    setStressParams((prev) => ({
-      ...prev,
-      fixedOpexShiftPct: shiftPct,
-    }));
-  };
-
-  const handleResetDefaults = useCallback(() => {
-    if (!reportData?.baseline) return;
-    const defaultShocks: Record<string, number> = {};
-    for (const d of reportData.baseline.upstreamDrivers) {
-      defaultShocks[d.id] = d.defaultShockPct ?? 0;
+    if (reportData && reportData.folderName !== lastInitSlugRef.current) {
+      lastInitSlugRef.current = reportData.folderName;
+      initStressParamsFromReport(reportData);
     }
-    setStressParams({
-      driverShocks: defaultShocks,
-      grossMarginBpsDelta: 0,
-      fixedOpexShiftPct: 0,
-    });
-    showToast(t.page.resetSlidersToast);
-  }, [reportData?.baseline, t.page.resetSlidersToast]);
+  }, [reportData, initStressParamsFromReport]);
 
-  // Catalyst probability changes
-  const handleCatalystProbabilityChange = useCallback(
-    (idx: number, prob: number) => {
-      if (!reportData?.catalysts) return;
-      const updated = [...reportData.catalysts.catalysts];
-      updated[idx] = { ...updated[idx], probability: prob };
-
-      let updatedZh = reportData.catalystsZh;
-      if (updatedZh?.catalysts?.[idx]) {
-        const zhList = [...updatedZh.catalysts];
-        zhList[idx] = { ...zhList[idx], probability: prob };
-        updatedZh = { ...updatedZh, catalysts: zhList };
-      }
-
-      setReportData({
-        ...reportData,
-        catalysts: {
-          ...reportData.catalysts,
-          catalysts: updated,
-        },
-        catalystsZh: updatedZh,
-      });
-    },
-    [reportData]
-  );
-
-  // News & Catalyst Simulation Handlers
-  const handleSimulateShock = useCallback(
-    (driverId: string, shockPct: number) => {
-      const drivers = reportData?.baseline?.upstreamDrivers || [];
-      // Smart matching: direct match, or fuzzy match by keyword / prefix
-      let targetDriver = drivers.find((d) => d.id === driverId);
-      if (!targetDriver && drivers.length > 0) {
-        const queryNorm = driverId.toLowerCase().replace(/[-_]/g, " ");
-        targetDriver = drivers.find((d) => {
-          const idNorm = d.id.toLowerCase().replace(/[-_]/g, " ");
-          const nameNorm = (d.name || "").toLowerCase();
-          return (
-            idNorm.includes(queryNorm) ||
-            queryNorm.includes(idNorm) ||
-            nameNorm.includes(queryNorm) ||
-            queryNorm
-              .split(" ")
-              .some(
-                (w) =>
-                  w.length > 3 && (idNorm.includes(w) || nameNorm.includes(w))
-              )
-          );
-        });
-        if (!targetDriver) {
-          targetDriver = drivers[0];
-        }
-      }
-
-      const effectiveDriverId = targetDriver ? targetDriver.id : driverId;
-      const driverName = targetDriver?.name || effectiveDriverId;
-
-      setStressParams((prev) => ({
-        ...prev,
-        driverShocks: {
-          ...prev.driverShocks,
-          [effectiveDriverId]: shockPct,
-        },
-      }));
-      showToast(
-        `⚡ Simulated shock on ${driverName}: ${shockPct > 0 ? "+" : ""}${shockPct}%`
-      );
-    },
-    [reportData?.baseline?.upstreamDrivers, showToast]
-  );
-
-  const handleSimulateGrossMarginDelta = useCallback(
-    (bps: number) => {
-      setStressParams((prev) => ({
-        ...prev,
-        grossMarginBpsDelta: bps,
-      }));
-      showToast(
-        `⚡ Simulated gross margin delta: ${bps > 0 ? "+" : ""}${bps} bps`
-      );
-    },
-    [showToast]
-  );
-
-  const handleSimulateCatalystProb = useCallback(
-    (catalystId: string, prob: number) => {
-      if (!reportData?.catalysts || !reportData.catalysts.catalysts.length)
-        return;
-      const catalysts = reportData.catalysts.catalysts;
-      let idx = catalysts.findIndex((c) => c.id === catalystId);
-      if (idx === -1) {
-        const query = catalystId.toLowerCase().replace(/[-_]/g, " ");
-        idx = catalysts.findIndex(
-          (c) =>
-            c.title.toLowerCase().includes(query) ||
-            c.id.toLowerCase().includes(query)
-        );
-        if (idx === -1) idx = 0;
-      }
-      handleCatalystProbabilityChange(idx, prob);
-      showToast(
-        `✨ Simulated catalyst probability on "${catalysts[idx].title}": ${(prob * 100).toFixed(0)}%`
-      );
-    },
-    [reportData, handleCatalystProbabilityChange, showToast]
-  );
-
-  const handleNavigateToModel = useCallback(() => {
-    setMobileSection("cockpit");
-    if (typeof window !== "undefined") {
-      const cockpitEl = document.getElementById("model-cockpit-pane");
-      if (cockpitEl) {
-        cockpitEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        cockpitEl.classList.add(
-          "ring-2",
-          "ring-accent",
-          "ring-offset-2",
-          "ring-offset-surface-0",
-          "transition-all",
-          "duration-500"
-        );
-        setTimeout(() => {
-          cockpitEl.classList.remove(
-            "ring-2",
-            "ring-accent",
-            "ring-offset-2",
-            "ring-offset-surface-0"
-          );
-        }, 1800);
-      }
-    }
-  }, []);
-
-  // Fetch news, supply chain dependencies, and valuation revisions
-  const fetchNewsAndRevisions = useCallback(async (ticker: string) => {
-    if (!ticker) return;
-    queueMicrotask(() => setIsNewsLoading(true));
-    try {
-      const [newsRes, revsRes] = await Promise.all([
-        fetch(`/api/news?ticker=${encodeURIComponent(ticker)}`),
-        fetch(`/api/revisions?ticker=${encodeURIComponent(ticker)}`),
-      ]);
-      if (newsRes.ok) {
-        const newsData = await newsRes.json();
-        setMarketEvents(newsData.events || []);
-        setUpstreamDependencies(newsData.upstreamDependencies || []);
-      }
-      if (revsRes.ok) {
-        const revsData = await revsRes.json();
-        setValuationRevisions(revsData.revisions || []);
-      }
-    } catch (err) {
-      console.error("Failed to fetch news or revisions for ticker:", err);
-    } finally {
-      setIsNewsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const ticker = reportData?.facts?.ticker;
-    if (!ticker) return;
-
-    const loadData = async () => {
-      await fetchNewsAndRevisions(ticker);
-    };
-    void loadData();
-  }, [reportData?.facts?.ticker, fetchNewsAndRevisions]);
-
-  // Scenario inline field changes
-  const handleScenarioChange = (idx: number, patch: Partial<Scenario>) => {
-    if (!reportData) return;
-    const updatedScenarios = [...reportData.scenarios.scenarios];
-    updatedScenarios[idx] = {
-      ...updatedScenarios[idx],
-      ...patch,
-      ...(patch.probability !== undefined && {
-        rawProbability: patch.probability,
-        calibratedProbability: patch.probability,
-      }),
-    };
-
-    const newScenarios = {
-      ...reportData.scenarios,
-      scenarios: updatedScenarios,
-    };
-
-    // Synchronize numerical edits to Chinese scenarios so inputs persist across language switches
-    let newScenariosZh = reportData.scenariosZh;
-    if (newScenariosZh?.scenarios?.[idx]) {
-      const updatedZh = [...newScenariosZh.scenarios];
-      updatedZh[idx] = {
-        ...updatedZh[idx],
-        ...(patch.probability !== undefined && {
-          probability: patch.probability,
-          rawProbability: patch.probability,
-          calibratedProbability: patch.probability,
-        }),
-        ...(patch.forwardEps !== undefined && { forwardEps: patch.forwardEps }),
-        ...(patch.multiple !== undefined && { multiple: patch.multiple }),
-      };
-      newScenariosZh = { ...newScenariosZh, scenarios: updatedZh };
-    }
-
-    // Deterministically recompute valuation with manual override (disableAutoCalibration: true)
-    const updatedValuation = computeValuation({
-      facts: reportData.facts,
-      scenarios: newScenarios,
-      baseline: reportData.baseline,
-      moat: reportData.moat,
-      estimates: reportData.estimates,
-      stressParams,
-      disableAutoCalibration: true,
-      calibrationAudit: reportData.valuation?.calibrationAudit,
-    });
-
-    setReportData({
-      ...reportData,
-      scenarios: newScenarios,
-      scenariosZh: newScenariosZh,
-      valuation: updatedValuation,
-    });
-  };
-
-  // Compute live stressed valuation
-  const stressResult = useMemo(() => {
-    if (!reportData?.baseline || !reportData.facts) return null;
-    return computeStressedValuation(
-      reportData.baseline,
-      reportData.facts.currentPrice,
-      stressParams
-    );
-  }, [reportData, stressParams]);
-
-  // Compute live dynamic valuation tree (WFV, scenario targets, upside %)
-  const dynamicValuation = useMemo(() => {
-    if (!reportData?.facts || !reportData.scenarios)
-      return reportData?.valuation;
-    return computeValuation({
-      facts: reportData.facts,
-      scenarios: reportData.scenarios,
-      baseline: reportData.baseline,
-      moat: reportData.moat,
-      estimates: reportData.estimates,
-      stressParams,
-      disableAutoCalibration: true,
-      calibrationAudit: reportData.valuation?.calibrationAudit,
-    });
-  }, [reportData, stressParams]);
+  // 3. Navigation, Deep-link URL Synchronization & Workspace Scrolling
+  const {
+    viewMode,
+    setViewMode,
+    activeTab,
+    mobileSection,
+    setMobileSection,
+    showBackToTop,
+    tabScrollRef,
+    tabButtonRefs,
+    workspaceScrollRef,
+    switchWorkspace,
+    handleScrollToTop,
+    handleViewModeChange,
+    handleSelectReport,
+    handleWheelTabScroll,
+    syncStateToUrl,
+  } = useReportNavigation({
+    currentSlug,
+    setCurrentSlug,
+    locale,
+    setLocale,
+    onSetReportDocLang: setReportDocLang,
+    stressParams,
+    setPendingStressOverrides,
+    setStressParams,
+    isLoading: isReportLoading,
+  });
 
   // Localized artifacts resolution
-  const isZh = locale === "zh";
-  const displayFacts =
-    isZh && reportData?.factsZh ? reportData.factsZh : reportData?.facts;
-  const displayCatalysts =
-    isZh && reportData?.catalystsZh
-      ? reportData.catalystsZh
-      : reportData?.catalysts;
-  const displayScenarios =
-    isZh && reportData?.scenariosZh
-      ? reportData.scenariosZh
-      : reportData?.scenarios;
-  const displaySentiment =
-    isZh && reportData?.sentimentZh
-      ? reportData.sentimentZh
-      : reportData?.sentiment;
-  const displayFiling =
-    isZh && reportData?.filingZh ? reportData.filingZh : reportData?.filing;
-  const displayReactions =
-    isZh && reportData?.reactionsZh
-      ? reportData.reactionsZh
-      : reportData?.reactions;
-  const displayMoat =
-    isZh && reportData?.moatZh ? reportData.moatZh : reportData?.moat;
-  const displayEstimates =
-    isZh && reportData?.estimatesZh
-      ? reportData.estimatesZh
-      : reportData?.estimates;
+  const artifacts = useMemo(() => getLocalizedArtifacts(reportData, locale), [reportData, locale]);
 
   // 5-Pillar Snowflake Score calculation
   const snowflakeScore = useMemo(() => {
-    if (!reportData || !displayFacts) return null;
+    if (!reportData || !artifacts.facts) return null;
     const effectiveReportData: ReportData = {
       ...reportData,
-      facts: displayFacts,
-      catalysts: displayCatalysts,
-      scenarios: displayScenarios ?? reportData.scenarios,
-      moat: displayMoat,
-      estimates: displayEstimates,
+      facts: artifacts.facts,
+      catalysts: artifacts.catalysts,
+      scenarios: artifacts.scenarios ?? reportData.scenarios,
+      moat: artifacts.moat,
+      estimates: artifacts.estimates,
       valuation: dynamicValuation ?? reportData.valuation,
     };
-    return computeSnowflakeScore(
-      effectiveReportData,
-      stressResult ?? undefined,
-      locale
-    );
-  }, [
-    reportData,
-    displayFacts,
-    displayCatalysts,
-    displayScenarios,
-    displayMoat,
-    displayEstimates,
-    dynamicValuation,
-    stressResult,
-    locale,
-  ]);
+    return computeSnowflakeScore(effectiveReportData, stressResult ?? undefined, locale);
+  }, [reportData, artifacts, dynamicValuation, stressResult, locale]);
 
-  // 7 Focused Intelligence Workspaces
+  // 7 Focused Intelligence Workspaces (+ Report Tab)
   const tabItems = useMemo(
-    () => [
-      {
-        id: "valuation",
-        shortcut: "1",
-        label: t.tabs.valuation,
-        shortLabel: t.tabs.shortValuation,
-        icon: TrendingUp,
-        count: displayScenarios?.scenarios.length,
-      },
-      {
-        id: "estimates",
-        shortcut: "2",
-        label: t.tabs.estimates || "Estimates",
-        shortLabel: t.tabs.shortEstimates,
-        icon: Target,
-        count: displayEstimates?.estimates?.length,
-      },
-      {
-        id: "moat",
-        shortcut: "3",
-        label: t.tabs.moat,
-        shortLabel: t.tabs.shortMoat,
-        icon: ShieldCheck,
-        count: displayMoat?.competitors?.length,
-      },
-      {
-        id: "segments",
-        shortcut: "4",
-        label: t.tabs.segments,
-        shortLabel: t.tabs.shortSegments,
-        icon: Layers,
-        count: displayFacts?.segments.length,
-      },
-      {
-        id: "catalysts",
-        shortcut: "5",
-        label: t.tabs.catalysts,
-        shortLabel: t.tabs.shortCatalysts,
-        icon: Sparkles,
-        count: displayCatalysts?.catalysts?.length,
-      },
-      {
-        id: "news",
-        shortcut: "6",
-        label: t.tabs.news,
-        shortLabel: t.tabs.shortNews,
-        icon: Radio,
-        count: marketEvents.length,
-      },
-      {
-        id: "audit",
-        shortcut: "7",
-        label: t.tabs.audit,
-        shortLabel: t.tabs.shortAudit,
-        icon: FileSearch,
-        count:
-          (displayFiling?.newRiskFactors?.length ?? 0) +
-          (displayReactions?.events?.length ?? 0),
-      },
-      {
-        id: "report",
-        shortcut: "8",
-        label: t.tabs.report,
-        shortLabel: t.tabs.shortReport,
-        icon: FileText,
-      },
-    ],
-    [
-      t,
-      displayScenarios,
-      displayEstimates,
-      displayMoat,
-      displayFacts,
-      displayCatalysts,
-      marketEvents.length,
-      displayFiling,
-      displayReactions,
-    ]
+    () => getWorkspaceTabs(t, reportData, marketEvents.length, artifacts.isZh),
+    [t, reportData, marketEvents.length, artifacts.isZh]
   );
 
   const currentTabIndex = useMemo(() => {
@@ -826,254 +175,54 @@ export default function HomePage() {
   }, [tabItems, activeTab]);
 
   const prevTab = currentTabIndex > 0 ? tabItems[currentTabIndex - 1] : null;
-  const nextTab =
-    currentTabIndex < tabItems.length - 1
-      ? tabItems[currentTabIndex + 1]
-      : null;
+  const nextTab = currentTabIndex < tabItems.length - 1 ? tabItems[currentTabIndex + 1] : null;
 
-  // Desktop & Mobile smooth workspace switcher with auto-scroll to top
-  const switchWorkspace = useCallback((tabId: string, smoothScroll = true) => {
-    setActiveTab(tabId);
-    setMobileSection("workspaces");
-    if (smoothScroll) {
-      if (workspaceScrollRef.current && window.innerWidth >= 1024) {
-        workspaceScrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      } else if (typeof window !== "undefined") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    }
-  }, []);
-
-  // Track vertical scroll to show floating "Back to Top" button on desktop & mobile
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  useEffect(() => {
-    const handleWindowScroll = () => {
-      if (window.innerWidth < 1024) {
-        setShowBackToTop(window.scrollY > 350);
-      }
-    };
-    const workspaceEl = workspaceScrollRef.current;
-    const handleWorkspaceScroll = () => {
-      if (workspaceEl && window.innerWidth >= 1024) {
-        setShowBackToTop(workspaceEl.scrollTop > 350);
-      }
-    };
-
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-    if (workspaceEl) {
-      workspaceEl.addEventListener("scroll", handleWorkspaceScroll, {
-        passive: true,
-      });
-    }
-    return () => {
-      window.removeEventListener("scroll", handleWindowScroll);
-      if (workspaceEl) {
-        workspaceEl.removeEventListener("scroll", handleWorkspaceScroll);
-      }
-    };
-  }, [viewMode, activeTab]);
-
-  const handleScrollToTop = () => {
-    if (workspaceScrollRef.current && window.innerWidth >= 1024) {
-      workspaceScrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  // Auto-scroll active tab into view smoothly whenever activeTab changes
-  useEffect(() => {
-    const activeBtn = tabButtonRefs.current[activeTab];
-    const container = tabScrollRef.current;
-    if (activeBtn && container) {
-      const containerRect = container.getBoundingClientRect();
-      const btnRect = activeBtn.getBoundingClientRect();
-      const scrollOffset =
-        btnRect.left -
-        containerRect.left -
-        containerRect.width / 2 +
-        btnRect.width / 2;
-      container.scrollBy({ left: scrollOffset, behavior: "smooth" });
-    }
-  }, [activeTab]);
-
-  // Global Keyboard Shortcuts (1-7 for tabs, [ / ] for prev/next, R for reset, M for memo, L for lang, ? for help)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Never intercept browser-native shortcuts (Cmd+R, Ctrl+R, Cmd+W, etc.)
-      if (e.metaKey || e.ctrlKey || e.altKey) {
-        return;
-      }
-
-      const target = e.target as HTMLElement | null;
-      const tag = target?.tagName?.toLowerCase();
-      const inputType = (target as HTMLInputElement)?.type?.toLowerCase();
-
-      // Only suppress hotkeys when actively typing inside text-entry controls
-      const isTextEntry =
-        tag === "textarea" ||
-        Boolean(target?.isContentEditable) ||
-        (tag === "input" &&
-          !["range", "button", "checkbox", "radio", "submit", "reset"].includes(
-            inputType || ""
-          ));
-
-      if (isTextEntry) {
-        return;
-      }
-
-      const num = parseInt(e.key, 10);
-      if (num >= 1 && num <= tabItems.length) {
-        e.preventDefault();
-        switchWorkspace(tabItems[num - 1].id);
-        return;
-      }
-
-      if (e.key === "[" || e.key === "PageUp") {
-        e.preventDefault();
-        if (currentTabIndex > 0) {
-          switchWorkspace(tabItems[currentTabIndex - 1].id);
-        }
-        return;
-      }
-
-      if (e.key === "]" || e.key === "PageDown") {
-        e.preventDefault();
-        if (currentTabIndex < tabItems.length - 1) {
-          switchWorkspace(tabItems[currentTabIndex + 1].id);
-        }
-        return;
-      }
-
-      if (e.key === "r" || e.key === "R") {
-        e.preventDefault();
-        handleResetDefaults();
-        return;
-      }
-
-      if (e.key === "m" || e.key === "M") {
-        e.preventDefault();
-        setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit"));
-        return;
-      }
-
-      if (e.key === "s" || e.key === "S") {
-        e.preventDefault();
-        handleViewModeChange("screener");
-        return;
-      }
-
-      if (e.key === "l" || e.key === "L") {
-        e.preventDefault();
-        handleToggleLocale(locale === "zh" ? "en" : "zh");
-        return;
-      }
-
-      if (e.key === "e" || e.key === "E") {
-        e.preventDefault();
-        setIsSocialCardOpen((prev) => !prev);
-        return;
-      }
-
-      if (e.key === "w" || e.key === "W") {
-        e.preventDefault();
-        setIsSnowflakeOpen((prev) => !prev);
-        return;
-      }
-
-      if (e.key === "f" || e.key === "F") {
-        const symbol = reportData?.facts?.ticker || currentSlug;
-        if (symbol) {
-          e.preventDefault();
-          if (!isAuthenticated) {
-            toggleFavorite(symbol);
-            showToast(t.header.signInRequiredToast);
-            return;
-          }
-          const added = toggleFavorite(symbol);
-          showToast(
-            added
-              ? t.header.addedToWatchlistToast(symbol)
-              : t.header.removedFromWatchlistToast(symbol)
-          );
-          return;
-        }
-      }
-
-      if (e.key === "?" || (e.shiftKey && e.key === "/")) {
-        e.preventDefault();
-        setIsShortcutsOpen((prev) => !prev);
-        return;
-      }
-
-      if (e.key === "Escape") {
-        if (isSnowflakeOpen) {
-          e.preventDefault();
-          setIsSnowflakeOpen(false);
-          return;
-        }
-        if (isSocialCardOpen) {
-          e.preventDefault();
-          setIsSocialCardOpen(false);
-          return;
-        }
-        if (isShortcutsOpen) {
-          e.preventDefault();
-          setIsShortcutsOpen(false);
-          return;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
+  // 4. Global Keyboard Shortcuts
+  useKeyboardShortcuts({
     tabItems,
     currentTabIndex,
-    locale,
-    t,
-    reportData?.facts?.ticker,
-    currentSlug,
-    toggleFavorite,
-    isAuthenticated,
-    isShortcutsOpen,
-    isSocialCardOpen,
+    switchWorkspace,
+    onResetDefaults: handleResetDefaults,
+    onToggleMemo: () => setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit")),
+    onOpenScreener: () => handleViewModeChange("screener"),
+    onToggleLocale: () => handleToggleLocale(locale === "zh" ? "en" : "zh"),
+    onToggleSocialCard: () => setIsSocialCardOpen((prev) => !prev),
+    onToggleSnowflake: () => setIsSnowflakeOpen((prev) => !prev),
+    onToggleFavorite: () => {
+      const symbol = reportData?.facts?.ticker || currentSlug;
+      if (symbol) {
+        if (!isAuthenticated) {
+          toggleFavorite(symbol);
+          showToast(t.header.signInRequiredToast);
+          return;
+        }
+        const added = toggleFavorite(symbol);
+        showToast(added ? t.header.addedToWatchlistToast(symbol) : t.header.removedFromWatchlistToast(symbol));
+      }
+    },
+    onToggleShortcuts: () => setIsShortcutsOpen((prev) => !prev),
     isSnowflakeOpen,
-    handleResetDefaults,
-    handleToggleLocale,
-    handleViewModeChange,
-  ]);
+    setIsSnowflakeOpen,
+    isSocialCardOpen,
+    setIsSocialCardOpen,
+    isShortcutsOpen,
+    setIsShortcutsOpen,
+  });
 
   // Historical multi-quarter reporting state
   const currentTicker = reportData?.facts?.ticker;
   const siblingReports = useMemo(() => {
-    if (!reports || reports.length === 0) return [];
-    if (currentTicker) {
-      return reports
-        .filter((r) => r.ticker === currentTicker)
-        .sort(
-          (a, b) =>
-            (b.reportDate || "").localeCompare(a.reportDate || "") ||
-            b.slug.localeCompare(a.slug)
-        );
-    }
-    return [];
+    if (!reports || reports.length === 0 || !currentTicker) return [];
+    return reports.filter((r) => r.ticker === currentTicker).sort(compareReportsByRecency);
   }, [reports, currentTicker]);
 
   const latestReport = siblingReports[0];
-  const isViewingHistorical = Boolean(
-    latestReport && currentSlug && latestReport.slug !== currentSlug
-  );
+  const isViewingHistorical = Boolean(latestReport && currentSlug && latestReport.slug !== currentSlug);
 
   return (
-    <div
-      className={`flex min-h-screen flex-col bg-background text-foreground ${
-        viewMode === "cockpit" ? "lg:h-screen lg:overflow-hidden" : ""
-      }`}
-    >
-      {/* Top Navigation */}
+    <div className={`flex min-h-screen flex-col bg-background text-foreground ${viewMode === "cockpit" ? "lg:h-screen lg:overflow-hidden" : ""}`}>
       <Header
-        facts={displayFacts}
+        facts={artifacts.facts}
         valuation={dynamicValuation ?? reportData?.valuation}
         currentSlug={currentSlug}
         reports={reports}
@@ -1081,61 +230,32 @@ export default function HomePage() {
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
-        onShare={handleShare}
+        onShare={() => {
+          syncStateToUrl();
+          setIsSocialCardOpen(true);
+        }}
         onOpenSnowflake={() => setIsSnowflakeOpen(true)}
         locale={locale}
         onToggleLocale={handleToggleLocale}
       />
 
-      {/* Main Content Area */}
-      <main
-        className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${
-          viewMode === "cockpit"
-            ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5"
-            : ""
-        }`}
-      >
+      <main className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${viewMode === "cockpit" ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5" : ""}`}>
         {viewMode === "screener" ? (
-          <ScreenerView
-            reports={reports}
-            onSelectReport={handleSelectReport}
-            locale={locale}
-            isLoading={isReportsLoading}
-          />
+          <ScreenerView reports={reports} onSelectReport={handleSelectReport} locale={locale} isLoading={isReportsLoading} />
         ) : !currentSlug && !reportData ? (
           <div className="min-h-[60vh]" />
-        ) : isLoading ? (
+        ) : isReportLoading ? (
           <CockpitSkeleton />
         ) : !reportData || !stressResult ? (
-          <div className="glass-panel shadow-xs relative mx-auto my-16 flex max-w-xl flex-col items-center gap-5 overflow-hidden rounded-3xl border border-border p-8 text-center sm:p-10">
-            <div className="pointer-events-none absolute -left-24 -top-24 size-48 rounded-full bg-accent/10 blur-3xl" />
-            <div className="flex size-14 items-center justify-center rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 to-sky-500/10 text-accent shadow-lg shadow-accent/10">
-              <FolderOpen className="size-7" />
-            </div>
-            <div>
-              <h2 className="text-xl font-extrabold tracking-tight text-foreground">
-                {t.page.noReportSelected}
-              </h2>
-              <p className="mt-1.5 max-w-md text-xs leading-relaxed text-slate-400">
-                {t.page.noReportDesc}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleViewModeChange("screener")}
-              className="rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-accent/25 transition-all hover:scale-[1.02] hover:bg-accent-hover hover:shadow-accent/40 active:scale-[0.98]"
-            >
-              {t.header.screener}
-            </button>
-          </div>
+          <NoReportSelected onOpenScreener={() => handleViewModeChange("screener")} locale={locale} />
         ) : viewMode === "memo" ? (
           <MemoView
             reportData={{
               ...reportData,
-              facts: displayFacts!,
-              catalysts: displayCatalysts,
-              scenarios: displayScenarios!,
-              filing: displayFiling,
+              facts: artifacts.facts!,
+              catalysts: artifacts.catalysts,
+              scenarios: artifacts.scenarios!,
+              filing: artifacts.filing,
               valuation: dynamicValuation ?? reportData.valuation,
             }}
             stressResult={stressResult}
@@ -1150,719 +270,72 @@ export default function HomePage() {
             onLocaleChange={handleToggleLocale}
           />
         ) : (
-          <div className="flex h-full min-h-0 w-full flex-col gap-5 lg:flex-row lg:items-stretch xl:gap-6">
-            {/* Mobile Segmented View Switcher: [ Cockpit ] [ Deep Dive (7) ] */}
-            <div className="-mx-3 mb-1 flex w-[calc(100%+24px)] items-center justify-between px-3 py-1 lg:hidden">
-              <div className="grid w-full grid-cols-2 gap-1 rounded-xl border border-border bg-surface-1 p-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileSection("cockpit");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
-                    mobileSection === "cockpit"
-                      ? "shadow-xs border border-border bg-surface-2 text-white"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Sliders
-                    className={`size-3.5 ${mobileSection === "cockpit" ? "text-accent" : "text-slate-400"}`}
-                  />
-                  <span>{t.cockpit.mobileCockpitTab}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileSection("workspaces");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
-                    mobileSection === "workspaces"
-                      ? "shadow-xs border border-border bg-surface-2 text-white"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <BarChart3
-                    className={`size-3.5 ${mobileSection === "workspaces" ? "text-accent" : "text-slate-400"}`}
-                  />
-                  <span>{t.cockpit.mobileWorkspacesTab}</span>
-                  <span
-                    className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
-                      mobileSection === "workspaces"
-                        ? "bg-accent/15 font-bold text-accent"
-                        : "bg-surface-3 text-slate-400"
-                    }`}
-                  >
-                    7
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Left Sticky Cockpit (~400px responsive) */}
-            <div
-              id="model-cockpit-pane"
-              className={`w-full shrink-0 lg:h-full lg:min-h-0 lg:w-[380px] xl:w-[415px] 2xl:w-[440px] ${mobileSection === "cockpit" ? "block" : "hidden lg:block"}`}
-            >
-              <Cockpit
-                baseline={reportData.baseline!}
-                facts={displayFacts!}
-                stressParams={stressParams}
-                stressResult={stressResult}
-                valuation={dynamicValuation ?? reportData.valuation}
-                snowflakeScore={snowflakeScore}
-                reportData={{
-                  ...reportData,
-                  facts: displayFacts!,
-                  catalysts: displayCatalysts,
-                  scenarios: displayScenarios!,
-                  moat: displayMoat,
-                  estimates: displayEstimates,
-                  filing: displayFiling,
-                  valuation: dynamicValuation ?? reportData.valuation,
-                }}
-                latestSlug={latestReport?.slug}
-                latestQuarter={latestReport?.quarter}
-                isHistorical={isViewingHistorical}
-                onSelectReport={handleSelectReport}
-                onDriverShockChange={handleDriverShockChange}
-                onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
-                onFixedOpexShiftChange={handleFixedOpexShiftChange}
-                onResetDefaults={handleResetDefaults}
-                onOpenSnowflake={() => setIsSnowflakeOpen(true)}
-                locale={locale}
-              />
-              {/* Mobile CTA: Explore 7 Intelligence Workspaces */}
-              <div className="mt-4 block lg:hidden">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileSection("workspaces");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/15 py-3 text-xs font-bold text-accent shadow-sm transition-all hover:bg-accent/25 active:scale-[0.99]"
-                >
-                  <span>{t.cockpit.exploreWorkspaces}</span>
-                  <ArrowRight className="size-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Right Tabbed Intelligence Workspace (Separate Scroll Container on Desktop) */}
-            <div
-              className={`flex w-full min-w-0 flex-1 flex-col gap-3 lg:h-full lg:min-h-0 lg:overflow-hidden ${mobileSection === "workspaces" ? "flex" : "hidden lg:flex"}`}
-            >
-              {/* Mobile Live Valuation Bar when viewing tabs */}
-              <div className="flex items-center justify-between rounded-xl border border-border bg-surface-1/90 px-3.5 py-2.5 backdrop-blur-md lg:hidden">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      {displayFacts?.ticker} {displayFacts?.quarter}
-                    </div>
-                    <div className="flex items-baseline gap-2 font-mono text-sm font-bold text-slate-100">
-                      <span>
-                        {formatCurrency(
-                          dynamicValuation?.weightedFairValue ??
-                            reportData.valuation?.weightedFairValue ??
-                            0
-                        )}
-                      </span>
-                      <span
-                        className={`text-xs ${
-                          (dynamicValuation?.upsidePct ??
-                            reportData.valuation?.upsidePct ??
-                            0) >= 0
-                            ? "text-emerald-400"
-                            : "text-rose-400"
-                        }`}
-                      >
-                        {(dynamicValuation?.upsidePct ??
-                          reportData.valuation?.upsidePct ??
-                          0) >= 0
-                          ? "+"
-                          : ""}
-                        {formatPercent(
-                          dynamicValuation?.upsidePct ??
-                            reportData.valuation?.upsidePct ??
-                            0
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileSection("cockpit");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-2.5 py-1.5 text-[11px] font-bold text-accent transition-all hover:bg-accent/25 active:scale-95"
-                >
-                  <Sliders className="size-3" />
-                  <span>{t.cockpit.adjustShocks}</span>
-                </button>
-              </div>
-
-              {/* Tab Navigation Ribbon - Pinned at top of right panel on desktop, sticky on mobile */}
-              <div className="glass-header lg:shadow-xs sticky top-14 z-30 -mx-3 shrink-0 px-3 py-1.5 sm:-mx-5 sm:px-5 md:-mx-6 md:px-6 lg:static lg:mx-0 lg:shrink-0 lg:rounded-2xl lg:border lg:border-border lg:bg-surface-1/90 lg:p-1.5 lg:backdrop-blur-xl">
-                <div className="flex items-center gap-1 sm:gap-1.5">
-                  {/* Desktop Prev Workspace Step Button */}
-                  <button
-                    type="button"
-                    disabled={!prevTab}
-                    onClick={() => {
-                      if (prevTab) {
-                        switchWorkspace(prevTab.id);
-                      }
-                    }}
-                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
-                      prevTab
-                        ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
-                        : "cursor-not-allowed text-slate-600 opacity-30"
-                    }`}
-                    title={
-                      prevTab
-                        ? `${t.tabs.prevTab}: ${prevTab.label} ([)`
-                        : t.tabs.prevTab
-                    }
-                    aria-label="Previous Workspace"
-                  >
-                    <ChevronLeft className="size-4" />
-                  </button>
-
-                  {/* Tabs Container with Mouse Wheel Support */}
-                  <div
-                    ref={tabScrollRef}
-                    onWheel={(e) => {
-                      if (tabScrollRef.current) {
-                        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                          tabScrollRef.current.scrollLeft += e.deltaY * 1.5;
-                        }
-                      }
-                    }}
-                    className="custom-scrollbar flex flex-1 items-center gap-1 overflow-x-auto py-0.5 sm:gap-1.5"
-                  >
-                    {tabItems.map((tab) => {
-                      const Icon = tab.icon;
-                      const isActive = activeTab === tab.id;
-                      return (
-                        <button
-                          key={tab.id}
-                          ref={(el) => {
-                            tabButtonRefs.current[tab.id] = el;
-                          }}
-                          type="button"
-                          onClick={() => switchWorkspace(tab.id)}
-                          title={`${tab.label} (${locale === "zh" ? "快捷键" : "Press"} ${tab.shortcut})`}
-                          className={`group flex flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-2 py-1.5 text-xs font-semibold transition-all duration-150 xl:px-2.5 xl:py-2 ${
-                            isActive
-                              ? "shadow-xs border border-border bg-surface-2 font-bold text-slate-100 dark:text-white"
-                              : "border border-transparent text-slate-400 hover:bg-surface-1 hover:text-slate-200"
-                          }`}
-                        >
-                          <Icon
-                            className={`size-3.5 shrink-0 ${isActive ? "text-accent" : "text-slate-400 group-hover:text-slate-300"}`}
-                          />
-                          <span className="2xl:hidden">{tab.shortLabel}</span>
-                          <span className="hidden 2xl:inline">{tab.label}</span>
-                          {tab.count !== undefined && (
-                            <span
-                              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] tabular-nums transition-all ${
-                                isActive
-                                  ? "bg-accent/15 font-bold text-accent"
-                                  : "bg-surface-3/80 text-slate-400 group-hover:text-slate-300"
-                              }`}
-                            >
-                              {tab.count}
-                            </span>
-                          )}
-                          <kbd
-                            className={`py-0.2 hidden rounded border border-border/80 px-1 font-mono text-[9px] font-medium transition-opacity ${
-                              tab.count !== undefined
-                                ? "opacity-0 group-hover:opacity-100"
-                                : ""
-                            } xl:inline ${
-                              isActive
-                                ? "bg-surface-3 text-slate-300"
-                                : "bg-surface-0/60 text-slate-500 group-hover:text-slate-400"
-                            }`}
-                          >
-                            {tab.shortcut}
-                          </kbd>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Desktop Next Workspace Step Button */}
-                  <button
-                    type="button"
-                    disabled={!nextTab}
-                    onClick={() => {
-                      if (nextTab) {
-                        switchWorkspace(nextTab.id);
-                      }
-                    }}
-                    className={`hidden size-8 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-1 transition-all lg:flex ${
-                      nextTab
-                        ? "text-slate-300 hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95"
-                        : "cursor-not-allowed text-slate-600 opacity-30"
-                    }`}
-                    title={
-                      nextTab
-                        ? `${t.tabs.nextTab}: ${nextTab.label} (])`
-                        : t.tabs.nextTab
-                    }
-                    aria-label="Next Workspace"
-                  >
-                    <ChevronRight className="size-4" />
-                  </button>
-
-                  {/* Research Memo Action Button docked next to chevrons */}
-                  <div className="mx-1 hidden h-4 w-px bg-white/[0.08] lg:block" />
-                  <button
-                    type="button"
-                    onClick={() => handleViewModeChange("memo")}
-                    className="shadow-xs hidden shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface-1 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-white active:scale-95 lg:flex xl:px-3"
-                    title={`${t.header.memo} (M)`}
-                  >
-                    <FileText className="size-3.5 text-accent" />
-                    <span className="hidden xl:inline">{t.header.memo}</span>
-                    <kbd className="py-0.2 rounded border border-border/80 bg-surface-0/60 px-1 font-mono text-[9px] text-slate-400">
-                      M
-                    </kbd>
-                  </button>
-                </div>
-              </div>
-
-              {/* Scrollable Workspace Tab Contents (Independent scroll on desktop) */}
-              <div
-                ref={workspaceScrollRef}
-                className="custom-scrollbar min-h-0 w-full flex-1 overflow-y-auto pr-0 lg:pr-1.5"
-              >
-                <div className="w-full">
-                  {(activeTab === "valuation" ||
-                    activeTab === "scenarios" ||
-                    activeTab === "sensitivity") && (
-                    <ScenariosTab
-                      scenariosData={displayScenarios!}
-                      currentPrice={displayFacts!.currentPrice}
-                      valuation={dynamicValuation ?? reportData.valuation}
-                      sensitivityData={
-                        dynamicValuation?.sensitivity ??
-                        reportData.valuation?.sensitivity ??
-                        []
-                      }
-                      onScenarioChange={handleScenarioChange}
-                      locale={locale}
-                      revisions={valuationRevisions}
-                    />
-                  )}
-
-                  {activeTab === "estimates" && (
-                    <EstimatesTab
-                      estimatesData={displayEstimates}
-                      currentPrice={displayFacts?.currentPrice}
-                      locale={locale}
-                    />
-                  )}
-
-                  {activeTab === "moat" && (
-                    <MoatTab moatData={displayMoat} locale={locale} />
-                  )}
-
-                  {activeTab === "segments" && (
-                    <SegmentsTab facts={displayFacts!} locale={locale} />
-                  )}
-
-                  {activeTab === "catalysts" && (
-                    <CatalystsTab
-                      catalystsData={displayCatalysts}
-                      onProbabilityChange={handleCatalystProbabilityChange}
-                      locale={locale}
-                    />
-                  )}
-
-                  {activeTab === "news" && (
-                    <NewsTab
-                      ticker={displayFacts?.ticker}
-                      events={marketEvents}
-                      upstreamDependencies={upstreamDependencies}
-                      currentPrice={displayFacts?.currentPrice}
-                      locale={locale}
-                      onSimulateShock={handleSimulateShock}
-                      onSimulateGrossMarginDelta={
-                        handleSimulateGrossMarginDelta
-                      }
-                      onSimulateCatalystProb={handleSimulateCatalystProb}
-                      onNavigateToModel={handleNavigateToModel}
-                    />
-                  )}
-
-                  {(activeTab === "audit" ||
-                    activeTab === "tone" ||
-                    activeTab === "filing" ||
-                    activeTab === "reactions") && (
-                    <AuditTab
-                      sentimentData={displaySentiment}
-                      filingData={displayFiling}
-                      reactionsData={displayReactions}
-                      locale={locale}
-                      ticker={reportData?.facts?.ticker}
-                    />
-                  )}
-
-                  {activeTab === "report" && (
-                    <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-5 sm:p-6">
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
-                        <div className="flex items-center gap-2">
-                          <FileText className="size-4 text-accent" />
-                          <div>
-                            <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-                              {reportDocLang === "zh"
-                                ? t.page.reportTitleZh
-                                : t.page.reportTitleEn}
-                            </span>
-                            <span className="font-mono text-[11px] text-slate-400">
-                              {reportData.folderName}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Language Switcher for Report View */}
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5 text-xs">
-                            <button
-                              type="button"
-                              onClick={() => setReportDocLang("en")}
-                              className={`rounded-md px-3 py-1 font-semibold transition-all ${
-                                reportDocLang === "en"
-                                  ? "shadow-xs bg-surface-2 text-accent ring-1 ring-border"
-                                  : "text-slate-400 hover:text-foreground"
-                              }`}
-                            >
-                              English (report.md)
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setReportDocLang("zh")}
-                              className={`rounded-md px-3 py-1 font-semibold transition-all ${
-                                reportDocLang === "zh"
-                                  ? "shadow-xs bg-accent/20 font-bold text-accent ring-1 ring-accent/30"
-                                  : "text-slate-400 hover:text-foreground"
-                              }`}
-                            >
-                              🇨🇳 中文研报 (report_zh.md)
-                            </button>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const content =
-                                reportDocLang === "zh"
-                                  ? reportData.reportMarkdownZh
-                                  : reportData.reportMarkdown;
-                              if (content) {
-                                navigator.clipboard.writeText(content);
-                                showToast(
-                                  reportDocLang === "zh"
-                                    ? t.page.copiedZh
-                                    : t.page.copiedEn
-                                );
-                              }
-                            }}
-                            className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-3 py-1.5 text-xs font-medium text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-foreground"
-                          >
-                            <span>{t.page.copyBtn}</span>
-                          </button>
-                        </div>
-                      </div>
-                      <pre className="custom-scrollbar max-h-[72vh] overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-0/90 p-5 font-mono text-xs leading-relaxed text-slate-200 shadow-inner selection:bg-accent/30 sm:text-[13px]">
-                        {(reportDocLang === "zh"
-                          ? reportData.reportMarkdownZh
-                          : reportData.reportMarkdown) ||
-                          (reportDocLang === "zh"
-                            ? t.page.noReportFileZh
-                            : t.page.noReportFileEn)}
-                      </pre>
-                    </div>
-                  )}
-                </div>
-
-                {/* Sequential Bottom Workspace Pager (Unified Glass Capsule) - Mobile Only */}
-                <div className="mt-8 flex items-center justify-center border-t border-border/40 pb-8 pt-5 lg:hidden">
-                  <div className="flex w-full max-w-2xl items-center justify-between rounded-2xl border border-border/60 bg-surface-1/80 p-1.5 shadow-xl backdrop-blur-md sm:p-2">
-                    {/* Left: Previous Workspace */}
-                    <div className="min-w-0">
-                      {prevTab ? (
-                        <button
-                          type="button"
-                          onClick={() => switchWorkspace(prevTab.id)}
-                          className="group flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-foreground/80 transition-all hover:bg-surface-2 hover:text-foreground active:scale-95 sm:gap-2 sm:px-3 sm:py-2"
-                        >
-                          <ChevronLeft className="size-3.5 shrink-0 text-foreground/50 transition-transform group-hover:-translate-x-0.5 group-hover:text-foreground sm:size-4" />
-                          <span className="hidden font-normal text-foreground/50 md:inline">
-                            {t.tabs.prevTab}:
-                          </span>
-                          <span className="truncate font-bold text-foreground/90 group-hover:text-foreground md:hidden">
-                            {prevTab.shortLabel}
-                          </span>
-                          <span className="hidden truncate font-bold text-foreground/90 group-hover:text-foreground md:inline">
-                            {prevTab.label}
-                          </span>
-                        </button>
-                      ) : (
-                        <div className="w-14 sm:w-24" />
-                      )}
-                    </div>
-
-                    {/* Center: Step Indicator Dots */}
-                    <div className="flex items-center gap-1.5 px-1 sm:gap-2">
-                      <div className="flex items-center gap-1">
-                        {tabItems.map((tab, idx) => (
-                          <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => switchWorkspace(tab.id)}
-                            title={tab.label}
-                            className={`rounded-full transition-all ${
-                              idx === currentTabIndex
-                                ? "h-1.5 w-4 bg-accent sm:w-5"
-                                : "size-1.5 bg-surface-3 hover:bg-foreground/40"
-                            }`}
-                            aria-label={`Jump to ${tab.label}`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-mono text-[10px] font-semibold tabular-nums text-foreground/60 sm:text-[11px]">
-                        {currentTabIndex + 1}{" "}
-                        <span className="text-foreground/30">/</span>{" "}
-                        {tabItems.length}
-                      </span>
-                    </div>
-
-                    {/* Right: Next Workspace */}
-                    <div className="min-w-0">
-                      {nextTab ? (
-                        <button
-                          type="button"
-                          onClick={() => switchWorkspace(nextTab.id)}
-                          className="hover:text-accent-bright group flex items-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs font-semibold text-accent shadow-sm transition-all hover:border-accent/50 hover:bg-accent/20 active:scale-95 sm:gap-2 sm:px-3 sm:py-2"
-                        >
-                          <span className="hidden font-normal text-accent/70 md:inline">
-                            {t.tabs.nextTab}:
-                          </span>
-                          <span className="group-hover:text-accent-bright truncate font-bold text-accent md:hidden">
-                            {nextTab.shortLabel}
-                          </span>
-                          <span className="group-hover:text-accent-bright hidden truncate font-bold text-accent md:inline">
-                            {nextTab.label}
-                          </span>
-                          <ChevronRight className="size-3.5 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 sm:size-4" />
-                        </button>
-                      ) : (
-                        <div className="w-14 sm:w-24" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CockpitDualPane
+            reportData={reportData}
+            artifacts={artifacts}
+            stressParams={stressParams}
+            stressResult={stressResult}
+            dynamicValuation={dynamicValuation}
+            snowflakeScore={snowflakeScore}
+            latestReport={latestReport}
+            isViewingHistorical={isViewingHistorical}
+            onSelectReport={handleSelectReport}
+            onDriverShockChange={handleDriverShockChange}
+            onGrossMarginDeltaChange={handleGrossMarginDeltaChange}
+            onFixedOpexShiftChange={handleFixedOpexShiftChange}
+            onResetDefaults={handleResetDefaults}
+            onOpenSnowflake={() => setIsSnowflakeOpen(true)}
+            mobileSection={mobileSection}
+            setMobileSection={setMobileSection}
+            locale={locale}
+            tabItems={tabItems}
+            activeTab={activeTab}
+            currentTabIndex={currentTabIndex}
+            prevTab={prevTab}
+            nextTab={nextTab}
+            switchWorkspace={switchWorkspace}
+            tabScrollRef={tabScrollRef}
+            tabButtonRefs={tabButtonRefs}
+            workspaceScrollRef={workspaceScrollRef}
+            onWheelTabScroll={handleWheelTabScroll}
+            onViewModeChange={handleViewModeChange}
+            valuationRevisions={valuationRevisions}
+            marketEvents={marketEvents}
+            upstreamDependencies={upstreamDependencies}
+            onScenarioChange={handleScenarioChange}
+            onCatalystProbabilityChange={handleCatalystProbabilityChange}
+            onSimulateShock={handleSimulateShock}
+            onSimulateGrossMarginDelta={handleSimulateGrossMarginDelta}
+            onSimulateCatalystProb={handleSimulateCatalystProb}
+            onNavigateToModel={handleNavigateToModel}
+            reportDocLang={reportDocLang}
+            setReportDocLang={setReportDocLang}
+            showToast={showToast}
+          />
         )}
       </main>
 
-      {/* Keyboard Shortcuts Modal */}
-      {isShortcutsOpen && (
-        <div
-          className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-          onClick={() => setIsShortcutsOpen(false)}
-        >
-          <div
-            className="glass-panel shadow-xs relative flex w-full max-w-md flex-col gap-5 rounded-2xl border border-border bg-surface-1/95 p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-2">
-                <Keyboard className="size-4 text-accent" />
-                <h3 className="text-sm font-bold tracking-wide text-foreground">
-                  {t.shortcuts.title}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsShortcutsOpen(false)}
-                className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-surface-2 hover:text-foreground"
-                aria-label="Close"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2.5">
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.tabSwitch}
-                </span>
-                <div className="flex items-center gap-1">
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                    1
-                  </kbd>
-                  <span className="text-[10px] text-slate-500">–</span>
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                    {tabItems.length}
-                  </kbd>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.prevNextTab}
-                </span>
-                <div className="flex items-center gap-1">
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                    [
-                  </kbd>
-                  <span className="text-[10px] text-slate-500">/</span>
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                    ]
-                  </kbd>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.resetModel}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  R
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.toggleMemo}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  M
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.toggleScreener}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  S
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.toggleLang}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  L
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.exportCard}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  E
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.openSnowflake}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  W
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.toggleFavorite}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  F
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
-                  {t.shortcuts.close}
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                    ?
-                  </kbd>
-                  <span className="text-[10px] text-slate-500">/</span>
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-300">
-                    Esc
-                  </kbd>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Social Media Card Export Modal */}
-      <SocialCardModal
-        isOpen={isSocialCardOpen}
-        onClose={() => setIsSocialCardOpen(false)}
-        facts={displayFacts ?? undefined}
+      <CockpitModals
+        isShortcutsOpen={isShortcutsOpen}
+        onCloseShortcuts={() => setIsShortcutsOpen(false)}
+        tabCount={tabItems.length}
+        isSocialCardOpen={isSocialCardOpen}
+        onCloseSocialCard={() => setIsSocialCardOpen(false)}
+        isSnowflakeOpen={isSnowflakeOpen}
+        onCloseSnowflake={() => setIsSnowflakeOpen(false)}
+        facts={artifacts.facts}
         valuation={dynamicValuation ?? reportData?.valuation}
-        stressResult={stressResult ?? undefined}
-        reportData={reportData ?? undefined}
+        stressResult={stressResult}
+        reportData={reportData}
         stressParams={stressParams}
+        snowflakeScore={snowflakeScore}
         locale={locale}
-        onShowToast={showToast}
+        toastMessage={toastMessage}
+        showToast={showToast}
+        showBackToTop={showBackToTop}
+        onScrollToTop={handleScrollToTop}
+        onOpenSocialCard={() => setIsSocialCardOpen(true)}
       />
-
-      {/* 30-Point Snowflake Audit Modal */}
-      {snowflakeScore && displayFacts && (
-        <SnowflakeModal
-          isOpen={isSnowflakeOpen}
-          onClose={() => setIsSnowflakeOpen(false)}
-          scoreResult={snowflakeScore}
-          ticker={displayFacts.ticker}
-          company={displayFacts.company}
-          locale={locale}
-          onOpenSocialCard={() => setIsSocialCardOpen(true)}
-        />
-      )}
-
-      {/* Floating Back to Top Button on Desktop */}
-      {showBackToTop && (
-        <button
-          type="button"
-          onClick={handleScrollToTop}
-          className="shadow-xs no-print fixed bottom-6 right-6 z-40 hidden animate-fade-in items-center gap-2 rounded-xl border border-border bg-surface-1/95 px-3 py-2 text-xs font-semibold text-slate-200 backdrop-blur-md transition-all hover:border-accent/40 hover:bg-surface-2 hover:text-foreground active:scale-95 lg:flex"
-          title={locale === "zh" ? "回到顶部" : "Back to top"}
-          aria-label="Back to top"
-        >
-          <ArrowUp className="size-3.5 text-accent" />
-          <span className="font-medium">
-            {locale === "zh" ? "回到顶部" : "Back to top"}
-          </span>
-        </button>
-      )}
-
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="no-print fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 animate-fade-in items-center gap-2 rounded-xl border border-accent/40 bg-surface-2 px-4 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl">
-          <Check className="size-4 text-accent" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
     </div>
   );
 }

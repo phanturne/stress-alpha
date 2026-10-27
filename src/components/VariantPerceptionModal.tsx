@@ -69,7 +69,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold text-accent">
+                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-bold text-accent">
                   {ticker}
                 </span>
                 <h3 className="font-sans text-base font-bold tracking-tight text-foreground sm:text-lg">
@@ -125,7 +125,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
           {ca && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   {t.divergenceAttributionTitle}
                 </span>
                 <div className="mt-1.5 flex items-baseline gap-1.5">
@@ -147,7 +147,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
               </div>
 
               <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   {t.baseMultipleVsStreet}
                 </span>
                 <div className="mt-1.5 flex items-baseline gap-1.5">
@@ -165,7 +165,7 @@ export const VariantPerceptionModal: React.FC<VariantPerceptionModalProps> = ({
               </div>
 
               <div className="shadow-xs rounded-xl border border-border/60 bg-surface-2/60 p-3.5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   {t.regimeStressImpact}
                 </span>
                 <div className="mt-1.5 flex items-baseline gap-1.5">

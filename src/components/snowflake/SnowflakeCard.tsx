@@ -41,8 +41,8 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
           <span className="font-mono text-base font-bold text-white">
             {scoreResult.totalScore}
           </span>
-          <span className="font-mono text-xs text-slate-500">/ 30</span>
-          <ChevronRight className="size-3.5 text-slate-500 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-accent" />
+          <span className="font-mono text-xs text-slate-400">/ 30</span>
+          <ChevronRight className="size-3.5 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-accent" />
         </div>
       </div>
 
@@ -65,11 +65,11 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
               key={p.id}
               className="flex flex-col items-center rounded-lg bg-surface-2/60 px-1 py-1 text-center transition-colors group-hover:bg-surface-2"
             >
-              <span className="w-full truncate font-mono text-[9px] uppercase text-slate-400">
+              <span className="w-full truncate font-mono text-[11px] uppercase text-slate-400">
                 {p.shortLabel}
               </span>
               <span
-                className="snowflake-pillar-score font-mono text-[10px] font-bold"
+                className="snowflake-pillar-score font-mono text-[11px] font-bold"
                 style={{ color: p.color }}
               >
                 {p.score}/6
@@ -80,7 +80,7 @@ export const SnowflakeCard: React.FC<SnowflakeCardProps> = ({
       </div>
 
       {/* Bottom CTA hint */}
-      <div className="flex items-center justify-center gap-1 font-mono text-[10px] text-slate-400 transition-colors group-hover:text-accent">
+      <div className="flex items-center justify-center gap-1 font-mono text-[11px] text-slate-400 transition-colors group-hover:text-accent">
         <Eye className="size-3" />
         <span>{t.clickToViewAudit}</span>
       </div>

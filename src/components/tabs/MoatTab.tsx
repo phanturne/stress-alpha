@@ -90,7 +90,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
       case "weak":
         return "bg-surface-2 text-slate-400 border-border";
       default:
-        return "bg-surface-2/50 text-slate-500 border-border/50";
+        return "bg-surface-2/50 text-slate-400 border-border/50";
     }
   };
 
@@ -420,7 +420,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                             title={t.viewYahoo(peer.ticker)}
                           >
                             <span>{peer.ticker}</span>
-                            <ExternalLink className="size-2.5 text-slate-500 opacity-60 transition-opacity hover:opacity-100" />
+                            <ExternalLink className="size-2.5 text-slate-400 opacity-60 transition-opacity hover:opacity-100" />
                           </a>
                         </td>
                         <td className="sticky left-[75px] z-10 whitespace-nowrap border-r border-border/70 bg-surface-1 p-3 font-medium text-white shadow-[3px_0_8px_rgba(0,0,0,0.3)]">

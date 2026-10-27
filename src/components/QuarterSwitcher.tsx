@@ -78,7 +78,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
           {currentQuarter}
         </span>
         <span
-          className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold ${
+          className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-bold ${
             isLatest
               ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
               : "border border-amber-500/30 bg-amber-500/20 text-amber-400"
@@ -108,7 +108,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                 </span>
               </span>
               {ticker && (
-                <span className="font-mono text-[10px] font-bold text-accent">
+                <span className="font-mono text-[11px] font-bold text-accent">
                   {ticker}
                 </span>
               )}
@@ -138,7 +138,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                           {r.quarter || r.slug}
                         </span>
                         <span
-                          className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold ${
+                          className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-bold ${
                             isReportLatest
                               ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
                               : "border border-amber-500/30 bg-amber-500/20 text-amber-400"
@@ -148,7 +148,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                         </span>
                       </div>
                       {r.reportDate && (
-                        <span className="font-mono text-[10px] text-slate-400">
+                        <span className="font-mono text-[11px] text-slate-400">
                           {r.reportDate}
                         </span>
                       )}
@@ -162,7 +162,7 @@ export const QuarterSwitcher: React.FC<QuarterSwitcherProps> = ({
                           </span>
                           {r.upsidePct !== undefined && (
                             <span
-                              className={`font-mono text-[10px] font-bold ${
+                              className={`font-mono text-[11px] font-bold ${
                                 r.upsidePct >= 0
                                   ? "text-emerald-400"
                                   : "text-rose-400"

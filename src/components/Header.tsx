@@ -23,6 +23,7 @@ import {
   Star,
 } from "lucide-react";
 import { AUTH_REQUIRED_EVENT, useWatchlist } from "@/lib/watchlist";
+import { compareReportsByRecency } from "@/lib/utils";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthModal } from "./AuthModal";
@@ -145,11 +146,7 @@ export const Header: React.FC<HeaderProps> = ({
     if (currentTicker) {
       return reports
         .filter((r) => r.ticker === currentTicker)
-        .sort(
-          (a, b) =>
-            (b.reportDate || "").localeCompare(a.reportDate || "") ||
-            b.slug.localeCompare(a.slug)
-        );
+        .sort(compareReportsByRecency);
     }
     if (currentSlug) {
       return reports.filter((r) => r.slug === currentSlug);
@@ -270,7 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span>{t.watchlist}</span>
           {watchlistCount > 0 && (
             <span
-              className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+              className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold ${
                 viewMode === "watchlist"
                   ? "bg-amber-400 text-slate-950"
                   : "bg-surface-3 text-slate-400"
@@ -433,7 +430,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <Settings className="size-3.5 text-slate-400" />
                     <span>{t.settingsPage}</span>
                   </div>
-                  <ArrowUpRight className="size-3 text-slate-500" />
+                  <ArrowUpRight className="size-3 text-slate-400" />
                 </Link>
 
                 <Link
@@ -445,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <BookOpen className="size-3.5 text-slate-400" />
                     <span>{t.methodology}</span>
                   </div>
-                  <ArrowUpRight className="size-3 text-slate-500" />
+                  <ArrowUpRight className="size-3 text-slate-400" />
                 </Link>
 
                 {onOpenShortcutsModal && (
@@ -461,7 +458,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <Keyboard className="size-3.5 text-slate-400" />
                       <span>{t.shortcuts}</span>
                     </div>
-                    <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                    <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">
                       ?
                     </kbd>
                   </button>
@@ -480,7 +477,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <GithubIcon className="size-3.5 text-slate-400" />
                     <span>{t.github}</span>
                   </div>
-                  <ExternalLink className="size-3 text-slate-500" />
+                  <ExternalLink className="size-3 text-slate-400" />
                 </a>
               </div>
             </div>
@@ -501,7 +498,7 @@ export const Header: React.FC<HeaderProps> = ({
               title={tAuth.accountMenu}
               aria-label={tAuth.accountMenu}
             >
-              <div className="flex size-5 items-center justify-center rounded-full bg-accent/20 text-[10px] font-bold text-accent">
+              <div className="flex size-5 items-center justify-center rounded-full bg-accent/20 text-[11px] font-bold text-accent">
                 {session.user.name
                   ? session.user.name.charAt(0).toUpperCase()
                   : "A"}
@@ -519,7 +516,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="truncate text-xs font-bold text-foreground">
                       {session.user.name || tAuth.profile}
                     </div>
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-emerald-400">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-400">
                       <span className="size-1 animate-pulse rounded-full bg-emerald-400" />
                       {tAuth.memberBadge}
                     </span>
@@ -612,7 +609,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <Settings className="size-3.5 text-slate-400" />
                       <span>{t.settingsPage}</span>
                     </div>
-                    <ArrowUpRight className="size-3 text-slate-500" />
+                    <ArrowUpRight className="size-3 text-slate-400" />
                   </Link>
                 </div>
 
@@ -745,7 +742,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="truncate text-xs font-bold text-white">
                         {session.user.name || tAuth.profile}
                       </div>
-                      <div className="flex items-center gap-1 font-mono text-[9px] text-emerald-400">
+                      <div className="flex items-center gap-1 font-mono text-[11px] text-emerald-400">
                         <span className="size-1 animate-pulse rounded-full bg-emerald-400" />
                         <span>{tAuth.cloudSyncActive}</span>
                       </div>
@@ -780,7 +777,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Navigation Workspaces */}
             <div className="py-3">
-              <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <div className="mb-2 font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 {t.navigation}
               </div>
               <div className="flex flex-col gap-1.5">
@@ -823,7 +820,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>{t.watchlist}</span>
                   </div>
                   {watchlistCount > 0 && (
-                    <span className="rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                    <span className="rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-400">
                       {watchlistCount}
                     </span>
                   )}
@@ -881,7 +878,7 @@ export const Header: React.FC<HeaderProps> = ({
               viewMode !== "settings" &&
               siblingReports.length > 1 && (
                 <div className="py-3">
-                  <div className="mb-2 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="mb-2 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="size-3 text-accent" />
                       {t.quarterHistory}
@@ -914,7 +911,7 @@ export const Header: React.FC<HeaderProps> = ({
                               {r.quarter || r.slug}
                             </span>
                             <span
-                              className={`py-0.2 rounded px-1 font-mono text-[9px] font-bold ${
+                              className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-bold ${
                                 isLatest
                                   ? "bg-emerald-500/15 text-emerald-400"
                                   : "bg-amber-500/20 text-amber-400"
@@ -1038,7 +1035,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Settings className="size-3.5 text-slate-400" />
                   <span>{t.settingsPage}</span>
                 </div>
-                <ArrowUpRight className="size-3 text-slate-500" />
+                <ArrowUpRight className="size-3 text-slate-400" />
               </Link>
               <Link
                 href="/methodology"
@@ -1049,7 +1046,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <BookOpen className="size-3.5 text-slate-400" />
                   <span>{t.methodology}</span>
                 </div>
-                <ArrowUpRight className="size-3 text-slate-500" />
+                <ArrowUpRight className="size-3 text-slate-400" />
               </Link>
               {onOpenShortcutsModal && (
                 <button
@@ -1064,7 +1061,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <Keyboard className="size-3.5 text-slate-400" />
                     <span>{t.shortcuts}</span>
                   </div>
-                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                  <kbd className="shadow-xs rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">
                     ?
                   </kbd>
                 </button>
@@ -1079,7 +1076,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <GithubIcon className="size-3.5 text-slate-400" />
                   <span>{t.github}</span>
                 </div>
-                <ExternalLink className="size-3 text-slate-500" />
+                <ExternalLink className="size-3 text-slate-400" />
               </a>
             </div>
           </div>

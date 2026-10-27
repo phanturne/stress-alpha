@@ -181,11 +181,11 @@ export const MemoView: React.FC<MemoViewProps> = ({
               STRESS<span className="text-accent">ALPHA</span>
             </span>
             <span className="text-slate-400">|</span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-600">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600">
               {t.docClassification}
             </span>
           </div>
-          <div className="font-mono text-[9px] font-extrabold tracking-wider text-slate-700">
+          <div className="font-mono text-[11px] font-extrabold tracking-wider text-slate-700">
             {t.confidentialBadge}
           </div>
         </div>
@@ -208,7 +208,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
           <div className="flex items-center gap-4 rounded-xl border border-border/80 bg-surface-0/90 px-4 py-2.5 shadow-sm">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                 {t.currentStock}
               </div>
               <div className="font-mono text-base font-bold tabular-nums text-white">
@@ -217,7 +217,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             </div>
             <div className="h-6 w-px bg-border" />
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
                 {t.weightedFairValue}
               </div>
               <div className="font-mono text-base font-bold tabular-nums text-accent">
@@ -383,7 +383,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
           <div className="custom-scrollbar overflow-x-auto rounded-xl border border-border/80">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                <tr className="border-b border-border bg-surface-0/90 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                   <th className="p-3 font-semibold">{t.colRegime}</th>
                   <th className="p-3 text-right font-semibold">
                     {t.colMultiple}
@@ -606,7 +606,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                       <strong className="font-medium text-white">
                         {s.source}
                       </strong>
-                      <span className="rounded border border-border/60 bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-accent">
+                      <span className="rounded border border-border/60 bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-accent">
                         {s.strength}{" "}
                         {s.durabilityYears ? `(${s.durabilityYears}y)` : ""}
                       </span>
@@ -624,7 +624,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <div className="custom-scrollbar break-inside-avoid overflow-x-auto rounded-xl border border-border/80">
                 <table className="w-full border-collapse text-left text-[11px]">
                   <thead>
-                    <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-border bg-surface-0/90 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                       <th className="p-2.5 font-semibold">Ticker</th>
                       <th className="p-2.5 font-semibold">Company</th>
                       <th className="p-2.5 text-right font-semibold">
@@ -685,12 +685,12 @@ export const MemoView: React.FC<MemoViewProps> = ({
                             : "-"}
                         </td>
                         <td className="whitespace-nowrap p-2.5">
-                          <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-300">
+                          <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-300">
                             {peer.pricingPower ?? "-"}
                           </span>
                         </td>
                         <td
-                          className="max-w-[240px] truncate p-2.5 text-[10px] text-slate-300"
+                          className="max-w-[240px] truncate p-2.5 text-[11px] text-slate-300"
                           title={`${peer.productComparison} — ${peer.keyAdvantageOrVulnerability}`}
                         >
                           {peer.keyAdvantageOrVulnerability}
@@ -745,7 +745,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               <div className="custom-scrollbar break-inside-avoid overflow-x-auto rounded-xl border border-border/80">
                 <table className="w-full border-collapse text-left text-[11px]">
                   <thead>
-                    <tr className="border-b border-border bg-surface-0/90 font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-border bg-surface-0/90 font-mono text-[11px] uppercase tracking-wider text-slate-400">
                       <th className="p-2.5 font-semibold">{t.colFirm}</th>
                       <th className="p-2.5 font-semibold">{t.colAnalyst}</th>
                       <th className="p-2.5 font-semibold">{t.colRating}</th>
@@ -773,14 +773,14 @@ export const MemoView: React.FC<MemoViewProps> = ({
                           {e.analyst || "—"}
                         </td>
                         <td className="whitespace-nowrap p-2.5">
-                          <span className="rounded border border-fintech-green/30 bg-surface-2 px-2 py-0.5 text-[10px] font-semibold text-fintech-green">
+                          <span className="rounded border border-fintech-green/30 bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-fintech-green">
                             {e.rating}
                           </span>
                         </td>
                         <td className="whitespace-nowrap p-2.5 text-right font-mono font-bold tabular-nums text-white">
                           ${e.priceTarget.toFixed(2)}
                           {e.priorPriceTarget && (
-                            <span className="ml-1 text-[10px] font-normal text-slate-500">
+                            <span className="ml-1 text-[11px] font-normal text-slate-400">
                               ({t.targetPriorFrom} $
                               {e.priorPriceTarget.toFixed(0)})
                             </span>
@@ -790,7 +790,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                           {e.upsidePct >= 0 ? "+" : ""}
                           {e.upsidePct.toFixed(1)}%
                         </td>
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-[10px] text-slate-400">
+                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-[11px] text-slate-400">
                           {e.date}
                         </td>
                       </tr>
@@ -832,14 +832,14 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 {t.footerMethodologyTitle}
               </span>
             </div>
-            <div className="font-mono text-[10px] text-slate-400">
+            <div className="font-mono text-[11px] text-slate-400">
               {t.docId}: SA-{facts.ticker}-{facts.quarter}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 text-xs text-slate-300 md:grid-cols-2">
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] font-bold uppercase text-slate-400">
+              <span className="font-mono text-[11px] font-bold uppercase text-slate-400">
                 {t.footerMethodologyTitle}
               </span>
               <p className="text-[11px] leading-relaxed text-slate-400">
@@ -847,7 +847,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] font-bold uppercase text-slate-400">
+              <span className="font-mono text-[11px] font-bold uppercase text-slate-400">
                 {t.footerDisclaimerTitle}
               </span>
               <p className="text-[11px] leading-relaxed text-slate-400">
@@ -856,7 +856,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-2 font-mono text-[10px] text-slate-400">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-2 font-mono text-[11px] text-slate-400">
             <div>{t.footerAuditStatus}</div>
             <div className="text-accent">
               {t.printGeneratedOn} • https://stressalpha.vercel.app

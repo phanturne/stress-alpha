@@ -120,7 +120,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
             <div className="mb-3 flex flex-col items-center text-center">
               <div className="flex items-baseline gap-1 font-mono text-3xl font-black text-foreground sm:text-4xl">
                 <span className="text-accent">{scoreResult.totalScore}</span>
-                <span className="text-slate-500">/ 30</span>
+                <span className="text-slate-400">/ 30</span>
               </div>
               <div className="mt-1 rounded-full border border-border bg-surface-2 px-3 py-0.5 text-xs font-semibold text-slate-300">
                 {scoreResult.ratingLabel}
@@ -144,7 +144,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
 
             {/* Quick Filter Pill Buttons */}
             <div className="mt-6 flex w-full flex-col gap-1.5">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 {t.filterByPillar}
               </div>
               <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-2">
@@ -158,7 +158,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                   }`}
                 >
                   <span>{t.filterAll}</span>
-                  <span className="font-mono text-[10px] font-bold text-accent">
+                  <span className="font-mono text-[11px] font-bold text-accent">
                     {scoreResult.totalScore}/30
                   </span>
                 </button>
@@ -188,7 +188,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                         <span className="truncate">{p.shortLabel}</span>
                       </div>
                       <span
-                        className="font-mono text-[10px] font-bold"
+                        className="font-mono text-[11px] font-bold"
                         style={{ color: p.color }}
                       >
                         {p.score}/6
@@ -229,7 +229,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                         }}
                       >
                         <span>{pillar.score} / 6</span>
-                        <span className="text-[10px] font-normal opacity-80">
+                        <span className="text-[11px] font-normal opacity-80">
                           {t.passedBadge}
                         </span>
                       </div>
@@ -252,7 +252,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                               {crit.passed ? (
                                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400" />
                               ) : (
-                                <XCircle className="mt-0.5 size-4 shrink-0 text-slate-500" />
+                                <XCircle className="mt-0.5 size-4 shrink-0 text-slate-400" />
                               )}
                               <div>
                                 <div className="text-xs font-semibold text-slate-200">
@@ -275,10 +275,10 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                               >
                                 {crit.valueDisplay}
                               </span>
-                              <span className="font-mono text-[10px] text-slate-500">
+                              <span className="font-mono text-[11px] text-slate-400">
                                 vs
                               </span>
-                              <span className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                              <span className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">
                                 {crit.benchmarkDisplay}
                               </span>
                             </div>
