@@ -1122,12 +1122,12 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
       {/* MATRIX TABLE VIEW MODE */}
       {!isLoading && viewMode === "table" && filteredGroups.length > 0 && (
         <div className="glass-panel shadow-xs overflow-hidden rounded-2xl border border-border bg-surface-1/90">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left font-mono text-xs">
-              <thead>
-                <tr className="border-b border-border bg-surface-1/90 text-[11px] font-semibold text-slate-400">
+          <div className="custom-scrollbar max-h-[calc(100vh-14.5rem)] min-h-[460px] overflow-auto">
+            <table className="w-full border-separate border-spacing-0 text-left font-mono text-xs">
+              <thead className="shadow-xs sticky top-0 z-20">
+                <tr className="border-b border-border bg-surface-2 text-[11px] font-semibold text-slate-400">
                   <th
-                    className="py-3 pl-4 pr-2"
+                    className="sticky left-0 top-0 z-30 border-b border-r border-border/40 bg-surface-2 py-3 pl-4 pr-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]"
                     title={t.screener.colTickerTooltip}
                   >
                     <button
@@ -1139,10 +1139,16 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
-                  <th className="px-2 py-3" title={t.screener.colMoatTooltip}>
+                  <th
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
+                    title={t.screener.colMoatTooltip}
+                  >
                     {tw.colMoat}
                   </th>
-                  <th className="px-2 py-3" title={t.screener.colPriceTooltip}>
+                  <th
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
+                    title={t.screener.colPriceTooltip}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSort("price")}
@@ -1153,7 +1159,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </button>
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colBaseFairValueTooltip}
                   >
                     <button
@@ -1166,7 +1172,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </button>
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colWeightedFairValueTooltip}
                   >
                     <button
@@ -1179,13 +1185,13 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </button>
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colAnalystTargetTooltip}
                   >
                     {tw.colConsensus}
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colConsensusSpread}
                   >
                     <button
@@ -1198,7 +1204,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </button>
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colOperatingMarginTooltip}
                   >
                     <button
@@ -1211,7 +1217,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     </button>
                   </th>
                   <th
-                    className="px-2 py-3"
+                    className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3"
                     title={t.screener.colSnowflakeTooltip}
                   >
                     <button
@@ -1223,11 +1229,15 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       <ArrowUpDown className="size-3 text-slate-400" />
                     </button>
                   </th>
-                  <th className="px-2 py-3">{tw.quarterlyHistory}</th>
-                  <th className="py-3 pl-2 pr-4 text-right">{tw.colActions}</th>
+                  <th className="sticky top-0 z-20 border-b border-border bg-surface-2 px-2 py-3">
+                    {tw.quarterlyHistory}
+                  </th>
+                  <th className="sticky top-0 z-20 border-b border-border bg-surface-2 py-3 pl-2 pr-4 text-right">
+                    {tw.colActions}
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/60">
+              <tbody>
                 {filteredGroups.map((group) => {
                   const report = group.latestReport;
                   const price = report.currentPrice ?? 0;
@@ -1244,7 +1254,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       className="group transition-colors hover:bg-surface-2/60"
                     >
                       {/* Ticker & Company */}
-                      <td className="py-3 pl-4 pr-2">
+                      <td className="sticky left-0 z-10 border-b border-r border-border/40 bg-surface-1 py-3 pl-4 pr-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
@@ -1266,7 +1276,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Moat */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         {report.moatRating ? (
                           <span
                             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
@@ -1295,12 +1305,12 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Current Price */}
-                      <td className="px-2 py-3 font-semibold text-slate-200">
+                      <td className="border-b border-border/40 px-2 py-3 font-semibold text-slate-200">
                         {price > 0 ? formatCurrency(price) : "—"}
                       </td>
 
                       {/* Base Fair Value */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         <div className="font-semibold text-slate-300">
                           {baseFv > 0 ? formatCurrency(baseFv) : "—"}
                         </div>
@@ -1319,7 +1329,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Weighted Fair Value */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         <div className="font-bold text-accent">
                           {wfv > 0 ? formatCurrency(wfv) : "—"}
                         </div>
@@ -1336,7 +1346,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Consensus Target */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         {report.analystTarget && report.analystTarget > 0 ? (
                           <div>
                             <span className="font-bold text-slate-200">
@@ -1354,7 +1364,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Consensus Divergence Spread & Tier */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         {getDivergenceBadge(
                           report.divergenceClassification,
                           report.consensusSpreadPct
@@ -1362,7 +1372,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Growth & Op Margin */}
-                      <td className="px-2 py-3 text-[11px]">
+                      <td className="border-b border-border/40 px-2 py-3 text-[11px]">
                         <div className="text-slate-300">
                           Rev:{" "}
                           <span
@@ -1388,7 +1398,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Snowflake Score & Mini Radar */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         <div className="flex items-center gap-2">
                           <MiniSnowflakeRadar
                             score={report.snowflakeScore}
@@ -1403,7 +1413,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Historical Quarters */}
-                      <td className="px-2 py-3">
+                      <td className="border-b border-border/40 px-2 py-3">
                         <div className="flex flex-wrap items-center gap-1">
                           {group.allReports.slice(0, 3).map((qRep, idx) => (
                             <button
@@ -1430,7 +1440,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3 pl-2 pr-4 text-right">
+                      <td className="border-b border-border/40 py-3 pl-2 pr-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"

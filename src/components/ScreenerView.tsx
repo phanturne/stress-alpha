@@ -1126,13 +1126,30 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
         renderCardsView()
       ) : (
         <div className="glass-panel overflow-hidden rounded-xl border border-border">
-          <div className="custom-scrollbar overflow-x-auto">
-            <table className="w-full min-w-[1200px] text-left text-xs sm:text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface-2/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div
+            onWheel={(e) => {
+              if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+              const el = e.currentTarget;
+              if (el.scrollWidth <= el.clientWidth) return;
+              const atVerticalTop = el.scrollTop <= 0 && e.deltaY < 0;
+              const atVerticalBottom =
+                el.scrollTop + el.clientHeight >= el.scrollHeight - 1 &&
+                e.deltaY > 0;
+              if (atVerticalTop || atVerticalBottom) {
+                el.scrollLeft += e.deltaY;
+              }
+            }}
+            tabIndex={0}
+            role="region"
+            aria-label="Stock Screener Table"
+            className="custom-scrollbar max-h-[calc(100vh-14.5rem)] min-h-[460px] overflow-auto outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
+          >
+            <table className="w-full min-w-[1100px] border-separate border-spacing-0 text-left text-xs sm:text-sm">
+              <thead className="shadow-xs sticky top-0 z-20">
+                <tr className="border-b border-border bg-surface-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {/* Watchlist Star */}
                   <th
-                    className="w-10 whitespace-nowrap py-3 pl-3 pr-1 text-center"
+                    className="sticky left-0 top-0 z-30 w-10 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-3 pr-1 text-center"
                     title={ts.colFavorite}
                   >
                     <Star className="mx-auto size-3.5 text-slate-400" />
@@ -1141,7 +1158,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Ticker & Company */}
                   <th
                     onClick={() => handleSort("ticker")}
-                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2 pr-3 transition-colors hover:text-foreground"
+                    className="group/th sticky left-10 top-0 z-30 cursor-pointer whitespace-nowrap border-b border-r border-border/40 bg-surface-2 py-3 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] transition-colors hover:text-foreground"
                     title={ts.colTickerTooltip}
                   >
                     <div className="flex items-center gap-1.5">
@@ -1161,7 +1178,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Moat */}
                   <th
                     onClick={() => handleSort("moat")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
                     title={ts.colMoatTooltip}
                   >
                     <div className="flex items-center gap-1.5">
@@ -1181,7 +1198,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Snowflake 30-Point Audit Radar */}
                   <th
                     onClick={() => handleSort("snowflake")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
                     title={ts.colSnowflakeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
@@ -1201,7 +1218,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Price */}
                   <th
                     onClick={() => handleSort("price")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colPriceTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1221,7 +1238,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Analyst Consensus Target */}
                   <th
                     onClick={() => handleSort("analystTarget")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colAnalystTargetTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1241,7 +1258,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Base Fair Value */}
                   <th
                     onClick={() => handleSort("baseUpside")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colBaseFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1261,7 +1278,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Weighted Fair Value & Upside */}
                   <th
                     onClick={() => handleSort("upside")}
-                    className="group/th relative cursor-pointer whitespace-nowrap p-3 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 p-3 text-right transition-colors hover:text-foreground"
                     title={ts.colWeightedFairValueTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1280,12 +1297,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                   {/* Valuation Spectrum / Stress Range */}
                   <th
-                    className="group/th relative min-w-[170px] max-w-[210px] whitespace-nowrap p-3"
+                    className="group/th sticky top-0 z-20 min-w-[125px] max-w-[160px] whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3"
                     title={ts.rangeTooltip}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{ts.colValuationRange}</span>
-                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-400 sm:inline">
+                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-400 2xl:inline">
                         {ts.rangeBearBullHint}
                       </span>
                     </div>
@@ -1302,7 +1319,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Operating Margin */}
                   <th
                     onClick={() => handleSort("opMargin")}
-                    className="group/th relative cursor-pointer whitespace-nowrap px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                     title={ts.colOperatingMarginTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1322,7 +1339,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   {/* Revenue Growth */}
                   <th
                     onClick={() => handleSort("revGrowth")}
-                    className="group/th relative cursor-pointer whitespace-nowrap py-3 pl-2.5 pr-4 text-right transition-colors hover:text-foreground"
+                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-3 text-right transition-colors hover:text-foreground"
                     title={ts.colRevenueGrowthTooltip}
                   >
                     <div className="flex items-center justify-end gap-1.5">
@@ -1341,21 +1358,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-border/60">
+              <tbody>
                 {isLoading ? (
                   <>
                     {SKELETON_ROWS.map((row, idx) => (
-                      <tr
-                        key={`skeleton-${idx}`}
-                        className="border-b border-border/40"
-                      >
+                      <tr key={`skeleton-${idx}`} className="group">
                         {/* Watchlist Star Skeleton */}
-                        <td className="w-10 py-2.5 pl-3 pr-1 text-center">
+                        <td className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center">
                           <Skeleton className="mx-auto size-4 rounded" />
                         </td>
 
                         {/* Ticker & Company */}
-                        <td className="py-2.5 pl-2 pr-3">
+                        <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]">
                           <div className="flex items-center gap-2.5">
                             <Skeleton className="size-7 shrink-0 rounded-lg" />
                             <div className="space-y-1.5">
@@ -1366,14 +1380,14 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Moat */}
-                        <td className="whitespace-nowrap p-2.5">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
                           <Skeleton
                             className={`h-5 ${row.moatW} rounded-full`}
                           />
                         </td>
 
                         {/* Snowflake */}
-                        <td className="whitespace-nowrap p-2.5">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
                           <div className="flex items-center gap-2">
                             <Skeleton className="size-7 shrink-0 rounded-full" />
                             <div className="space-y-1">
@@ -1384,22 +1398,22 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Price */}
-                        <td className="whitespace-nowrap p-2.5 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                           <Skeleton className="ml-auto h-4 w-14" />
                         </td>
 
                         {/* Analyst Target */}
-                        <td className="whitespace-nowrap p-2.5 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
                         </td>
 
                         {/* Base Fair Value */}
-                        <td className="whitespace-nowrap p-2.5 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
                         </td>
 
                         {/* Weighted Fair Value & Upside */}
-                        <td className="whitespace-nowrap px-3 py-2.5 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right">
                           <div className="ml-auto space-y-1">
                             <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
                             <Skeleton className="ml-auto h-3 w-12 rounded-full" />
@@ -1407,7 +1421,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Valuation Spectrum / Stress Range */}
-                        <td className="min-w-[170px] max-w-[210px] px-3 py-2.5">
+                        <td className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5">
                           <div className="space-y-1.5">
                             <div className="flex justify-between">
                               <Skeleton className="h-2 w-8" />
@@ -1418,12 +1432,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Operating Margin */}
-                        <td className="whitespace-nowrap p-2.5 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
                         </td>
 
                         {/* Revenue Growth */}
-                        <td className="whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right">
+                        <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right">
                           <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
                         </td>
                       </tr>
@@ -1433,7 +1447,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                   <tr>
                     <td
                       colSpan={11}
-                      className="px-4 py-16 text-center text-slate-400"
+                      className="border-b border-border/40 bg-surface-1 px-4 py-16 text-center text-slate-400"
                     >
                       {watchlistOnly ? (
                         <div className="flex flex-col items-center gap-2">
@@ -1502,7 +1516,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                       >
                         {/* Watchlist Star Toggle */}
                         <td
-                          className="w-10 py-2.5 pl-3 pr-1 text-center"
+                          className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center group-hover:bg-surface-2/90"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button
@@ -1534,9 +1548,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Ticker & Company */}
-                        <td className="py-2.5 pl-2 pr-3">
-                          <div className="flex items-center gap-2.5">
-                            <span className="shadow-xs flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent">
+                        <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
+                          <div className="flex items-center gap-2">
+                            <span className="shadow-xs hidden size-6 shrink-0 items-center justify-center rounded border border-border bg-surface-1 font-mono text-[10px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent sm:flex">
                               {report.ticker || report.slug.split("-")[0]}
                             </span>
                             <div className="min-w-0">
@@ -1550,7 +1564,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   </span>
                                 )}
                               </div>
-                              <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[180px] xl:max-w-[220px]">
+                              <p className="max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[125px] xl:max-w-[150px]">
                                 {report.company || report.slug}
                               </p>
                             </div>
@@ -1558,7 +1572,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Economic Moat */}
-                        <td className="whitespace-nowrap p-2.5">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
                           {report.moatRating ? (
                             <div className="flex items-center gap-1.5">
                               <span
@@ -1596,7 +1610,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Snowflake Fundamental Radar & Score */}
-                        <td className="whitespace-nowrap p-2.5">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
                           {report.snowflakeScore !== undefined ? (
                             <div
                               className="flex items-center gap-2"
@@ -1642,12 +1656,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Current Stock Price */}
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
                           {price > 0 ? formatCurrency(price) : "—"}
                         </td>
 
                         {/* Analyst Consensus Target */}
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
                           {report.analystTarget && report.analystTarget > 0 ? (
                             <div
                               title={
@@ -1677,7 +1691,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                                   </span>
                                 )}
                                 {report.analystRating && (
-                                  <span className="hidden text-[11px] text-slate-400 sm:inline">
+                                  <span className="hidden text-[11px] text-slate-400 2xl:inline">
                                     • {report.analystRating}
                                   </span>
                                 )}
@@ -1689,7 +1703,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Base Fair Value & Upside */}
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
                           {baseFv > 0 ? (
                             <div>
                               <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
@@ -1712,7 +1726,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Weighted Fair Value & Upside */}
-                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono">
+                        <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right font-mono">
                           {wfv > 0 ? (
                             <div>
                               <div className="font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
@@ -1741,7 +1755,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
 
                         {/* Stress Range Bar */}
                         <td
-                          className="min-w-[170px] max-w-[210px] px-3 py-2.5"
+                          className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5"
                           title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
                         >
                           {price > 0 && bull > bear ? (
@@ -1790,7 +1804,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Operating Margin */}
-                        <td className="whitespace-nowrap p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
+                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
                           {report.operatingMarginPct !== undefined ? (
                             <span>{report.operatingMarginPct.toFixed(1)}%</span>
                           ) : (
@@ -1799,7 +1813,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = ({
                         </td>
 
                         {/* Revenue Growth */}
-                        <td className="whitespace-nowrap py-2.5 pl-2.5 pr-4 text-right font-mono text-xs tabular-nums sm:text-sm">
+                        <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right font-mono text-xs tabular-nums sm:text-sm">
                           {report.revenueGrowthPct !== undefined ? (
                             <span
                               className={

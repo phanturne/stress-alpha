@@ -1555,7 +1555,7 @@ export const translations: Record<Locale, Translations> = {
       colOperatingMargin: "Op. Margin",
       colOperatingMarginTooltip:
         "Normalized operating profit margin (Operating Income / Revenue). Click to sort.",
-      colRevenueGrowth: "Rev Growth (YoY)",
+      colRevenueGrowth: "Rev Growth",
       colRevenueGrowthTooltip:
         "Quarterly year-over-year revenue growth velocity. Click to sort.",
       colValuationRange: "Stress Range",
@@ -2556,7 +2556,7 @@ export const translations: Record<Locale, Translations> = {
       colOperatingMargin: "营业利润率",
       colOperatingMarginTooltip:
         "标准化营业利润率（营业利润 / 总营收），衡量主营业务核心盈利能力。点击排序。",
-      colRevenueGrowth: "营收增速 (YoY)",
+      colRevenueGrowth: "营收增速",
       colRevenueGrowthTooltip: "最新季度营业收入同比增长率 (YoY)。点击排序。",
       colValuationRange: "压力估值区间",
       colAction: "操作",
