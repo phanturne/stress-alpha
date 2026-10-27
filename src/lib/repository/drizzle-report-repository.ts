@@ -6,12 +6,15 @@ import {
   marketEventsTable,
   upstreamDependenciesTable,
   valuationRevisionsTable,
+  financialMetricsTable,
   type MarketEventSelect,
   type MarketEventInsert,
   type UpstreamDependencySelect,
   type UpstreamDependencyInsert,
   type ValuationRevisionSelect,
   type ValuationRevisionInsert,
+  type FinancialMetric,
+  type FinancialMetricsInsert,
 } from "@/db/schema";
 import type { IReportRepository, ReportSummary } from "./types";
 import type { ReportData, Valuation, Facts, Scenarios } from "@/lib/schemas";
@@ -749,5 +752,93 @@ export class DrizzleReportRepository implements IReportRepository {
           fullStateDiff: rev.fullStateDiff,
         },
       });
+  }
+
+  async getFinancialMetrics(ticker: string): Promise<FinancialMetric[]> {
+    const db = getDb();
+    return db
+      .select()
+      .from(financialMetricsTable)
+      .where(eq(financialMetricsTable.ticker, ticker.toUpperCase()))
+      .orderBy(desc(financialMetricsTable.periodEndDate));
+  }
+
+  async saveFinancialMetrics(metrics: FinancialMetricsInsert[]): Promise<void> {
+    if (!metrics || metrics.length === 0) return;
+    const db = getDb();
+
+    // 1. Ensure all referenced tickers exist in tickersTable
+    const uniqueTickers = Array.from(
+      new Set(metrics.map((m) => m.ticker.toUpperCase()))
+    );
+    for (const t of uniqueTickers) {
+      await db
+        .insert(tickersTable)
+        .values({
+          ticker: t,
+          company: `${t} Corporation`,
+          currentPrice: "100.00",
+        })
+        .onConflictDoNothing();
+    }
+
+    // 2. Upsert each quarterly metric with type normalization
+    for (const m of metrics) {
+      const ticker = m.ticker.toUpperCase();
+      const revenue = String(m.revenue);
+      const grossProfit = String(m.grossProfit);
+      const operatingIncome = String(m.operatingIncome);
+      const netIncome = String(m.netIncome);
+      const dilutedEps = String(m.dilutedEps);
+      const grossMarginPct = String(m.grossMarginPct);
+      const operatingMarginPct = String(m.operatingMarginPct);
+
+      const operatingCashFlow =
+        m.operatingCashFlow != null ? String(m.operatingCashFlow) : null;
+      const freeCashFlow =
+        m.freeCashFlow != null ? String(m.freeCashFlow) : null;
+      const capex = m.capex != null ? String(m.capex) : null;
+      const dilutedShares =
+        m.dilutedShares != null ? String(m.dilutedShares) : null;
+
+      await db
+        .insert(financialMetricsTable)
+        .values({
+          ...m,
+          ticker,
+          revenue,
+          grossProfit,
+          operatingIncome,
+          netIncome,
+          operatingCashFlow,
+          freeCashFlow,
+          capex,
+          dilutedEps,
+          dilutedShares,
+          grossMarginPct,
+          operatingMarginPct,
+        })
+        .onConflictDoUpdate({
+          target: [
+            financialMetricsTable.ticker,
+            financialMetricsTable.fiscalYear,
+            financialMetricsTable.fiscalQuarter,
+          ],
+          set: {
+            periodEndDate: m.periodEndDate,
+            revenue,
+            grossProfit,
+            operatingIncome,
+            netIncome,
+            operatingCashFlow,
+            freeCashFlow,
+            capex,
+            dilutedEps,
+            dilutedShares,
+            grossMarginPct,
+            operatingMarginPct,
+          },
+        });
+    }
   }
 }

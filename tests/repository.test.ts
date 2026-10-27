@@ -237,6 +237,66 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(foundRev).toBeDefined();
       expect(foundRev?.triggerType).toBe("peer_earnings_shock");
     });
+
+    it("manages relational financial metrics time-series on ephemeral test branch", async () => {
+      const testTicker = "NVDA";
+      const sampleMetrics = [
+        {
+          ticker: testTicker,
+          fiscalYear: 2027,
+          fiscalQuarter: "Q2",
+          periodEndDate: "2026-08-26",
+          revenue: "30040000000.00",
+          grossProfit: "22530000000.00",
+          operatingIncome: "18642000000.00",
+          netIncome: "16599000000.00",
+          dilutedEps: "0.6800",
+          grossMarginPct: "75.00",
+          operatingMarginPct: "62.06",
+        },
+        {
+          ticker: testTicker,
+          fiscalYear: 2027,
+          fiscalQuarter: "Q1",
+          periodEndDate: "2026-05-22",
+          revenue: "26044000000.00",
+          grossProfit: "20406000000.00",
+          operatingIncome: "16909000000.00",
+          netIncome: "14881000000.00",
+          dilutedEps: "0.6100",
+          grossMarginPct: "78.35",
+          operatingMarginPct: "64.92",
+        },
+      ];
+
+      await drizzleRepo.saveFinancialMetrics(sampleMetrics);
+
+      const metrics = await drizzleRepo.getFinancialMetrics(testTicker);
+      expect(metrics.length).toBeGreaterThanOrEqual(2);
+
+      const q2 = metrics.find(
+        (m) => m.fiscalYear === 2027 && m.fiscalQuarter === "Q2"
+      );
+      expect(q2).toBeDefined();
+      expect(q2?.ticker).toBe(testTicker);
+      expect(Number(q2?.revenue)).toBe(30040000000);
+      expect(Number(q2?.dilutedEps)).toBe(0.68);
+      expect(Number(q2?.operatingMarginPct)).toBe(62.06);
+
+      // Verify non-destructive upsert behavior
+      await drizzleRepo.saveFinancialMetrics([
+        {
+          ...sampleMetrics[0],
+          revenue: "30500000000.00",
+        },
+      ]);
+
+      const updatedMetrics = await drizzleRepo.getFinancialMetrics(testTicker);
+      const updatedQ2 = updatedMetrics.find(
+        (m) => m.fiscalYear === 2027 && m.fiscalQuarter === "Q2"
+      );
+      expect(Number(updatedQ2?.revenue)).toBe(30500000000);
+    });
   });
 
   describe("InMemoryReportRepository", () => {
@@ -335,6 +395,32 @@ describe("Data Access Layer: Repository Pattern", () => {
       expect(revs.length).toBe(1);
       expect(revs[0].id).toBe("rev-msft-1");
       expect(revs[0].priorWfv).toBe("450.00");
+    });
+
+    it("manages relational financial metrics time-series in memory", async () => {
+      const testTicker = "AAPL";
+      await memRepo.saveFinancialMetrics([
+        {
+          ticker: testTicker,
+          fiscalYear: 2026,
+          fiscalQuarter: "Q3",
+          periodEndDate: "2026-08-01",
+          revenue: "109420000000.00",
+          grossProfit: "50880300000.00",
+          operatingIncome: "35700000000.00",
+          netIncome: "29988000000.00",
+          dilutedEps: "2.0200",
+          grossMarginPct: "46.50",
+          operatingMarginPct: "32.60",
+        },
+      ]);
+
+      const metrics = await memRepo.getFinancialMetrics(testTicker);
+      expect(metrics.length).toBe(1);
+      expect(metrics[0].ticker).toBe(testTicker);
+      expect(metrics[0].revenue).toBe("109420000000.00");
+      expect(metrics[0].dilutedEps).toBe("2.0200");
+      expect(metrics[0].grossMarginPct).toBe("46.50");
     });
   });
 

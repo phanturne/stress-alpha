@@ -28,6 +28,7 @@ import {
   EarningsSentimentSchema,
   FilingExtractsSchema,
 } from "@/lib/schemas";
+import { resilientFetch } from "./http-client";
 
 const yf = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
@@ -198,12 +199,9 @@ export async function fetchMassiveFinancials(
       ticker
     )}&timeframe=quarterly&limit=8&apiKey=${resolvedKey}`;
 
-    let res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (res.status === 429) {
-      // Retry once after 1.2s delay for rate limits
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      res = await fetch(url, { headers: { Accept: "application/json" } });
-    }
+    const res = await resilientFetch(url, {
+      headers: { Accept: "application/json" },
+    });
     if (!res.ok) return null;
 
     const text = await res.text();
@@ -321,7 +319,7 @@ export async function fetchFinnhubRecommendations(
       ticker
     )}&token=${resolvedKey}`;
 
-    const res = await fetch(url);
+    const res = await resilientFetch(url);
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -356,7 +354,7 @@ export async function fetchFinnhubFilings(
       ticker
     )}&token=${resolvedKey}`;
 
-    const res = await fetch(url);
+    const res = await resilientFetch(url);
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -397,12 +395,12 @@ export async function fetchFinnhubProfile(
 
   try {
     const [profRes, quoteRes] = await Promise.all([
-      fetch(
+      resilientFetch(
         `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(
           ticker
         )}&token=${resolvedKey}`
       ),
-      fetch(
+      resilientFetch(
         `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(
           ticker
         )}&token=${resolvedKey}`
@@ -446,7 +444,7 @@ export async function fetchPolygonAggregates(
       ticker
     )}/range/1/day/${fromDate}/${toDate}?apiKey=${resolvedKey}`;
 
-    const res = await fetch(url);
+    const res = await resilientFetch(url);
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -576,9 +574,20 @@ export async function fetchFundamentalProfile(
       statements = reversed.map((q: any) => {
         const rev = round2(safeNum(q.revenue) / 1e9);
         const net = round2(safeNum(q.earnings) / 1e9);
+        const rawPeriod = String(q.fiscalQuarter || q.date || "");
+        let fiscalPeriod: string | undefined = rawPeriod;
+        let fiscalYear: string | undefined = undefined;
+        const qMatch =
+          rawPeriod.match(/([1-4])Q\s*(\d{4})/i) ||
+          rawPeriod.match(/Q([1-4])\s*(\d{4})/i);
+        if (qMatch) {
+          fiscalPeriod = `Q${qMatch[1]}`;
+          fiscalYear = qMatch[2];
+        }
         return {
           date: q.date || "",
-          fiscalPeriod: q.fiscalQuarter || q.date,
+          fiscalPeriod,
+          fiscalYear,
           revenueBillions: rev,
           grossProfitBillions: round2(rev * grossMargin),
           operatingIncomeBillions: round2(rev * opMargin),
@@ -1013,7 +1022,10 @@ export function generateFactsDraft(
       ? `${latestStmt.fiscalPeriod} ${latestStmt.fiscalYear}`
       : `Q${Math.floor(new Date().getMonth() / 3) + 1} ${new Date().getFullYear()}`);
 
-  const reportDate = latestStmt?.date || new Date().toISOString().split("T")[0];
+  let reportDate = latestStmt?.date;
+  if (!reportDate || !/^\d{4}-\d{2}-\d{2}/.test(reportDate)) {
+    reportDate = new Date().toISOString().split("T")[0];
+  }
 
   const draft: Facts = {
     ticker: profile.ticker,

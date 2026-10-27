@@ -86,10 +86,18 @@ All data access is mediated through the **Repository Pattern** defined in [`src/
    - `saveReport(report: ReportData): Promise<void>`
    - `deleteReport(folderSlug: string): Promise<void>`
    - `syncPrice(ticker: string, price: number): Promise<void>`
-2. **Factory Selection**:
+   - `getFinancialMetrics(ticker: string): Promise<FinancialMetric[]>`
+   - `saveFinancialMetrics(metrics: FinancialMetricsInsert[]): Promise<void>`
+2. **Normalized Relational Financial Metrics Time-Series (`financialMetricsTable`, `scripts/migrate_financial_metrics.ts`, `npm run migrate:metrics`)**:
+   - Resolves JSONB database anti-patterns by decomposing quarterly financial statements and historical quarters into typed relational rows with composite indexing on `(ticker, fiscalYear, fiscalQuarter)` and `(ticker, periodEndDate)`.
+   - Normalizes revenue, gross profit, operating income, net income, operating cash flow, FCF, CapEx, diluted EPS, diluted shares, gross margin %, and operating margin %.
+3. **Resilient Network Ingestion & Error Budgeting (`src/lib/services/http-client.ts`)**:
+   - Unified `resilientFetch` utility replacing raw `fetch` across `financial-data.ts`, `news-ingestion.ts`, and `earnings-calendar.ts`.
+   - Enforces exponential backoff with random jitter, automatic HTTP 429 rate limit parsing (`Retry-After` header support for seconds and HTTP dates), transient 5xx error retries (500, 502, 503, 504), and timeout budgeting via `AbortController` (default 10s).
+4. **Factory Selection**:
    - Always use `getReportRepository()` which instantiates `DrizzleReportRepository` connected directly to Neon PostgreSQL.
    - **Never bypass repository interfaces** in API routes or extraction scripts.
-3. **Isolated Integration Testing via Neon Ephemeral Branching**:
+5. **Isolated Integration Testing via Neon Ephemeral Branching**:
    - Automated via `tests/setup/neon-branch-global.ts` and `tests/helpers/neon-branch.ts`.
    - When `NEON_API_KEY` and `NEON_PROJECT_ID` are configured, Vitest spins up an isolated copy-on-write database branch (`test-vitest-<timestamp>`) from `production` in ~1.0s.
    - Tests run against this pristine replica with 100% cloud parity, executing read and write operations without corrupting production data.
@@ -107,16 +115,19 @@ StressAlpha calculates four deterministic valuation regimes:
 3. **Bear Regime**: Macro headwinds and modest deceleration.
 4. **Panic Floor**: Extreme multiple de-rating + severe demand contraction (liquidity safety floor).
 
-### Mathematical Sensitivity Modeling
+### Mathematical Sensitivity Modeling & Cash Flow Telemetry
 - **Upstream Volume Shocks**:
   $$\Delta \text{Revenue} = \text{Base Revenue} \times \sum_{i} (\text{Shock}_i \times \text{Exposure}_i \times \text{Elasticity}_i)$$
 - **Operating Leverage Rigidity**: Fixed operating expenditures (`fixedOpexBillions`) do not contract proportionally with revenue, modeling operational deleverage during downturns.
+- **Free Cash Flow (FCF) Conversion & Yield**:
+  $$\text{FCF} = \text{Operating Income} \times (1 - \text{Tax Rate}) + \text{D\&A} - \text{CapEx}$$
+  $$\text{FCF Conversion } \% = \frac{\text{FCF}}{\text{Net Income}} \times 100, \quad \text{FCF Yield } \% = \frac{\text{FCF Per Share}}{\text{Stock Price}} \times 100$$
 - **Asymmetry Skew Ratio**:
   $$\text{Asymmetry} = \frac{\text{Upside to Bull } \%}{|\text{Downside to Panic } \%|}$$
 
-### Quantitative Probability Calibration Engine (QPCE) & Archetypes
-Scenario probabilities are calibrated in multinomial logit (softmax) space rather than naively assigned:
-- **Pillar 1: Lexicographic Governance Veto**: Severe governance risk (e.g. auditor resignation, DOJ probes, multiple accounting flags) overrides standard margin cushions, forcing Panic probability $\ge 45-50\%$ and capping Bull $\le 8\%$.
+### Deterministic Scenario Calibration Matrix & Archetypes
+Scenario probabilities are calibrated using **Softmax Multi-Regime Weighting with Tail Risk Heuristics** rather than naively assigned or obscured under academic pretension:
+- **Pillar 1: Lexicographic Governance Tail Veto**: Severe governance risk (e.g. auditor resignation, DOJ probes, multiple accounting flags) applies asymmetric log-odds shifts ($\Delta z_{\text{panic}} = +1.35, \Delta z_{\text{bull}} = -1.60$). This overrides standard margin cushions, forcing Panic probability $\ge 45-50\%$ and capping Bull $\le 8\%$, reflecting the institutional fiduciary reality that no operational margin can protect an un-auditable firm.
 - **Pillar 2: Archetype-Aware Resilience & Capital Runway**:
   - `compounder` (Archetype A): Operating margin $>30\%$ rewarded; $<15\%$ penalized unless protected by durable Wide Moat (`Costco Compounder Exemption`).
   - `operating_scaler` (Archetype B): Fast growth ($\ge 25\%$), high gross margins ($\ge 60\%$) rewarded for operating leverage velocity.
@@ -125,8 +136,9 @@ Scenario probabilities are calibrated in multinomial logit (softmax) space rathe
     - $9 \le \tau_{\text{net}} < 18$ months: Moderate dilution overhang ($\Delta z_{\text{panic}} = +0.50, \Delta z_{\text{bull}} = -0.35$).
     - $\tau_{\text{net}} \ge 18$ months: Abundant runway ($\Delta z_{\text{bull}} = +0.15$).
 - **Pillar 3: Wall Street Consensus Skew & Dispersion**: Analyzes analyst bullish ratio and 52W target dispersion.
-- **Pillar 4: Market-Implied Reality Check**: Reverse-engineers market-priced-in disaster risk with a 20% Bayesian shrinkage anchor.
+- **Pillar 4: Market-Implied Risk Anchor & Regularization**: Reverse-engineers market-priced-in disaster risk with a dampening regularization weight ($w_{\text{mkt}} = 0.20$), rather than claiming an unproven prior distribution. It anchors 20% to real-time market pricing to prevent dogmatic detachment from reality while preserving 80% weight for independent fundamental alpha.
 - **Simplex Regularization**: Convex contraction ensuring probabilities strictly remain within $[0.05, 0.85]$ and sum precisely to $1.000$.
+- **Methodology & Interview Guidance Note**: In investment committee and quant interviews, the baseline logit shifts ($\Delta z$) are clearly articulated as transparent heuristic bounds modeling downside tail asymmetries. In systematic production setups, these coefficients can be empirically calibrated by minimizing Brier scores ($B = \frac{1}{N} \sum (p_i - o_i)^2$) and multinomial log-loss across multi-quarter earnings outturns.
 
 ### Event-Driven Fundamental Transmission & News Pipeline
 To factor in real-time news, product announcements, and cross-company supply chain updates without LLM price hallucinations:

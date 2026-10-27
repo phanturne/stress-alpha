@@ -22,6 +22,8 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 
 ### 1. Interactive Flow-Through Stress Model Cockpit
 * **Sub-Millisecond Sensitivity Sliders**: Real-time client-side simulation (<1ms) perturbing upstream demand shocks (Hyperscaler CapEx, Consumer Demand, Digital Ad spend) with exposure shares and elasticities.
+* **Operating Leverage Rigidity & Cash Flow Telemetry**: Fixed OpEx does not contract smoothly during downturns; models NOPAT, D&A, CapEx intensity, and Free Cash Flow (FCF) conversion, deriving FCF per share and FCF yield across all stress regimes.
+* **Deterministic Scenario Calibration Matrix**: Replaces naive symmetrical priors with Softmax Multi-Regime Weighting with Tail Risk Heuristics. Enforces an asymmetric governance tail veto ($\Delta z_{\text{panic}} = +1.35, \Delta z_{\text{bull}} = -1.60$) and a 20% market-implied dampening regularization anchor ($w_{\text{mkt}} = 0.20$) without academic pretension.
 * **4-Regime Valuation Spectrum**:
   * 🐂 **Bull Regime**: Multiple expansion and catalyst acceleration scenario.
   * ⚖️ **Base Regime**: Guidance execution and normalized valuation multiple.
@@ -64,7 +66,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 * **Desktop Dual-Pane Independent Scroll**: Locked window scroll on desktop eliminates jumpy double scrollbars; left model and right deep-dive workspaces scroll independently.
 
 > [!NOTE]
-> For complete mathematical proofs, formulas, and worked examples (including QPCE logit-space calibration and ASU 2016-01 adjustments), visit the interactive **[/methodology](http://localhost:3000/methodology)** page or [`docs/architecture.md`](./docs/architecture.md).
+> For complete mathematical proofs, formulas, and worked examples (including deterministic scenario calibration matrix, FCF flow-through, and ASU 2016-01 adjustments), visit the interactive **[/methodology](http://localhost:3000/methodology)** page or [`docs/architecture.md`](./docs/architecture.md).
 
 ---
 
@@ -80,6 +82,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 | `npm run sync:news -- --firehose` | Ingest and filter market-wide news via Polygon global firehose |
 | `npm run sync:prices` | Update live market prices across coverage universe |
 | `npm run fetch:data -- <TICKER> --stage` | Ingest SEC statements and scaffold starter draft modules |
+| `npm run migrate:metrics` | Backfill relational quarterly time-series statements into `financial_metrics` |
 
 ---
 
@@ -119,7 +122,7 @@ stress-alpha/
 │   │   └── tabs/                       # 8 Specialized intelligence workspaces
 │   ├── db/                             # Neon Serverless Postgres schema & connection pool
 │   └── lib/                            # Core domain logic
-│       ├── valuation.ts                # Deterministic arithmetic & QPCE scenario calibration
+│       ├── valuation.ts                # Deterministic arithmetic, FCF metrics & scenario calibration
 │       ├── snowflake.ts                # 30-point fundamental health scoring engine
 │       ├── sanity.ts                   # Variant perception & data completeness audit
 │       ├── news-filter.ts              # Clickbait & class-action lawsuit spam filter

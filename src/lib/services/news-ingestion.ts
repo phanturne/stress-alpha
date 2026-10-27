@@ -16,6 +16,7 @@ import {
 } from "@/lib/news-filter";
 import { calculateNewsTransmissionImpact } from "@/lib/news-transmission";
 import { fetchFinnhubFilings } from "./financial-data";
+import { resilientFetch } from "./http-client";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
@@ -49,7 +50,7 @@ export async function fetchFinnhubCompanyNews(
       to
     )}&token=${encodeURIComponent(token)}`;
 
-    const res = await fetch(url);
+    const res = await resilientFetch(url);
     if (!res.ok) {
       return [];
     }
@@ -498,7 +499,7 @@ export async function fetchPolygonGlobalNews(
   }
 
   try {
-    const res = await fetch(url.toString());
+    const res = await resilientFetch(url.toString());
     if (!res.ok) {
       return [];
     }

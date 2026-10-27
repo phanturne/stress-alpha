@@ -8,6 +8,7 @@ import {
   jsonb,
   uniqueIndex,
   index,
+  serial,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import type {
@@ -373,7 +374,60 @@ export const valuationRevisionsTable = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// 8. Relations
+// 8. Financial Metrics Table (Normalized relational time-series statements)
+// ---------------------------------------------------------------------------
+export const financialMetricsTable = pgTable(
+  "financial_metrics",
+  {
+    id: serial("id").primaryKey(),
+    ticker: text("ticker")
+      .notNull()
+      .references(() => tickersTable.ticker, { onDelete: "cascade" }),
+    fiscalYear: integer("fiscal_year").notNull(),
+    fiscalQuarter: text("fiscal_quarter").notNull(), // "Q1", "Q2", "Q3", "Q4"
+    periodEndDate: text("period_end_date").notNull(), // "YYYY-MM-DD"
+    revenue: numeric("revenue", { precision: 16, scale: 2 }).notNull(),
+    grossProfit: numeric("gross_profit", { precision: 16, scale: 2 }).notNull(),
+    operatingIncome: numeric("operating_income", {
+      precision: 16,
+      scale: 2,
+    }).notNull(),
+    netIncome: numeric("net_income", { precision: 16, scale: 2 }).notNull(),
+    operatingCashFlow: numeric("operating_cash_flow", {
+      precision: 16,
+      scale: 2,
+    }),
+    freeCashFlow: numeric("free_cash_flow", { precision: 16, scale: 2 }),
+    capex: numeric("capex", { precision: 16, scale: 2 }),
+    dilutedEps: numeric("diluted_eps", { precision: 10, scale: 4 }).notNull(),
+    dilutedShares: numeric("diluted_shares", { precision: 16, scale: 2 }),
+    grossMarginPct: numeric("gross_margin_pct", {
+      precision: 6,
+      scale: 2,
+    }).notNull(),
+    operatingMarginPct: numeric("operating_margin_pct", {
+      precision: 6,
+      scale: 2,
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("idx_financial_metrics_ticker_quarter").on(
+      table.ticker,
+      table.fiscalYear,
+      table.fiscalQuarter
+    ),
+    index("idx_financial_metrics_ticker_period").on(
+      table.ticker,
+      table.periodEndDate
+    ),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// 9. Relations
 // ---------------------------------------------------------------------------
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
@@ -419,6 +473,16 @@ export const valuationRevisionsRelations = relations(
   })
 );
 
+export const financialMetricsRelations = relations(
+  financialMetricsTable,
+  ({ one }) => ({
+    ticker: one(tickersTable, {
+      fields: [financialMetricsTable.ticker],
+      references: [tickersTable.ticker],
+    }),
+  })
+);
+
 export type UserSelect = typeof user.$inferSelect;
 export type UserInsert = typeof user.$inferInsert;
 export type SessionSelect = typeof session.$inferSelect;
@@ -436,3 +500,6 @@ export type ValuationRevisionSelect =
   typeof valuationRevisionsTable.$inferSelect;
 export type ValuationRevisionInsert =
   typeof valuationRevisionsTable.$inferInsert;
+export type FinancialMetric = typeof financialMetricsTable.$inferSelect;
+export type FinancialMetricsInsert = typeof financialMetricsTable.$inferInsert;
+export type FinancialMetricSelect = FinancialMetric;

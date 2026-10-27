@@ -26,6 +26,7 @@
     "sync:earnings": "npx tsx scripts/sync_earnings_calendar.ts",
     "seed:universe": "npx tsx scripts/seed_universe.ts",
     "scaffold:universe": "npx tsx scripts/bulk_scaffold.ts",
+    "migrate:metrics": "npx tsx scripts/migrate_financial_metrics.ts",
     "prepare": "husky"
   },
   "dependencies": {

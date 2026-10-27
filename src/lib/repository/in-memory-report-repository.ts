@@ -7,6 +7,8 @@ import type {
   UpstreamDependencyInsert,
   ValuationRevisionSelect,
   ValuationRevisionInsert,
+  FinancialMetric,
+  FinancialMetricsInsert,
 } from "@/db/schema";
 import { computeSnowflakeScore } from "@/lib/snowflake";
 import { computeStressedValuation, computeValuation } from "@/lib/valuation";
@@ -17,6 +19,7 @@ export class InMemoryReportRepository implements IReportRepository {
   private marketEvents: MarketEventSelect[] = [];
   private upstreamDependencies: UpstreamDependencySelect[] = [];
   private valuationRevisions: ValuationRevisionSelect[] = [];
+  private financialMetrics: FinancialMetric[] = [];
 
   constructor(
     initialData?: { report: ReportData; summary?: Partial<ReportSummary> }[]
@@ -343,6 +346,57 @@ export class InMemoryReportRepository implements IReportRepository {
       this.valuationRevisions[existingIndex] = selectItem;
     } else {
       this.valuationRevisions.push(selectItem);
+    }
+  }
+
+  async getFinancialMetrics(ticker: string): Promise<FinancialMetric[]> {
+    const upper = ticker.toUpperCase();
+    return this.financialMetrics
+      .filter((m) => m.ticker.toUpperCase() === upper)
+      .sort((a, b) => b.periodEndDate.localeCompare(a.periodEndDate));
+  }
+
+  async saveFinancialMetrics(metrics: FinancialMetricsInsert[]): Promise<void> {
+    for (const m of metrics) {
+      const ticker = m.ticker.toUpperCase();
+      const selectItem: FinancialMetric = {
+        id: m.id || Math.floor(Math.random() * 1_000_000),
+        ticker,
+        fiscalYear: m.fiscalYear,
+        fiscalQuarter: m.fiscalQuarter,
+        periodEndDate: m.periodEndDate,
+        revenue: String(m.revenue),
+        grossProfit: String(m.grossProfit),
+        operatingIncome: String(m.operatingIncome),
+        netIncome: String(m.netIncome),
+        operatingCashFlow:
+          m.operatingCashFlow != null ? String(m.operatingCashFlow) : null,
+        freeCashFlow: m.freeCashFlow != null ? String(m.freeCashFlow) : null,
+        capex: m.capex != null ? String(m.capex) : null,
+        dilutedEps: String(m.dilutedEps),
+        dilutedShares:
+          m.dilutedShares != null ? String(m.dilutedShares) : null,
+        grossMarginPct: String(m.grossMarginPct),
+        operatingMarginPct: String(m.operatingMarginPct),
+        createdAt: m.createdAt instanceof Date ? m.createdAt : new Date(),
+      };
+
+      const existingIndex = this.financialMetrics.findIndex(
+        (existing) =>
+          existing.ticker.toUpperCase() === ticker &&
+          existing.fiscalYear === m.fiscalYear &&
+          existing.fiscalQuarter === m.fiscalQuarter
+      );
+
+      if (existingIndex >= 0) {
+        this.financialMetrics[existingIndex] = {
+          ...this.financialMetrics[existingIndex],
+          ...selectItem,
+          id: this.financialMetrics[existingIndex].id,
+        };
+      } else {
+        this.financialMetrics.push(selectItem);
+      }
     }
   }
 }

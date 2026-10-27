@@ -6,6 +6,7 @@ import type { ReportData } from "@/lib/schemas";
 import { computeStressedValuation } from "@/lib/valuation";
 import { computeSanityAudit } from "@/lib/sanity";
 import { fetchCompletePipelineBundle } from "./financial-data";
+import { resilientFetch } from "./http-client";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
@@ -77,7 +78,7 @@ export async function fetchFinnhubEarningsCalendar(
   )}&to=${encodeURIComponent(to)}&token=${encodeURIComponent(token)}`;
 
   try {
-    const res = await fetch(url, {
+    const res = await resilientFetch(url, {
       headers: { Accept: "application/json" },
     });
 

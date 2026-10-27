@@ -6,6 +6,8 @@ import type {
   UpstreamDependencyInsert,
   ValuationRevisionSelect,
   ValuationRevisionInsert,
+  FinancialMetric,
+  FinancialMetricsInsert,
 } from "@/db/schema";
 
 export interface ReportSummary {
@@ -126,4 +128,14 @@ export interface IReportRepository {
    * Record a fair value revision snapshot in the valuation ledger.
    */
   saveValuationRevision(rev: ValuationRevisionInsert): Promise<void>;
+
+  /**
+   * Fetch normalized historical quarterly financial statements for a ticker.
+   */
+  getFinancialMetrics(ticker: string): Promise<FinancialMetric[]>;
+
+  /**
+   * Upsert normalized quarterly financial statements into the time-series ledger.
+   */
+  saveFinancialMetrics(metrics: FinancialMetricsInsert[]): Promise<void>;
 }
