@@ -83,12 +83,10 @@ export class DrizzleReportRepository implements IReportRepository {
         operatingMarginPct: reportsTable.operatingMarginPct,
         revenueGrowthPct: reportsTable.revenueGrowthPct,
         publishedAt: reportsTable.publishedAt,
+        snowflakeScore: reportsTable.snowflakeScore,
+        snowflakeTier: reportsTable.snowflakeTier,
+        snowflakePillars: reportsTable.snowflakePillars,
         estimates: reportsTable.estimates,
-        facts: reportsTable.facts,
-        scenarios: reportsTable.scenarios,
-        baseline: reportsTable.baseline,
-        moat: reportsTable.moat,
-        catalysts: reportsTable.catalysts,
         hasFacts: sql<boolean>`(${reportsTable.facts} IS NOT NULL)`,
         hasScenarios: sql<boolean>`(${reportsTable.scenarios} IS NOT NULL)`,
         hasValuation: sql<boolean>`(${reportsTable.valuation} IS NOT NULL)`,
@@ -194,70 +192,55 @@ export class DrizzleReportRepository implements IReportRepository {
           }
         | undefined;
 
-      const snowflakeCacheKey = `${row.slug}:${effectivePrice}`;
-      const cachedSnowflake = this.snowflakeCache.get(snowflakeCacheKey);
+      if (row.snowflakeScore != null) {
+        snowflakeScore = row.snowflakeScore;
+        snowflakeTier = row.snowflakeTier as
+          "exceptional" | "strong" | "balanced" | "cautious" | undefined;
+        snowflakePillars = row.snowflakePillars ?? undefined;
+      } else {
+        const snowflakeCacheKey = `${row.slug}:${effectivePrice}`;
+        const cachedSnowflake = this.snowflakeCache.get(snowflakeCacheKey);
 
-      if (cachedSnowflake) {
-        snowflakeScore = cachedSnowflake.score;
-        snowflakeTier = cachedSnowflake.tier;
-        snowflakePillars = cachedSnowflake.pillars;
-      } else if (row.facts && row.scenarios) {
-        try {
-          const facts: Facts = {
-            ...row.facts,
-            currentPrice:
-              effectivePrice > 0 ? effectivePrice : row.facts.currentPrice,
-          };
-          const scenarios: Scenarios = {
-            ...row.scenarios,
-            currentPrice:
-              effectivePrice > 0 ? effectivePrice : row.scenarios.currentPrice,
-          };
-          const baseline = row.baseline ?? undefined;
+        if (cachedSnowflake) {
+          snowflakeScore = cachedSnowflake.score;
+          snowflakeTier = cachedSnowflake.tier;
+          snowflakePillars = cachedSnowflake.pillars;
+        } else {
+          try {
+            const reportPayload = await this.getReport(row.slug);
+            if (
+              reportPayload &&
+              reportPayload.facts &&
+              reportPayload.scenarios
+            ) {
+              const stressResult =
+                reportPayload.baseline && effectivePrice > 0
+                  ? computeStressedValuation(
+                      reportPayload.baseline,
+                      effectivePrice
+                    )
+                  : undefined;
 
-          // Compute dynamic valuation matching model's default unperturbed state
-          const dynamicValuation = computeValuation({
-            facts,
-            scenarios,
-            baseline,
-            moat: row.moat ?? undefined,
-            estimates: row.estimates ?? undefined,
-          });
+              const res = computeSnowflakeScore(reportPayload, stressResult);
+              snowflakeScore = res.totalScore;
+              snowflakeTier = res.ratingTier;
+              snowflakePillars = {
+                valuation: res.pillars.valuation.score,
+                future: res.pillars.future.score,
+                earnings: res.pillars.earnings.score,
+                moat: res.pillars.moat.score,
+                resilience: res.pillars.resilience.score,
+              };
 
-          const stressResult =
-            baseline && facts.currentPrice > 0
-              ? computeStressedValuation(baseline, facts.currentPrice)
-              : undefined;
-
-          const reportPayload: ReportData = {
-            folderSlug: row.slug,
-            folderName: row.slug,
-            facts,
-            valuation: dynamicValuation,
-            scenarios,
-            baseline,
-            moat: row.moat ?? undefined,
-            catalysts: row.catalysts ?? undefined,
-            estimates: row.estimates ?? undefined,
-          };
-          const res = computeSnowflakeScore(reportPayload, stressResult);
-          snowflakeScore = res.totalScore;
-          snowflakeTier = res.ratingTier;
-          snowflakePillars = {
-            valuation: res.pillars.valuation.score,
-            future: res.pillars.future.score,
-            earnings: res.pillars.earnings.score,
-            moat: res.pillars.moat.score,
-            resilience: res.pillars.resilience.score,
-          };
-
-          this.snowflakeCache.set(snowflakeCacheKey, {
-            score: snowflakeScore,
-            tier: snowflakeTier,
-            pillars: snowflakePillars,
-          });
-        } catch {
-          // ignore snowflake computation error in summary listing
+              this.snowflakeCache.set(snowflakeCacheKey, {
+                score: snowflakeScore,
+                tier: snowflakeTier,
+                pillars: snowflakePillars,
+              });
+            }
+          } catch {
+            // ignore snowflake computation error in summary listing
+          }
         }
       }
 
@@ -265,7 +248,7 @@ export class DrizzleReportRepository implements IReportRepository {
         slug: row.slug,
         name: row.slug,
         ticker: row.ticker,
-        company: row.tickerCompany ?? row.facts?.company,
+        company: row.tickerCompany ?? undefined,
         quarter: row.quarter,
         reportDate: row.reportDate,
         currentPrice: effectivePrice,
@@ -275,14 +258,14 @@ export class DrizzleReportRepository implements IReportRepository {
         baseUpsidePct,
         bullFairValue,
         bearFairValue,
-        moatRating: row.moatRating ?? row.moat?.overallMoatRating,
-        moatTrend: row.moatTrend ?? row.moat?.moatTrend,
+        moatRating: row.moatRating ?? undefined,
+        moatTrend: row.moatTrend ?? undefined,
         operatingMarginPct: row.operatingMarginPct
           ? Number(row.operatingMarginPct)
-          : row.facts?.operatingMarginPct,
+          : undefined,
         revenueGrowthPct: row.revenueGrowthPct
           ? Number(row.revenueGrowthPct)
-          : row.facts?.revenueGrowthPct,
+          : undefined,
         analystTarget,
         analystUpsidePct,
         analystRating,
@@ -435,6 +418,36 @@ export class DrizzleReportRepository implements IReportRepository {
     const panicFairValue =
       report.valuation?.stressTest?.valuationBands?.panic?.targetPrice;
 
+    // Calculate deterministic Snowflake metrics for persistence
+    let snowflakeScore: number | null = null;
+    let snowflakeTier: string | null = null;
+    let snowflakePillars: {
+      valuation: number;
+      future: number;
+      earnings: number;
+      moat: number;
+      resilience: number;
+    } | null = null;
+
+    try {
+      const stressResult =
+        report.baseline && currentPrice > 0
+          ? computeStressedValuation(report.baseline, currentPrice)
+          : undefined;
+      const res = computeSnowflakeScore(report, stressResult);
+      snowflakeScore = res.totalScore;
+      snowflakeTier = res.ratingTier;
+      snowflakePillars = {
+        valuation: res.pillars.valuation.score,
+        future: res.pillars.future.score,
+        earnings: res.pillars.earnings.score,
+        moat: res.pillars.moat.score,
+        resilience: res.pillars.resilience.score,
+      };
+    } catch {
+      // ignore calculation errors on partial mock reports
+    }
+
     // Ensure ticker exists in tickersTable
     await db
       .insert(tickersTable)
@@ -479,6 +492,9 @@ export class DrizzleReportRepository implements IReportRepository {
           report.facts.revenueGrowthPct != null
             ? String(report.facts.revenueGrowthPct)
             : null,
+        snowflakeScore,
+        snowflakeTier,
+        snowflakePillars,
         facts: report.facts,
         scenarios: report.scenarios,
         valuation: (report.valuation ?? {}) as any,
@@ -520,6 +536,9 @@ export class DrizzleReportRepository implements IReportRepository {
             report.facts.revenueGrowthPct != null
               ? String(report.facts.revenueGrowthPct)
               : null,
+          snowflakeScore,
+          snowflakeTier,
+          snowflakePillars,
           facts: report.facts,
           scenarios: report.scenarios,
           valuation: (report.valuation ?? {}) as any,

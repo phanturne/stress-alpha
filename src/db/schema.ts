@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   index,
   serial,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import type {
@@ -93,6 +94,17 @@ export const reportsTable = pgTable(
       scale: 2,
     }),
     revenueGrowthPct: numeric("revenue_growth_pct", { precision: 6, scale: 2 }),
+
+    // Denormalized 30-point Snowflake Radar metrics
+    snowflakeScore: integer("snowflake_score"),
+    snowflakeTier: varchar("snowflake_tier", { length: 32 }),
+    snowflakePillars: jsonb("snowflake_pillars").$type<{
+      valuation: number;
+      future: number;
+      earnings: number;
+      moat: number;
+      resilience: number;
+    }>(),
 
     // Strongly-typed JSONB artifact payloads (bound directly to Zod schemas)
     facts: jsonb("facts").$type<Facts>().notNull(),
