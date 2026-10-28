@@ -16,6 +16,7 @@ jobs:
   sync-market-and-news:
     name: Sync Closing Prices & News Intelligence
     runs-on: ubuntu-latest
+    environment: Production
 
     steps:
       - name: Checkout code
