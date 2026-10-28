@@ -1,4 +1,4 @@
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   reportsTable,
@@ -465,11 +465,34 @@ export class DrizzleReportRepository implements IReportRepository {
         },
       });
 
+    // Resolve slug: if a row with matching (ticker, quarter, year) already exists under another slug format,
+    // target that slug so onConflictDoUpdate updates it without violating idx_reports_ticker_quarter.
+    let targetSlug = slug;
+    try {
+      const existing = await db
+        .select({ slug: reportsTable.slug })
+        .from(reportsTable)
+        .where(
+          and(
+            eq(reportsTable.ticker, ticker),
+            eq(reportsTable.quarter, quarter),
+            eq(reportsTable.year, year)
+          )
+        )
+        .limit(1);
+
+      if (existing[0]?.slug) {
+        targetSlug = existing[0].slug;
+      }
+    } catch {
+      // Fallback to original slug
+    }
+
     // Save report in reportsTable
     await db
       .insert(reportsTable)
       .values({
-        slug,
+        slug: targetSlug,
         ticker,
         quarter,
         year,

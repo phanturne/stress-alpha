@@ -39,6 +39,7 @@ export interface SyncEarningsCalendarOptions {
   apiKey?: string;
   massiveApiKey?: string;
   universe?: string[];
+  ticker?: string;
 }
 
 export interface SyncEarningsCalendarResult {
@@ -181,10 +182,13 @@ export async function syncEarningsCalendar(
 
   // 3. Determine Active Universe
   let universeSet: Set<string>;
-  if (options?.universe && options.universe.length > 0) {
+  const reportSummaries = await repo.listReports();
+
+  if (options?.ticker) {
+    universeSet = new Set([options.ticker.toUpperCase()]);
+  } else if (options?.universe && options.universe.length > 0) {
     universeSet = new Set(options.universe.map((t) => t.toUpperCase()));
   } else {
-    const reportSummaries = await repo.listReports();
     const fromReports = reportSummaries
       .map((r) => r.ticker?.toUpperCase())
       .filter((t): t is string => Boolean(t));
@@ -208,9 +212,25 @@ export async function syncEarningsCalendar(
   }
 
   // 4. Filter Candidates matching Universe
-  const candidates = sessionFiltered.filter((e) =>
+  let candidates = sessionFiltered.filter((e) =>
     universeSet.has(e.symbol.toUpperCase())
   );
+
+  // If a single ticker was explicitly requested and not in the day's calendar, synthesize a test candidate
+  if (options?.ticker && candidates.length === 0) {
+    const targetSymbol = options.ticker.toUpperCase();
+    const now = new Date();
+    candidates = [
+      {
+        symbol: targetSymbol,
+        date: targetDate,
+        hour: "bmo",
+        year: now.getFullYear(),
+        quarter: Math.ceil((now.getMonth() + 1) / 3),
+      },
+    ];
+  }
+
   const matchedUniverse = candidates.length;
 
   let scaffolded = 0;
@@ -224,8 +244,22 @@ export async function syncEarningsCalendar(
     const quarter = entry.quarter;
     const folderSlug = `${symbol.toLowerCase()}-${year}q${quarter}`;
 
+    // Resolve existing report slug (handles cases like RJF-Q4-2026-analysis vs rjf-2026q4)
+    const matchingSummary = reportSummaries.find((s) => {
+      const summarySlug = s.slug || (s as any).folderSlug || "";
+      return (
+        s.ticker?.toUpperCase() === symbol &&
+        (summarySlug.toLowerCase() === folderSlug.toLowerCase() ||
+          (s.year === year && s.quarter?.toLowerCase().includes(`q${quarter}`)))
+      );
+    });
+    const resolvedSlug =
+      matchingSummary?.slug ||
+      (matchingSummary as any)?.folderSlug ||
+      folderSlug;
+
     // Deduplication check
-    const existingReport = await repo.getReport(folderSlug);
+    const existingReport = await repo.getReport(resolvedSlug);
     const isPopulated =
       existingReport &&
       existingReport.facts &&
@@ -233,11 +267,11 @@ export async function syncEarningsCalendar(
 
     if (isPopulated && !options?.force) {
       console.log(
-        `[SKIP] Report for ${folderSlug} already exists and is populated.`
+        `[SKIP] Report for ${symbol} (${resolvedSlug}) already exists and is populated.`
       );
       results.push({
         symbol,
-        folderSlug,
+        folderSlug: resolvedSlug,
         status: "skipped",
       });
       skipped++;
@@ -246,11 +280,11 @@ export async function syncEarningsCalendar(
 
     if (options?.dryRun) {
       console.log(
-        `[DRY RUN] Would scaffold earnings report for ${symbol} (${folderSlug})`
+        `[DRY RUN] Would scaffold earnings report for ${symbol} (${resolvedSlug})`
       );
       results.push({
         symbol,
-        folderSlug,
+        folderSlug: resolvedSlug,
         status: "scaffolded",
       });
       scaffolded++;
@@ -259,19 +293,19 @@ export async function syncEarningsCalendar(
 
     try {
       console.log(
-        `📡 [Scaffolding] Ingesting feeds for ${symbol} (${folderSlug})...`
+        `📡 [Scaffolding] Ingesting feeds for ${symbol} (${resolvedSlug})...`
       );
 
       const quarterStr = `Q${quarter} ${year}`;
-      const bundle = await fetchCompletePipelineBundle(symbol, folderSlug, {
+      const bundle = await fetchCompletePipelineBundle(symbol, resolvedSlug, {
         quarterStr,
         apiKey: options?.apiKey,
         massiveApiKey: options?.massiveApiKey,
       });
 
       const report: ReportData = {
-        folderSlug,
-        folderName: folderSlug,
+        folderSlug: resolvedSlug,
+        folderName: resolvedSlug,
         facts: bundle.factsDraft,
         factsZh: bundle.factsZh,
         scenarios: bundle.scenariosEn,

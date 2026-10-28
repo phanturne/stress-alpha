@@ -32,6 +32,7 @@ async function main() {
   let force = false;
   let dryRun = false;
   let session: "bmo" | "amc" | undefined;
+  let ticker: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -49,6 +50,10 @@ async function main() {
     } else if (arg === "--session" && args[i + 1]) {
       const s = args[++i].toLowerCase();
       if (s === "bmo" || s === "amc") session = s;
+    } else if (arg.startsWith("--ticker=")) {
+      ticker = arg.split("=")[1].toUpperCase();
+    } else if ((arg === "--ticker" || arg === "-t") && args[i + 1]) {
+      ticker = args[++i].toUpperCase();
     }
   }
 
@@ -83,6 +88,9 @@ async function main() {
     "⚡ [StressAlpha Inverted Earnings Calendar & Scaffolding Engine]"
   );
   console.log(` • Target Date:   ${targetDate}`);
+  if (ticker) {
+    console.log(` • Single Target: ${ticker}`);
+  }
   console.log(
     ` • Session:       ${session ? session.toUpperCase() : "ALL (bmo + amc)"}`
   );
@@ -95,6 +103,7 @@ async function main() {
     force,
     dryRun,
     session,
+    ticker,
   });
 
   const errorCount = result.results.filter((r) => r.status === "error").length;

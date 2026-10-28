@@ -26,6 +26,10 @@ on:
           - bmo
           - amc
         default: all
+      ticker:
+        description: "Target single ticker (e.g. RJF, NVDA). If omitted, processes calendar universe."
+        required: false
+        type: string
   push:
     paths:
       - ".github/workflows/earnings_sync.yml"
@@ -86,5 +90,8 @@ jobs:
           fi
           if [ "${{ github.event.inputs.session }}" = "bmo" ] || [ "${{ github.event.inputs.session }}" = "amc" ]; then
             ARGS="$ARGS --session=${{ github.event.inputs.session }}"
+          fi
+          if [ -n "${{ github.event.inputs.ticker }}" ]; then
+            ARGS="$ARGS --ticker=${{ github.event.inputs.ticker }}"
           fi
           npx tsx scripts/sync_earnings_calendar.ts $ARGS
