@@ -20,9 +20,22 @@ export function round3(num: number): number {
 }
 
 export function getMassiveApiKey(provided?: string): string | undefined {
-  return provided || process.env.MASSIVE_API_KEY;
+  return (
+    provided ||
+    process.env.MASSIVE_API_KEY ||
+    process.env.POLYGON_API_KEY ||
+    process.env.MASSIVE_KEY ||
+    process.env.POLYGON_KEY ||
+    process.env.MASSIVE_TOKEN ||
+    process.env.POLYGON_TOKEN
+  );
 }
 
 export function getFinnhubApiKey(provided?: string): string | undefined {
-  return provided || process.env.FINNHUB_API_KEY;
+  return (
+    provided ||
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN
+  );
 }

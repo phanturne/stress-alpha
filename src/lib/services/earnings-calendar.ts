@@ -61,7 +61,11 @@ export interface SyncEarningsCalendarResult {
 export async function fetchFinnhubEarningsCalendar(
   options?: FetchFinnhubEarningsCalendarOptions
 ): Promise<EarningsCalendarEntry[]> {
-  const token = options?.apiKey || process.env.FINNHUB_API_KEY;
+  const token =
+    options?.apiKey ||
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN;
   if (!token) {
     console.warn(
       "⚠️ [Finnhub Calendar] No FINNHUB_API_KEY provided or configured in environment."

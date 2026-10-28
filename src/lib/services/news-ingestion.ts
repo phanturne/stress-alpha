@@ -22,11 +22,24 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 function getFinnhubApiKey(provided?: string): string | undefined {
-  return provided || process.env.FINNHUB_API_KEY;
+  return (
+    provided ||
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN
+  );
 }
 
 function getPolygonApiKey(provided?: string): string | undefined {
-  return provided || process.env.MASSIVE_API_KEY || process.env.POLYGON_API_KEY;
+  return (
+    provided ||
+    process.env.MASSIVE_API_KEY ||
+    process.env.POLYGON_API_KEY ||
+    process.env.MASSIVE_KEY ||
+    process.env.POLYGON_KEY ||
+    process.env.MASSIVE_TOKEN ||
+    process.env.POLYGON_TOKEN
+  );
 }
 
 /**

@@ -55,13 +55,23 @@ async function main() {
   const targetDate = date || new Date().toISOString().split("T")[0];
 
   if (!dryRun && !process.env.DATABASE_URL) {
+    console.log(
+      "::error title=Missing Database URL::DATABASE_URL is not set in GitHub Secrets."
+    );
     console.error(
       "❌ DATABASE_URL is not set. Aborting earnings calendar sync."
     );
     process.exit(1);
   }
 
-  if (!process.env.FINNHUB_API_KEY) {
+  const finnhubKey =
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN;
+  if (!finnhubKey) {
+    console.log(
+      "::error title=Missing Finnhub API Key::Neither FINNHUB_API_KEY nor FINNHUB_KEY is configured in GitHub Secrets (Repository Secrets)."
+    );
     console.error(
       "❌ FINNHUB_API_KEY is not configured in environment. Cannot query earnings calendar."
     );
@@ -127,6 +137,8 @@ async function main() {
 }
 
 main().catch((err) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.log(`::error title=Fatal Earnings Sync Error::${msg}`);
   console.error("❌ Fatal unhandled exception in sync_earnings_calendar:", err);
   process.exit(1);
 });

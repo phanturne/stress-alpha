@@ -220,8 +220,17 @@ async function syncNews() {
   const isFirehose = rawArgs.includes("--firehose");
   const daysIndex = rawArgs.indexOf("--days");
 
-  const polygonKey = process.env.MASSIVE_API_KEY || process.env.POLYGON_API_KEY;
+  const polygonKey =
+    process.env.MASSIVE_API_KEY ||
+    process.env.POLYGON_API_KEY ||
+    process.env.MASSIVE_KEY ||
+    process.env.POLYGON_KEY ||
+    process.env.MASSIVE_TOKEN ||
+    process.env.POLYGON_TOKEN;
   if (isFirehose && !polygonKey) {
+    console.log(
+      "::error title=Missing News API Key::Neither MASSIVE_API_KEY nor POLYGON_API_KEY is configured in GitHub Secrets (Repository Secrets)."
+    );
     console.error(
       "❌ Neither MASSIVE_API_KEY nor POLYGON_API_KEY is configured in environment. Cannot stream global news."
     );
@@ -380,6 +389,8 @@ async function syncNews() {
 }
 
 syncNews().catch((err) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.log(`::error title=Fatal News Sync Error::${msg}`);
   console.error("❌ Fatal error in sync_news:", err);
   process.exit(1);
 });
