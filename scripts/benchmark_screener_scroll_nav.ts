@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer-core";
+import puppeteer, { type ConsoleMessage } from "puppeteer-core";
 
 const CHROME_PATH =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -24,7 +24,7 @@ async function main() {
   const page = await browser.newPage();
 
   // Listen to console errors and warnings
-  page.on("console", (msg) => {
+  page.on("console", (msg: ConsoleMessage) => {
     if (msg.type() === "error") {
       console.log(`[Browser Console Error]: ${msg.text()}`);
     }
