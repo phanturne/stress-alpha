@@ -5,6 +5,9 @@ on:
     # Runs Monday through Friday at 22:00 UTC (5:00 PM EST / 6:00 PM EDT)
     - cron: "0 22 * * 1-5"
   workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+  push:
+    paths:
+      - ".github/workflows/nightly-price-sync.yml"
 
 jobs:
   sync-market-and-news:
