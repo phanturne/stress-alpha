@@ -247,10 +247,13 @@ export async function syncEarningsCalendar(
     // Resolve existing report slug (handles cases like RJF-Q4-2026-analysis vs rjf-2026q4)
     const matchingSummary = reportSummaries.find((s) => {
       const summarySlug = s.slug || (s as any).folderSlug || "";
+      const matchesQuarterYear =
+        Boolean(s.quarter?.toLowerCase().includes(`q${quarter}`)) &&
+        Boolean(s.quarter?.includes(String(year)));
       return (
         s.ticker?.toUpperCase() === symbol &&
         (summarySlug.toLowerCase() === folderSlug.toLowerCase() ||
-          (s.year === year && s.quarter?.toLowerCase().includes(`q${quarter}`)))
+          matchesQuarterYear)
       );
     });
     const resolvedSlug =
