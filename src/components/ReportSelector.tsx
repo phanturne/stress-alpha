@@ -191,6 +191,11 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
     return { pinnedGroups: pinned, otherGroups: other };
   }, [filteredReports, isFavorite]);
 
+  const displayedOtherGroups = useMemo(
+    () => otherGroups.slice(0, 40),
+    [otherGroups]
+  );
+
   const renderSingleReportItem = (r: ReportSummary) => {
     const isSelected = r.slug === currentSlug;
     const isFav = isFavorite(r.ticker || r.slug);
@@ -340,12 +345,8 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
               }`}
               title={
                 isExpanded
-                  ? locale === "zh"
-                    ? "收起历史季度"
-                    : "Collapse quarters"
-                  : locale === "zh"
-                    ? `展开全部 ${g.reports.length} 个季度`
-                    : `View all ${g.reports.length} quarters`
+                  ? t.collapseQuarters
+                  : t.expandQuarters(g.reports.length)
               }
             >
               <span>{g.reports.length}Q</span>
@@ -502,11 +503,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  locale === "zh"
-                    ? "搜索代码、公司或季度..."
-                    : "Search ticker, company or quarter..."
-                }
+                placeholder={t.searchPlaceholder}
                 className="w-full rounded-lg border border-border bg-surface-1 py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                 autoFocus
               />
@@ -597,7 +594,12 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                         <span>{t.allReportsSection}</span>
                       </div>
                     )}
-                    {otherGroups.map(renderGroup)}
+                    {displayedOtherGroups.map(renderGroup)}
+                    {otherGroups.length > 40 && (
+                      <div className="border-t border-border/40 bg-surface-0/60 px-3 py-2 text-center font-mono text-[11px] text-slate-400">
+                        {t.showingUniverseSummary(40, otherGroups.length)}
+                      </div>
+                    )}
                   </div>
                 )}
               </>

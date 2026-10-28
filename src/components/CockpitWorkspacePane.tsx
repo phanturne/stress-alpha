@@ -73,7 +73,7 @@ export interface CockpitWorkspacePaneProps {
   showToast: (msg: string) => void;
 }
 
-export function CockpitWorkspacePane({
+export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
   tabItems,
   activeTab,
   currentTabIndex,
@@ -529,4 +529,4 @@ export function CockpitWorkspacePane({
       </div>
     </div>
   );
-}
+});

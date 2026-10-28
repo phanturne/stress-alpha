@@ -1,10 +1,24 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { Keyboard, X, Check, ArrowUp } from "lucide-react";
-import { SocialCardModal } from "@/components/social-card/SocialCardModal";
-import { SnowflakeModal } from "@/components/snowflake/SnowflakeModal";
 import { getTranslations, type Locale } from "@/lib/i18n";
+
+const SocialCardModal = dynamic(
+  () =>
+    import("@/components/social-card/SocialCardModal").then(
+      (m) => m.SocialCardModal
+    ),
+  { ssr: false }
+);
+const SnowflakeModal = dynamic(
+  () =>
+    import("@/components/snowflake/SnowflakeModal").then(
+      (m) => m.SnowflakeModal
+    ),
+  { ssr: false }
+);
 import type { Facts, ReportData } from "@/lib/schemas";
 import type {
   StressTestParams,
