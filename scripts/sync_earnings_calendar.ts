@@ -127,11 +127,20 @@ async function main() {
       console.log(
         `   ${badge} | [${r.symbol}] ${r.folderSlug}${r.error ? ` - ${r.error}` : ""}`
       );
+      if (r.status === "error") {
+        console.log(
+          `::warning title=Scaffolding Warning [${r.symbol}]::Failed to scaffold ${r.folderSlug}: ${r.error}`
+        );
+      }
     }
   }
   console.log("\n");
 
-  if (errorCount > 0) {
+  // Fail workflow if errors occurred and no reports were successfully scaffolded or skipped
+  if (errorCount > 0 && result.scaffolded === 0 && result.skipped === 0) {
+    console.log(
+      "::error title=Earnings Sync Failed::All candidate scaffolding attempts failed."
+    );
     process.exitCode = 1;
   }
 }
