@@ -44,6 +44,8 @@ import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 
+export const SCREENER_PAGE_SIZE = 50;
+
 interface ScreenerViewProps {
   reports: ReportSummary[];
   onSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
@@ -158,7 +160,7 @@ const SKELETON_ROWS = [
   },
 ];
 
-interface ScreenerItemProps {
+export interface ScreenerItemProps {
   report: ReportSummary;
   isFav: boolean;
   onToggleFav: (tickerOrSlug: string) => void;
@@ -168,7 +170,7 @@ interface ScreenerItemProps {
   tHeader: ReturnType<typeof getTranslations>["header"];
 }
 
-const ScreenerTableRow = React.memo(function ScreenerTableRow({
+export const ScreenerTableRow = React.memo(function ScreenerTableRow({
   report,
   isFav,
   onToggleFav,
@@ -501,7 +503,7 @@ const ScreenerTableRow = React.memo(function ScreenerTableRow({
   );
 });
 
-const ScreenerCard = React.memo(function ScreenerCard({
+export const ScreenerCard = React.memo(function ScreenerCard({
   report,
   isFav,
   onToggleFav,
@@ -1004,8 +1006,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     };
 
     // Progressive rendering batch size (renders initial 50 rows in <15ms, auto-increments on scroll)
-    const PAGE_SIZE = 50;
-    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const [visibleCount, setVisibleCount] = useState(SCREENER_PAGE_SIZE);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
 
     // Reset visible count when filters or sorting change
@@ -1013,7 +1014,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
     if (prevFilterKey !== filterKey) {
       setPrevFilterKey(filterKey);
-      setVisibleCount(PAGE_SIZE);
+      setVisibleCount(SCREENER_PAGE_SIZE);
     }
 
     const displayedReports = useMemo(() => {
@@ -1032,7 +1033,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
         (entries) => {
           if (entries[0]?.isIntersecting) {
             setVisibleCount((prev) =>
-              Math.min(prev + PAGE_SIZE, filteredReports.length)
+              Math.min(prev + SCREENER_PAGE_SIZE, filteredReports.length)
             );
           }
         },

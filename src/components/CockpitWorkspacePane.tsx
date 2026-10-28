@@ -130,27 +130,27 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
               <span>
                 {formatCurrency(
                   dynamicValuation?.weightedFairValue ??
-                    reportData.valuation?.weightedFairValue ??
+                    reportData?.valuation?.weightedFairValue ??
                     0
                 )}
               </span>
               <span
                 className={`text-xs ${
                   (dynamicValuation?.upsidePct ??
-                    reportData.valuation?.upsidePct ??
+                    reportData?.valuation?.upsidePct ??
                     0) >= 0
                     ? "text-emerald-400"
                     : "text-rose-400"
                 }`}
               >
                 {(dynamicValuation?.upsidePct ??
-                  reportData.valuation?.upsidePct ??
+                  reportData?.valuation?.upsidePct ??
                   0) >= 0
                   ? "+"
                   : ""}
                 {formatPercent(
                   dynamicValuation?.upsidePct ??
-                    reportData.valuation?.upsidePct ??
+                    reportData?.valuation?.upsidePct ??
                     0
                 )}
               </span>
@@ -309,10 +309,10 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
             <ScenariosTab
               scenariosData={displayScenarios!}
               currentPrice={displayFacts!.currentPrice}
-              valuation={dynamicValuation ?? reportData.valuation}
+              valuation={dynamicValuation ?? reportData?.valuation}
               sensitivityData={
                 dynamicValuation?.sensitivity ??
-                reportData.valuation?.sensitivity ??
+                reportData?.valuation?.sensitivity ??
                 []
               }
               onScenarioChange={onScenarioChange}
@@ -384,7 +384,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                         : t.page.reportTitleEn}
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">
-                      {reportData.folderName}
+                      {reportData?.folderName}
                     </span>
                   </div>
                 </div>
@@ -421,8 +421,8 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                     onClick={() => {
                       const content =
                         reportDocLang === "zh"
-                          ? reportData.reportMarkdownZh
-                          : reportData.reportMarkdown;
+                          ? reportData?.reportMarkdownZh
+                          : reportData?.reportMarkdown;
                       if (content) {
                         navigator.clipboard.writeText(content);
                         showToast(
@@ -440,8 +440,8 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
               </div>
               <pre className="custom-scrollbar max-h-[72vh] overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-0/90 p-5 font-mono text-xs leading-relaxed text-slate-200 shadow-inner selection:bg-accent/30 sm:text-[13px]">
                 {(reportDocLang === "zh"
-                  ? reportData.reportMarkdownZh
-                  : reportData.reportMarkdown) ||
+                  ? reportData?.reportMarkdownZh
+                  : reportData?.reportMarkdown) ||
                   (reportDocLang === "zh"
                     ? t.page.noReportFileZh
                     : t.page.noReportFileEn)}

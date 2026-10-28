@@ -12,7 +12,7 @@ export default defineConfig({
     teardownTimeout: 30000,
     globalSetup: ["./tests/setup/neon-branch-global.ts"],
     setupFiles: ["./tests/setup/test-env.ts"],
-    include: ["tests/**/*.test.ts", "src/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,tsx}", "src/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],

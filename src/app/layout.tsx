@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ThemeScript } from "@/components/ThemeScript";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { WebVitals } from "@/components/WebVitals";
 import "./globals.css";
 
 const inter = Inter({
@@ -51,7 +52,10 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-sans text-foreground antialiased selection:bg-accent/20 selection:text-accent">
         <ThemeProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <WebVitals />
+            {children}
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

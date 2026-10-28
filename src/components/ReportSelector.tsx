@@ -30,6 +30,8 @@ export interface ReportSelectorProps {
   siblingReports?: ReportSummary[];
 }
 
+export const MAX_DROPDOWN_GROUPS = 40;
+
 interface TickerReportGroup {
   ticker: string;
   company: string;
@@ -192,7 +194,7 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   }, [filteredReports, isFavorite]);
 
   const displayedOtherGroups = useMemo(
-    () => otherGroups.slice(0, 40),
+    () => otherGroups.slice(0, MAX_DROPDOWN_GROUPS),
     [otherGroups]
   );
 
@@ -595,9 +597,12 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
                       </div>
                     )}
                     {displayedOtherGroups.map(renderGroup)}
-                    {otherGroups.length > 40 && (
+                    {otherGroups.length > MAX_DROPDOWN_GROUPS && (
                       <div className="border-t border-border/40 bg-surface-0/60 px-3 py-2 text-center font-mono text-[11px] text-slate-400">
-                        {t.showingUniverseSummary(40, otherGroups.length)}
+                        {t.showingUniverseSummary(
+                          MAX_DROPDOWN_GROUPS,
+                          otherGroups.length
+                        )}
                       </div>
                     )}
                   </div>

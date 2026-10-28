@@ -42,6 +42,8 @@ import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 import Link from "next/link";
 
+export const WATCHLIST_PAGE_SIZE = 50;
+
 export interface WatchlistViewProps {
   reports: ReportSummary[];
   onSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
@@ -299,8 +301,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
     ]);
 
     // Progressive rendering batch size (renders initial 50 rows in <15ms, auto-increments on scroll)
-    const PAGE_SIZE = 50;
-    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const [visibleCount, setVisibleCount] = useState(WATCHLIST_PAGE_SIZE);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
 
     // Reset visible count when filters or sorting change
@@ -308,7 +309,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
     const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
     if (prevFilterKey !== filterKey) {
       setPrevFilterKey(filterKey);
-      setVisibleCount(PAGE_SIZE);
+      setVisibleCount(WATCHLIST_PAGE_SIZE);
     }
 
     const displayedGroups = useMemo(() => {
@@ -327,7 +328,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
         (entries) => {
           if (entries[0]?.isIntersecting) {
             setVisibleCount((prev) =>
-              Math.min(prev + PAGE_SIZE, filteredGroups.length)
+              Math.min(prev + WATCHLIST_PAGE_SIZE, filteredGroups.length)
             );
           }
         },
