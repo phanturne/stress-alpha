@@ -215,14 +215,18 @@ async function syncNews() {
   const db = getDb();
   const repo = getReportRepository();
 
-  console.log(
-    "\n📰 [StressAlpha News & Catalyst Sync] Initializing event intelligence pipeline...\n"
-  );
-
   // 1. Parse CLI flags
   const rawArgs = process.argv.slice(2);
   const isFirehose = rawArgs.includes("--firehose");
   const daysIndex = rawArgs.indexOf("--days");
+
+  const polygonKey = process.env.MASSIVE_API_KEY || process.env.POLYGON_API_KEY;
+  if (isFirehose && !polygonKey) {
+    console.error(
+      "❌ Neither MASSIVE_API_KEY nor POLYGON_API_KEY is configured in environment. Cannot stream global news."
+    );
+    process.exit(1);
+  }
 
   // For daily runs: 1 day lookback (Tuesday-Friday) or 3 days on Monday to bridge Friday AMC/weekend
   const dayOfWeek = new Date().getUTCDay(); // 0 = Sun, 1 = Mon

@@ -54,6 +54,20 @@ async function main() {
 
   const targetDate = date || new Date().toISOString().split("T")[0];
 
+  if (!dryRun && !process.env.DATABASE_URL) {
+    console.error(
+      "❌ DATABASE_URL is not set. Aborting earnings calendar sync."
+    );
+    process.exit(1);
+  }
+
+  if (!process.env.FINNHUB_API_KEY) {
+    console.error(
+      "❌ FINNHUB_API_KEY is not configured in environment. Cannot query earnings calendar."
+    );
+    process.exit(1);
+  }
+
   console.log("\n" + "=".repeat(66));
   console.log(
     "⚡ [StressAlpha Inverted Earnings Calendar & Scaffolding Engine]"

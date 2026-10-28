@@ -47,7 +47,8 @@ jobs:
       - name: Run Earnings Calendar Ingestion Script
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY || secrets.POLYGON_API_KEY }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY || secrets.MASSIVE_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
         run: |
           ARGS=""
