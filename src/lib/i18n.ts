@@ -61,6 +61,10 @@ export interface Translations {
     allReportsSection: string;
     starredTooltip: string;
     quartersCount: (count: number) => string;
+    searchPlaceholder: string;
+    collapseQuarters: string;
+    expandQuarters: (count: number) => string;
+    showingUniverseSummary: (shown: number, total: number) => string;
   };
   cockpit: {
     title: string;
@@ -650,6 +654,9 @@ export interface Translations {
       moat: string;
       resilience: string;
     };
+    noFilterMatches: string;
+    resultsCount: (shown: number, total: number) => string;
+    loadAll: (total: number) => string;
   };
   socialCard: {
     modalTitle: string;
@@ -937,6 +944,111 @@ export interface Translations {
       shortcutsButton: string;
     };
   };
+  methodologyPage: {
+    backToModel: string;
+    engineTag: string;
+    badge: string;
+    title: string;
+    subtitle: string;
+    nav: {
+      demand: string;
+      operatingLeverage: string;
+      earningsQuality: string;
+      scenarioTargets: string;
+      baseVsWfv: string;
+      moat: string;
+      calibration: string;
+    };
+    section1: {
+      title: string;
+      desc: string;
+      formulaLabel: string;
+      formula: string;
+      shockLabel: string;
+      exposureLabel: string;
+      elasticityLabel: string;
+      exampleTitle: string;
+      exampleExposure: string;
+      exampleElasticity: string;
+      exampleCut: string;
+      exampleNetShock: string;
+      exampleStressedRev: string;
+    };
+    section2: {
+      title: string;
+      desc: string;
+      formulaLabel: string;
+    };
+    section3: {
+      title: string;
+      desc: string;
+      caseStudyTitle: string;
+      caseStudyText: string;
+    };
+    section4: {
+      title: string;
+      desc: string;
+      bullTitle: string;
+      bullDesc: string;
+      baseTitle: string;
+      baseDesc: string;
+      panicTitle: string;
+      panicDesc: string;
+      asymmetryTitle: string;
+      asymmetryDesc: string;
+    };
+    section5: {
+      title: string;
+      desc: string;
+      baseTitle: string;
+      baseBadge: string;
+      baseDesc: string;
+      wfvTitle: string;
+      wfvBadge: string;
+      wfvDesc: string;
+      callout: string;
+    };
+    section6: {
+      title: string;
+      desc: string;
+      p1Title: string;
+      p1Desc: string;
+      p2Title: string;
+      p2Desc: string;
+      p3Title: string;
+      p3Desc: string;
+      p4Title: string;
+      p4Desc: string;
+      p5Title: string;
+      p5Desc: string;
+    };
+    section7: {
+      title: string;
+      desc: string;
+      formulaLabel: string;
+      p1Title: string;
+      p1Desc: string;
+      p2Title: string;
+      p2Desc: string;
+      p3Title: string;
+      p3Desc: string;
+      p4Title: string;
+      p4Desc: string;
+      caseStudyTitle: string;
+      caseStudyText: string;
+      interviewTitle: string;
+      interviewWhyTitle: string;
+      interviewWhyText: string;
+      interviewRoadmapTitle: string;
+      interviewRoadmapText: string;
+    };
+    cta: {
+      title: string;
+      desc: string;
+      backBtn: string;
+      githubBtn: string;
+    };
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -1007,6 +1119,11 @@ export const translations: Record<Locale, Translations> = {
       starredTooltip: "Toggle Watchlist",
       quartersCount: (count: number) =>
         `${count} ${count === 1 ? "Quarter" : "Quarters"}`,
+      searchPlaceholder: "Search ticker, company or quarter...",
+      collapseQuarters: "Collapse quarters",
+      expandQuarters: (count: number) => `View all ${count} quarters`,
+      showingUniverseSummary: (shown: number, total: number) =>
+        `Showing ${shown} of ${total} companies · Type to search universe...`,
     },
     cockpit: {
       title: "Stress Test Model",
@@ -1642,6 +1759,10 @@ export const translations: Record<Locale, Translations> = {
         moat: "Economic Moat",
         resilience: "Downside Floor",
       },
+      noFilterMatches: "No tracked equities match your filters.",
+      resultsCount: (shown: number, total: number) =>
+        `Showing ${shown} of ${total} tickers`,
+      loadAll: (total: number) => `Load all (${total})`,
     },
     socialCard: {
       modalTitle: "Share Analysis & Export Cards",
@@ -1962,6 +2083,132 @@ export const translations: Record<Locale, Translations> = {
         shortcutsButton: "View Keyboard Shortcuts",
       },
     },
+    methodologyPage: {
+      backToModel: "Back to Model",
+      engineTag: "METHODOLOGY",
+      badge: "Mathematical Engine & Valuation Logic",
+      title: "Deterministic Valuation & Stress Simulation Methodology",
+      subtitle:
+        "Unlike black-box AI financial chatbots, StressAlpha confines LLMs exclusively to structured artifact extraction and risk disclosure audits. All P&L flow-through calculations, operating leverage, EPS normalization, and scenario valuation trees are executed by a client-side deterministic arithmetic engine in sub-milliseconds.",
+      nav: {
+        demand: "1. Demand & Volume Drivers",
+        operatingLeverage: "2. Operating Leverage",
+        earningsQuality: "3. Earnings Quality & EPS",
+        scenarioTargets: "4. Scenario Targets & Risk/Reward",
+        baseVsWfv: "5. Base FV vs. WFV",
+        moat: "6. Economic Moat",
+        calibration: "7. Scenario Calibration Matrix",
+      },
+      section1: {
+        title: "1. Upstream Demand Shock Flow-Through",
+        desc: "Hyper-growth tech enterprises are tethered to upstream capital spending or enterprise budget trends. StressAlpha pairs each upstream macroeconomic driver (e.g. Big-4 Hyperscaler CapEx, CoWoS packaging yield, enterprise IT budgets) with an Exposure share and an Elasticity coefficient.",
+        formulaLabel: "FORMULA",
+        formula:
+          "Stressed_Revenue = Base_Revenue × [ 1 + ∑ (Shock_i × Exposure_i × Elasticity_i) ]",
+        shockLabel: "Adjustment (%)",
+        exposureLabel: "Revenue exposure [0, 1]",
+        elasticityLabel: "Sensitivity multiplier",
+        exampleTitle: "Example: NVIDIA (NVDA Q2 2027)",
+        exampleExposure:
+          "NVDA Data Center revenue represents 85% of sales (0.85 exposure) with an elasticity of 1.15. If cloud hyperscalers cut AI CapEx by -15%:",
+        exampleElasticity: "1.15",
+        exampleCut: "-15%",
+        exampleNetShock: "Net Shock = -15% × 0.85 × 1.15 = -14.66%.",
+        exampleStressedRev:
+          "Stressed Revenue = $30.04B × (1 - 14.66%) = $25.63B.",
+      },
+      section2: {
+        title: "2. Operating Leverage & Cost Structure",
+        desc: "When top-line sales decline, fixed overhead (R&D amortization, data center leases, base compensation) does not scale down linearly. This triggers an amplified collapse in operating profit (operating leverage). StressAlpha decomposes costs into variable COGS and rigid fixed OpEx, enabling independent margin stress tests. Crucially for institutional investment committees, StressAlpha extends beyond P&L accounting to quantify Free Cash Flow (FCF) conversion, CapEx intensity, and working capital drag across all stress regimes.",
+        formulaLabel: "FORMULAS",
+      },
+      section3: {
+        title: "3. Earnings Quality Audit & Clean Operating EPS",
+        desc: "Headline GAAP diluted earnings are frequently distorted by non-operating mark-to-market revaluations, litigation settlements, or paper investment marks. Valuing a company on contaminated headline EPS produces severe mispricings.",
+        caseStudyTitle:
+          "Case Study: Amazon (AMZN Q2 2026) ASU 2016-01 Distortion",
+        caseStudyText:
+          "Amazon reported headline GAAP diluted EPS of $5.49, seemingly crushing consensus. However, forensic analysis reveals a $53.4B unrealized paper mark on its Anthropic investment under ASU 2016-01. StressAlpha's guardrail automatically isolates and strips this one-time non-operating distortion, revealing Amazon's true sustainable operating EPS was $1.26.",
+      },
+      section4: {
+        title: "4. Scenario Target Prices & Risk/Reward Ratio",
+        desc: "Disciplined equity investing is not about predicting a single target point; it is about quantifying risk/reward asymmetry across multiple market regimes:",
+        bullTitle: "Bull Regime",
+        bullDesc: "Accelerating growth with multiple expansion.",
+        baseTitle: "Base Regime",
+        baseDesc:
+          "Execution on baseline guidance at normalized historical P/E.",
+        panicTitle: "Panic Floor",
+        panicDesc: "Macro recession and multiple compression to cycle trough.",
+        asymmetryTitle: "Risk / Reward Ratio",
+        asymmetryDesc:
+          "Measures the ratio of upside gain potential in the Bull regime versus drawdown exposure to the Panic Floor. A skew above 2.0x indicates an attractive margin of safety.",
+      },
+      section5: {
+        title: "5. Base Fair Value vs. Weighted Fair Value (WFV)",
+        desc: "These are the two anchor valuation figures featured in the Stock Screener and Valuation Model:",
+        baseTitle: "Base Fair Value",
+        baseBadge: "Single-Point Baseline",
+        baseDesc:
+          "The implied share price under the single most likely baseline scenario (management guidance execution).",
+        wfvTitle: "Weighted Fair Value (WFV)",
+        wfvBadge: "Expected Payoff Simplex",
+        wfvDesc:
+          "The probability-weighted expected payoff integrating Bull, Base, and Bear scenario distributions.",
+        callout:
+          "💡 When an enterprise possesses positive skew (e.g. NVIDIA's open-ended AI compute tailwind), the Weighted Fair Value exceeds Base Fair Value because the massive Bull upside pulls the probability distribution up.",
+      },
+      section6: {
+        title: "6. 5-Pillar Economic Moat Framework",
+        desc: "Financial figures only record backward-looking quarterly performance. Economic moats determine how long a firm can defend excess returns (ROIC > WACC). StressAlpha evaluates moats across five structural pillars:",
+        p1Title: "1. Intangible Assets",
+        p1Desc: "Patents, proprietary tech, brands.",
+        p2Title: "2. Switching Costs",
+        p2Desc: "Developer lock-in, deep integrations.",
+        p3Title: "3. Cost Advantage",
+        p3Desc: "Purchasing scale, superior unit economics.",
+        p4Title: "4. Network Effects",
+        p4Desc: "Two-sided developer & hardware flywheels.",
+        p5Title: "5. Efficient Scale",
+        p5Desc: "Capital intensity deterring new entrants.",
+      },
+      section7: {
+        title: "7. Deterministic Scenario Calibration Matrix",
+        desc: "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha rejects academic window dressing in favor of a pure deterministic TypeScript Softmax Multi-Regime Weighting with Tail Risk Heuristics: scenario priors are mapped into Log-Odds space, modified across 4 institutional pillars with deterministic shifts, and resolved via temperature-controlled Softmax with simplex contraction.",
+        formulaLabel: "LOG-ODDS & SOFTMAX PROBABILITY SIMPLEX",
+        p1Title: "Pillar 1: Forensic & Governance Tail Veto",
+        p1Desc:
+          "Severe governance flags or forensic accounting probes impose asymmetric log-odds shifts (Δz_panic = +1.35, Δz_bull = -1.60) and enforce an institutional fiduciary veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled). Governance failures are existential downside tail events that no operational margin cushion can offset.",
+        p2Title: "Pillar 2: Archetype-Aware Resilience & Capital Runway",
+        p2Desc:
+          "Categorizes equities into 3 valuation archetypes: 1) Compounder: Operating margins >30% rewarded, <15% penalized unless protected by Wide Moat (Costco Exemption); 2) Operating Scaler: Growth ≥25% and gross margin ≥60% rewarded for operating leverage acceleration; 3) Venture Hypergrowth: High growth (≥50%) scale-ups with negative operating income (e.g. ONDS). Gated by a ≥35% gross margin floor to grant the Unit Economics Exemption; audited for Net Liquid Cash Runway: runways <9 months incur an acute +1.25 Panic logit penalty to reflect emergency secondary equity dilution.",
+        p3Title: "Pillar 3: Sell-Side Consensus Skew & Dispersion",
+        p3Desc:
+          "Ingests consensus rating skew and target price dispersion ((High - Low) / Mean). Overwhelming buy conviction (≥80%) boosts Bull logits, while extreme target dispersion (>0.80) widens tail regime weights to capture market disagreement and consensus overcrowding.",
+        p4Title: "Pillar 4: Market-Implied Risk Anchor & Regularization",
+        p4Desc:
+          "Reverse-engineers the disaster probability priced in by the current market. The parameter w_mkt = 0.20 functions as an empirical dampening regularization weight rather than an unproven prior distribution: it anchors 20% to real-time market pricing to prevent dogmatic detachment from reality while preserving 80% model weight for independent fundamental alpha.",
+        caseStudyTitle:
+          "Case Study: Super Micro Computer (SMCI Q4 2026) Governance Calibration",
+        caseStudyText:
+          "SMCI traded at $41.54. Uncalibrated priors assigned 25% Bull ($104) / 50% Base ($59.40) / 25% Panic ($19.00), producing an uncalibrated WFV of $60.45 (+45.5% False Alpha) despite active forensic accounting investigations. The Scenario Calibration Matrix detected severe governance risk and thin 13.5% gross margins, triggering the Lexicographic Veto to calibrate probabilities to: Panic 75.0% / Base 17.0% / Bull 8.0%. This adjusted Weighted Fair Value to $31.91 (-23.2% real downside risk), accurately identifying asymmetric capital impairment danger.",
+        interviewTitle:
+          "Methodology Note & Interview Guidance: Heuristic Framing vs. Empirical Backtesting",
+        interviewWhyTitle:
+          "Why use heuristic logit shifts over unproven academic priors?",
+        interviewWhyText:
+          "In buy-side investment committee and quant research interviews, claiming an unsubstantiated “Bayesian posterior” without empirical distributions invites immediate skepticism. StressAlpha is intellectually honest: the baseline logit shifts (Δz) represent transparent institutional heuristic bounds modeling structural downside asymmetries (governance tail vetoes, acute dilution overhang).",
+        interviewRoadmapTitle: "Empirical Calibration Roadmap:",
+        interviewRoadmapText:
+          "In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.",
+      },
+      cta: {
+        title: "Explore the Open-Source Codebase & AI Skills",
+        desc: "StressAlpha is fully open-source with Next.js 16, deterministic arithmetic modules, in-memory test suites, and automated earnings analysis CLI scripts.",
+        backBtn: "Open Model",
+        githubBtn: "View on GitHub",
+      },
+    },
   },
   zh: {
     header: {
@@ -2027,6 +2274,11 @@ export const translations: Record<Locale, Translations> = {
       allReportsSection: "全部覆盖标的",
       starredTooltip: "切换自选状态",
       quartersCount: (count: number) => `${count} 个季度`,
+      searchPlaceholder: "搜索代码、公司或季度...",
+      collapseQuarters: "收起历史季度",
+      expandQuarters: (count: number) => `展开全部 ${count} 个季度`,
+      showingUniverseSummary: (shown: number, total: number) =>
+        `显示全部 ${total} 家公司中的前 ${shown} 家 · 输入关键词搜索股票池...`,
     },
     cockpit: {
       title: "情景压力测试模型",
@@ -2643,6 +2895,10 @@ export const translations: Record<Locale, Translations> = {
         moat: "护城河与对标",
         resilience: "下行安全底与抗风险",
       },
+      noFilterMatches: "未找到符合当前筛选条件的自选标的。",
+      resultsCount: (shown: number, total: number) =>
+        `显示 ${shown} / 共 ${total} 家标的`,
+      loadAll: (total: number) => `加载全部 (${total})`,
     },
     socialCard: {
       modalTitle: "分享研报与导出社媒卡片",
@@ -2952,6 +3208,129 @@ export const translations: Record<Locale, Translations> = {
         methodologyLink: "模型算法原理交互指南",
         githubLink: "GitHub 开源代码仓库",
         shortcutsButton: "查看键盘快捷键",
+      },
+    },
+    methodologyPage: {
+      backToModel: "返回模型",
+      engineTag: "模型算法原理",
+      badge: "数理内核与决策逻辑",
+      title: "StressAlpha 财务与压力估值模型计算原理",
+      subtitle:
+        "不同于传统大模型的黑盒幻觉推测，StressAlpha 将 LLM 严密限制在上游财报事实抽取与情景锚定阶段，所有 P&L 传导、经营杠杆、核心经营 EPS 与加权估值均由客户端纯确定性算术引擎毫秒级实时计算。",
+      nav: {
+        demand: "1. 需求驱动与业务量冲击",
+        operatingLeverage: "2. 经营杠杆与固定成本",
+        earningsQuality: "3. 盈利质量与核心EPS",
+        scenarioTargets: "4. 情景目标价与盈亏比",
+        baseVsWfv: "5. 基准公允价 vs 加权公允价",
+        moat: "6. 五维经济护城河评级",
+        calibration: "7. 确定性情景校准矩阵",
+      },
+      section1: {
+        title: "1. 上游需求扰动传导模型",
+        desc: "大型科技巨头（如英伟达、亚马逊）的营收极度依赖上游资本开支或终端市场预算。模型为每一个上游宏观驱动因子（如云厂商AI资本开支、CoWoS先进封装良率、企业IT预算）配置了业务暴露比例（Exposure）与传导弹性系数（Elasticity）。",
+        formulaLabel: "数学公式",
+        formula:
+          "Stressed_Revenue = Base_Revenue × [ 1 + ∑ (Shock_i × Exposure_i × Elasticity_i) ]",
+        shockLabel: "滑块调整幅度 (%)",
+        exposureLabel: "业务营收占比 [0, 1]",
+        elasticityLabel: "传导弹性系数",
+        exampleTitle: "以 NVIDIA (NVDA Q2 2027) 为例",
+        exampleExposure:
+          "NVDA 数据中心营收暴露度为 85% (0.85)，对四大云厂商 AI 资本开支的弹性为 1.15。若云厂商削减 AI 资本开支 -15%：",
+        exampleElasticity: "1.15",
+        exampleCut: "-15%",
+        exampleNetShock: "传导冲击 = -15% × 0.85 × 1.15 = -14.66%。",
+        exampleStressedRev:
+          "经测试年度营收 = $30.04B × (1 - 14.66%) = $25.63B。",
+      },
+      section2: {
+        title: "2. 经营杠杆与固定/变动成本分拆",
+        desc: "当营收下滑时，固定开支（研发折旧、数据中心租金、固定薪酬）并不会同比例减少，这导致利润率呈现非线性的剧烈下挫（经营杠杆效应）。StressAlpha 将营业费用（OpEx）拆分为变动成本与刚性固定成本，并允许在毛利率基点（Bps）和固定支出变动（%）上施加压力。除损益表外，投资委员会高度关注自由现金流（FCF）转化率、资本开支密集度与运营资金拖累，模型同步推导 NOPAT、折旧摊销与 CapEx 压力对真实每股现金流及自由现金流收益率的传导。",
+        formulaLabel: "数学公式",
+      },
+      section3: {
+        title: "3. 盈利质量防线与核心经营 EPS 净化",
+        desc: "GAAP 会计准则下的财报净利润经常包含巨额的非经常性纸面公允价值重估收益或投资浮盈。如果直接采用 GAAP EPS 进行估值倍数测算，将严重扭曲真实价值。",
+        caseStudyTitle: "经典案例：亚马逊 (AMZN Q2 2026) 投资公允价值失真",
+        caseStudyText:
+          "亚马逊 Q2 2026 财报 GAAP 稀释每股收益达到 $5.49，大幅超出市场预期。然而审计发现，其中包含对 Anthropic 股权投资按 ASU 2016-01 准则确认的 $53.4B 非经营性未实现纸面浮盈。StressAlpha 的收益质量引擎自动扣除该一次性收益，还原出亚马逊真实的持续经营核心 EPS 仅为 $1.26，为投资者规避了虚高估值陷阱。",
+      },
+      section4: {
+        title: "4. 情景目标价谱系与盈亏收益比",
+        desc: "投资决策不是预测一个孤立的价格点，而是评估不同市场情境下的盈亏不对称性。系统将经受压力测试后的预期 EPS 映射到三个市场周期估值倍数中：",
+        bullTitle: "乐观周期 (Bull Regime)",
+        bullDesc: "企业业绩加速增长，估值倍数大幅扩张 (P/E Expansion)。",
+        baseTitle: "基准周期 (Base Regime)",
+        baseDesc: "管理层正常兑现前瞻指引，市场维持历史平均估值倍数。",
+        panicTitle: "恐慌底线 (Panic Floor)",
+        panicDesc: "宏观衰退与需求冰封，估值压缩至历史周期极值底部。",
+        asymmetryTitle: "盈亏收益比 (Risk/Reward Ratio)",
+        asymmetryDesc:
+          "衡量向上乐观空间与向下极端恐慌回撤的倍数关系。比率大于 2.0x 意味着潜在收益显著高于下行风险，具备极高配置安全边际。",
+      },
+      section5: {
+        title: "5. 基准公允价 vs 加权公允价 (WFV)",
+        desc: "这是股票筛选器（Screener）与估值模型中最核心的两个指标：",
+        baseTitle: "基准公允价 (Base Fair Value)",
+        baseBadge: "单点基准",
+        baseDesc:
+          "若公司如期兑现官方前瞻业绩指引，且市场估值倍数维持中枢水平时的合理股价。",
+        wfvTitle: "加权公允价 (Weighted Fair Value)",
+        wfvBadge: "期望概率全景",
+        wfvDesc:
+          "综合考虑乐观浪潮与悲观下行的全状态概率加权期望值 (Expected Payoff)。",
+        callout:
+          "💡 当公司面临极大的正向期权收益（如英伟达受 AI 算力指数级爆发驱动）时，加权公允价会因乐观端的大幅拉动而高于基准公允价；反之，若公司面临严重债务违约或行业被颠覆风险，加权公允价将低于基准公允价。",
+      },
+      section6: {
+        title: "6. 五维经济护城河评级体系",
+        desc: "纯财务数据只能反映过去一个季度的结果，唯有经济护城河才能决定高超额利润（ROIC > WACC）的持久性。StressAlpha 遵循晨星（Morningstar）与巴菲特护城河标准，从五个维度量化评估竞争壁垒与其演进趋势：",
+        p1Title: "1. 无形资产",
+        p1Desc: "专利微架构、品牌定价权、独家许可",
+        p2Title: "2. 转换成本",
+        p2Desc: "CUDA生态绑定、企业核心业务深度嵌合",
+        p3Title: "3. 成本优势",
+        p3Desc: "台积电先进制程采购规模、独占良率",
+        p4Title: "4. 网络效应",
+        p4Desc: "开发者-云厂商双向增强飞轮",
+        p5Title: "5. 有效规模",
+        p5Desc: "百亿研发开支筑起自然垄断护城河",
+      },
+      section7: {
+        title:
+          "7. 确定性情景概率校准矩阵 (Deterministic Scenario Calibration Matrix)",
+        desc: "传统定性估值模型通常给乐观（Bull）、基准（Base）和悲观（Panic）情景赋予机械对称的先验权重（如 25% / 50% / 25%）。当公司面临严重审计师辞职、司法部调查或薄弱毛利率时，未校准的模型会给出脱离现实的“虚假阿尔法（False Alpha）”。StressAlpha 摒弃空洞的学术包装，采用纯确定性 TypeScript 编写的 Softmax 多状态加权与尾部风险启发式矩阵：将先验转换至对数几率空间（Log-Odds），基于四大制度性支柱施加确定性非线性偏置，并通过凸收缩确保概率落在 [0.05, 0.85] 概率单纯形闭环区间。",
+        formulaLabel: "对数几率变换与 Softmax 闭合",
+        p1Title: "支柱一：司法审计与治理否决权",
+        p1Desc:
+          "当 facts.json 标记 governanceRisk: 'severe'、审计师辞职或司法调查时，模型施加非对称对数偏置（Δz_panic = +1.35, Δz_bull = -1.60），并触发硬性受托否决（Panic 概率 ≥ 45%，Bull 概率 ≤ 8%，强制屏蔽毛利防御缓冲）。治理失信属于存在性下行风险，无法被任何经营毛利抵消。",
+        p2Title: "支柱二：商业范式校准与现金跑道护栏（复合/扩张/创投三分类）",
+        p2Desc:
+          "将标的划分为三类范式：1) 现金复合型 (Compounder)：营业利润率 >30% 奖赏，<15% 施加去杠杆惩罚（好市多高周转宽护城河豁免）；2) 经营杠杆型 (Operating Scaler)：增速 ≥25% 且毛利 ≥60% 奖赏经营杠杆释放速度；3) 创投极速扩张型 (Venture Hypergrowth)：如 ONDS 增速 ≥50% 且营业亏损。若毛利率 ≥35% 判定单位经济模型成立，豁免营业亏损惩罚；同时审计净流动现金跑道：若跑道 <9 个月，施加 +1.25 恐慌对数惩罚，真实反映股权增发与破发折价稀释风险。",
+        p3Title: "支柱三：华尔街卖方预期偏度与离散度",
+        p3Desc:
+          "自动采集分析师买入/中性/卖方评级分布与 52 周目标价离散度 ((High - Low)/Mean)。若超 80% 分析师给出买入评级，向乐观端微调；若预期离散度 >0.80，则提升极端情景权重，反映市场认知巨大分歧与交易拥挤度。",
+        p4Title: "支柱四：内生市场风险锚与阻尼正则化",
+        p4Desc:
+          "根据当前市场成交价反推市场隐含的恐慌折价概率。参数 w_mkt = 0.20 并非假设的先验分布，而是实用的阻尼正则化权重：将模型向市场实际定价锚定 20%，避免脱离现实的主观教条主义，同时保留 80% 权重用于发现独立的非共识阿尔法。",
+        caseStudyTitle: "实测案例：超微电脑 (SMCI Q4 2026) 治理危机压力校准",
+        caseStudyText:
+          "SMCI 现价 $41.54。原始模型在未校准时分配 25% Bull ($104) / 50% Base ($59.40) / 25% Panic ($19.00)，计算出加权公允价高达 $60.45 (+45.5% 虚假虚高空间)。情景校准矩阵检测到审计师辞职与调查，自动触发治理否决权与薄利（13.5% GM）惩罚，将概率校准为：Panic 75.0% / Base 17.0% / Bull 8.0%，测得实际加权公允价为 $31.91 (-23.2% 真实下行风险)，成功保护投资决策免遭踩雷。",
+        interviewTitle:
+          "方法论释疑与买方投研面试指引：启发式设计与经验回测演进",
+        interviewWhyTitle: "为什么采用对数几率启发式偏置而非机械拟合？",
+        interviewWhyText:
+          "在买方基本面研究与量化面试中，最忌讳在无共轭先验的场景下伪称“严谨贝叶斯后验”。StressAlpha 坦诚说明：当前的 Δz 调整量是基于买方风控经验提炼的确定性启发式界限（如审计师辞职属于制度性否决，稀释跑道不足 9 个月面临股权破发）。",
+        interviewRoadmapTitle: "未来实证校准路径：",
+        interviewRoadmapText:
+          "在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier Score: B = 1/N ∑ (p_i - o_i)²）与多项对数损失（Multinomial Log-Loss）实现实证最优化校准。",
+      },
+      cta: {
+        title: "探索开源代码与 AI Skill 流水线",
+        desc: "StressAlpha 包含完整的 Next.js 16 仪表盘、确定性估值引擎、In-Memory 测试套件以及自动化 AI 技能脚本。",
+        backBtn: "返回测算模型",
+        githubBtn: "访问 GitHub 仓库",
       },
     },
   },

@@ -78,6 +78,18 @@ export function useReportNavigation({
   const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const workspaceScrollRef = useRef<HTMLDivElement | null>(null);
 
+  const currentSlugRef = useRef(currentSlug);
+  const activeTabRef = useRef(activeTab);
+  const localeRef = useRef(locale);
+  const stressParamsRef = useRef(stressParams);
+
+  useEffect(() => {
+    currentSlugRef.current = currentSlug;
+    activeTabRef.current = activeTab;
+    localeRef.current = locale;
+    stressParamsRef.current = stressParams;
+  });
+
   // Initial load: parse URL search or hash to restore exact scenario, report, tab, and mode
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -207,11 +219,11 @@ export function useReportNavigation({
       setViewMode(mode);
       if (typeof window !== "undefined") {
         const queryString = serializeScenarioUrlState({
-          report: currentSlug ?? undefined,
-          tab: activeTab,
+          report: currentSlugRef.current ?? undefined,
+          tab: activeTabRef.current,
           mode,
-          lang: locale,
-          stressParams,
+          lang: localeRef.current,
+          stressParams: stressParamsRef.current,
         });
         window.history.pushState(
           null,
@@ -220,7 +232,7 @@ export function useReportNavigation({
         );
       }
     },
-    [currentSlug, activeTab, locale, stressParams, router]
+    [router]
   );
 
   // Select report and navigate directly to Cockpit
@@ -232,10 +244,10 @@ export function useReportNavigation({
       if (typeof window !== "undefined") {
         const queryString = serializeScenarioUrlState({
           report: slug,
-          tab: activeTab,
+          tab: activeTabRef.current,
           mode: nextMode,
-          lang: locale,
-          stressParams,
+          lang: localeRef.current,
+          stressParams: stressParamsRef.current,
         });
         window.history.pushState(
           null,
@@ -244,7 +256,7 @@ export function useReportNavigation({
         );
       }
     },
-    [setCurrentSlug, activeTab, locale, stressParams]
+    [setCurrentSlug]
   );
 
   // Smooth workspace switcher with auto-scroll to top

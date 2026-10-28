@@ -89,7 +89,7 @@ export interface CockpitDualPaneProps {
   showToast: (msg: string) => void;
 }
 
-export function CockpitDualPane({
+export const CockpitDualPane = React.memo(function CockpitDualPane({
   reportData,
   artifacts,
   displayFacts = artifacts?.facts,
@@ -292,4 +292,4 @@ export function CockpitDualPane({
       />
     </div>
   );
-}
+});

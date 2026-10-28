@@ -968,3 +968,25 @@ input[type="range"]::-moz-range-thumb {
   animation: skeleton-shimmer 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   content: "";
 }
+
+/* Methodology bilingual SSR rendering */
+html:not([data-methodology-locale="zh"]) .methodology-zh-block,
+html:not([data-methodology-locale="zh"]) .methodology-zh-inline {
+  display: none !important;
+}
+
+html[data-methodology-locale="zh"] .methodology-en-block,
+html[data-methodology-locale="zh"] .methodology-en-inline {
+  display: none !important;
+}
+
+/* Off-screen Content Containment (Eliminates DOM layout freeze on 500+ rows) */
+.cv-table-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
+.cv-grid-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
+}

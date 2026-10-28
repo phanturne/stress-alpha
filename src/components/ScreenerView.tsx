@@ -158,1791 +158,1827 @@ const SKELETON_ROWS = [
   },
 ];
 
-export const ScreenerView: React.FC<ScreenerViewProps> = ({
-  reports,
+interface ScreenerItemProps {
+  report: ReportSummary;
+  isFav: boolean;
+  onToggleFav: (tickerOrSlug: string) => void;
+  onSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
+  onPrefetch: (slug: string) => void;
+  ts: ReturnType<typeof getTranslations>["screener"];
+  tHeader: ReturnType<typeof getTranslations>["header"];
+}
+
+const ScreenerTableRow = React.memo(function ScreenerTableRow({
+  report,
+  isFav,
+  onToggleFav,
   onSelectReport,
-  locale = "en",
-  isLoading = false,
-  initialWatchlistOnly = false,
-  onWatchlistFilterChange,
-}) => {
-  const t = getTranslations(locale);
-  const ts = t.screener;
-  const { prefetchReport } = useReportPrefetch();
+  onPrefetch,
+  ts,
+  tHeader,
+}: ScreenerItemProps) {
+  const upside = report.upsidePct ?? 0;
+  const isPositive = upside >= 0;
+  const price = report.currentPrice ?? 0;
+  const wfv = report.weightedFairValue ?? 0;
+  const baseFv = report.baseFairValue ?? 0;
+  const baseUpside = report.baseUpsidePct ?? 0;
+  const bear = report.bearFairValue ?? price * 0.7;
+  const bull = report.bullFairValue ?? price * 1.4;
 
-  const { isFavorite, toggleFavorite, count: watchlistCount } = useWatchlist();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [watchlistOnly, setWatchlistOnly] =
-    useState<boolean>(initialWatchlistOnly);
-  const [prevInitialWatchlist, setPrevInitialWatchlist] =
-    useState<boolean>(initialWatchlistOnly);
-
-  if (prevInitialWatchlist !== initialWatchlistOnly) {
-    setPrevInitialWatchlist(initialWatchlistOnly);
-    setWatchlistOnly(initialWatchlistOnly);
-  }
-
-  const handleToggleWatchlistOnly = (val: boolean) => {
-    setWatchlistOnly(val);
-    onWatchlistFilterChange?.(val);
-  };
-  const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
-  const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
-  const [sortField, setSortField] = useState<SortField>("upside");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [viewMode, setViewMode] = useState<"cards" | "table">("table");
-
-  // Restore saved viewMode preference on client mount to prevent SSR hydration mismatch
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("stress_alpha_screener_view_mode");
-      if (saved === "cards" || saved === "table") {
-        Promise.resolve().then(() => setViewMode(saved));
-      } else if (window.innerWidth < 768) {
-        Promise.resolve().then(() => setViewMode("cards"));
-      }
-    } catch {}
-  }, []);
-
-  const handleSetViewMode = (mode: "cards" | "table") => {
-    setViewMode(mode);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("stress_alpha_screener_view_mode", mode);
-      } catch {}
-    }
-  };
-
-  const hasActiveFilters = Boolean(
-    searchQuery ||
-    moatFilter !== "all" ||
-    upsideFilter !== "all" ||
-    watchlistOnly
+  const rangeSpan = Math.max(bull - bear, 1);
+  const pricePos = Math.min(
+    100,
+    Math.max(0, ((price - bear) / rangeSpan) * 100)
+  );
+  const basePos = Math.min(
+    100,
+    Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
   );
 
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setMoatFilter("all");
-    setUpsideFilter("all");
-    handleToggleWatchlistOnly(false);
-  };
-
-  // Group reports by unique ticker symbol, selecting the latest report as default primary
-  const uniqueReports = useMemo(
-    () => deduplicateReportsToLatest(reports),
-    [reports]
-  );
-
-  // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
-  const stats = useMemo(() => {
-    const baseList = watchlistOnly
-      ? uniqueReports.filter((r) => isFavorite(r.ticker || r.slug))
-      : uniqueReports;
-
-    if (baseList.length === 0) {
-      return {
-        count: 0,
-        avgUpside: 0,
-        topPick: null as ReportSummary | null,
-        wideMoatCount: 0,
-      };
-    }
-
-    const validUpsides = baseList
-      .map((r) => r.upsidePct)
-      .filter((u): u is number => typeof u === "number" && !isNaN(u));
-    const avgUpside =
-      validUpsides.length > 0
-        ? validUpsides.reduce((a, b) => a + b, 0) / validUpsides.length
-        : 0;
-
-    let topPick: ReportSummary | null = null;
-    let maxUpside = -Infinity;
-    let wideMoatCount = 0;
-
-    for (const r of baseList) {
-      if (typeof r.upsidePct === "number" && r.upsidePct > maxUpside) {
-        maxUpside = r.upsidePct;
-        topPick = r;
-      }
-      if (r.moatRating?.toLowerCase() === "wide") {
-        wideMoatCount += 1;
-      }
-    }
-
-    return {
-      count: baseList.length,
-      avgUpside,
-      topPick,
-      wideMoatCount,
-    };
-  }, [uniqueReports, watchlistOnly, isFavorite]);
-
-  const isWatchlistEmpty = watchlistOnly && stats.count === 0 && !isLoading;
-
-  // Filter and sort reports
-  const filteredReports = useMemo(() => {
-    return uniqueReports
-      .filter((r) => {
-        // Watchlist filter
-        if (watchlistOnly) {
-          const symbol = r.ticker || r.slug;
-          if (!isFavorite(symbol)) return false;
-        }
-
-        // Text search
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase().trim();
-          const matchTicker = r.ticker?.toLowerCase().includes(q);
-          const matchCompany = r.company?.toLowerCase().includes(q);
-          const matchSlug = r.slug?.toLowerCase().includes(q);
-          if (!matchTicker && !matchCompany && !matchSlug) return false;
-        }
-
-        // Moat filter
-        if (moatFilter !== "all") {
-          const moat = r.moatRating?.toLowerCase() ?? "";
-          if (moatFilter === "wide" && moat !== "wide") return false;
-          if (moatFilter === "narrow" && moat !== "narrow") return false;
-        }
-
-        // Upside filter
-        if (upsideFilter === "undervalued") {
-          if ((r.upsidePct ?? 0) <= 0) return false;
-        } else if (upsideFilter === "high-upside") {
-          if ((r.upsidePct ?? 0) < 20) return false;
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        let valA: number | string = 0;
-        let valB: number | string = 0;
-
-        switch (sortField) {
-          case "upside":
-            valA = a.upsidePct ?? -999;
-            valB = b.upsidePct ?? -999;
-            break;
-          case "baseUpside":
-            valA = a.baseUpsidePct ?? -999;
-            valB = b.baseUpsidePct ?? -999;
-            break;
-          case "price":
-            valA = a.currentPrice ?? 0;
-            valB = b.currentPrice ?? 0;
-            break;
-          case "analystTarget":
-            valA =
-              a.analystUpsidePct ??
-              (a.analystTarget && a.currentPrice && a.currentPrice > 0
-                ? ((a.analystTarget - a.currentPrice) / a.currentPrice) * 100
-                : -999);
-            valB =
-              b.analystUpsidePct ??
-              (b.analystTarget && b.currentPrice && b.currentPrice > 0
-                ? ((b.analystTarget - b.currentPrice) / b.currentPrice) * 100
-                : -999);
-            break;
-          case "opMargin":
-            valA = a.operatingMarginPct ?? -999;
-            valB = b.operatingMarginPct ?? -999;
-            break;
-          case "revGrowth":
-            valA = a.revenueGrowthPct ?? -999;
-            valB = b.revenueGrowthPct ?? -999;
-            break;
-          case "ticker":
-            valA = a.ticker || a.slug;
-            valB = b.ticker || b.slug;
-            break;
-          case "snowflake":
-            valA = a.snowflakeScore ?? -1;
-            valB = b.snowflakeScore ?? -1;
-            break;
-          case "moat": {
-            const moatRank = (r?: string) => {
-              const m = r?.toLowerCase();
-              if (m === "wide") return 2;
-              if (m === "narrow") return 1;
-              return 0;
-            };
-            valA = moatRank(a.moatRating);
-            valB = moatRank(b.moatRating);
-            break;
+  return (
+    <tr
+      className="cv-table-row group cursor-pointer transition-colors hover:bg-surface-2/70"
+      onClick={() => onSelectReport(report.slug, "cockpit")}
+      onMouseEnter={() => onPrefetch(report.slug)}
+      onFocus={() => onPrefetch(report.slug)}
+    >
+      {/* Watchlist Star Toggle */}
+      <td
+        className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center group-hover:bg-surface-2/90"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFav(report.ticker || report.slug);
+          }}
+          className="group/star inline-flex items-center justify-center rounded p-1 transition-transform hover:scale-125 active:scale-95"
+          title={isFav ? tHeader.removeFromWatchlist : tHeader.addToWatchlist}
+          aria-label={
+            isFav ? tHeader.removeFromWatchlist : tHeader.addToWatchlist
           }
-        }
+        >
+          <Star
+            className={`size-4 transition-colors ${
+              isFav
+                ? "fill-amber-400 text-amber-400"
+                : "text-slate-600 hover:text-amber-400"
+            }`}
+          />
+        </button>
+      </td>
 
-        if (typeof valA === "string" && typeof valB === "string") {
-          return sortDirection === "asc"
-            ? valA.localeCompare(valB)
-            : valB.localeCompare(valA);
-        }
-
-        return sortDirection === "asc"
-          ? (valA as number) - (valB as number)
-          : (valB as number) - (valA as number);
-      });
-  }, [
-    uniqueReports,
-    searchQuery,
-    watchlistOnly,
-    isFavorite,
-    moatFilter,
-    upsideFilter,
-    sortField,
-    sortDirection,
-  ]);
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection(field === "ticker" ? "asc" : "desc");
-    }
-  };
-
-  // Progressive rendering batch size (renders initial 50 rows in <15ms, auto-increments on scroll)
-  const PAGE_SIZE = 50;
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const observerTargetRef = useRef<HTMLDivElement | null>(null);
-
-  // Reset visible count when filters or sorting change
-  const filterKey = `${searchQuery}|${moatFilter}|${upsideFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-  if (prevFilterKey !== filterKey) {
-    setPrevFilterKey(filterKey);
-    setVisibleCount(PAGE_SIZE);
-  }
-
-  const displayedReports = useMemo(() => {
-    return filteredReports.slice(0, visibleCount);
-  }, [filteredReports, visibleCount]);
-
-  const handleLoadAll = useCallback(() => {
-    setVisibleCount(filteredReports.length);
-  }, [filteredReports.length]);
-
-  useEffect(() => {
-    const el = observerTargetRef.current;
-    if (!el || visibleCount >= filteredReports.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setVisibleCount((prev) =>
-            Math.min(prev + PAGE_SIZE, filteredReports.length)
-          );
-        }
-      },
-      { rootMargin: "400px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [visibleCount, filteredReports.length]);
-
-  const renderSortIcon = (field: SortField) => {
-    if (sortField === field) {
-      return sortDirection === "asc" ? (
-        <ArrowUp className="size-3 shrink-0 text-accent" />
-      ) : (
-        <ArrowDown className="size-3 shrink-0 text-accent" />
-      );
-    }
-    return (
-      <ArrowUpDown className="size-3 shrink-0 text-slate-400 opacity-40 transition-opacity group-hover/th:opacity-100" />
-    );
-  };
-
-  const renderCardsView = () => {
-    if (isLoading) {
-      return (
-        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="glass-panel space-y-3.5 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <Skeleton className="size-8 rounded-lg" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-3 w-28" />
-                  </div>
-                </div>
-                <Skeleton className="h-5 w-14 rounded-full" />
-              </div>
-              <div className="grid grid-cols-3 gap-2 rounded-lg bg-surface-0/60 p-2.5">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-              </div>
-              <Skeleton className="h-2 w-full rounded-full" />
-              <div className="flex justify-between">
-                <Skeleton className="h-3 w-20" />
-                <Skeleton className="h-3 w-20" />
-              </div>
+      {/* Ticker & Company */}
+      <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
+        <div className="flex items-center gap-2">
+          <span className="shadow-xs hidden size-6 shrink-0 items-center justify-center rounded border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent sm:flex">
+            {report.ticker || report.slug.split("-")[0]}
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-foreground group-hover:text-accent">
+                {report.ticker || report.slug}
+              </span>
+              {report.quarter && (
+                <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
+                  {report.quarter}
+                </span>
+              )}
             </div>
-          ))}
+            <p className="max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[125px] xl:max-w-[150px]">
+              {report.company || report.slug}
+            </p>
+          </div>
         </div>
-      );
+      </td>
+
+      {/* Economic Moat */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+        {report.moatRating ? (
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                report.moatRating.toLowerCase() === "wide"
+                  ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
+                  : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
+              }`}
+            >
+              <Shield className="size-2.5" />
+              {report.moatRating}
+            </span>
+            {report.moatTrend && (
+              <span
+                className={`hidden font-mono text-[11px] font-bold sm:inline ${
+                  report.moatTrend === "Widening"
+                    ? "text-emerald-400"
+                    : report.moatTrend === "Narrowing"
+                      ? "text-rose-400"
+                      : "text-slate-400"
+                }`}
+                title={`${report.moatTrend} Moat Trend`}
+              >
+                {report.moatTrend === "Widening"
+                  ? "↗"
+                  : report.moatTrend === "Narrowing"
+                    ? "↘"
+                    : "→"}
+              </span>
+            )}
+          </div>
+        ) : (
+          <span className="text-xs text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Snowflake Fundamental Radar & Score */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+        {report.snowflakeScore !== undefined ? (
+          <div
+            className="flex items-center gap-2"
+            title={
+              report.snowflakePillars
+                ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
+                : `${report.snowflakeScore}/30 Snowflake Radar`
+            }
+          >
+            <MiniSnowflakeRadar
+              score={report.snowflakeScore}
+              tier={report.snowflakeTier}
+              pillars={report.snowflakePillars}
+              size={28}
+            />
+            <div className="flex flex-col">
+              <div className="flex items-baseline gap-0.5">
+                <span className="font-mono text-xs font-bold text-foreground">
+                  {report.snowflakeScore}
+                </span>
+                <span className="font-mono text-[11px] text-slate-400">
+                  /30
+                </span>
+              </div>
+              <span
+                className={`font-mono text-[11px] font-semibold uppercase tracking-wider ${
+                  report.snowflakeScore >= 24
+                    ? "text-emerald-400"
+                    : report.snowflakeScore >= 18
+                      ? "text-cyan-400"
+                      : report.snowflakeScore >= 12
+                        ? "text-amber-400"
+                        : "text-rose-400"
+                }`}
+              >
+                {report.snowflakeTier ?? "balanced"}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <span className="text-xs text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Current Stock Price */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
+        {price > 0 ? formatCurrency(price) : "—"}
+      </td>
+
+      {/* Analyst Consensus Target */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
+        {report.analystTarget && report.analystTarget > 0 ? (
+          <div
+            title={
+              report.analystCount
+                ? `${report.analystCount} ${ts.analystsLabel}${
+                    report.analystRating ? ` · ${report.analystRating}` : ""
+                  }`
+                : undefined
+            }
+          >
+            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
+              {formatCurrency(report.analystTarget)}
+            </div>
+            <div className="flex items-center justify-end gap-1 font-mono text-[11px] tabular-nums">
+              {report.analystUpsidePct !== undefined && (
+                <span
+                  className={
+                    report.analystUpsidePct >= 0
+                      ? "font-medium text-emerald-400"
+                      : "font-medium text-rose-400"
+                  }
+                >
+                  {report.analystUpsidePct >= 0 ? "+" : ""}
+                  {report.analystUpsidePct.toFixed(1)}%
+                </span>
+              )}
+              {report.analystRating && (
+                <span className="hidden text-[11px] text-slate-400 2xl:inline">
+                  • {report.analystRating}
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Base Fair Value & Upside */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
+        {baseFv > 0 ? (
+          <div>
+            <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
+              {formatCurrency(baseFv)}
+            </div>
+            <div
+              className={`font-mono text-[11px] font-medium tabular-nums ${
+                baseUpside >= 0 ? "text-emerald-400" : "text-rose-400"
+              }`}
+            >
+              {baseUpside >= 0 ? "+" : ""}
+              {baseUpside.toFixed(1)}%
+            </div>
+          </div>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Weighted Fair Value & Upside */}
+      <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right font-mono">
+        {wfv > 0 ? (
+          <div>
+            <div className="font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
+              {formatCurrency(wfv)}
+            </div>
+            <span
+              className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
+                isPositive
+                  ? "border border-green-500/30 bg-green-500/10 text-green-400"
+                  : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+              }`}
+            >
+              {isPositive ? (
+                <ArrowUpRight className="size-2.5" />
+              ) : (
+                <ArrowDownRight className="size-2.5" />
+              )}
+              {isPositive ? "+" : ""}
+              {upside.toFixed(1)}%
+            </span>
+          </div>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Stress Range Bar */}
+      <td
+        className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5"
+        title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
+      >
+        {price > 0 && bull > bear ? (
+          <div className="space-y-1">
+            <div className="relative h-1.5 w-full rounded-full bg-surface-3">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
+              <div
+                style={{ left: `${basePos}%` }}
+                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
+                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+              />
+              <div
+                style={{ left: `${pricePos}%` }}
+                className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
+                title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
+              />
+            </div>
+            <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
+              <span title={`${ts.bearLabel}: ${formatCurrency(bear)}`}>
+                ${Math.round(bear)}
+              </span>
+              <span
+                className="flex items-center gap-1 font-mono text-[11px] text-slate-400"
+                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+              >
+                <span className="size-1.5 rounded-full bg-sky-400" />$
+                {Math.round(baseFv)}
+              </span>
+              <span title={`${ts.bullLabel}: ${formatCurrency(bull)}`}>
+                ${Math.round(bull)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Operating Margin */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
+        {report.operatingMarginPct !== undefined ? (
+          <span>{report.operatingMarginPct.toFixed(1)}%</span>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+
+      {/* Revenue Growth */}
+      <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right font-mono text-xs tabular-nums sm:text-sm">
+        {report.revenueGrowthPct !== undefined ? (
+          <span
+            className={
+              report.revenueGrowthPct >= 0 ? "text-slate-200" : "text-rose-400"
+            }
+          >
+            {report.revenueGrowthPct >= 0 ? "+" : ""}
+            {report.revenueGrowthPct.toFixed(1)}%
+          </span>
+        ) : (
+          <span className="text-slate-600">—</span>
+        )}
+      </td>
+    </tr>
+  );
+});
+
+const ScreenerCard = React.memo(function ScreenerCard({
+  report,
+  isFav,
+  onToggleFav,
+  onSelectReport,
+  onPrefetch,
+  ts,
+  tHeader,
+}: ScreenerItemProps) {
+  const upside = report.upsidePct ?? 0;
+  const isPositive = upside >= 0;
+  const price = report.currentPrice ?? 0;
+  const wfv = report.weightedFairValue ?? 0;
+  const baseFv = report.baseFairValue ?? 0;
+  const baseUpside = report.baseUpsidePct ?? 0;
+  const bear = report.bearFairValue ?? price * 0.7;
+  const bull = report.bullFairValue ?? price * 1.4;
+
+  const rangeSpan = Math.max(bull - bear, 1);
+  const pricePos = Math.min(
+    100,
+    Math.max(0, ((price - bear) / rangeSpan) * 100)
+  );
+  const basePos = Math.min(
+    100,
+    Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
+  );
+
+  return (
+    <div
+      onClick={() => onSelectReport(report.slug, "cockpit")}
+      onMouseEnter={() => onPrefetch(report.slug)}
+      onFocus={() => onPrefetch(report.slug)}
+      className="glass-panel cv-grid-card group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-[border-color,background-color] duration-150 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
+    >
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFav(report.ticker || report.slug);
+              }}
+              className="-ml-1 shrink-0 p-1 text-slate-400 transition-colors hover:text-amber-400"
+              title={
+                isFav ? tHeader.removeFromWatchlist : tHeader.addToWatchlist
+              }
+              aria-label={
+                isFav ? tHeader.removeFromWatchlist : tHeader.addToWatchlist
+              }
+            >
+              <Star
+                className={`size-4 ${
+                  isFav
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-slate-600 group-hover:text-slate-400"
+                }`}
+              />
+            </button>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-base font-black tracking-tight text-foreground group-hover:text-accent">
+                  {report.ticker || report.slug.split("-")[0]}
+                </span>
+                {report.quarter && (
+                  <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
+                    {report.quarter}
+                  </span>
+                )}
+              </div>
+              <p className="max-w-[150px] truncate text-xs text-slate-400 sm:max-w-[180px]">
+                {report.company || report.slug}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5">
+            {report.moatRating && (
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                  report.moatRating.toLowerCase() === "wide"
+                    ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
+                    : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
+                }`}
+                title={ts.colMoatTooltip}
+              >
+                <Shield className="size-2.5" />
+                <span>{report.moatRating}</span>
+                {report.moatTrend && (
+                  <span
+                    className="font-mono text-[11px]"
+                    title={`${report.moatTrend} Moat Trend`}
+                  >
+                    {report.moatTrend === "Widening"
+                      ? "↗"
+                      : report.moatTrend === "Narrowing"
+                        ? "↘"
+                        : "→"}
+                  </span>
+                )}
+              </span>
+            )}
+            {report.snowflakeScore !== undefined && (
+              <div
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-surface-0/60 px-1.5 py-1"
+                title={ts.colSnowflakeTooltip}
+              >
+                <MiniSnowflakeRadar
+                  score={report.snowflakeScore}
+                  tier={report.snowflakeTier}
+                  pillars={report.snowflakePillars}
+                  size={22}
+                />
+                <span className="font-mono text-xs font-bold text-foreground">
+                  {report.snowflakeScore}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-lg border border-border bg-surface-0/60 p-2.5">
+          <div title={ts.colPriceTooltip}>
+            <div className="text-[11px] font-medium text-slate-400">
+              {ts.colPrice}
+            </div>
+            <div className="font-mono text-xs font-bold text-slate-200">
+              {price > 0 ? formatCurrency(price) : "—"}
+            </div>
+          </div>
+          <div title={ts.colBaseFairValueTooltip}>
+            <div className="text-[11px] font-medium text-slate-400">
+              {ts.colBaseFairValue}
+            </div>
+            <div className="font-mono text-xs font-semibold text-slate-300">
+              {baseFv > 0 ? formatCurrency(baseFv) : "—"}
+            </div>
+            {baseFv > 0 && (
+              <div
+                className={`font-mono text-[11px] ${
+                  baseUpside >= 0 ? "text-emerald-400" : "text-rose-400"
+                }`}
+              >
+                {baseUpside >= 0 ? "+" : ""}
+                {baseUpside.toFixed(1)}%
+              </div>
+            )}
+          </div>
+          <div className="text-right" title={ts.colWeightedFairValueTooltip}>
+            <div className="text-[11px] font-bold text-accent">
+              {ts.colWeightedFairValue}
+            </div>
+            <div className="font-mono text-xs font-extrabold text-foreground">
+              {wfv > 0 ? formatCurrency(wfv) : "—"}
+            </div>
+            {wfv > 0 && (
+              <div
+                className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 font-mono text-[11px] font-bold ${
+                  isPositive ? "text-green-400" : "text-rose-400"
+                }`}
+              >
+                {isPositive ? (
+                  <ArrowUpRight className="size-2.5" />
+                ) : (
+                  <ArrowDownRight className="size-2.5" />
+                )}
+                {isPositive ? "+" : ""}
+                {upside.toFixed(1)}%
+              </div>
+            )}
+          </div>
+        </div>
+
+        {price > 0 && bull > bear && (
+          <div className="mt-3 space-y-1">
+            <div className="relative h-1.5 w-full rounded-full bg-surface-3">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
+              <div
+                style={{ left: `${basePos}%` }}
+                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
+                title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
+              />
+              <div
+                style={{ left: `${pricePos}%` }}
+                className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
+                title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
+              />
+            </div>
+            <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
+              <span>${Math.round(bear)}</span>
+              <span className="flex items-center gap-1 text-slate-400">
+                <span className="size-1.5 rounded-full bg-sky-400" />$
+                {Math.round(baseFv)}
+              </span>
+              <span>${Math.round(bull)}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5 text-[11px]">
+        <div className="flex items-center gap-2.5 font-mono text-[11px] text-slate-400">
+          {report.operatingMarginPct !== undefined && (
+            <span>
+              OpM:{" "}
+              <strong className="font-bold text-slate-200">
+                {report.operatingMarginPct.toFixed(0)}%
+              </strong>
+            </span>
+          )}
+          {report.analystTarget && report.analystTarget > 0 && (
+            <span>
+              Target:{" "}
+              <strong className="font-bold text-slate-200">
+                ${Math.round(report.analystTarget)}
+              </strong>
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectReport(report.slug, "memo");
+            }}
+            className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+          >
+            {ts.openMemo}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectReport(report.slug, "cockpit");
+            }}
+            className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[11px] font-bold text-accent transition-colors hover:bg-accent/25"
+          >
+            {ts.openCockpit}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
+  function ScreenerView({
+    reports,
+    onSelectReport,
+    locale = "en",
+    isLoading = false,
+    initialWatchlistOnly = false,
+    onWatchlistFilterChange,
+  }: ScreenerViewProps) {
+    const t = getTranslations(locale);
+    const ts = t.screener;
+    const { prefetchReport } = useReportPrefetch();
+
+    const {
+      isFavorite,
+      toggleFavorite,
+      count: watchlistCount,
+    } = useWatchlist();
+    const handleToggleFav = useCallback(
+      (tickerOrSlug: string) => toggleFavorite(tickerOrSlug),
+      [toggleFavorite]
+    );
+    const [searchQuery, setSearchQuery] = useState("");
+    const [watchlistOnly, setWatchlistOnly] =
+      useState<boolean>(initialWatchlistOnly);
+    const [prevInitialWatchlist, setPrevInitialWatchlist] =
+      useState<boolean>(initialWatchlistOnly);
+
+    if (prevInitialWatchlist !== initialWatchlistOnly) {
+      setPrevInitialWatchlist(initialWatchlistOnly);
+      setWatchlistOnly(initialWatchlistOnly);
     }
 
-    if (filteredReports.length === 0) {
+    const handleToggleWatchlistOnly = (val: boolean) => {
+      setWatchlistOnly(val);
+      onWatchlistFilterChange?.(val);
+    };
+    const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
+    const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
+    const [sortField, setSortField] = useState<SortField>("upside");
+    const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+    const [viewMode, setViewMode] = useState<"cards" | "table">("table");
+
+    // Restore saved viewMode preference on client mount to prevent SSR hydration mismatch
+    useEffect(() => {
+      try {
+        const saved = localStorage.getItem("stress_alpha_screener_view_mode");
+        if (saved === "cards" || saved === "table") {
+          Promise.resolve().then(() => setViewMode(saved));
+        } else if (window.innerWidth < 768) {
+          Promise.resolve().then(() => setViewMode("cards"));
+        }
+      } catch {}
+    }, []);
+
+    const handleSetViewMode = (mode: "cards" | "table") => {
+      setViewMode(mode);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("stress_alpha_screener_view_mode", mode);
+        } catch {}
+      }
+    };
+
+    const hasActiveFilters = Boolean(
+      searchQuery ||
+      moatFilter !== "all" ||
+      upsideFilter !== "all" ||
+      watchlistOnly
+    );
+
+    const handleResetFilters = () => {
+      setSearchQuery("");
+      setMoatFilter("all");
+      setUpsideFilter("all");
+      handleToggleWatchlistOnly(false);
+    };
+
+    // Group reports by unique ticker symbol, selecting the latest report as default primary
+    const uniqueReports = useMemo(
+      () => deduplicateReportsToLatest(reports),
+      [reports]
+    );
+
+    // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
+    const stats = useMemo(() => {
+      const baseList = watchlistOnly
+        ? uniqueReports.filter((r) => isFavorite(r.ticker || r.slug))
+        : uniqueReports;
+
+      if (baseList.length === 0) {
+        return {
+          count: 0,
+          avgUpside: 0,
+          topPick: null as ReportSummary | null,
+          wideMoatCount: 0,
+        };
+      }
+
+      const validUpsides = baseList
+        .map((r) => r.upsidePct)
+        .filter((u): u is number => typeof u === "number" && !isNaN(u));
+      const avgUpside =
+        validUpsides.length > 0
+          ? validUpsides.reduce((a, b) => a + b, 0) / validUpsides.length
+          : 0;
+
+      let topPick: ReportSummary | null = null;
+      let maxUpside = -Infinity;
+      let wideMoatCount = 0;
+
+      for (const r of baseList) {
+        if (typeof r.upsidePct === "number" && r.upsidePct > maxUpside) {
+          maxUpside = r.upsidePct;
+          topPick = r;
+        }
+        if (r.moatRating?.toLowerCase() === "wide") {
+          wideMoatCount += 1;
+        }
+      }
+
+      return {
+        count: baseList.length,
+        avgUpside,
+        topPick,
+        wideMoatCount,
+      };
+    }, [uniqueReports, watchlistOnly, isFavorite]);
+
+    const isWatchlistEmpty = watchlistOnly && stats.count === 0 && !isLoading;
+
+    // Filter and sort reports
+    const filteredReports = useMemo(() => {
+      return uniqueReports
+        .filter((r) => {
+          // Watchlist filter
+          if (watchlistOnly) {
+            const symbol = r.ticker || r.slug;
+            if (!isFavorite(symbol)) return false;
+          }
+
+          // Text search
+          if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            const matchTicker = r.ticker?.toLowerCase().includes(q);
+            const matchCompany = r.company?.toLowerCase().includes(q);
+            const matchSlug = r.slug?.toLowerCase().includes(q);
+            if (!matchTicker && !matchCompany && !matchSlug) return false;
+          }
+
+          // Moat filter
+          if (moatFilter !== "all") {
+            const moat = r.moatRating?.toLowerCase() ?? "";
+            if (moatFilter === "wide" && moat !== "wide") return false;
+            if (moatFilter === "narrow" && moat !== "narrow") return false;
+          }
+
+          // Upside filter
+          if (upsideFilter === "undervalued") {
+            if ((r.upsidePct ?? 0) <= 0) return false;
+          } else if (upsideFilter === "high-upside") {
+            if ((r.upsidePct ?? 0) < 20) return false;
+          }
+
+          return true;
+        })
+        .sort((a, b) => {
+          let valA: number | string = 0;
+          let valB: number | string = 0;
+
+          switch (sortField) {
+            case "upside":
+              valA = a.upsidePct ?? -999;
+              valB = b.upsidePct ?? -999;
+              break;
+            case "baseUpside":
+              valA = a.baseUpsidePct ?? -999;
+              valB = b.baseUpsidePct ?? -999;
+              break;
+            case "price":
+              valA = a.currentPrice ?? 0;
+              valB = b.currentPrice ?? 0;
+              break;
+            case "analystTarget":
+              valA =
+                a.analystUpsidePct ??
+                (a.analystTarget && a.currentPrice && a.currentPrice > 0
+                  ? ((a.analystTarget - a.currentPrice) / a.currentPrice) * 100
+                  : -999);
+              valB =
+                b.analystUpsidePct ??
+                (b.analystTarget && b.currentPrice && b.currentPrice > 0
+                  ? ((b.analystTarget - b.currentPrice) / b.currentPrice) * 100
+                  : -999);
+              break;
+            case "opMargin":
+              valA = a.operatingMarginPct ?? -999;
+              valB = b.operatingMarginPct ?? -999;
+              break;
+            case "revGrowth":
+              valA = a.revenueGrowthPct ?? -999;
+              valB = b.revenueGrowthPct ?? -999;
+              break;
+            case "ticker":
+              valA = a.ticker || a.slug;
+              valB = b.ticker || b.slug;
+              break;
+            case "snowflake":
+              valA = a.snowflakeScore ?? -1;
+              valB = b.snowflakeScore ?? -1;
+              break;
+            case "moat": {
+              const moatRank = (r?: string) => {
+                const m = r?.toLowerCase();
+                if (m === "wide") return 2;
+                if (m === "narrow") return 1;
+                return 0;
+              };
+              valA = moatRank(a.moatRating);
+              valB = moatRank(b.moatRating);
+              break;
+            }
+          }
+
+          if (typeof valA === "string" && typeof valB === "string") {
+            return sortDirection === "asc"
+              ? valA.localeCompare(valB)
+              : valB.localeCompare(valA);
+          }
+
+          return sortDirection === "asc"
+            ? (valA as number) - (valB as number)
+            : (valB as number) - (valA as number);
+        });
+    }, [
+      uniqueReports,
+      searchQuery,
+      watchlistOnly,
+      isFavorite,
+      moatFilter,
+      upsideFilter,
+      sortField,
+      sortDirection,
+    ]);
+
+    const handleSort = (field: SortField) => {
+      if (sortField === field) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortField(field);
+        setSortDirection(field === "ticker" ? "asc" : "desc");
+      }
+    };
+
+    // Progressive rendering batch size (renders initial 50 rows in <15ms, auto-increments on scroll)
+    const PAGE_SIZE = 50;
+    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const observerTargetRef = useRef<HTMLDivElement | null>(null);
+
+    // Reset visible count when filters or sorting change
+    const filterKey = `${searchQuery}|${moatFilter}|${upsideFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
+    const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+    if (prevFilterKey !== filterKey) {
+      setPrevFilterKey(filterKey);
+      setVisibleCount(PAGE_SIZE);
+    }
+
+    const displayedReports = useMemo(() => {
+      return filteredReports.slice(0, visibleCount);
+    }, [filteredReports, visibleCount]);
+
+    const handleLoadAll = useCallback(() => {
+      setVisibleCount(filteredReports.length);
+    }, [filteredReports.length]);
+
+    useEffect(() => {
+      const el = observerTargetRef.current;
+      if (!el || visibleCount >= filteredReports.length) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            setVisibleCount((prev) =>
+              Math.min(prev + PAGE_SIZE, filteredReports.length)
+            );
+          }
+        },
+        { rootMargin: "400px" }
+      );
+
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [visibleCount, filteredReports.length]);
+
+    const renderSortIcon = (field: SortField) => {
+      if (sortField === field) {
+        return sortDirection === "asc" ? (
+          <ArrowUp className="size-3 shrink-0 text-accent" />
+        ) : (
+          <ArrowDown className="size-3 shrink-0 text-accent" />
+        );
+      }
       return (
-        <div className="glass-panel rounded-xl px-4 py-16 text-center text-slate-400">
-          {watchlistOnly ? (
-            <div className="flex flex-col items-center gap-2">
-              <Star className="size-6 text-amber-400" />
-              <h3 className="text-base font-bold text-foreground">
-                {ts.watchlistEmptyTitle}
-              </h3>
-              <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
-                {ts.watchlistEmptyDesc}
-              </p>
+        <ArrowUpDown className="size-3 shrink-0 text-slate-400 opacity-40 transition-opacity group-hover/th:opacity-100" />
+      );
+    };
+
+    const renderCardsView = () => {
+      if (isLoading) {
+        return (
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="glass-panel space-y-3.5 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <Skeleton className="size-8 rounded-lg" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-3 w-28" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                </div>
+                <div className="grid grid-cols-3 gap-2 rounded-lg bg-surface-0/60 p-2.5">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                </div>
+                <Skeleton className="h-2 w-full rounded-full" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      if (filteredReports.length === 0) {
+        return (
+          <div className="glass-panel rounded-xl px-4 py-16 text-center text-slate-400">
+            {watchlistOnly ? (
+              <div className="flex flex-col items-center gap-2">
+                <Star className="size-6 text-amber-400" />
+                <h3 className="text-base font-bold text-foreground">
+                  {ts.watchlistEmptyTitle}
+                </h3>
+                <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
+                  {ts.watchlistEmptyDesc}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => handleToggleWatchlistOnly(false)}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                >
+                  {ts.viewAllReports}
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm font-medium">{ts.noResults}</p>
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="mt-3 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
+                >
+                  {ts.resetFilters}
+                </button>
+              </>
+            )}
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            {displayedReports.map((report) => (
+              <ScreenerCard
+                key={report.slug}
+                report={report}
+                isFav={isFavorite(report.ticker || report.slug)}
+                onToggleFav={handleToggleFav}
+                onSelectReport={onSelectReport}
+                onPrefetch={prefetchReport}
+                ts={ts}
+                tHeader={t.header}
+              />
+            ))}
+          </div>
+
+          {visibleCount < filteredReports.length && (
+            <div
+              ref={observerTargetRef}
+              className="flex items-center justify-center gap-3 py-4"
+            >
+              <span className="font-mono text-xs tabular-nums text-slate-400">
+                {ts.resultsCount(
+                  displayedReports.length,
+                  filteredReports.length
+                )}
+              </span>
               <button
                 type="button"
-                onClick={() => handleToggleWatchlistOnly(false)}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                onClick={handleLoadAll}
+                className="rounded-lg border border-border bg-surface-2 px-3 py-1 font-mono text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-surface-3"
               >
-                {ts.viewAllReports}
+                {ts.loadAll(filteredReports.length)}
               </button>
             </div>
-          ) : (
-            <>
-              <p className="text-sm font-medium">{ts.noResults}</p>
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="mt-3 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
-              >
-                {ts.resetFilters}
-              </button>
-            </>
           )}
         </div>
       );
-    }
+    };
 
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-          {displayedReports.map((report) => {
-            const upside = report.upsidePct ?? 0;
-            const isPositive = upside >= 0;
-            const price = report.currentPrice ?? 0;
-            const wfv = report.weightedFairValue ?? 0;
-            const baseFv = report.baseFairValue ?? 0;
-            const baseUpside = report.baseUpsidePct ?? 0;
-            const bear = report.bearFairValue ?? price * 0.7;
-            const bull = report.bullFairValue ?? price * 1.4;
+      <div className="mx-auto w-full max-w-[1520px] space-y-6 px-3 py-4 sm:p-6">
+        {/* Header Banner */}
+        <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-end">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <BarChart3 className="size-5 text-accent" />
+              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                {ts.title}
+              </h1>
+            </div>
+            <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+              {ts.subtitle}
+            </p>
+          </div>
 
-            const rangeSpan = Math.max(bull - bear, 1);
-            const pricePos = Math.min(
-              100,
-              Math.max(0, ((price - bear) / rangeSpan) * 100)
-            );
-            const basePos = Math.min(
-              100,
-              Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-            );
-
-            return (
-              <div
-                key={report.slug}
-                onClick={() => onSelectReport(report.slug, "cockpit")}
-                onMouseEnter={() => prefetchReport(report.slug)}
-                onFocus={() => prefetchReport(report.slug)}
-                className="glass-panel group relative flex cursor-pointer flex-col justify-between rounded-xl p-4 transition-[border-color,background-color] duration-150 hover:border-accent/40 hover:bg-surface-2/60 active:scale-[0.99]"
-              >
-                {/* Top Row: Ticker, Company, Favorite Star, Moat, Snowflake */}
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(report.ticker || report.slug);
-                        }}
-                        className="-ml-1 shrink-0 p-1 text-slate-400 transition-colors hover:text-amber-400"
-                        title={
-                          isFavorite(report.ticker || report.slug)
-                            ? t.header.removeFromWatchlist
-                            : t.header.addToWatchlist
-                        }
-                        aria-label={
-                          isFavorite(report.ticker || report.slug)
-                            ? t.header.removeFromWatchlist
-                            : t.header.addToWatchlist
-                        }
-                      >
-                        <Star
-                          className={`size-4 ${
-                            isFavorite(report.ticker || report.slug)
-                              ? "fill-amber-400 text-amber-400"
-                              : "text-slate-600 group-hover:text-slate-400"
-                          }`}
-                        />
-                      </button>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-base font-black tracking-tight text-foreground group-hover:text-accent">
-                            {report.ticker || report.slug.split("-")[0]}
-                          </span>
-                          {report.quarter && (
-                            <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
-                              {report.quarter}
-                            </span>
-                          )}
-                        </div>
-                        <p className="max-w-[150px] truncate text-xs text-slate-400 sm:max-w-[180px]">
-                          {report.company || report.slug}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right Badges: Moat & Snowflake */}
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      {report.moatRating && (
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                            report.moatRating.toLowerCase() === "wide"
-                              ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
-                              : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
-                          }`}
-                          title={ts.colMoatTooltip}
-                        >
-                          <Shield className="size-2.5" />
-                          <span>{report.moatRating}</span>
-                          {report.moatTrend && (
-                            <span
-                              className="font-mono text-[11px]"
-                              title={`${report.moatTrend} Moat Trend`}
-                            >
-                              {report.moatTrend === "Widening"
-                                ? "↗"
-                                : report.moatTrend === "Narrowing"
-                                  ? "↘"
-                                  : "→"}
-                            </span>
-                          )}
-                        </span>
-                      )}
-                      {report.snowflakeScore !== undefined && (
-                        <div
-                          className="flex items-center gap-1.5 rounded-lg border border-border bg-surface-0/60 px-1.5 py-1"
-                          title={ts.colSnowflakeTooltip}
-                        >
-                          <MiniSnowflakeRadar
-                            score={report.snowflakeScore}
-                            tier={report.snowflakeTier}
-                            pillars={report.snowflakePillars}
-                            size={22}
-                          />
-                          <span className="font-mono text-xs font-bold text-foreground">
-                            {report.snowflakeScore}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Pricing Grid */}
-                  <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-lg border border-border bg-surface-0/60 p-2.5">
-                    <div title={ts.colPriceTooltip}>
-                      <div className="text-[11px] font-medium text-slate-400">
-                        {ts.colPrice}
-                      </div>
-                      <div className="font-mono text-xs font-bold text-slate-200">
-                        {price > 0 ? formatCurrency(price) : "—"}
-                      </div>
-                    </div>
-                    <div title={ts.colBaseFairValueTooltip}>
-                      <div className="text-[11px] font-medium text-slate-400">
-                        {ts.colBaseFairValue}
-                      </div>
-                      <div className="font-mono text-xs font-semibold text-slate-300">
-                        {baseFv > 0 ? formatCurrency(baseFv) : "—"}
-                      </div>
-                      {baseFv > 0 && (
-                        <div
-                          className={`font-mono text-[11px] ${
-                            baseUpside >= 0
-                              ? "text-emerald-400"
-                              : "text-rose-400"
-                          }`}
-                        >
-                          {baseUpside >= 0 ? "+" : ""}
-                          {baseUpside.toFixed(1)}%
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="text-right"
-                      title={ts.colWeightedFairValueTooltip}
-                    >
-                      <div className="text-[11px] font-bold text-accent">
-                        {ts.colWeightedFairValue}
-                      </div>
-                      <div className="font-mono text-xs font-extrabold text-foreground">
-                        {wfv > 0 ? formatCurrency(wfv) : "—"}
-                      </div>
-                      {wfv > 0 && (
-                        <div
-                          className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 font-mono text-[11px] font-bold ${
-                            isPositive ? "text-green-400" : "text-rose-400"
-                          }`}
-                        >
-                          {isPositive ? (
-                            <ArrowUpRight className="size-2.5" />
-                          ) : (
-                            <ArrowDownRight className="size-2.5" />
-                          )}
-                          {isPositive ? "+" : ""}
-                          {upside.toFixed(1)}%
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Valuation Range Spectrum Bar */}
-                  {price > 0 && bull > bear && (
-                    <div className="mt-3 space-y-1">
-                      <div className="relative h-1.5 w-full rounded-full bg-surface-3">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
-                        <div
-                          style={{ left: `${basePos}%` }}
-                          className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
-                          title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
-                        />
-                        <div
-                          style={{ left: `${pricePos}%` }}
-                          className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
-                          title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
-                        <span>${Math.round(bear)}</span>
-                        <span className="flex items-center gap-1 text-slate-400">
-                          <span className="size-1.5 rounded-full bg-sky-400" />$
-                          {Math.round(baseFv)}
-                        </span>
-                        <span>${Math.round(bull)}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Secondary stats & quick actions footer */}
-                <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5 text-[11px]">
-                  <div className="flex items-center gap-2.5 font-mono text-[11px] text-slate-400">
-                    {report.operatingMarginPct !== undefined && (
-                      <span>
-                        OpM:{" "}
-                        <strong className="font-bold text-slate-200">
-                          {report.operatingMarginPct.toFixed(0)}%
-                        </strong>
-                      </span>
-                    )}
-                    {report.analystTarget && report.analystTarget > 0 && (
-                      <span>
-                        Target:{" "}
-                        <strong className="font-bold text-slate-200">
-                          ${Math.round(report.analystTarget)}
-                        </strong>
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectReport(report.slug, "memo");
-                      }}
-                      className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
-                    >
-                      {ts.openMemo}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectReport(report.slug, "cockpit");
-                      }}
-                      className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[11px] font-bold text-accent transition-colors hover:bg-accent/25"
-                    >
-                      {ts.openCockpit}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          <div className="flex items-center gap-2">
+            {isLoading ? (
+              <Skeleton className="h-6 w-24 rounded-md" />
+            ) : !isWatchlistEmpty ? (
+              <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
+                {stats.count} {ts.statsCoverage}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        {visibleCount < filteredReports.length && (
-          <div
-            ref={observerTargetRef}
-            className="flex items-center justify-center gap-3 py-4"
-          >
-            <span className="font-mono text-xs tabular-nums text-slate-400">
-              {ts.resultsCount(displayedReports.length, filteredReports.length)}
-            </span>
+        {/* KPI Telemetry Strip */}
+        {!isWatchlistEmpty && (
+          <div className="glass-panel shadow-xs grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/90 sm:grid-cols-4 sm:divide-x sm:divide-y-0">
+            {/* Coverage Count */}
+            <div className="p-3.5 sm:p-4">
+              <div className="text-slate-400">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {ts.statsCoverage}
+                </span>
+              </div>
+              {isLoading ? (
+                <>
+                  <Skeleton className="mt-3 h-8 w-16" />
+                  <Skeleton className="mt-2 h-3.5 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
+                    {stats.count}
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {`${stats.wideMoatCount} ${ts.wideMoat}`}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Avg Upside */}
+            <div className="p-3.5 sm:p-4">
+              <div className="text-slate-400">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {ts.statsAvgUpside}
+                </span>
+              </div>
+              {isLoading ? (
+                <>
+                  <Skeleton className="mt-3 h-8 w-24" />
+                  <Skeleton className="mt-2 h-3.5 w-32" />
+                </>
+              ) : (
+                <>
+                  <div
+                    className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
+                      stats.avgUpside >= 0
+                        ? "text-fintech-green"
+                        : "text-fintech-red"
+                    }`}
+                  >
+                    {stats.avgUpside >= 0 ? "+" : ""}
+                    {stats.avgUpside.toFixed(1)}%
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {ts.statsAvgUpsideSub}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Highest Upside Pick */}
+            <div
+              className={`p-3.5 sm:p-4 ${
+                stats.topPick && !isLoading
+                  ? "cursor-pointer transition-colors hover:bg-surface-2/40"
+                  : ""
+              }`}
+              onClick={() =>
+                !isLoading &&
+                stats.topPick &&
+                onSelectReport(stats.topPick.slug, "cockpit")
+              }
+              onMouseEnter={() => {
+                if (stats.topPick && !isLoading) {
+                  prefetchReport(stats.topPick.slug);
+                }
+              }}
+              title={
+                stats.topPick && !isLoading
+                  ? ts.openCockpitTooltip(
+                      stats.topPick.ticker || stats.topPick.slug
+                    )
+                  : undefined
+              }
+            >
+              <div className="text-slate-400">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {ts.statsTopPick}
+                </span>
+              </div>
+              {isLoading ? (
+                <>
+                  <Skeleton className="mt-3 h-8 w-28" />
+                  <Skeleton className="mt-2 h-3.5 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="font-mono text-2xl font-black text-foreground sm:text-3xl">
+                      {stats.topPick?.ticker || "—"}
+                    </span>
+                    {stats.topPick?.upsidePct !== undefined && (
+                      <span
+                        className={`font-mono text-sm font-bold ${
+                          stats.topPick.upsidePct >= 0
+                            ? "text-fintech-green"
+                            : "text-fintech-red"
+                        }`}
+                      >
+                        {stats.topPick.upsidePct >= 0 ? "+" : ""}
+                        {stats.topPick.upsidePct.toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 truncate text-[11px] text-slate-400">
+                    {stats.topPick?.company || "—"}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Wide Moat Share */}
+            <div className="p-3.5 sm:p-4">
+              <div className="text-slate-400">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {ts.statsWideMoat}
+                </span>
+              </div>
+              {isLoading ? (
+                <>
+                  <Skeleton className="mt-3 h-8 w-16" />
+                  <Skeleton className="mt-2 h-3.5 w-24" />
+                </>
+              ) : (
+                <>
+                  <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
+                    {stats.count > 0
+                      ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
+                      : "0%"}
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {ts.statsWideMoatSub(stats.wideMoatCount, stats.count)}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Filter and Search Controls */}
+        {!isWatchlistEmpty && (
+          <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
+            {/* Search input */}
+            <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={ts.searchPlaceholder}
+                className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-foreground"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Watchlist Filter Pill */}
+              {(watchlistCount > 0 || watchlistOnly) && (
+                <button
+                  type="button"
+                  onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
+                  className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
+                    watchlistOnly
+                      ? "shadow-xs border-amber-500/50 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
+                      : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-foreground"
+                  }`}
+                  title={ts.filterWatchlist}
+                >
+                  <Star
+                    className={`size-3.5 ${
+                      watchlistOnly
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-slate-400"
+                    }`}
+                  />
+                  <span>{ts.filterWatchlist}</span>
+                  {watchlistCount > 0 && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] ${
+                        watchlistOnly
+                          ? "bg-amber-400 font-bold text-slate-950"
+                          : "bg-surface-3 text-slate-400"
+                      }`}
+                    >
+                      {watchlistCount}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              {/* Moat Filter */}
+              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setMoatFilter("all")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    moatFilter === "all"
+                      ? "bg-accent/20 font-semibold text-accent"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.allMoatsTooltip}
+                >
+                  {ts.allMoats}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMoatFilter("wide")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    moatFilter === "wide"
+                      ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.wideMoatTooltip}
+                >
+                  {ts.wideMoat}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMoatFilter("narrow")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    moatFilter === "narrow"
+                      ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.narrowMoatTooltip}
+                >
+                  {ts.narrowMoat}
+                </button>
+              </div>
+
+              {/* Upside Filter */}
+              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setUpsideFilter("all")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    moatFilter === "all"
+                      ? "bg-accent/20 font-semibold text-accent"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.filterAllTooltip}
+                >
+                  {ts.filterAll}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUpsideFilter("undervalued")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    upsideFilter === "undervalued"
+                      ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.filterUndervaluedTooltip}
+                >
+                  {ts.filterUndervalued}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUpsideFilter("high-upside")}
+                  className={`rounded px-2.5 py-1 transition-colors ${
+                    upsideFilter === "high-upside"
+                      ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.filterHighUpsideTooltip}
+                >
+                  {ts.filterHighUpside}
+                </button>
+              </div>
+            </div>
+
+            {/* View Mode Toggle & Result Counter & Reset */}
+            <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
+              {/* View Mode Toggle: Cards vs Table */}
+              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => handleSetViewMode("cards")}
+                  className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                    viewMode === "cards"
+                      ? "bg-accent/20 font-bold text-accent"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.viewCards}
+                >
+                  <LayoutGrid className="size-3.5" />
+                  <span>{ts.viewCards}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetViewMode("table")}
+                  className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
+                    viewMode === "table"
+                      ? "bg-accent/20 font-bold text-accent"
+                      : "text-slate-400 hover:text-foreground"
+                  }`}
+                  title={ts.viewTable}
+                >
+                  <Table className="size-3.5" />
+                  <span>{ts.viewTable}</span>
+                </button>
+              </div>
+
+              <div className="hidden h-4 w-px bg-white/10 sm:block" />
+
+              {/* Results count & Reset */}
+              <div className="flex items-center gap-2">
+                <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-400">
+                  {ts.resultsCount(
+                    filteredReports.length,
+                    uniqueReports.length
+                  )}
+                </span>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
+                    title={ts.resetFilters}
+                  >
+                    <RotateCcw className="size-2.5" />
+                    <span>{ts.resetFilters}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content: Cards or Table */}
+        {isWatchlistEmpty ? (
+          <div className="glass-panel shadow-xs mx-auto my-8 flex max-w-xl flex-col items-center gap-4 rounded-2xl border border-border p-8 text-center sm:p-12">
+            <div className="shadow-xs flex size-12 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
+              <Star className="size-6 fill-amber-400" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="font-mono text-lg font-bold text-foreground sm:text-xl">
+                {ts.watchlistEmptyTitle}
+              </h3>
+              <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-400 sm:text-sm">
+                {ts.watchlistEmptyDesc}
+              </p>
+            </div>
             <button
               type="button"
-              onClick={handleLoadAll}
-              className="rounded-lg border border-border bg-surface-2 px-3 py-1 font-mono text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-surface-3"
+              onClick={() => handleToggleWatchlistOnly(false)}
+              className="shadow-xs mt-2 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
             >
-              {ts.loadAll(filteredReports.length)}
+              {ts.viewAllReports}
             </button>
+          </div>
+        ) : viewMode === "cards" ? (
+          renderCardsView()
+        ) : (
+          <div className="glass-panel overflow-hidden rounded-xl border border-border">
+            <div
+              onWheel={(e) => {
+                if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY))
+                  return;
+                const el = e.currentTarget;
+                if (el.scrollWidth <= el.clientWidth) return;
+                const atVerticalTop = el.scrollTop <= 0 && e.deltaY < 0;
+                const atVerticalBottom =
+                  el.scrollTop + el.clientHeight >= el.scrollHeight - 1 &&
+                  e.deltaY > 0;
+                if (atVerticalTop || atVerticalBottom) {
+                  el.scrollLeft += e.deltaY;
+                }
+              }}
+              tabIndex={0}
+              role="region"
+              aria-label="Stock Screener Table"
+              className="custom-scrollbar max-h-[calc(100vh-14.5rem)] min-h-[460px] overflow-auto outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
+            >
+              <table className="w-full min-w-[1100px] border-separate border-spacing-0 text-left text-xs sm:text-sm">
+                <thead className="shadow-xs sticky top-0 z-20">
+                  <tr className="border-b border-border bg-surface-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    {/* Watchlist Star */}
+                    <th
+                      className="sticky left-0 top-0 z-30 w-10 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-3 pr-1 text-center"
+                      title={ts.colFavorite}
+                    >
+                      <Star className="mx-auto size-3.5 text-slate-400" />
+                    </th>
+
+                    {/* Ticker & Company */}
+                    <th
+                      onClick={() => handleSort("ticker")}
+                      className="group/th sticky left-10 top-0 z-30 cursor-pointer whitespace-nowrap border-b border-r border-border/40 bg-surface-2 py-3 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] transition-colors hover:text-foreground"
+                      title={ts.colTickerTooltip}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>{ts.colTicker}</span>
+                        {renderSortIcon("ticker")}
+                      </div>
+                      <div className="pointer-events-none absolute left-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colTicker}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colTickerTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Moat */}
+                    <th
+                      onClick={() => handleSort("moat")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      title={ts.colMoatTooltip}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>{ts.colMoat}</span>
+                        {renderSortIcon("moat")}
+                      </div>
+                      <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colMoat}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colMoatTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Snowflake 30-Point Audit Radar */}
+                    <th
+                      onClick={() => handleSort("snowflake")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      title={ts.colSnowflakeTooltip}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>{ts.colSnowflake}</span>
+                        {renderSortIcon("snowflake")}
+                      </div>
+                      <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colSnowflake}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colSnowflakeTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Price */}
+                    <th
+                      onClick={() => handleSort("price")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colPriceTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colPrice}</span>
+                        {renderSortIcon("price")}
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-52 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colPrice}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colPriceTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Analyst Consensus Target */}
+                    <th
+                      onClick={() => handleSort("analystTarget")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colAnalystTargetTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colAnalystTarget}</span>
+                        {renderSortIcon("analystTarget")}
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colAnalystTarget}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colAnalystTargetTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Base Fair Value */}
+                    <th
+                      onClick={() => handleSort("baseUpside")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colBaseFairValueTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colBaseFairValue}</span>
+                        {renderSortIcon("baseUpside")}
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colBaseFairValue}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colBaseFairValueTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Weighted Fair Value & Upside */}
+                    <th
+                      onClick={() => handleSort("upside")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 p-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colWeightedFairValueTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colWeightedFairValue}</span>
+                        {renderSortIcon("upside")}
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-64 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colWeightedFairValue}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colWeightedFairValueTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Valuation Spectrum / Stress Range */}
+                    <th
+                      className="group/th sticky top-0 z-20 min-w-[125px] max-w-[160px] whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3"
+                      title={ts.rangeTooltip}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>{ts.colValuationRange}</span>
+                        <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-400 2xl:inline">
+                          {ts.rangeBearBullHint}
+                        </span>
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colValuationRange}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.rangeTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Operating Margin */}
+                    <th
+                      onClick={() => handleSort("opMargin")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colOperatingMarginTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colOperatingMargin}</span>
+                        {renderSortIcon("opMargin")}
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colOperatingMargin}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colOperatingMarginTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Revenue Growth */}
+                    <th
+                      onClick={() => handleSort("revGrowth")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-3 text-right transition-colors hover:text-foreground"
+                      title={ts.colRevenueGrowthTooltip}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{ts.colRevenueGrowth}</span>
+                        {renderSortIcon("revGrowth")}
+                      </div>
+                      <div className="pointer-events-none absolute right-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colRevenueGrowth}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colRevenueGrowthTooltip}
+                        </p>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {isLoading ? (
+                    <>
+                      {SKELETON_ROWS.map((row, idx) => (
+                        <tr key={`skeleton-${idx}`} className="group">
+                          {/* Watchlist Star Skeleton */}
+                          <td className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center">
+                            <Skeleton className="mx-auto size-4 rounded" />
+                          </td>
+
+                          {/* Ticker & Company */}
+                          <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]">
+                            <div className="flex items-center gap-2.5">
+                              <Skeleton className="size-7 shrink-0 rounded-lg" />
+                              <div className="space-y-1.5">
+                                <Skeleton className={`h-3.5 ${row.tickerW}`} />
+                                <Skeleton className={`h-2.5 ${row.nameW}`} />
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Moat */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                            <Skeleton
+                              className={`h-5 ${row.moatW} rounded-full`}
+                            />
+                          </td>
+
+                          {/* Snowflake */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                            <div className="flex items-center gap-2">
+                              <Skeleton className="size-7 shrink-0 rounded-full" />
+                              <div className="space-y-1">
+                                <Skeleton className="h-3 w-8" />
+                                <Skeleton className="h-2 w-10" />
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Price */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                            <Skeleton className="ml-auto h-4 w-14" />
+                          </td>
+
+                          {/* Analyst Target */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                            <Skeleton
+                              className={`ml-auto h-4 ${row.targetW}`}
+                            />
+                          </td>
+
+                          {/* Base Fair Value */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                            <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
+                          </td>
+
+                          {/* Weighted Fair Value & Upside */}
+                          <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right">
+                            <div className="ml-auto space-y-1">
+                              <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
+                              <Skeleton className="ml-auto h-3 w-12 rounded-full" />
+                            </div>
+                          </td>
+
+                          {/* Valuation Spectrum / Stress Range */}
+                          <td className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5">
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between">
+                                <Skeleton className="h-2 w-8" />
+                                <Skeleton className="h-2 w-8" />
+                              </div>
+                              <Skeleton className="h-1.5 w-full rounded-full" />
+                            </div>
+                          </td>
+
+                          {/* Operating Margin */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                            <Skeleton
+                              className={`ml-auto h-4 ${row.marginW}`}
+                            />
+                          </td>
+
+                          {/* Revenue Growth */}
+                          <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right">
+                            <Skeleton
+                              className={`ml-auto h-4 ${row.growthW}`}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </>
+                  ) : filteredReports.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={11}
+                        className="border-b border-border/40 bg-surface-1 px-4 py-16 text-center text-slate-400"
+                      >
+                        {watchlistOnly ? (
+                          <div className="flex flex-col items-center gap-2">
+                            <Star className="size-6 text-amber-400" />
+                            <h3 className="text-base font-bold text-foreground">
+                              {ts.watchlistEmptyTitle}
+                            </h3>
+                            <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
+                              {ts.watchlistEmptyDesc}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleWatchlistOnly(false)}
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
+                            >
+                              {ts.viewAllReports}
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-sm font-medium">
+                              {ts.noResults}
+                            </p>
+                            <button
+                              onClick={() => {
+                                setSearchQuery("");
+                                setMoatFilter("all");
+                                setUpsideFilter("all");
+                                handleToggleWatchlistOnly(false);
+                              }}
+                              className="mt-3 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
+                            >
+                              {ts.resetFilters}
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {displayedReports.map((report) => (
+                        <ScreenerTableRow
+                          key={report.slug}
+                          report={report}
+                          isFav={isFavorite(report.ticker || report.slug)}
+                          onToggleFav={handleToggleFav}
+                          onSelectReport={onSelectReport}
+                          onPrefetch={prefetchReport}
+                          ts={ts}
+                          tHeader={t.header}
+                        />
+                      ))}
+                      {visibleCount < filteredReports.length && (
+                        <tr>
+                          <td
+                            colSpan={11}
+                            className="border-b border-border/40 bg-surface-1/90 py-4 text-center text-xs text-slate-400"
+                          >
+                            <div
+                              ref={observerTargetRef}
+                              className="flex items-center justify-center gap-3"
+                            >
+                              <span className="font-mono text-xs tabular-nums text-slate-400">
+                                {ts.resultsCount(
+                                  displayedReports.length,
+                                  filteredReports.length
+                                )}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={handleLoadAll}
+                                className="rounded-lg border border-border bg-surface-2 px-3 py-1 font-mono text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-surface-3"
+                              >
+                                {ts.loadAll(filteredReports.length)}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
     );
-  };
-
-  return (
-    <div className="mx-auto w-full max-w-[1520px] space-y-6 px-3 py-4 sm:p-6">
-      {/* Header Banner */}
-      <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-end">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <BarChart3 className="size-5 text-accent" />
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              {ts.title}
-            </h1>
-          </div>
-          <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-            {ts.subtitle}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isLoading ? (
-            <Skeleton className="h-6 w-24 rounded-md" />
-          ) : !isWatchlistEmpty ? (
-            <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-xs font-semibold text-accent">
-              {stats.count} {ts.statsCoverage}
-            </span>
-          ) : null}
-        </div>
-      </div>
-
-      {/* KPI Telemetry Strip */}
-      {!isWatchlistEmpty && (
-        <div className="glass-panel shadow-xs grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/90 sm:grid-cols-4 sm:divide-x sm:divide-y-0">
-          {/* Coverage Count */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-slate-400">
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {ts.statsCoverage}
-              </span>
-            </div>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-3 h-8 w-16" />
-                <Skeleton className="mt-2 h-3.5 w-24" />
-              </>
-            ) : (
-              <>
-                <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
-                  {stats.count}
-                </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  {`${stats.wideMoatCount} ${ts.wideMoat}`}
-                </p>
-              </>
-            )}
-          </div>
-
-          {/* Avg Upside */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-slate-400">
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {ts.statsAvgUpside}
-              </span>
-            </div>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-3 h-8 w-24" />
-                <Skeleton className="mt-2 h-3.5 w-32" />
-              </>
-            ) : (
-              <>
-                <div
-                  className={`mt-2 font-mono text-2xl font-black sm:text-3xl ${
-                    stats.avgUpside >= 0
-                      ? "text-fintech-green"
-                      : "text-fintech-red"
-                  }`}
-                >
-                  {stats.avgUpside >= 0 ? "+" : ""}
-                  {stats.avgUpside.toFixed(1)}%
-                </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  {ts.statsAvgUpsideSub}
-                </p>
-              </>
-            )}
-          </div>
-
-          {/* Highest Upside Pick */}
-          <div
-            className={`p-3.5 sm:p-4 ${
-              stats.topPick && !isLoading
-                ? "cursor-pointer transition-colors hover:bg-surface-2/40"
-                : ""
-            }`}
-            onClick={() =>
-              !isLoading &&
-              stats.topPick &&
-              onSelectReport(stats.topPick.slug, "cockpit")
-            }
-            onMouseEnter={() => {
-              if (stats.topPick && !isLoading) {
-                prefetchReport(stats.topPick.slug);
-              }
-            }}
-            title={
-              stats.topPick && !isLoading
-                ? ts.openCockpitTooltip(
-                    stats.topPick.ticker || stats.topPick.slug
-                  )
-                : undefined
-            }
-          >
-            <div className="text-slate-400">
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {ts.statsTopPick}
-              </span>
-            </div>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-3 h-8 w-28" />
-                <Skeleton className="mt-2 h-3.5 w-24" />
-              </>
-            ) : (
-              <>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-black text-foreground sm:text-3xl">
-                    {stats.topPick?.ticker || "—"}
-                  </span>
-                  {stats.topPick?.upsidePct !== undefined && (
-                    <span
-                      className={`font-mono text-sm font-bold ${
-                        stats.topPick.upsidePct >= 0
-                          ? "text-fintech-green"
-                          : "text-fintech-red"
-                      }`}
-                    >
-                      {stats.topPick.upsidePct >= 0 ? "+" : ""}
-                      {stats.topPick.upsidePct.toFixed(1)}%
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 truncate text-[11px] text-slate-400">
-                  {stats.topPick?.company || "—"}
-                </p>
-              </>
-            )}
-          </div>
-
-          {/* Wide Moat Share */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-slate-400">
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                {ts.statsWideMoat}
-              </span>
-            </div>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-3 h-8 w-16" />
-                <Skeleton className="mt-2 h-3.5 w-24" />
-              </>
-            ) : (
-              <>
-                <div className="mt-2 font-mono text-2xl font-black text-foreground sm:text-3xl">
-                  {stats.count > 0
-                    ? `${Math.round((stats.wideMoatCount / stats.count) * 100)}%`
-                    : "0%"}
-                </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  {ts.statsWideMoatSub(stats.wideMoatCount, stats.count)}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Filter and Search Controls */}
-      {!isWatchlistEmpty && (
-        <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
-          {/* Search input */}
-          <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={ts.searchPlaceholder}
-              className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-foreground"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Watchlist Filter Pill */}
-            {(watchlistCount > 0 || watchlistOnly) && (
-              <button
-                type="button"
-                onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
-                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
-                  watchlistOnly
-                    ? "shadow-xs border-amber-500/50 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
-                    : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-foreground"
-                }`}
-                title={ts.filterWatchlist}
-              >
-                <Star
-                  className={`size-3.5 ${
-                    watchlistOnly
-                      ? "fill-amber-400 text-amber-400"
-                      : "text-slate-400"
-                  }`}
-                />
-                <span>{ts.filterWatchlist}</span>
-                {watchlistCount > 0 && (
-                  <span
-                    className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] ${
-                      watchlistOnly
-                        ? "bg-amber-400 font-bold text-slate-950"
-                        : "bg-surface-3 text-slate-400"
-                    }`}
-                  >
-                    {watchlistCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            {/* Moat Filter */}
-            <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => setMoatFilter("all")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  moatFilter === "all"
-                    ? "bg-accent/20 font-semibold text-accent"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.allMoatsTooltip}
-              >
-                {ts.allMoats}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMoatFilter("wide")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  moatFilter === "wide"
-                    ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.wideMoatTooltip}
-              >
-                {ts.wideMoat}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMoatFilter("narrow")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  moatFilter === "narrow"
-                    ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.narrowMoatTooltip}
-              >
-                {ts.narrowMoat}
-              </button>
-            </div>
-
-            {/* Upside Filter */}
-            <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => setUpsideFilter("all")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  moatFilter === "all"
-                    ? "bg-accent/20 font-semibold text-accent"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.filterAllTooltip}
-              >
-                {ts.filterAll}
-              </button>
-              <button
-                type="button"
-                onClick={() => setUpsideFilter("undervalued")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  upsideFilter === "undervalued"
-                    ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.filterUndervaluedTooltip}
-              >
-                {ts.filterUndervalued}
-              </button>
-              <button
-                type="button"
-                onClick={() => setUpsideFilter("high-upside")}
-                className={`rounded px-2.5 py-1 transition-colors ${
-                  upsideFilter === "high-upside"
-                    ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.filterHighUpsideTooltip}
-              >
-                {ts.filterHighUpside}
-              </button>
-            </div>
-          </div>
-
-          {/* View Mode Toggle & Result Counter & Reset */}
-          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
-            {/* View Mode Toggle: Cards vs Table */}
-            <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => handleSetViewMode("cards")}
-                className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-accent/20 font-bold text-accent"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.viewCards}
-              >
-                <LayoutGrid className="size-3.5" />
-                <span>{ts.viewCards}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetViewMode("table")}
-                className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                  viewMode === "table"
-                    ? "bg-accent/20 font-bold text-accent"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-                title={ts.viewTable}
-              >
-                <Table className="size-3.5" />
-                <span>{ts.viewTable}</span>
-              </button>
-            </div>
-
-            <div className="hidden h-4 w-px bg-white/10 sm:block" />
-
-            {/* Results count & Reset */}
-            <div className="flex items-center gap-2">
-              <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-400">
-                {ts.resultsCount(filteredReports.length, uniqueReports.length)}
-              </span>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
-                  title={ts.resetFilters}
-                >
-                  <RotateCcw className="size-2.5" />
-                  <span>{ts.resetFilters}</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content: Cards or Table */}
-      {isWatchlistEmpty ? (
-        <div className="glass-panel shadow-xs mx-auto my-8 flex max-w-xl flex-col items-center gap-4 rounded-2xl border border-border p-8 text-center sm:p-12">
-          <div className="shadow-xs flex size-12 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-            <Star className="size-6 fill-amber-400" />
-          </div>
-          <div className="space-y-1.5">
-            <h3 className="font-mono text-lg font-bold text-foreground sm:text-xl">
-              {ts.watchlistEmptyTitle}
-            </h3>
-            <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-400 sm:text-sm">
-              {ts.watchlistEmptyDesc}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleToggleWatchlistOnly(false)}
-            className="shadow-xs mt-2 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 transition-all hover:bg-accent-hover active:scale-[0.98]"
-          >
-            {ts.viewAllReports}
-          </button>
-        </div>
-      ) : viewMode === "cards" ? (
-        renderCardsView()
-      ) : (
-        <div className="glass-panel overflow-hidden rounded-xl border border-border">
-          <div
-            onWheel={(e) => {
-              if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-              const el = e.currentTarget;
-              if (el.scrollWidth <= el.clientWidth) return;
-              const atVerticalTop = el.scrollTop <= 0 && e.deltaY < 0;
-              const atVerticalBottom =
-                el.scrollTop + el.clientHeight >= el.scrollHeight - 1 &&
-                e.deltaY > 0;
-              if (atVerticalTop || atVerticalBottom) {
-                el.scrollLeft += e.deltaY;
-              }
-            }}
-            tabIndex={0}
-            role="region"
-            aria-label="Stock Screener Table"
-            className="custom-scrollbar max-h-[calc(100vh-14.5rem)] min-h-[460px] overflow-auto outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
-          >
-            <table className="w-full min-w-[1100px] border-separate border-spacing-0 text-left text-xs sm:text-sm">
-              <thead className="shadow-xs sticky top-0 z-20">
-                <tr className="border-b border-border bg-surface-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  {/* Watchlist Star */}
-                  <th
-                    className="sticky left-0 top-0 z-30 w-10 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-3 pr-1 text-center"
-                    title={ts.colFavorite}
-                  >
-                    <Star className="mx-auto size-3.5 text-slate-400" />
-                  </th>
-
-                  {/* Ticker & Company */}
-                  <th
-                    onClick={() => handleSort("ticker")}
-                    className="group/th sticky left-10 top-0 z-30 cursor-pointer whitespace-nowrap border-b border-r border-border/40 bg-surface-2 py-3 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] transition-colors hover:text-foreground"
-                    title={ts.colTickerTooltip}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>{ts.colTicker}</span>
-                      {renderSortIcon("ticker")}
-                    </div>
-                    <div className="pointer-events-none absolute left-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colTicker}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colTickerTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Moat */}
-                  <th
-                    onClick={() => handleSort("moat")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
-                    title={ts.colMoatTooltip}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>{ts.colMoat}</span>
-                      {renderSortIcon("moat")}
-                    </div>
-                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colMoat}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colMoatTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Snowflake 30-Point Audit Radar */}
-                  <th
-                    onClick={() => handleSort("snowflake")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
-                    title={ts.colSnowflakeTooltip}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>{ts.colSnowflake}</span>
-                      {renderSortIcon("snowflake")}
-                    </div>
-                    <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colSnowflake}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colSnowflakeTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Price */}
-                  <th
-                    onClick={() => handleSort("price")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colPriceTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colPrice}</span>
-                      {renderSortIcon("price")}
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-52 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colPrice}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colPriceTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Analyst Consensus Target */}
-                  <th
-                    onClick={() => handleSort("analystTarget")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colAnalystTargetTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colAnalystTarget}</span>
-                      {renderSortIcon("analystTarget")}
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colAnalystTarget}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colAnalystTargetTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Base Fair Value */}
-                  <th
-                    onClick={() => handleSort("baseUpside")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colBaseFairValueTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colBaseFairValue}</span>
-                      {renderSortIcon("baseUpside")}
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colBaseFairValue}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colBaseFairValueTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Weighted Fair Value & Upside */}
-                  <th
-                    onClick={() => handleSort("upside")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 p-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colWeightedFairValueTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colWeightedFairValue}</span>
-                      {renderSortIcon("upside")}
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-64 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colWeightedFairValue}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colWeightedFairValueTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Valuation Spectrum / Stress Range */}
-                  <th
-                    className="group/th sticky top-0 z-20 min-w-[125px] max-w-[160px] whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3"
-                    title={ts.rangeTooltip}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>{ts.colValuationRange}</span>
-                      <span className="hidden font-mono text-[11px] font-normal lowercase tracking-normal text-slate-400 2xl:inline">
-                        {ts.rangeBearBullHint}
-                      </span>
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-60 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colValuationRange}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.rangeTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Operating Margin */}
-                  <th
-                    onClick={() => handleSort("opMargin")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colOperatingMarginTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colOperatingMargin}</span>
-                      {renderSortIcon("opMargin")}
-                    </div>
-                    <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colOperatingMargin}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colOperatingMarginTooltip}
-                      </p>
-                    </div>
-                  </th>
-
-                  {/* Revenue Growth */}
-                  <th
-                    onClick={() => handleSort("revGrowth")}
-                    className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-3 text-right transition-colors hover:text-foreground"
-                    title={ts.colRevenueGrowthTooltip}
-                  >
-                    <div className="flex items-center justify-end gap-1.5">
-                      <span>{ts.colRevenueGrowth}</span>
-                      {renderSortIcon("revGrowth")}
-                    </div>
-                    <div className="pointer-events-none absolute right-2 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
-                      <div className="font-semibold text-foreground">
-                        {ts.colRevenueGrowth}
-                      </div>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
-                        {ts.colRevenueGrowthTooltip}
-                      </p>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {isLoading ? (
-                  <>
-                    {SKELETON_ROWS.map((row, idx) => (
-                      <tr key={`skeleton-${idx}`} className="group">
-                        {/* Watchlist Star Skeleton */}
-                        <td className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center">
-                          <Skeleton className="mx-auto size-4 rounded" />
-                        </td>
-
-                        {/* Ticker & Company */}
-                        <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]">
-                          <div className="flex items-center gap-2.5">
-                            <Skeleton className="size-7 shrink-0 rounded-lg" />
-                            <div className="space-y-1.5">
-                              <Skeleton className={`h-3.5 ${row.tickerW}`} />
-                              <Skeleton className={`h-2.5 ${row.nameW}`} />
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Moat */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
-                          <Skeleton
-                            className={`h-5 ${row.moatW} rounded-full`}
-                          />
-                        </td>
-
-                        {/* Snowflake */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5">
-                          <div className="flex items-center gap-2">
-                            <Skeleton className="size-7 shrink-0 rounded-full" />
-                            <div className="space-y-1">
-                              <Skeleton className="h-3 w-8" />
-                              <Skeleton className="h-2 w-10" />
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Price */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
-                          <Skeleton className="ml-auto h-4 w-14" />
-                        </td>
-
-                        {/* Analyst Target */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
-                          <Skeleton className={`ml-auto h-4 ${row.targetW}`} />
-                        </td>
-
-                        {/* Base Fair Value */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
-                          <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
-                        </td>
-
-                        {/* Weighted Fair Value & Upside */}
-                        <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right">
-                          <div className="ml-auto space-y-1">
-                            <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
-                            <Skeleton className="ml-auto h-3 w-12 rounded-full" />
-                          </div>
-                        </td>
-
-                        {/* Valuation Spectrum / Stress Range */}
-                        <td className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5">
-                          <div className="space-y-1.5">
-                            <div className="flex justify-between">
-                              <Skeleton className="h-2 w-8" />
-                              <Skeleton className="h-2 w-8" />
-                            </div>
-                            <Skeleton className="h-1.5 w-full rounded-full" />
-                          </div>
-                        </td>
-
-                        {/* Operating Margin */}
-                        <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
-                          <Skeleton className={`ml-auto h-4 ${row.marginW}`} />
-                        </td>
-
-                        {/* Revenue Growth */}
-                        <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right">
-                          <Skeleton className={`ml-auto h-4 ${row.growthW}`} />
-                        </td>
-                      </tr>
-                    ))}
-                  </>
-                ) : filteredReports.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={11}
-                      className="border-b border-border/40 bg-surface-1 px-4 py-16 text-center text-slate-400"
-                    >
-                      {watchlistOnly ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <Star className="size-6 text-amber-400" />
-                          <h3 className="text-base font-bold text-foreground">
-                            {ts.watchlistEmptyTitle}
-                          </h3>
-                          <p className="mx-auto max-w-sm text-pretty text-xs leading-relaxed text-slate-400">
-                            {ts.watchlistEmptyDesc}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleToggleWatchlistOnly(false)}
-                            className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/15 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25"
-                          >
-                            {ts.viewAllReports}
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <p className="text-sm font-medium">{ts.noResults}</p>
-                          <button
-                            onClick={() => {
-                              setSearchQuery("");
-                              setMoatFilter("all");
-                              setUpsideFilter("all");
-                              handleToggleWatchlistOnly(false);
-                            }}
-                            className="mt-3 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
-                          >
-                            {ts.resetFilters}
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ) : (
-                  <>
-                    {displayedReports.map((report) => {
-                      const upside = report.upsidePct ?? 0;
-                      const isPositive = upside >= 0;
-                      const price = report.currentPrice ?? 0;
-                      const wfv = report.weightedFairValue ?? 0;
-                      const baseFv = report.baseFairValue ?? 0;
-                      const baseUpside = report.baseUpsidePct ?? 0;
-                      const bear = report.bearFairValue ?? price * 0.7;
-                      const bull = report.bullFairValue ?? price * 1.4;
-
-                      // Compute normalized price position between Bear and Bull (0% to 100%)
-                      const rangeSpan = Math.max(bull - bear, 1);
-                      const pricePos = Math.min(
-                        100,
-                        Math.max(0, ((price - bear) / rangeSpan) * 100)
-                      );
-                      const basePos = Math.min(
-                        100,
-                        Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-                      );
-
-                      return (
-                        <tr
-                          key={report.slug}
-                          className="group cursor-pointer transition-colors hover:bg-surface-2/70"
-                          onClick={() => onSelectReport(report.slug, "cockpit")}
-                          onMouseEnter={() => prefetchReport(report.slug)}
-                          onFocus={() => prefetchReport(report.slug)}
-                        >
-                          {/* Watchlist Star Toggle */}
-                          <td
-                            className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center group-hover:bg-surface-2/90"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleFavorite(report.ticker || report.slug);
-                              }}
-                              className="group/star inline-flex items-center justify-center rounded p-1 transition-transform hover:scale-125 active:scale-95"
-                              title={
-                                isFavorite(report.ticker || report.slug)
-                                  ? t.header.removeFromWatchlist
-                                  : t.header.addToWatchlist
-                              }
-                              aria-label={
-                                isFavorite(report.ticker || report.slug)
-                                  ? t.header.removeFromWatchlist
-                                  : t.header.addToWatchlist
-                              }
-                            >
-                              <Star
-                                className={`size-4 transition-colors ${
-                                  isFavorite(report.ticker || report.slug)
-                                    ? "fill-amber-400 text-amber-400"
-                                    : "text-slate-600 hover:text-amber-400"
-                                }`}
-                              />
-                            </button>
-                          </td>
-
-                          {/* Ticker & Company */}
-                          <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
-                            <div className="flex items-center gap-2">
-                              <span className="shadow-xs hidden size-6 shrink-0 items-center justify-center rounded border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent sm:flex">
-                                {report.ticker || report.slug.split("-")[0]}
-                              </span>
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="font-bold text-foreground group-hover:text-accent">
-                                    {report.ticker || report.slug}
-                                  </span>
-                                  {report.quarter && (
-                                    <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
-                                      {report.quarter}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[125px] xl:max-w-[150px]">
-                                  {report.company || report.slug}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-
-                          {/* Economic Moat */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
-                            {report.moatRating ? (
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                                    report.moatRating.toLowerCase() === "wide"
-                                      ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300"
-                                      : "border border-sky-500/30 bg-sky-500/10 text-sky-300"
-                                  }`}
-                                >
-                                  <Shield className="size-2.5" />
-                                  {report.moatRating}
-                                </span>
-                                {report.moatTrend && (
-                                  <span
-                                    className={`hidden font-mono text-[11px] font-bold sm:inline ${
-                                      report.moatTrend === "Widening"
-                                        ? "text-emerald-400"
-                                        : report.moatTrend === "Narrowing"
-                                          ? "text-rose-400"
-                                          : "text-slate-400"
-                                    }`}
-                                    title={`${report.moatTrend} Moat Trend`}
-                                  >
-                                    {report.moatTrend === "Widening"
-                                      ? "↗"
-                                      : report.moatTrend === "Narrowing"
-                                        ? "↘"
-                                        : "→"}
-                                  </span>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-xs text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Snowflake Fundamental Radar & Score */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
-                            {report.snowflakeScore !== undefined ? (
-                              <div
-                                className="flex items-center gap-2"
-                                title={
-                                  report.snowflakePillars
-                                    ? `${report.snowflakeScore}/30 5-Pillar Snowflake Audit\n• Valuation: ${report.snowflakePillars.valuation}/6\n• Future Growth: ${report.snowflakePillars.future}/6\n• Earnings Quality: ${report.snowflakePillars.earnings}/6\n• Economic Moat: ${report.snowflakePillars.moat}/6\n• Resilience Floor: ${report.snowflakePillars.resilience}/6`
-                                    : `${report.snowflakeScore}/30 Snowflake Radar`
-                                }
-                              >
-                                <MiniSnowflakeRadar
-                                  score={report.snowflakeScore}
-                                  tier={report.snowflakeTier}
-                                  pillars={report.snowflakePillars}
-                                  size={28}
-                                />
-                                <div className="flex flex-col">
-                                  <div className="flex items-baseline gap-0.5">
-                                    <span className="font-mono text-xs font-bold text-foreground">
-                                      {report.snowflakeScore}
-                                    </span>
-                                    <span className="font-mono text-[11px] text-slate-400">
-                                      /30
-                                    </span>
-                                  </div>
-                                  <span
-                                    className={`font-mono text-[11px] font-semibold uppercase tracking-wider ${
-                                      report.snowflakeScore >= 24
-                                        ? "text-emerald-400"
-                                        : report.snowflakeScore >= 18
-                                          ? "text-cyan-400"
-                                          : report.snowflakeScore >= 12
-                                            ? "text-amber-400"
-                                            : "text-rose-400"
-                                    }`}
-                                  >
-                                    {report.snowflakeTier ?? "balanced"}
-                                  </span>
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-xs text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Current Stock Price */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
-                            {price > 0 ? formatCurrency(price) : "—"}
-                          </td>
-
-                          {/* Analyst Consensus Target */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
-                            {report.analystTarget &&
-                            report.analystTarget > 0 ? (
-                              <div
-                                title={
-                                  report.analystCount
-                                    ? `${report.analystCount} ${ts.analystsLabel}${
-                                        report.analystRating
-                                          ? ` · ${report.analystRating}`
-                                          : ""
-                                      }`
-                                    : undefined
-                                }
-                              >
-                                <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
-                                  {formatCurrency(report.analystTarget)}
-                                </div>
-                                <div className="flex items-center justify-end gap-1 font-mono text-[11px] tabular-nums">
-                                  {report.analystUpsidePct !== undefined && (
-                                    <span
-                                      className={
-                                        report.analystUpsidePct >= 0
-                                          ? "font-medium text-emerald-400"
-                                          : "font-medium text-rose-400"
-                                      }
-                                    >
-                                      {report.analystUpsidePct >= 0 ? "+" : ""}
-                                      {report.analystUpsidePct.toFixed(1)}%
-                                    </span>
-                                  )}
-                                  {report.analystRating && (
-                                    <span className="hidden text-[11px] text-slate-400 2xl:inline">
-                                      • {report.analystRating}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Base Fair Value & Upside */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
-                            {baseFv > 0 ? (
-                              <div>
-                                <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
-                                  {formatCurrency(baseFv)}
-                                </div>
-                                <div
-                                  className={`font-mono text-[11px] font-medium tabular-nums ${
-                                    baseUpside >= 0
-                                      ? "text-emerald-400"
-                                      : "text-rose-400"
-                                  }`}
-                                >
-                                  {baseUpside >= 0 ? "+" : ""}
-                                  {baseUpside.toFixed(1)}%
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Weighted Fair Value & Upside */}
-                          <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right font-mono">
-                            {wfv > 0 ? (
-                              <div>
-                                <div className="font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
-                                  {formatCurrency(wfv)}
-                                </div>
-                                <span
-                                  className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
-                                    isPositive
-                                      ? "border border-green-500/30 bg-green-500/10 text-green-400"
-                                      : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
-                                  }`}
-                                >
-                                  {isPositive ? (
-                                    <ArrowUpRight className="size-2.5" />
-                                  ) : (
-                                    <ArrowDownRight className="size-2.5" />
-                                  )}
-                                  {isPositive ? "+" : ""}
-                                  {upside.toFixed(1)}%
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Stress Range Bar */}
-                          <td
-                            className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5"
-                            title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
-                          >
-                            {price > 0 && bull > bear ? (
-                              <div className="space-y-1">
-                                <div className="relative h-1.5 w-full rounded-full bg-surface-3">
-                                  {/* Range track from Bear to Bull */}
-                                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
-
-                                  {/* Base FV Marker */}
-                                  <div
-                                    style={{ left: `${basePos}%` }}
-                                    className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-300 bg-sky-400 shadow-sm"
-                                    title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
-                                  />
-
-                                  {/* Current Price Marker */}
-                                  <div
-                                    style={{ left: `${pricePos}%` }}
-                                    className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-accent shadow ring-2 ring-accent/30"
-                                    title={`${ts.currentPriceLabel}: ${formatCurrency(price)}`}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
-                                  <span
-                                    title={`${ts.bearLabel}: ${formatCurrency(bear)}`}
-                                  >
-                                    ${Math.round(bear)}
-                                  </span>
-                                  <span
-                                    className="flex items-center gap-1 font-mono text-[11px] text-slate-400"
-                                    title={`${ts.colBaseFairValue}: ${formatCurrency(baseFv)}`}
-                                  >
-                                    <span className="size-1.5 rounded-full bg-sky-400" />
-                                    ${Math.round(baseFv)}
-                                  </span>
-                                  <span
-                                    title={`${ts.bullLabel}: ${formatCurrency(bull)}`}
-                                  >
-                                    ${Math.round(bull)}
-                                  </span>
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Operating Margin */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
-                            {report.operatingMarginPct !== undefined ? (
-                              <span>
-                                {report.operatingMarginPct.toFixed(1)}%
-                              </span>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-
-                          {/* Revenue Growth */}
-                          <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right font-mono text-xs tabular-nums sm:text-sm">
-                            {report.revenueGrowthPct !== undefined ? (
-                              <span
-                                className={
-                                  report.revenueGrowthPct >= 0
-                                    ? "text-slate-200"
-                                    : "text-rose-400"
-                                }
-                              >
-                                {report.revenueGrowthPct >= 0 ? "+" : ""}
-                                {report.revenueGrowthPct.toFixed(1)}%
-                              </span>
-                            ) : (
-                              <span className="text-slate-600">—</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {visibleCount < filteredReports.length && (
-                      <tr>
-                        <td
-                          colSpan={11}
-                          className="border-b border-border/40 bg-surface-1/90 py-4 text-center text-xs text-slate-400"
-                        >
-                          <div
-                            ref={observerTargetRef}
-                            className="flex items-center justify-center gap-3"
-                          >
-                            <span className="font-mono text-xs tabular-nums text-slate-400">
-                              {ts.resultsCount(
-                                displayedReports.length,
-                                filteredReports.length
-                              )}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={handleLoadAll}
-                              className="rounded-lg border border-border bg-surface-2 px-3 py-1 font-mono text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-surface-3"
-                            >
-                              {ts.loadAll(filteredReports.length)}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+  }
+);
