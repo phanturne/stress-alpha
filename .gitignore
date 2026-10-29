@@ -20,4 +20,9 @@ coverage
 
 # Local agent / tool configs
 .codex/
-.impeccable/*.local.json
+
+# Scratch & temporary specification drafts
+*.draft.md
+docs/spec-*.md
+docs/scratch/
+
