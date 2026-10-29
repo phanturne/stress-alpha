@@ -289,10 +289,11 @@ All code and architectural contributions MUST adhere to a branch and Pull Reques
      - `npm run lint`
      - `npx tsc --noEmit`
      - `npm test`
-3. **Pull Request Handoff**:
+3. **Draft Pull Request Creation & Handoff**:
    - Push branch to remote: `git push -u origin <branch-name>`
-   - Provide a complete, ready-to-use PR title and markdown description directly in the agent's turn response (covering context/motivation, key files changed, and verification results) alongside the GitHub comparison / PR creation link.
-   - Wait for human review, feedback, or merge approval before proceeding with dependent work.
+   - **Always create as a Draft PR outright**: Execute `gh pr create --draft --title "<type>: <title>" --body "<markdown body>"` so the PR is live immediately without risk of premature merging.
+   - Provide the live PR link along with the PR title and description summary directly in the turn response.
+   - Wait for human review, feedback, or merge approval before proceeding with dependent work. Once approved, the PR can be marked ready (`gh pr ready`) and merged.
 4. **Post-Merge Local Branch Cleanup**:
    - Once the pull request has been merged to `main`:
      - Switch back to `main`: `git checkout main`
