@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
@@ -11,47 +11,71 @@ import {
 
 /**
  * Pre-warms TanStack Query cache and Next.js page route chunks on hover or focus.
- * Ensures zero-latency navigation when user clicks from Screener, Watchlist, or Report dropdowns.
+ * Includes a lightweight hover-intent debounce (75ms) to prevent network thread
+ * saturation when scrolling or skimming across rows in the screener table.
  */
 export function useReportPrefetch() {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const prefetchReport = useCallback(
-    (slug: string) => {
+    (slug: string, immediate = false) => {
       if (!slug || typeof window === "undefined") return;
-      const ticker = slug.split("-")[0]?.toUpperCase();
 
-      // 1. Prefetch Next.js page route component bundle
-      try {
-        router.prefetch(`/?report=${encodeURIComponent(slug)}`);
-      } catch {
-        // Ignore prefetch errors in unsupported environments
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+        hoverTimerRef.current = null;
       }
 
-      // 2. Prefetch active report data
-      queryClient.prefetchQuery({
-        queryKey: ["report", slug],
-        queryFn: () => fetchReportData(slug),
-        staleTime: 1000 * 60 * 5,
-      });
+      const execute = () => {
+        const ticker = slug.split("-")[0]?.toUpperCase();
 
-      // 3. Prefetch ticker news & revisions in parallel
-      if (ticker) {
+        // 1. Prefetch Next.js page route component bundle
+        try {
+          router.prefetch(`/?report=${encodeURIComponent(slug)}`);
+        } catch {
+          // Ignore prefetch errors in unsupported environments
+        }
+
+        // 2. Prefetch active report data
         queryClient.prefetchQuery({
-          queryKey: ["news", ticker],
-          queryFn: () => fetchNews(ticker),
+          queryKey: ["report", slug],
+          queryFn: () => fetchReportData(slug),
           staleTime: 1000 * 60 * 5,
         });
-        queryClient.prefetchQuery({
-          queryKey: ["revisions", ticker],
-          queryFn: () => fetchRevisions(ticker),
-          staleTime: 1000 * 60 * 5,
-        });
+
+        // 3. Prefetch ticker news & revisions in parallel
+        if (ticker) {
+          queryClient.prefetchQuery({
+            queryKey: ["news", ticker],
+            queryFn: () => fetchNews(ticker),
+            staleTime: 1000 * 60 * 5,
+          });
+          queryClient.prefetchQuery({
+            queryKey: ["revisions", ticker],
+            queryFn: () => fetchRevisions(ticker),
+            staleTime: 1000 * 60 * 5,
+          });
+        }
+      };
+
+      if (immediate) {
+        execute();
+      } else {
+        hoverTimerRef.current = setTimeout(execute, 75);
       }
     },
     [queryClient, router]
   );
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   return { prefetchReport };
 }

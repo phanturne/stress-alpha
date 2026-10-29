@@ -106,9 +106,6 @@ export function useRecentReport(
           };
         }
       }
-      if (typeof window !== "undefined") {
-        return getStoredLastReport();
-      }
       return null;
     }
   );
