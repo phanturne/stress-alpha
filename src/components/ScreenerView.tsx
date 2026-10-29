@@ -1505,7 +1505,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                   type="button"
                   onClick={() => setUpsideFilter("all")}
                   className={`rounded px-2.5 py-1 transition-colors ${
-                    moatFilter === "all"
+                    upsideFilter === "all"
                       ? "bg-accent/20 font-semibold text-accent"
                       : "text-slate-400 hover:text-foreground"
                   }`}

@@ -274,10 +274,10 @@ export function SettingsClientPage({
                     key={sec.id}
                     type="button"
                     onClick={() => setActiveSection(sec.id)}
-                    className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-all lg:w-full ${
+                    className={`flex shrink-0 items-center gap-2.5 rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition-colors lg:w-full ${
                       isActive
-                        ? "shadow-xs border border-border bg-surface-2 font-bold text-white"
-                        : "text-slate-400 hover:bg-surface-2 hover:text-white"
+                        ? "shadow-xs border-border bg-surface-2 font-bold text-white"
+                        : "border-transparent text-slate-400 hover:bg-surface-2 hover:text-white"
                     }`}
                   >
                     <IconComponent

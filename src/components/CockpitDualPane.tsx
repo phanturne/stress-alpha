@@ -152,10 +152,10 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
               setMobileSection("cockpit");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-lg border py-2 text-xs font-bold transition-colors ${
               mobileSection === "cockpit"
-                ? "shadow-xs border border-border bg-surface-2 text-white"
-                : "text-slate-400 hover:text-slate-200"
+                ? "shadow-xs border-border bg-surface-2 text-white"
+                : "border-transparent text-slate-400 hover:text-slate-200"
             }`}
           >
             <Sliders
@@ -171,10 +171,10 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
               setMobileSection("workspaces");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-lg border py-2 text-xs font-bold transition-colors ${
               mobileSection === "workspaces"
-                ? "shadow-xs border border-border bg-surface-2 text-white"
-                : "text-slate-400 hover:text-slate-200"
+                ? "shadow-xs border-border bg-surface-2 text-white"
+                : "border-transparent text-slate-400 hover:text-slate-200"
             }`}
           >
             <BarChart3

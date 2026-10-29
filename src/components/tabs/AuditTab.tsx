@@ -76,10 +76,10 @@ export const AuditTab: React.FC<AuditTabProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => setSubTab(item.id)}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-semibold transition-colors ${
                   isActive
-                    ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
-                    : "text-slate-400 hover:bg-surface-2/60 hover:text-slate-200"
+                    ? "shadow-xs border-border bg-surface-2 font-bold text-foreground"
+                    : "border-transparent text-slate-400 hover:bg-surface-2/60 hover:text-slate-200"
                 }`}
               >
                 <Icon

@@ -797,10 +797,10 @@ export const Header: React.FC<HeaderProps> = ({
                     onViewModeChange("screener", { watchlistOnly: false });
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
                     viewMode === "screener"
-                      ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                      : "text-slate-300 hover:bg-surface-2"
+                      ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                      : "border-transparent text-slate-300 hover:bg-surface-2"
                   }`}
                 >
                   <BarChart3 className="size-4 text-accent" />
@@ -813,10 +813,10 @@ export const Header: React.FC<HeaderProps> = ({
                     onViewModeChange("watchlist");
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`flex items-center justify-between rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
                     viewMode === "watchlist"
-                      ? "border border-amber-500/30 bg-amber-500/15 text-amber-300 shadow-sm"
-                      : "text-slate-300 hover:bg-surface-2"
+                      ? "border-amber-500/30 bg-amber-500/15 text-amber-300 shadow-sm"
+                      : "border-transparent text-slate-300 hover:bg-surface-2"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -845,10 +845,10 @@ export const Header: React.FC<HeaderProps> = ({
                     onViewModeChange("cockpit");
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
                     viewMode === "cockpit"
-                      ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                      : "text-slate-300 hover:bg-surface-2"
+                      ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                      : "border-transparent text-slate-300 hover:bg-surface-2"
                   }`}
                 >
                   <SlidersHorizontal className="size-4 text-accent" />
@@ -865,10 +865,10 @@ export const Header: React.FC<HeaderProps> = ({
                       onViewModeChange("memo");
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
                       viewMode === "memo"
-                        ? "border border-accent/30 bg-accent/15 text-accent shadow-sm"
-                        : "text-slate-300 hover:bg-surface-2"
+                        ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                        : "border-transparent text-slate-300 hover:bg-surface-2"
                     }`}
                   >
                     <FileText className="size-4 text-accent" />
