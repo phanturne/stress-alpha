@@ -270,6 +270,38 @@ Whenever you implement a new feature, modify calculation engines, adjust data sc
 2. **Zero Documentation Drift**:
    - Never leave documentation behind code changes. Outdated documentation is treated with the same rigor as a failing unit test or broken TypeScript build.
 
+---
+
+## 9. Branching & Pull Request Workflow (Human-in-the-Loop Review)
+
+All code and architectural contributions MUST adhere to a branch and Pull Request workflow. Agents must never push or merge directly to `main`.
+
+1. **Feature Branch Mandate**:
+   - Every change must live on a dedicated branch created from latest `origin/main`.
+   - Branch naming convention:
+     - `feat/<topic>`: New features, endpoints, or UI tabs
+     - `fix/<bug>`: Bug fixes or data ingestion patches
+     - `chore/<task>`: Dependency updates, CI workflows, or maintenance
+     - `docs/<topic>`: Documentation, methodology guides, or architectural specifications
+2. **Local Pre-Handoff Verification**:
+   - Before pushing a branch, the agent must verify:
+     - `npm run format:check`
+     - `npm run lint`
+     - `npx tsc --noEmit`
+     - `npm test`
+3. **Draft Pull Request Creation & Handoff**:
+   - Push branch to remote: `git push -u origin <branch-name>`
+   - **Always create as a Draft PR outright**: Execute `gh pr create --draft --title "<type>: <title>" --body "<markdown body>"` so the PR is live immediately without risk of premature merging.
+   - Provide the live PR link along with the PR title and description summary directly in the turn response.
+   - Wait for human review, feedback, or merge approval before proceeding with dependent work. Once approved, the PR can be marked ready (`gh pr ready`) and merged.
+4. **Post-Merge Local Branch Cleanup**:
+   - Once the pull request has been merged to `main`:
+     - Switch back to `main`: `git checkout main`
+     - Fast-forward pull latest changes: `git pull origin main`
+     - Delete the merged local branch: `git branch -d <branch-name>` (or `-D` if squashed)
+     - Prune remote-tracking references: `git fetch -p`
+     - Verify working directory is clean: `git status`
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
