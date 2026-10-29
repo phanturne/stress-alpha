@@ -1,81 +1,135 @@
 # StressAlpha — Modern Equity Earnings & Stress Simulation Platform
 
-A forward-looking financial decision and scenario-simulation platform for fundamental equity analysts, tech investors, and quant researchers. Built as a high-performance **Next.js 16 App Router** application (powered by **React 19** and **Turbopack**) with pure client-side deterministic arithmetic, dynamic valuation bands, and an autonomous AI pipeline skill.
+A forward-looking financial decision and scenario-simulation platform for fundamental equity analysts, tech investors, and quant researchers. Built as a high-performance **Next.js 16 App Router** application (powered by **React 19** and **Turbopack**) with pure client-side deterministic arithmetic, dynamic valuation bands, and autonomous earnings intelligence pipelines.
+
+---
+
+## 📸 Platform Interface Gallery
+
+### 1. Interactive Flow-Through Cockpit (Desktop Dual-Pane)
+The left pane anchors the deterministic flow-through valuation model and sensitivity sliders, while the right pane navigates 8 deep-dive intelligence workspaces with independent scrolling.
 
 <p align="center">
-  <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Model Preview" width="100%" />
+  <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Dual-Pane Cockpit Preview" width="100%" />
+</p>
+
+### 2. Cross-Ticker Universe Screener & Radar Matrix
+Analyze valuation multiples, consensus upside spreads, and 30-point Snowflake Fundamental Radars across 630+ covered equities with adaptive card and table views.
+
+<p align="center">
+  <img src="./docs/images/screener-preview.png" alt="StressAlpha Universe Screener Preview" width="100%" />
+</p>
+
+### 3. Dedicated Watchlist Portfolio & Telemetry
+Track coverage lists with real-time quote updates, valuation spreads, operating margins, and multi-quarter earnings history.
+
+<p align="center">
+  <img src="./docs/images/watchlist-preview.png" alt="StressAlpha Watchlist Preview" width="100%" />
+</p>
+
+### 4. 1-Click Investment Committee Memorandum (`[M]` key)
+Instant publication-ready PDF-styled research memo rendering thesis bullets, variant perception commentary, catalyst timetables, and valuation sensitivity ranges.
+
+<p align="center">
+  <img src="./docs/images/memo-preview.png" alt="StressAlpha Investment Memorandum Preview" width="100%" />
 </p>
 
 ---
 
-## 💡 Core Philosophy
+## 💡 Core Philosophy & System Architecture
 
 > **LLMs extract and audit qualitative context; pure deterministic TypeScript handles 100% of the arithmetic.**
 
-* **Zero Math Hallucinations**: Target prices, weighted fair values (WFVs), multiple spreads, and snowflake scores are never invented by an LLM. All financial mathematics and operating leverage flows are strictly calculated by deterministic TypeScript engines.
-* **Audited SEC Data Extraction**: Point-in-time financial statements, 10-Q/10-K filings, and earnings call transcripts are extracted via [Massive.com](https://massive.com/pricing) and [Finnhub.io](https://finnhub.io/pricing).
-* **Income Quality Guardrail**: Automatically isolates non-operating, mark-to-market one-off gains (e.g. ASU 2016-01 equity adjustments) to surface true `Operating EPS`, preventing valuation multiple distortion.
+```mermaid
+flowchart TB
+    subgraph Feeds["1. External Feeds & Calendar"]
+        Finnhub["Finnhub API<br/>Earnings Calendar & Audio Transcripts"]
+        Polygon["Polygon / Massive API<br/>Reference News Firehose & SEC Filings"]
+        SEC["SEC EDGAR<br/>10-Q & 10-K Statements"]
+    end
+
+    subgraph AutonomousPipelines["2. Autonomous Scaffolding & Transmission"]
+        CalendarIngestion["Autonomous Earnings Calendar Engine<br/>(8:45 AM BMO & 5:15 PM AMC EST)"]
+        NewsPipeline["News Transmission & DAG Engine<br/>Clickbait Filter + Upstream Shocks"]
+        SanityGate["Deterministic Sanity & Variant Perception Gate<br/>Data Completeness + Buy-Side Divergence"]
+    end
+
+    subgraph Storage["3. Data Access Layer (Neon PostgreSQL + Drizzle ORM)"]
+        NeonDB[("Neon Serverless Postgres<br/>• tickers • reports • financial_metrics<br/>• market_events • valuation_revisions")]
+        DAL["DrizzleReportRepository<br/>(In-Memory Cache & Ephemeral Test Branches)"]
+    end
+
+    subgraph ClientSimulation["4. Next.js 16 Presentation & Simulation Cockpit"]
+        Cockpit["Desktop Dual-Pane Cockpit<br/>• Sub-ms Sensitivity Sliders<br/>• Fixed OpEx Rigidity & FCF Conversion"]
+        Screener["Universe Screener & Watchlist<br/>• 30-Point Snowflake Radars<br/>• Price Regime Meters"]
+        MemoView["Investment Committee Memo ([M])"]
+    end
+
+    Feeds --> AutonomousPipelines
+    AutonomousPipelines --> SanityGate
+    SanityGate --> Storage
+    Storage --> ClientSimulation
+```
+
+1. **Zero LLM Math Hallucinations**:
+   - Target prices, weighted fair values (WFVs), multiple spreads, and snowflake scores are **never** calculated or guessed by an LLM.
+   - All financial mathematics, operating leverage flows, and risk/reward asymmetries are strictly computed by deterministic TypeScript engines (`src/lib/valuation.ts`, `src/lib/snowflake.ts`).
+2. **Income Quality Guardrail**:
+   - Automatically isolates non-operating, mark-to-market one-off paper gains (e.g. ASU 2016-01 equity adjustments) to surface true `Operating EPS`, preventing valuation multiple distortion.
+3. **Sub-Millisecond Client Reactivity**:
+   - Sliders perturbing upstream demand shocks (Hyperscaler CapEx, Consumer Demand, Digital Ad spend) evaluate instantly (`<1ms`) client-side without round-trip network delays.
+4. **Isolated Ephemeral Integration Testing**:
+   - Automated via Vitest and the Neon API: tests spin up an isolated copy-on-write branch from `production` in ~0.85s, ensuring 100% cloud parity without polluting production data.
 
 ---
 
-## 🚀 Key Features
+## 🔬 Deterministic Valuation Mechanics
 
-### 1. Interactive Flow-Through Stress Model Cockpit
-* **Sub-Millisecond Sensitivity Sliders**: Real-time client-side simulation (<1ms) perturbing upstream demand shocks (Hyperscaler CapEx, Consumer Demand, Digital Ad spend) with exposure shares and elasticities.
-* **Operating Leverage Rigidity & Cash Flow Telemetry**: Fixed OpEx does not contract smoothly during downturns; models NOPAT, D&A, CapEx intensity, and Free Cash Flow (FCF) conversion, deriving FCF per share and FCF yield across all stress regimes.
-* **Deterministic Scenario Calibration Matrix**: Replaces naive symmetrical priors with Softmax Multi-Regime Weighting with Tail Risk Heuristics. Enforces an asymmetric governance tail veto ($\Delta z_{\text{panic}} = +1.35, \Delta z_{\text{bull}} = -1.60$) and a 20% market-implied dampening regularization anchor ($w_{\text{mkt}} = 0.20$) without academic pretension.
-* **4-Regime Valuation Spectrum**:
-  * 🐂 **Bull Regime**: Multiple expansion and catalyst acceleration scenario.
-  * ⚖️ **Base Regime**: Guidance execution and normalized valuation multiple.
-  * 🐻 **Bear Regime**: Deceleration and macro margin compression.
-  * 🚨 **Panic Floor**: Extreme multiple de-rating and demand contraction floor.
-* **Risk/Reward Asymmetry**: Real-time gauge pin positioning the market price against regime boundaries and computing the Upside-to-Downside skew ratio.
+StressAlpha models corporate cash generation across a **4-Regime Valuation Spectrum**:
 
-### 2. Autonomous Earnings Calendar & Scaffolding Engine
-* **Inverted Daily Polling**: Queries Finnhub's earnings calendar (`GET /calendar/earnings`) once or twice daily to identify every reporting company across US markets in a single request.
-* **Automated Scaffolding**: Automatically runs at **8:45 AM EST** (post-BMO) and **5:15 PM EST** (post-AMC) via GitHub Actions, auto-scaffolding all 8 quarterly modules (both English & Chinese), computing deterministic valuations, and running sanity audits.
-* **Non-Destructive Deduplication**: Skips populated reports (`revenueBillions > 0`) while enabling forced re-scaffolding with `--force` and simulation with `--dry-run`.
+```mermaid
+flowchart LR
+    Panic["🚨 Panic Floor<br/>Extreme Multiple De-rating<br/>+ Severe Demand Shock"]
+    Bear["🐻 Bear Regime<br/>Macro Headwinds<br/>+ Margin Compression"]
+    Base["⚖️ Base Regime<br/>Guidance Mid-Point<br/>+ Normalized Multiple"]
+    Bull["🐂 Bull Regime<br/>Multiple Expansion<br/>+ Catalyst Acceleration"]
 
-### 3. Global News Firehose & Supply Chain Transmission Pipeline
-* **Unparameterized Marketplace Streaming**: Ingests up to 1,000 articles in a single query via Polygon / Massive Reference News API (`GET /v2/reference/news?limit=1000`).
-* **Noise & Clickbait Gating**: Deterministic regex filters eliminate ~90% of syndicated clickbait, wealth formulas, and class-action lawyer solicitation spam before any processing occurs.
-* **Cross-Company Dependency Graph (DAG)**: Propagates upstream supplier/customer announcements (e.g. TSMC CapEx or ASML bookings) downstream to customer valuations (e.g. NVIDIA revenue) without duplicate extractions.
-* **Valuation Revision Ledger**: Maintains an immutable audit trail of event-driven baseline valuation adjustments between quarterly earnings releases.
+    Panic --- Bear --- Base --- Bull
+```
 
-### 4. Cross-Ticker Universe Screener & Dedicated Watchlist
-* **Market-Wide Comparison**: Side-by-side overview of all covered equities with real-time closing prices, market caps, and consensus price targets sorted by upside potential.
-* **Valuation Spread Spectrum Bars**: Visual Bear $\leftrightarrow$ Market Price $\leftrightarrow$ Base $\leftrightarrow$ Bull spread bars identifying deep-value discounts.
-* **Standalone Routes**: Dedicated routes for `/screener` and `/watchlist` with dynamic count badges, multi-quarter grouping, and dual view modes (Adaptive Cards vs Matrix Table).
-* **30-Point Snowflake Fundamental Radar**: 5-pillar fundamental health score (Valuation & Safety, Future Growth, Earnings Quality, Economic Moat, Downside Resilience).
-
-### 5. Institutional Intelligence Workspaces & PDF Memo Mode
-* **8 Focused Workspaces**:
-  1. *Valuation & Scenario Tree*: Bull/Base/Bear matrix with inline-editable EPS and multiples.
-  2. *Wall Street Estimates*: Street consensus targets, upside spreads, and revision history.
-  3. *Economic Moat*: 5-pillar moat evaluation and competitor benchmarking.
-  4. *Segments & Guidance*: Segment velocities and management forward guidance ranges.
-  5. *Catalysts*: Quantified growth/risk drivers with probability anchors and horizons.
-  6. *News & Pulse*: Live market event feed with abnormal price moves and "Simulate in Cockpit" triggers.
-  7. *Audit & Risk*: SEC 10-Q disclosures, management tone scorecard, and post-earnings stock reactions.
-  8. *Research Memo*: Bilingual report markdown (`report.md` / `report_zh.md`) with 1-click clipboard copy.
-* **1-Click Printable Memo (`[M]` key)**: Instant publication-ready 1-page PDF memorandum for investment committees.
-
-### 6. Institutional UI & Dual-Theme Engine
-* **Dual Themes**: Default Bloomberg Terminal Dark (`#07090e`) and FactSet/WSJ Day Light (`#f8fafc`) with zero-flash (`0ms FOUC`) SSR persistence.
-* **Zero-Exposure Email Privacy**: User emails are omitted from header menus and mobile drawers, and masked by default on `/settings` to safeguard against shoulder-surfing and presentation leaks.
-* **Desktop Dual-Pane Independent Scroll**: Locked window scroll on desktop eliminates jumpy double scrollbars; left model and right deep-dive workspaces scroll independently.
-
-> [!NOTE]
-> For complete mathematical proofs, formulas, and worked examples (including deterministic scenario calibration matrix, FCF flow-through, and ASU 2016-01 adjustments), visit the interactive **[/methodology](http://localhost:3000/methodology)** page or [`docs/architecture.md`](./docs/architecture.md).
+### Flow-Through Equations
+1. **Top-Line Demand Shocks**:
+   $$\Delta \text{Revenue} = \text{Base Revenue} \times \sum_{i} \left( \text{Exposure}_i \times \text{Elasticity}_i \times \text{Shock}_i \right)$$
+2. **Operating Leverage Rigidity**: Fixed operating expenditures (`fixedOpexBillions`) do not contract proportionally with revenue during downturns, realistically modeling operational deleveraging.
+3. **Free Cash Flow (FCF) Conversion & Yield**:
+   $$\text{FCF} = \text{Operating Income} \times (1 - \text{Tax Rate}) + \text{D\&A} - \text{CapEx}$$
+   $$\text{FCF Conversion } \% = \frac{\text{FCF}}{\text{Net Income}} \times 100, \quad \text{FCF Yield } \% = \frac{\text{FCF Per Share}}{\text{Stock Price}} \times 100$$
+4. **Softmax Multi-Regime Weighting with Tail Risk Heuristics**:
+   - Applies an asymmetric governance tail veto ($\Delta z_{\text{panic}} = +1.35, \Delta z_{\text{bull}} = -1.60$) overriding margin cushions when severe accounting flags arise.
+   - Regularized by a 20% market-implied anchor ($w_{\text{mkt}} = 0.20$) on a bounded simplex $[0.05, 0.85]$.
 
 ---
 
-## ⚡ CLI Quick Reference
+## ❄️ 30-Point Snowflake Fundamental Radar
+
+The circular fundamental radar scores companies across 5 core pillars (6 points each, 30 points max):
+
+| Pillar | Axis ID | Focus & Evaluation Criteria | Token Color |
+| :--- | :--- | :--- | :--- |
+| **Valuation & Margin of Safety** | `valuation` | Upside to WFV, discount to consensus target, multiple discipline | Emerald (`#10b981`) |
+| **Future Growth & Catalysts** | `future` | Segment revenue velocity, forward guidance, catalyst pipeline | Cyan (`#06b6d4`) |
+| **Earnings Quality & Margins** | `earnings` | Operating margin level, clean cash conversion, GAAP equity adjustments | Indigo (`#6366f1`) |
+| **Economic Moat & Benchmarking** | `moat` | Pricing power, peer margin spread, durable switching costs | Amber (`#f59e0b`) |
+| **Downside Floor & Resilience** | `resilience` | Panic multiple buffer, upstream solvency, asymmetry skew ratio | Rose (`#ec4899`) |
+
+---
+
+## ⚡ CLI & Pipeline Commands
 
 | Command | Description |
 | :--- | :--- |
 | `npm run dev` | Start Next.js development server at `http://localhost:3000` |
-| `npm test` | Run Vitest test suite with Neon ephemeral copy-on-write branching |
+| `npm test` | Run Vitest test suite (244 tests) with Neon ephemeral copy-on-write branching |
 | `npm run build` | Compile Next.js production build with Turbopack |
 | `npm run sync:earnings -- --dry-run` | Simulate earnings calendar ingestion for today |
 | `npm run sync:earnings -- --date=YYYY-MM-DD` | Ingest and scaffold earnings reports for a specific date |
@@ -83,6 +137,7 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 | `npm run sync:prices` | Update live market prices across coverage universe |
 | `npm run fetch:data -- <TICKER> --stage` | Ingest SEC statements and scaffold starter draft modules |
 | `npm run migrate:metrics` | Backfill relational quarterly time-series statements into `financial_metrics` |
+| `npm run capture:screenshots` | Capture fresh headless screenshots of all core platform views |
 
 ---
 
@@ -95,8 +150,8 @@ stress-alpha/
 │   ├── nightly-price-sync.yml          # Nightly price & news sync (22:00 UTC)
 │   └── earnings_sync.yml               # Twice-daily automated earnings scaffolding (8:45 AM & 5:15 PM EST)
 ├── docs/
-│   ├── architecture.md                 # Canonical system architecture documentation
-│   └── images/                         # UI preview screenshots
+│   ├── architecture.md                 # Canonical system architecture documentation & diagrams
+│   └── images/                         # Platform screenshots (cockpit, screener, watchlist, memo, methodology)
 ├── scripts/
 │   ├── sync_earnings_calendar.ts       # Finnhub earnings calendar ingestion & scaffolding
 │   ├── sync_news.ts                    # Polygon firehose news ingestion & transmission calculation
@@ -104,7 +159,8 @@ stress-alpha/
 │   ├── fetch_data.ts                   # SEC 10-Q & consensus pipeline data extractor
 │   ├── seed_universe.ts                # S&P 500 & NASDAQ-100 universe ingestion & quote seeder
 │   ├── bulk_scaffold.ts                # Batch valuation scaffolding & report persistence engine
-│   └── seed_upstream_dependencies.ts   # Cross-company supply chain DAG seeder
+│   ├── seed_upstream_dependencies.ts   # Cross-company supply chain DAG seeder
+│   └── capture_screenshots.sh          # Headless browser screenshot capture script
 ├── src/
 │   ├── app/                            # Next.js 16 App Router pages & API routes
 │   │   ├── page.tsx                    # Main valuation model & workspace cockpit
@@ -114,9 +170,10 @@ stress-alpha/
 │   │   ├── methodology/                # Interactive mathematical methodology guide (/methodology)
 │   │   └── api/                        # REST API routes (reports, news, revisions, watchlist, pipeline)
 │   ├── components/                     # React 19 UI components
-│   │   ├── Header.tsx                  # Global navigation bar & theme toggle
+│   │   ├── Header.tsx                  # Global 3-tab segmented navigation bar & theme toggle
 │   │   ├── Cockpit.tsx                 # Interactive flow-through model & sliders
-│   │   ├── ScreenerView.tsx            # Multi-ticker radar table & cards
+│   │   ├── CockpitDualPane.tsx         # Desktop dual-pane independent scroll container
+│   │   ├── ScreenerView.tsx            # Multi-ticker radar table & adaptive cards
 │   │   ├── WatchlistView.tsx           # Dedicated watchlist telemetry strip & metrics
 │   │   ├── snowflake/                  # 5-Pillar Snowflake Radar chart & modal
 │   │   └── tabs/                       # 8 Specialized intelligence workspaces
@@ -129,7 +186,7 @@ stress-alpha/
 │       ├── news-transmission.ts        # Event-to-valuation transmission engine
 │       ├── services/                   # Earnings calendar, financial data, and news services
 │       └── repository/                 # Data Access Layer (Drizzle & InMemory repositories)
-└── tests/                              # Vitest automated test suite (207 tests across 21 suites)
+└── tests/                              # Vitest automated test suite (244 tests across 24 suites)
 ```
 
 ---
@@ -150,9 +207,10 @@ Key environment variables:
 * `DATABASE_URL`: Neon Serverless PostgreSQL connection string.
 * `MASSIVE_API_KEY`: API key for point-in-time financial statements and news.
 * `FINNHUB_API_KEY`: API key for earnings calendar and earnings call transcripts.
+* `NEON_API_KEY` & `NEON_PROJECT_ID`: Optional credentials for running ephemeral Vitest integration branches.
 
 ### 3. Verify System Health
-Run the comprehensive test suite (Vitest spins up an isolated, ephemeral copy-on-write Neon DB branch in ~1s):
+Run the comprehensive test suite (Vitest spins up an isolated, ephemeral copy-on-write Neon DB branch in ~0.85s):
 ```bash
 npm test
 npm run build

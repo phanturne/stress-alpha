@@ -44,43 +44,53 @@ trap cleanup EXIT
 
 echo "📸 Capturing Headless Screenshots..."
 
-echo "1/3 Capturing Universe Screener..."
+echo "1/5 Capturing Stress Flow-Through Cockpit (Desktop Dual-Pane)..."
 "$CHROME_BIN" \
   --headless=new \
   --disable-gpu \
   --hide-scrollbars \
   --window-size=1600,1050 \
-  --virtual-time-budget=4000 \
-  --screenshot="docs/images/screener-preview.png" \
-  "http://localhost:${PORT}/?mode=screener"
-
-echo "2/3 Capturing Stress Flow-Through Cockpit..."
-"$CHROME_BIN" \
-  --headless=new \
-  --disable-gpu \
-  --hide-scrollbars \
-  --window-size=1600,1050 \
-  --virtual-time-budget=4000 \
+  --virtual-time-budget=5000 \
   --screenshot="docs/images/cockpit-preview.png" \
-  "http://localhost:${PORT}/?report=NVDA-Q2-2027-analysis&mode=cockpit"
+  "http://localhost:${PORT}/?report=NVDA-Q2-2027-analysis"
 
-echo "3/4 Capturing Investment Committee Memorandum..."
+echo "2/5 Capturing Cross-Ticker Universe Screener..."
 "$CHROME_BIN" \
   --headless=new \
   --disable-gpu \
   --hide-scrollbars \
   --window-size=1600,1050 \
-  --virtual-time-budget=4000 \
+  --virtual-time-budget=5000 \
+  --screenshot="docs/images/screener-preview.png" \
+  "http://localhost:${PORT}/screener"
+
+echo "3/5 Capturing Dedicated Watchlist Portfolio..."
+"$CHROME_BIN" \
+  --headless=new \
+  --disable-gpu \
+  --hide-scrollbars \
+  --window-size=1600,1050 \
+  --virtual-time-budget=5000 \
+  --screenshot="docs/images/watchlist-preview.png" \
+  "http://localhost:${PORT}/watchlist"
+
+echo "4/5 Capturing Investment Committee Memorandum..."
+"$CHROME_BIN" \
+  --headless=new \
+  --disable-gpu \
+  --hide-scrollbars \
+  --window-size=1600,1050 \
+  --virtual-time-budget=5000 \
   --screenshot="docs/images/memo-preview.png" \
   "http://localhost:${PORT}/?report=NVDA-Q2-2027-analysis&mode=memo"
 
-echo "4/4 Capturing Valuation Methodology & Calculations Page..."
+echo "5/5 Capturing Valuation Methodology & Calculations..."
 "$CHROME_BIN" \
   --headless=new \
   --disable-gpu \
   --hide-scrollbars \
   --window-size=1600,1050 \
-  --virtual-time-budget=4000 \
+  --virtual-time-budget=5000 \
   --screenshot="docs/images/methodology-preview.png" \
   "http://localhost:${PORT}/methodology"
 

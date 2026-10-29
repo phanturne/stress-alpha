@@ -20,4 +20,3 @@ coverage
 
 # Local agent / tool configs
 .codex/
-.impeccable/*.local.json
