@@ -126,6 +126,11 @@ Dedicated `/watchlist` route grouping coverage universe constituents by report q
   <img src="./images/watchlist-preview.png" alt="StressAlpha Watchlist View" width="100%" />
 </p>
 
+### 3.1 Design System, Dual-Theme Engine & Institutional Privacy
+* **Dual Themes**: Default Bloomberg Terminal Dark (`#07090e`) and FactSet/WSJ Day Light (`#f8fafc`) with zero-flash (0ms FOUC) SSR persistence via `src/components/ThemeScript.tsx`.
+* **Zero-Exposure Email Privacy**: User emails are omitted from header menus and mobile drawers, and masked by default on `/settings` to safeguard against shoulder-surfing and presentation leaks.
+* **Desktop Dual-Pane Independent Scroll**: Locked window scroll on desktop (`lg:overflow-hidden`) eliminates jumpy double scrollbars; left model and right deep-dive workspaces scroll independently.
+
 ---
 
 ## 4. Data Layer Architecture & Ephemeral Cloud Parity
@@ -324,3 +329,101 @@ flowchart LR
 3. **TypeScript Static Analysis**: `npx tsc --noEmit` (0 errors)
 4. **Vitest Unit Test Suite**: `npm test` (244 tests across 24 suites)
 5. **Next.js Production Build**: `npm run build` (Turbopack compilation)
+
+---
+
+## 10. 5-Pillar Snowflake Fundamental Radar (`src/lib/snowflake.ts`)
+
+The circular fundamental radar evaluates companies across 5 distinct axes (6 points each, 30 points maximum):
+
+```mermaid
+flowchart TD
+    subgraph SnowflakeAxes["5-Pillar Fundamental Radar (30 Points Max)"]
+        Valuation["1. Valuation & Safety (Emerald #10b981)<br/>• Upside to WFV • Discount to Consensus • Multiple Discipline"]
+        Future["2. Future Growth & Catalysts (Cyan #06b6d4)<br/>• Segment Velocity • Forward Guidance • Catalyst Pipeline"]
+        Earnings["3. Earnings Quality & Margins (Indigo #6366f1)<br/>• Operating Margin • Clean FCF Conversion • ASU 2016-01 Normalization"]
+        Moat["4. Economic Moat & Moat Trend (Amber #f59e0b)<br/>• Pricing Power • Peer Margin Spread • Durable Switching Costs"]
+        Resilience["5. Downside Floor & Resilience (Rose #ec4899)<br/>• Panic Floor Multiple • Upstream Solvency • Asymmetry Skew"]
+    end
+```
+
+| Pillar | Axis ID | Focus & Evaluation Criteria | Token Color |
+| :--- | :--- | :--- | :--- |
+| **Valuation & Margin of Safety** | `valuation` | Upside to WFV, discount to consensus target, multiple discipline | Emerald (`#10b981`) |
+| **Future Growth & Catalysts** | `future` | Segment revenue velocity, forward guidance, catalyst pipeline | Cyan (`#06b6d4`) |
+| **Earnings Quality & Margins** | `earnings` | Operating margin level, clean cash conversion, GAAP equity adjustments | Indigo (`#6366f1`) |
+| **Economic Moat & Benchmarking** | `moat` | Pricing power, peer margin spread, durable switching costs | Amber (`#f59e0b`) |
+| **Downside Floor & Resilience** | `resilience` | Panic multiple buffer, upstream solvency, asymmetry skew ratio | Rose (`#ec4899`) |
+
+### Scoring Tiers
+* **Exceptional Alpha Conviction**: $\ge 24 / 30$
+* **High-Quality Investment Grade**: $18 - 23 / 30$
+* **Selective Opportunity**: $12 - 17 / 30$
+* **Elevated Fundamental Risk**: $< 12 / 30$
+
+---
+
+## 11. CLI Tooling & Autonomous Workflows
+
+| Command | Target Script | Operational Description |
+| :--- | :--- | :--- |
+| `npm run dev` | Next.js Server | Start development server at `http://localhost:3000` |
+| `npm test` | Vitest Runner | Run full 244-test suite with Neon ephemeral copy-on-write branching |
+| `npm run build` | Turbopack Build | Compile production Next.js bundle |
+| `npm run sync:earnings -- --dry-run` | `sync_earnings_calendar.ts` | Simulate earnings calendar ingestion for today |
+| `npm run sync:earnings -- --date=YYYY-MM-DD` | `sync_earnings_calendar.ts` | Ingest and scaffold earnings reports for a specific date |
+| `npm run sync:news -- --firehose` | `sync_news.ts` | Ingest and filter market-wide news via Polygon global firehose |
+| `npm run sync:prices` | `sync_prices.ts` | Update live market prices across coverage universe |
+| `npm run fetch:data -- <TICKER> --stage` | `fetch_data.ts` | Ingest SEC statements and scaffold starter draft modules |
+| `npm run migrate:metrics` | `migrate_financial_metrics.ts` | Backfill relational quarterly time-series statements into `financial_metrics` |
+| `npm run capture:screenshots` | `capture_screenshots.sh` | Capture fresh headless screenshots of all core platform views |
+
+---
+
+## 12. Repository Directory Structure
+
+```
+stress-alpha/
+├── .github/workflows/
+│   ├── ci.yml                          # Continuous integration (format, lint, tsc, test, build)
+│   ├── nightly-price-sync.yml          # Nightly price & news sync (22:00 UTC)
+│   └── earnings_sync.yml               # Twice-daily automated earnings scaffolding (8:45 AM & 5:15 PM EST)
+├── docs/
+│   ├── architecture.md                 # Canonical system architecture documentation & diagrams
+│   └── images/                         # Platform screenshots (cockpit, screener, watchlist, memo, methodology)
+├── scripts/
+│   ├── sync_earnings_calendar.ts       # Finnhub earnings calendar ingestion & scaffolding
+│   ├── sync_news.ts                    # Polygon firehose news ingestion & transmission calculation
+│   ├── sync_prices.ts                  # Market price synchronization (batch-accelerated)
+│   ├── fetch_data.ts                   # SEC 10-Q & consensus pipeline data extractor
+│   ├── seed_universe.ts                # S&P 500 & NASDAQ-100 universe ingestion & quote seeder
+│   ├── bulk_scaffold.ts                # Batch valuation scaffolding & report persistence engine
+│   ├── seed_upstream_dependencies.ts   # Cross-company supply chain DAG seeder
+│   └── capture_screenshots.sh          # Headless browser screenshot capture script
+├── src/
+│   ├── app/                            # Next.js 16 App Router pages & API routes
+│   │   ├── page.tsx                    # Main valuation model & workspace cockpit
+│   │   ├── screener/                   # Dedicated cross-ticker screener (/screener)
+│   │   ├── watchlist/                  # Dedicated coverage watchlist (/watchlist)
+│   │   ├── settings/                   # Dedicated settings & privacy hub (/settings)
+│   │   ├── methodology/                # Interactive mathematical methodology guide (/methodology)
+│   │   └── api/                        # REST API routes (reports, news, revisions, watchlist, pipeline)
+│   ├── components/                     # React 19 UI components
+│   │   ├── Header.tsx                  # Global 3-tab segmented navigation bar & theme toggle
+│   │   ├── Cockpit.tsx                 # Interactive flow-through model & sliders
+│   │   ├── CockpitDualPane.tsx         # Desktop dual-pane independent scroll container
+│   │   ├── ScreenerView.tsx            # Multi-ticker radar table & adaptive cards
+│   │   ├── WatchlistView.tsx           # Dedicated watchlist telemetry strip & metrics
+│   │   ├── snowflake/                  # 5-Pillar Snowflake Radar chart & modal
+│   │   └── tabs/                       # 8 Specialized intelligence workspaces
+│   ├── db/                             # Neon Serverless Postgres schema & connection pool
+│   └── lib/                            # Core domain logic
+│       ├── valuation.ts                # Deterministic arithmetic, FCF metrics & scenario calibration
+│       ├── snowflake.ts                # 30-point fundamental health scoring engine
+│       ├── sanity.ts                   # Variant perception & data completeness audit
+│       ├── news-filter.ts              # Clickbait & class-action lawsuit spam filter
+│       ├── news-transmission.ts        # Event-to-valuation transmission engine
+│       ├── services/                   # Earnings calendar, financial data, and news services
+│       └── repository/                 # Data Access Layer (Drizzle & InMemory repositories)
+└── tests/                              # Vitest automated test suite (244 tests across 24 suites)
+```
