@@ -302,6 +302,22 @@ All code and architectural contributions MUST adhere to a branch and Pull Reques
      - Prune remote-tracking references: `git fetch -p`
      - Verify working directory is clean: `git status`
 
+---
+
+## 10. Documentation & Specification Hygiene
+
+To prevent documentation rot, token bloat, and conflicting instructions:
+
+1. **Single Source of Truth (`docs/architecture.md`)**:
+   - All architectural designs, data flows, database schemas, and mathematical mechanics MUST be documented directly in [**`docs/architecture.md`**](file:///Users/krding/Projects/stress-alpha/docs/architecture.md).
+   - Never create or commit standalone proposal/spec markdown files (e.g. `docs/spec-*.md`, `RFC-*.md`) into the repository.
+2. **Scratchpad & Working Notes Location**:
+   - Working notes, temporary design drafts, and exploratory plans belong exclusively in the conversation scratch directory (`<appDataDir>/brain/<conversation-id>/scratch/`) or PR description.
+   - Never check temporary scratchpads into git.
+3. **Commit Guardrail**:
+   - Do not stage or commit `docs/spec-*.md`, `*.draft.md`, or temporary design documents.
+   - If a feature introduces architectural changes, update `docs/architecture.md` and document the delta in the Pull Request body.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
