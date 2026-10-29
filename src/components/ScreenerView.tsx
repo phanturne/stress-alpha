@@ -760,8 +760,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     initialWatchlistOnly = false,
     onWatchlistFilterChange,
   }: ScreenerViewProps) {
-    const t = getTranslations(locale);
-    const ts = t.screener;
+    const t = useMemo(() => getTranslations(locale), [locale]);
+    const ts = useMemo(() => t.screener, [t]);
+    const tHeader = useMemo(() => t.header, [t]);
     const { prefetchReport } = useReportPrefetch();
 
     const {
@@ -1005,21 +1006,80 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       }
     };
 
-    // Progressive rendering batch size (renders initial 50 rows in <15ms, auto-increments on scroll)
+    // Progressive rendering batch size for cards view (mobile)
     const [visibleCount, setVisibleCount] = useState(SCREENER_PAGE_SIZE);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
 
-    // Reset visible count when filters or sorting change
+    // Virtual windowing for table view (desktop): renders ~30 rows in DOM at any scroll position
+    const tableContainerRef = useRef<HTMLDivElement | null>(null);
+    const [tableScrollTop, setTableScrollTop] = useState(0);
+    const [tableContainerHeight, setTableContainerHeight] = useState(550);
+    const tableRafRef = useRef<number | null>(null);
+
+    // Track table container viewport height via ResizeObserver
+    useEffect(() => {
+      const el = tableContainerRef.current;
+      if (!el) return;
+      setTableContainerHeight(el.clientHeight || 550);
+      const ro = new ResizeObserver((entries) => {
+        if (entries[0]) {
+          setTableContainerHeight(entries[0].contentRect.height || 550);
+        }
+      });
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [viewMode]);
+
+    const handleTableScroll = useCallback(
+      (e: React.UIEvent<HTMLDivElement>) => {
+        const target = e.currentTarget;
+        if (tableRafRef.current) cancelAnimationFrame(tableRafRef.current);
+        tableRafRef.current = requestAnimationFrame(() => {
+          setTableScrollTop(target.scrollTop);
+        });
+      },
+      []
+    );
+
+    // Reset visible count and table scroll when filters or sorting change
     const filterKey = `${searchQuery}|${moatFilter}|${upsideFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
     const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
     if (prevFilterKey !== filterKey) {
       setPrevFilterKey(filterKey);
       setVisibleCount(SCREENER_PAGE_SIZE);
+      setTableScrollTop(0);
+      if (tableContainerRef.current) {
+        tableContainerRef.current.scrollTop = 0;
+      }
     }
 
     const displayedReports = useMemo(() => {
       return filteredReports.slice(0, visibleCount);
     }, [filteredReports, visibleCount]);
+
+    // Table virtual slice calculation (fixed 67px row height with 12 overscan rows)
+    const ROW_HEIGHT = 67;
+    const OVERSCAN = 12;
+    const totalTableRows = filteredReports.length;
+
+    const tableStartIndex = Math.max(
+      0,
+      Math.floor(tableScrollTop / ROW_HEIGHT) - OVERSCAN
+    );
+    const tableEndIndex = Math.min(
+      totalTableRows,
+      Math.ceil((tableScrollTop + tableContainerHeight) / ROW_HEIGHT) + OVERSCAN
+    );
+
+    const virtualTableRows = useMemo(() => {
+      return filteredReports.slice(tableStartIndex, tableEndIndex);
+    }, [filteredReports, tableStartIndex, tableEndIndex]);
+
+    const topTableSpacerHeight = tableStartIndex * ROW_HEIGHT;
+    const bottomTableSpacerHeight = Math.max(
+      0,
+      (totalTableRows - tableEndIndex) * ROW_HEIGHT
+    );
 
     const handleLoadAll = useCallback(() => {
       setVisibleCount(filteredReports.length);
@@ -1137,7 +1197,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                 onSelectReport={onSelectReport}
                 onPrefetch={prefetchReport}
                 ts={ts}
-                tHeader={t.header}
+                tHeader={tHeader}
               />
             ))}
           </div>
@@ -1565,6 +1625,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
         ) : (
           <div className="glass-panel overflow-hidden rounded-xl border border-border">
             <div
+              ref={tableContainerRef}
+              onScroll={handleTableScroll}
               onWheel={(e) => {
                 if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY))
                   return;
@@ -1933,7 +1995,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     </tr>
                   ) : (
                     <>
-                      {displayedReports.map((report) => (
+                      {topTableSpacerHeight > 0 && (
+                        <tr
+                          style={{ height: topTableSpacerHeight }}
+                          aria-hidden="true"
+                        >
+                          <td colSpan={11} className="border-0 p-0" />
+                        </tr>
+                      )}
+                      {virtualTableRows.map((report) => (
                         <ScreenerTableRow
                           key={report.slug}
                           report={report}
@@ -1942,36 +2012,30 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           onSelectReport={onSelectReport}
                           onPrefetch={prefetchReport}
                           ts={ts}
-                          tHeader={t.header}
+                          tHeader={tHeader}
                         />
                       ))}
-                      {visibleCount < filteredReports.length && (
-                        <tr>
-                          <td
-                            colSpan={11}
-                            className="border-b border-border/40 bg-surface-1/90 py-4 text-center text-xs text-slate-400"
-                          >
-                            <div
-                              ref={observerTargetRef}
-                              className="flex items-center justify-center gap-3"
-                            >
-                              <span className="font-mono text-xs tabular-nums text-slate-400">
-                                {ts.resultsCount(
-                                  displayedReports.length,
-                                  filteredReports.length
-                                )}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={handleLoadAll}
-                                className="rounded-lg border border-border bg-surface-2 px-3 py-1 font-mono text-xs font-semibold text-accent transition-colors hover:border-accent/40 hover:bg-surface-3"
-                              >
-                                {ts.loadAll(filteredReports.length)}
-                              </button>
-                            </div>
-                          </td>
+                      {bottomTableSpacerHeight > 0 && (
+                        <tr
+                          style={{ height: bottomTableSpacerHeight }}
+                          aria-hidden="true"
+                        >
+                          <td colSpan={11} className="border-0 p-0" />
                         </tr>
                       )}
+                      <tr>
+                        <td
+                          colSpan={11}
+                          className="border-b border-border/40 bg-surface-1/90 py-3 text-center text-xs text-slate-400"
+                        >
+                          <span className="font-mono text-xs tabular-nums text-slate-400">
+                            {ts.resultsCount(
+                              filteredReports.length,
+                              filteredReports.length
+                            )}
+                          </span>
+                        </td>
+                      </tr>
                     </>
                   )}
                 </tbody>
