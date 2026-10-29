@@ -291,12 +291,15 @@ All code and architectural contributions MUST adhere to a branch and Pull Reques
      - `npm test`
 3. **Pull Request Handoff**:
    - Push branch to remote: `git push -u origin <branch-name>`
-   - Open a GitHub Pull Request (via `gh pr create` or providing the direct GitHub comparison URL).
-   - Provide a clear PR description detailing:
-     - Context and motivation
-     - Key files changed
-     - Verification and test results
+   - Provide a complete, ready-to-use PR title and markdown description directly in the agent's turn response (covering context/motivation, key files changed, and verification results) alongside the GitHub comparison / PR creation link.
    - Wait for human review, feedback, or merge approval before proceeding with dependent work.
+4. **Post-Merge Local Branch Cleanup**:
+   - Once the pull request has been merged to `main`:
+     - Switch back to `main`: `git checkout main`
+     - Fast-forward pull latest changes: `git pull origin main`
+     - Delete the merged local branch: `git branch -d <branch-name>` (or `-D` if squashed)
+     - Prune remote-tracking references: `git fetch -p`
+     - Verify working directory is clean: `git status`
 
 <!-- BEGIN:nextjs-agent-rules -->
 
