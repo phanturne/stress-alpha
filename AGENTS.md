@@ -270,6 +270,34 @@ Whenever you implement a new feature, modify calculation engines, adjust data sc
 2. **Zero Documentation Drift**:
    - Never leave documentation behind code changes. Outdated documentation is treated with the same rigor as a failing unit test or broken TypeScript build.
 
+---
+
+## 9. Branching & Pull Request Workflow (Human-in-the-Loop Review)
+
+All code and architectural contributions MUST adhere to a branch and Pull Request workflow. Agents must never push or merge directly to `main`.
+
+1. **Feature Branch Mandate**:
+   - Every change must live on a dedicated branch created from latest `origin/main`.
+   - Branch naming convention:
+     - `feat/<topic>`: New features, endpoints, or UI tabs
+     - `fix/<bug>`: Bug fixes or data ingestion patches
+     - `chore/<task>`: Dependency updates, CI workflows, or maintenance
+     - `docs/<topic>`: Documentation, methodology guides, or architectural specifications
+2. **Local Pre-Handoff Verification**:
+   - Before pushing a branch, the agent must verify:
+     - `npm run format:check`
+     - `npm run lint`
+     - `npx tsc --noEmit`
+     - `npm test`
+3. **Pull Request Handoff**:
+   - Push branch to remote: `git push -u origin <branch-name>`
+   - Open a GitHub Pull Request (via `gh pr create` or providing the direct GitHub comparison URL).
+   - Provide a clear PR description detailing:
+     - Context and motivation
+     - Key files changed
+     - Verification and test results
+   - Wait for human review, feedback, or merge approval before proceeding with dependent work.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
