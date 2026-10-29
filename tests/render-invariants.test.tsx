@@ -1,7 +1,13 @@
 // @vitest-environment happy-dom
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, fireEvent, screen } from "@testing-library/react";
+import {
+  render,
+  act,
+  waitFor,
+  fireEvent,
+  screen,
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   ScreenerTableRow,
@@ -20,6 +26,11 @@ import {
   ReportSelector,
   MAX_DROPDOWN_GROUPS,
 } from "@/components/ReportSelector";
+import {
+  useRecentReport,
+  setStoredLastReport,
+  clearStoredLastReport,
+} from "@/lib/recent-report";
 import { getTranslations } from "@/lib/i18n";
 import { TrendingUp } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
@@ -361,6 +372,51 @@ describe("Frontend Render & Efficiency Invariants", () => {
         (CockpitWorkspacePane as unknown as { type: unknown }).type =
           originalType;
       }
+    });
+  });
+
+  describe("useRecentReport SSR Parity & Hydration Safety", () => {
+    it("initializes with currentSlug synchronously when provided", () => {
+      let initialRenderValue: unknown = undefined;
+      function TestConsumer() {
+        const { recentReport } = useRecentReport("AAPL-2025Q1", "AAPL");
+        if (initialRenderValue === undefined) {
+          initialRenderValue = recentReport;
+        }
+        return <div data-testid="recent">{recentReport?.ticker ?? "none"}</div>;
+      }
+
+      render(<TestConsumer />);
+      expect(initialRenderValue).toEqual({
+        slug: "AAPL-2025Q1",
+        ticker: "AAPL",
+      });
+      expect(screen.getByTestId("recent").textContent).toBe("AAPL");
+    });
+
+    it("initializes to null on initial render when currentSlug is not provided to preserve SSR parity", async () => {
+      setStoredLastReport("LITE-2025Q2", "LITE");
+
+      let initialRenderValue: unknown = undefined;
+      function TestConsumer() {
+        const { recentReport } = useRecentReport(null);
+        if (initialRenderValue === undefined) {
+          initialRenderValue = recentReport;
+        }
+        return <div data-testid="recent">{recentReport?.ticker ?? "none"}</div>;
+      }
+
+      await act(async () => {
+        render(<TestConsumer />);
+      });
+
+      // Synchronous initial render MUST be null so client initial tree matches SSR output
+      expect(initialRenderValue).toBeNull();
+      expect(screen.getByTestId("recent").textContent).toBe("LITE");
+
+      act(() => {
+        clearStoredLastReport();
+      });
     });
   });
 });
