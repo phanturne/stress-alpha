@@ -23,6 +23,7 @@ import {
   type FinancialProfile,
   type SecFilingItem,
 } from "./types";
+import { computeTechnicalLevels, type DailyBar } from "@/lib/technical";
 import {
   safeNum,
   round2,
@@ -330,12 +331,16 @@ export async function fetchFundamentalProfile(
 ): Promise<FinancialProfile> {
   const ticker = tickerSymbol.toUpperCase();
 
-  // 1. Fetch Yahoo Finance quote & summary
+  // 1. Fetch Yahoo Finance quote, summary & 1-year daily chart for technical levels
   let yfQuote: any = {};
   let yfSummary: any = {};
+  let historicalBars: DailyBar[] = [];
+
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
   try {
-    const [quote, summary] = await Promise.all([
+    const [quote, summary, chartRes] = await Promise.all([
       yf.quote(ticker).catch((err: any) => err?.result ?? {}),
       yf
         .quoteSummary(ticker, {
@@ -348,9 +353,28 @@ export async function fetchFundamentalProfile(
           ],
         })
         .catch((err: any) => err?.result ?? {}),
+      yf
+        .chart(ticker, { period1: oneYearAgo, interval: "1d" })
+        .catch((err: any) => {
+          console.warn(
+            `⚠️ Warning fetching 1y chart for ${ticker}:`,
+            err?.message || err
+          );
+          return null;
+        }),
     ]);
     yfQuote = quote || {};
     yfSummary = summary || {};
+    if (chartRes && Array.isArray(chartRes.quotes)) {
+      historicalBars = chartRes.quotes.map((q: any) => ({
+        date: q.date,
+        open: q.open,
+        high: q.high,
+        low: q.low,
+        close: q.close,
+        volume: q.volume,
+      }));
+    }
   } catch (err) {
     console.warn("⚠️ Warning fetching Yahoo Finance profile:", err);
   }
@@ -456,6 +480,31 @@ export async function fetchFundamentalProfile(
     }
   }
 
+  let technicalLevels = undefined;
+  if (currentPrice > 0) {
+    try {
+      technicalLevels = computeTechnicalLevels(
+        {
+          regularMarketPrice: currentPrice,
+          regularMarketPreviousClose: previousClose,
+          regularMarketDayHigh: yfQuote.regularMarketDayHigh,
+          regularMarketDayLow: yfQuote.regularMarketDayLow,
+          fiftyDayAverage: yfQuote.fiftyDayAverage,
+          twoHundredDayAverage: yfQuote.twoHundredDayAverage,
+          fiftyTwoWeekHigh: yfQuote.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: yfQuote.fiftyTwoWeekLow,
+        },
+        currentPrice,
+        { historicalBars }
+      );
+    } catch (techErr) {
+      console.warn(
+        "⚠️ Warning computing technical levels for profile:",
+        techErr
+      );
+    }
+  }
+
   return {
     ticker,
     companyName,
@@ -471,6 +520,7 @@ export async function fetchFundamentalProfile(
     quarterlyStatements: statements,
     balanceSheet,
     cashFlow,
+    technicalLevels,
     dataSource:
       massiveData && massiveData.statements.length > 0
         ? "Massive.com (Polygon.io) SEC Financials API vX"

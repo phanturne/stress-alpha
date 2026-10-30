@@ -324,6 +324,8 @@ export async function syncEarningsCalendar(
         filing: bundle.filingEn,
         filingZh: bundle.filingZh,
         reactions: bundle.reactions,
+        technicalLevels:
+          bundle.technicalLevels ?? bundle.profile.technicalLevels,
       };
 
       // Deterministic valuation calculation

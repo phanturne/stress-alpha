@@ -141,6 +141,11 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
 }: CockpitDualPaneProps) {
   const t = getTranslations(locale);
 
+  const handleOpenTechnicals = React.useCallback(() => {
+    switchWorkspace("technicals");
+    setMobileSection("workspaces");
+  }, [switchWorkspace, setMobileSection]);
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col gap-5 lg:flex-row lg:items-stretch xl:gap-6">
       {/* Mobile Switcher: [ Cockpit ] [ Deep Dive (7) ] */}
@@ -192,7 +197,7 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
                   : "bg-surface-3 text-slate-400"
               }`}
             >
-              7
+              {tabItems.length}
             </span>
           </button>
         </div>
@@ -231,6 +236,7 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
           onFixedOpexShiftChange={onFixedOpexShiftChange}
           onResetDefaults={onResetDefaults}
           onOpenSnowflake={onOpenSnowflake}
+          onOpenTechnicals={handleOpenTechnicals}
           locale={locale}
         />
         <div className="mt-4 block lg:hidden">

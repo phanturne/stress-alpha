@@ -379,6 +379,7 @@ export class DrizzleReportRepository implements IReportRepository {
       scenariosZh,
       reportMarkdown: report.reportMd ?? undefined,
       reportMarkdownZh: report.reportMdZh ?? undefined,
+      technicalLevels: tickerInfo?.technicalLevels ?? undefined,
     };
 
     this.cachedReports.set(slug, {
@@ -455,12 +456,16 @@ export class DrizzleReportRepository implements IReportRepository {
         ticker,
         company: report.facts.company || `${ticker} Corporation`,
         currentPrice: String(currentPrice),
+        technicalLevels: report.technicalLevels,
         priceUpdatedAt: new Date(),
       })
       .onConflictDoUpdate({
         target: tickersTable.ticker,
         set: {
           currentPrice: String(currentPrice),
+          ...(report.technicalLevels
+            ? { technicalLevels: report.technicalLevels }
+            : {}),
           priceUpdatedAt: new Date(),
         },
       });

@@ -1,5 +1,6 @@
 import {
   TrendingUp,
+  CandlestickChart,
   Target,
   ShieldCheck,
   Layers,
@@ -14,6 +15,7 @@ import type { ReportData } from "@/lib/schemas";
 
 export const WORKSPACE_TAB_IDS = [
   "valuation",
+  "technicals",
   "estimates",
   "moat",
   "segments",
@@ -73,8 +75,16 @@ export function getWorkspaceTabs(
       count: displayScenarios?.scenarios.length,
     },
     {
-      id: "estimates",
+      id: "technicals",
       shortcut: "2",
+      label: t.tabs.technicals,
+      shortLabel: t.tabs.shortTechnicals,
+      icon: CandlestickChart,
+      count: reportData?.technicalLevels?.levels?.length,
+    },
+    {
+      id: "estimates",
+      shortcut: "3",
       label: t.tabs.estimates || "Estimates",
       shortLabel: t.tabs.shortEstimates,
       icon: Target,
@@ -82,7 +92,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "moat",
-      shortcut: "3",
+      shortcut: "4",
       label: t.tabs.moat,
       shortLabel: t.tabs.shortMoat,
       icon: ShieldCheck,
@@ -90,7 +100,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "segments",
-      shortcut: "4",
+      shortcut: "5",
       label: t.tabs.segments,
       shortLabel: t.tabs.shortSegments,
       icon: Layers,
@@ -98,7 +108,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "catalysts",
-      shortcut: "5",
+      shortcut: "6",
       label: t.tabs.catalysts,
       shortLabel: t.tabs.shortCatalysts,
       icon: Sparkles,
@@ -106,7 +116,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "news",
-      shortcut: "6",
+      shortcut: "7",
       label: t.tabs.news,
       shortLabel: t.tabs.shortNews,
       icon: Radio,
@@ -114,7 +124,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "audit",
-      shortcut: "7",
+      shortcut: "8",
       label: t.tabs.audit,
       shortLabel: t.tabs.shortAudit,
       icon: FileSearch,
@@ -124,7 +134,7 @@ export function getWorkspaceTabs(
     },
     {
       id: "report",
-      shortcut: "8",
+      shortcut: "9",
       label: t.tabs.report,
       shortLabel: t.tabs.shortReport,
       icon: FileText,

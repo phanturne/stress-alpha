@@ -26,6 +26,7 @@ import type {
   MarketEvent,
   TransmissionPayload,
   ValuationRevisionStateDiff,
+  TechnicalLevelsPayload,
 } from "@/lib/schemas";
 
 // ---------------------------------------------------------------------------
@@ -45,6 +46,7 @@ export const tickersTable = pgTable("tickers", {
     .notNull(),
 
   marketCap: numeric("market_cap", { precision: 16, scale: 2 }),
+  technicalLevels: jsonb("technical_levels").$type<TechnicalLevelsPayload>(),
   active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
