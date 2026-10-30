@@ -18,6 +18,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "sync:prices": "npx tsx scripts/sync_prices.ts",
+    "backfill:technical": "npx tsx scripts/backfill_technical_universe.ts",
     "sync:news": "npx tsx scripts/sync_news.ts",
     "seed:deps": "npx tsx scripts/seed_upstream_dependencies.ts",
     "migrate:neon": "npx tsx scripts/migrate_to_neon.ts",

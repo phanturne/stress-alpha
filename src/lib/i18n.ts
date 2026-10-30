@@ -185,8 +185,90 @@ export interface Translations {
     base: string;
     bullRegime: string;
   };
+  technicalLevels: {
+    cardTitle: string;
+    badgeTitle: string;
+    supportTitle: string;
+    resistanceTitle: string;
+    confluenceTitle: string;
+    confluenceBadge: string;
+    confluenceDesc: (
+      techLabel: string,
+      techPrice: string,
+      fundRegime: string,
+      fundPrice: string,
+      diffPct: string
+    ) => string;
+    levelNames: {
+      sma50: string;
+      sma200: string;
+      high52: string;
+      low52: string;
+      pivot_p: string;
+      pivot_s1: string;
+      pivot_r1: string;
+      pivot_s2: string;
+      pivot_r2: string;
+      pivot_s3: string;
+      pivot_r3: string;
+      gap_fill: string;
+      gap_boundary: string;
+      volume_poc: string;
+      avwap_high: string;
+      avwap_volume: string;
+      swing_high: string;
+      swing_low: string;
+    };
+    types: {
+      support: string;
+      resistance: string;
+      pivot: string;
+    };
+    importance: {
+      major: string;
+      intermediate: string;
+      minor: string;
+    };
+    noData: string;
+    distance: string;
+    tooltip: string;
+    zone: string;
+    zoneBadge: string;
+    zoneDesc: (count: number) => string;
+    corridors: {
+      title: string;
+      badge: string;
+      viewCorridors: string;
+      viewAllLevels: string;
+      s1Title: string;
+      s1Desc: (low: string, high: string) => string;
+      s2Bedrock: string;
+      s2BedrockDesc: (low: string, high: string) => string;
+      s2Structural: string;
+      s2StructuralDesc: (low: string, high: string) => string;
+      s3Breakdown: string;
+      s3BreakdownDesc: (low: string, high: string) => string;
+      s3Macro: string;
+      s3MacroDesc: (low: string, high: string) => string;
+      r1Title: string;
+      r1Desc: (low: string, high: string) => string;
+      r2Gap: string;
+      r2GapDesc: (low: string, high: string) => string;
+      r2Structural: string;
+      r2StructuralDesc: (low: string, high: string) => string;
+      r3Sma: string;
+      r3SmaDesc: (low: string, high: string) => string;
+      r3High: string;
+      r3HighDesc: (low: string, high: string) => string;
+    };
+    openFullAnalysis: string;
+    compactSummary: string;
+    spot: string;
+    openChartTab: string;
+  };
   tabs: {
     valuation: string;
+    technicals: string;
     estimates: string;
     moat: string;
     segments: string;
@@ -200,6 +282,7 @@ export interface Translations {
     filing?: string;
     reactions?: string;
     shortValuation: string;
+    shortTechnicals: string;
     shortEstimates: string;
     shortMoat: string;
     shortSegments: string;
@@ -211,6 +294,22 @@ export interface Translations {
     prevTab: string;
     allTabs: string;
     tabNumber: (current: number, total: number) => string;
+  };
+  technicalsTab: {
+    title: string;
+    subtitle: string;
+    chartCardTitle: string;
+    chartCardSubtitle: string;
+    corridorsCardTitle: string;
+    corridorsCardSubtitle: string;
+    confluenceSectionTitle: string;
+    confluenceEmpty: string;
+    trendBullish: string;
+    trendBearish: string;
+    distanceTo52WHigh: string;
+    distanceTo52WLow: string;
+    volumePoc: string;
+    tradingViewWatermark: string;
   };
   newsTab: {
     title: string;
@@ -958,6 +1057,7 @@ export interface Translations {
       baseVsWfv: string;
       moat: string;
       calibration: string;
+      technicalCorridors: string;
     };
     section1: {
       title: string;
@@ -1041,6 +1141,23 @@ export interface Translations {
       interviewWhyText: string;
       interviewRoadmapTitle: string;
       interviewRoadmapText: string;
+    };
+    section8: {
+      title: string;
+      desc: string;
+      formulaLabel: string;
+      pivotsTitle: string;
+      pivotsDesc: string;
+      volumePocTitle: string;
+      volumePocDesc: string;
+      confluenceTitle: string;
+      confluenceDesc: string;
+      tier1Title: string;
+      tier1Desc: string;
+      tier2Title: string;
+      tier2Desc: string;
+      tier3Title: string;
+      tier3Desc: string;
     };
     cta: {
       title: string;
@@ -1250,8 +1367,101 @@ export const translations: Record<Locale, Translations> = {
       base: "⚖️ Base",
       bullRegime: "🐂 Bull Regime",
     },
+    technicalLevels: {
+      cardTitle: "Key Support & Resistance",
+      badgeTitle: "S/R Matrix",
+      supportTitle: "Key Support",
+      resistanceTitle: "Key Resistance",
+      confluenceTitle: "Valuation Confluence",
+      confluenceBadge: "⚡ CONFLUENCE DETECTED",
+      confluenceDesc: (
+        techLabel: string,
+        techPrice: string,
+        fundRegime: string,
+        fundPrice: string,
+        diffPct: string
+      ) =>
+        `${techLabel} (${techPrice}) converges with ${fundRegime} (${fundPrice}) within ${diffPct}%`,
+      levelNames: {
+        sma50: "50-Day SMA",
+        sma200: "200-Day SMA",
+        high52: "52-Week High",
+        low52: "52-Week Low",
+        pivot_p: "Classical Pivot (P)",
+        pivot_s1: "Pivot Support 1 (S1)",
+        pivot_r1: "Pivot Resistance 1 (R1)",
+        pivot_s2: "Pivot Support 2 (S2)",
+        pivot_r2: "Pivot Resistance 2 (R2)",
+        pivot_s3: "Pivot Support 3 (S3)",
+        pivot_r3: "Pivot Resistance 3 (R3)",
+        gap_fill: "Gap Fill Target (Prior Close)",
+        gap_boundary: "Gap Day Boundary",
+        volume_poc: "1-Year Volume POC",
+        avwap_high: "Anchored VWAP (52W High)",
+        avwap_volume: "Anchored VWAP (Max Volume)",
+        swing_high: "Fractal Swing High",
+        swing_low: "Fractal Swing Low",
+      },
+      types: {
+        support: "Support",
+        resistance: "Resistance",
+        pivot: "Pivot",
+      },
+      importance: {
+        major: "Major",
+        intermediate: "Intermediate",
+        minor: "Minor",
+      },
+      noData: "Technical levels data not yet synced for this ticker.",
+      distance: "Distance",
+      tooltip: "Pure deterministic technical levels & fundamental confluence",
+      zone: "Zone",
+      zoneBadge: "Zone Band",
+      zoneDesc: (count: number) => `${count} clustered levels`,
+      corridors: {
+        title: "Institutional Price Corridors",
+        badge: "3-Tier Hierarchy",
+        viewCorridors: "3-Tier Corridors",
+        viewAllLevels: "All Levels",
+        s1Title: "Immediate Shelf",
+        s1Desc: (low: string, high: string) =>
+          `Intraday capitulation low (${low}) & Pivot S1 (${high})`,
+        s2Bedrock: "Cycle Bedrock Floor",
+        s2BedrockDesc: (low: string, high: string) =>
+          `52-Week Low (${low}) & Structural S3 (${high})`,
+        s2Structural: "Structural Pivot Floor",
+        s2StructuralDesc: (low: string, high: string) =>
+          `Multi-day swing shelf & secondary pivot support (${low} – ${high})`,
+        s3Breakdown: "Downside Breakdown Extension",
+        s3BreakdownDesc: (low: string, high: string) =>
+          `Measured-move breakdown target if 52W low fails (${low} – ${high})`,
+        s3Macro: "Macro Bedrock Floor",
+        s3MacroDesc: (low: string, high: string) =>
+          `Macro cycle liquidity floor & downside safety anchor (${low} – ${high})`,
+        r1Title: "Immediate Ceiling",
+        r1Desc: (low: string, high: string) =>
+          `Post-drop intraday high (${high}) & Pivot R1 (${low})`,
+        r2Gap: "Trapped Supply & Gap Top",
+        r2GapDesc: (low: string, high: string) =>
+          `Volume POC (${low}) up to pre-earnings close (${high})`,
+        r2Structural: "Structural Volume Ceiling",
+        r2StructuralDesc: (low: string, high: string) =>
+          `High-volume node & secondary resistance band (${low} – ${high})`,
+        r3Sma: "Major Trend Confluence",
+        r3SmaDesc: (low: string, high: string) =>
+          `50-Day (${low}) & 200-Day SMA (${high}) confluence (Death Cross Zone)`,
+        r3High: "Cycle / 52W High Ceiling",
+        r3HighDesc: (low: string, high: string) =>
+          `52-Week cycle ceiling & multi-month resistance (${low} – ${high})`,
+      },
+      openFullAnalysis: "Full Chart & Analysis →",
+      compactSummary: "S/R Telemetry",
+      spot: "Spot",
+      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 2) →",
+    },
     tabs: {
       valuation: "Valuation & Scenarios",
+      technicals: "Technicals & Chart",
       estimates: "Analyst Estimates",
       moat: "Moat & Peers",
       segments: "Segments & Financials",
@@ -1265,6 +1475,7 @@ export const translations: Record<Locale, Translations> = {
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
       shortValuation: "Valuation",
+      shortTechnicals: "Technicals",
       shortEstimates: "Estimates",
       shortMoat: "Moat",
       shortSegments: "Segments",
@@ -1277,6 +1488,26 @@ export const translations: Record<Locale, Translations> = {
       allTabs: "All Workspaces",
       tabNumber: (current: number, total: number) =>
         `Workspace ${current} of ${total}`,
+    },
+    technicalsTab: {
+      title: "Technical Analysis & Chart",
+      subtitle:
+        "Real-time candlestick price action, classical pivots, volume profile POC, and fundamental confluence.",
+      chartCardTitle: "Live Interactive Chart",
+      chartCardSubtitle:
+        "Institutional TradingView charting with volume, moving averages, and technical indicators.",
+      corridorsCardTitle: "Institutional Price Corridors & Confluence",
+      corridorsCardSubtitle:
+        "3-tier S/R hierarchy synthesized with quantitative valuation regimes.",
+      confluenceSectionTitle: "Fundamental-Technical Confluence Signals",
+      confluenceEmpty:
+        "No direct regime confluence detected within ±2.5% tolerance band.",
+      trendBullish: "Bullish Trend (Above 200 SMA)",
+      trendBearish: "Bearish Trend (Below 200 SMA)",
+      distanceTo52WHigh: "from 52W High",
+      distanceTo52WLow: "from 52W Low",
+      volumePoc: "1-Yr Volume POC",
+      tradingViewWatermark: "Powered by TradingView",
     },
     newsTab: {
       title: "Real-Time News & Catalyst Intelligence",
@@ -2098,6 +2329,7 @@ export const translations: Record<Locale, Translations> = {
         baseVsWfv: "5. Base FV vs. WFV",
         moat: "6. Economic Moat",
         calibration: "7. Scenario Calibration Matrix",
+        technicalCorridors: "8. Technical Corridors & Confluence",
       },
       section1: {
         title: "1. Upstream Demand Shock Flow-Through",
@@ -2201,6 +2433,29 @@ export const translations: Record<Locale, Translations> = {
         interviewRoadmapTitle: "Empirical Calibration Roadmap:",
         interviewRoadmapText:
           "In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.",
+      },
+      section8: {
+        title: "8. Deterministic Price Corridors & Regime Confluence",
+        desc: "Bridges fundamental stress-test valuations with market microstructure. Synthesizes classical floor pivots, unfilled gap edges, 1-year volume profile Point of Control (POC), and Anchored VWAPs into a 3-tier price corridor hierarchy, auditing for direct convergence against fundamental valuation regimes.",
+        formulaLabel: "Mathematical Formulations & Convergence Criteria",
+        pivotsTitle: "Classical Pivot Extensions",
+        pivotsDesc:
+          "Computes standard floor trader pivots P = (H + L + C) / 3, S1 = 2P - H, R1 = 2P - L, S2 = P - (H - L), R2 = P + (H - L), alongside measured-move extensions S3 = L - 2(H - P) and R3 = H + 2(P - L).",
+        volumePocTitle: "1-Year Volume Profile POC & Anchored VWAPs",
+        volumePocDesc:
+          "Discretizes 252-day price action into 40 equal-range volume buckets to isolate high-volume institutional nodes (POC) and computes Anchored VWAPs from cycle peaks and peak volume bars.",
+        confluenceTitle: "Fundamental-Technical Confluence Criteria",
+        confluenceDesc:
+          "Flags high-conviction inflection zones where technical corridors converge with fundamental valuation regimes (Panic Floor, Bear, Base, Bull) within a ±2.5% band (|Price_tech - Price_regime| / Price_regime <= 0.025).",
+        tier1Title: "Tier 1: Immediate Pivot Corridor (S1 / R1)",
+        tier1Desc:
+          "Day-trader inventory boundaries and initial algorithmic rejection/support bands.",
+        tier2Title: "Tier 2: Structural Congestion Corridor (S2 / R2)",
+        tier2Desc:
+          "Multi-week horizontal shelves, unfilled gap tops, and volume profile POC nodes.",
+        tier3Title: "Tier 3: Macro Bedrock & Cycle Ceiling (S3 / R3)",
+        tier3Desc:
+          "52-week cycle boundaries, 200-day SMAs, and measured-move breakdown extensions.",
       },
       cta: {
         title: "Explore the Open-Source Codebase & AI Skills",
@@ -2400,8 +2655,101 @@ export const translations: Record<Locale, Translations> = {
       base: "⚖️ 基准目标",
       bullRegime: "🐂 牛市目标",
     },
+    technicalLevels: {
+      cardTitle: "关键支撑与阻力",
+      badgeTitle: "支撑/阻力矩阵",
+      supportTitle: "关键支撑位 (Support)",
+      resistanceTitle: "关键阻力位 (Resistance)",
+      confluenceTitle: "估值与技术共振",
+      confluenceBadge: "⚡ 发现技术共振",
+      confluenceDesc: (
+        techLabel: string,
+        techPrice: string,
+        fundRegime: string,
+        fundPrice: string,
+        diffPct: string
+      ) =>
+        `${techLabel} (${techPrice}) 与 ${fundRegime} (${fundPrice}) 在 ${diffPct}% 范围内形成共振`,
+      levelNames: {
+        sma50: "50日均线 (50 SMA)",
+        sma200: "200日均线 (200 SMA)",
+        high52: "52周高点 (52W H)",
+        low52: "52周低点 (52W L)",
+        pivot_p: "经典枢轴点 (P)",
+        pivot_s1: "第一支撑位 (S1)",
+        pivot_r1: "第一阻力位 (R1)",
+        pivot_s2: "第二支撑位 (S2)",
+        pivot_r2: "第二阻力位 (R2)",
+        pivot_s3: "第三支撑位 (S3)",
+        pivot_r3: "第三阻力位 (R3)",
+        gap_fill: "缺口回补目标 (昨收)",
+        gap_boundary: "跳空日边界位",
+        volume_poc: "一年成交量重心 (POC)",
+        avwap_high: "锚定均价 (52周高点 AVWAP)",
+        avwap_volume: "锚定均价 (最大量能 AVWAP)",
+        swing_high: "分形波段高点",
+        swing_low: "分形波段低点",
+      },
+      types: {
+        support: "支撑",
+        resistance: "阻力",
+        pivot: "枢轴",
+      },
+      importance: {
+        major: "强关键",
+        intermediate: "中级",
+        minor: "次级",
+      },
+      noData: "该标的尚未同步关键技术支撑与阻力位数据。",
+      distance: "距离现价",
+      tooltip: "纯确定性技术位与基本面估值共振审计",
+      zone: "密集区",
+      zoneBadge: "共振带",
+      zoneDesc: (count: number) => `${count}重技术位重合`,
+      corridors: {
+        title: "机构级价格走廊",
+        badge: "3阶走廊体系",
+        viewCorridors: "3阶核心走廊",
+        viewAllLevels: "全部技术位",
+        s1Title: "即时支撑平台",
+        s1Desc: (low: string, high: string) =>
+          `日内探底低点 (${low}) 与第一支撑位 (${high}) 企稳买盘`,
+        s2Bedrock: "周期底部基石",
+        s2BedrockDesc: (low: string, high: string) =>
+          `52周低点 (${low}) 与第三结构支撑 (${high}) 关键防线`,
+        s2Structural: "中线结构支撑",
+        s2StructuralDesc: (low: string, high: string) =>
+          `波段筹码平台与次级支撑共振带 (${low} – ${high})`,
+        s3Breakdown: "破位测算下限",
+        s3BreakdownDesc: (low: string, high: string) =>
+          `52周低点失守后的等距下行测算位 (${low} – ${high})`,
+        s3Macro: "宏观底线支撑",
+        s3MacroDesc: (low: string, high: string) =>
+          `宏观流动性安全底线与估值支撑带 (${low} – ${high})`,
+        r1Title: "即时反弹压制",
+        r1Desc: (low: string, high: string) =>
+          `跳空日反弹高点 (${high}) 与第一阻力位 (${low}) 抛压`,
+        r2Gap: "筹码套牢峰与缺口上沿",
+        r2GapDesc: (low: string, high: string) =>
+          `成交量重心峰 (${low}) 至跳空前收盘价 (${high}) 密集套牢盘`,
+        r2Structural: "结构性筹码压力带",
+        r2StructuralDesc: (low: string, high: string) =>
+          `高成交量换手区与次级阻力带 (${low} – ${high})`,
+        r3Sma: "主线均线死叉压力区",
+        r3SmaDesc: (low: string, high: string) =>
+          `50日 (${low}) 与200日均线 (${high}) 共振压制带 (死叉区)`,
+        r3High: "52周高点周期压制",
+        r3HighDesc: (low: string, high: string) =>
+          `一年高点与牛市极限压制位 (${low} – ${high})`,
+      },
+      openFullAnalysis: "图表与走廊 →",
+      compactSummary: "支撑阻力简析",
+      spot: "现价",
+      openChartTab: "打开交互K线图与三层走廊 (工作台 2) →",
+    },
     tabs: {
       valuation: "估值与情景",
+      technicals: "技术分析与图表",
       estimates: "分析师共识",
       moat: "护城河与竞品",
       segments: "分部业务与财务",
@@ -2415,6 +2763,7 @@ export const translations: Record<Locale, Translations> = {
       filing: "10-Q 风险",
       reactions: "历史股价反应",
       shortValuation: "估值",
+      shortTechnicals: "图表",
       shortEstimates: "共识",
       shortMoat: "护城河",
       shortSegments: "分部",
@@ -2427,6 +2776,23 @@ export const translations: Record<Locale, Translations> = {
       allTabs: "全部工作台",
       tabNumber: (current: number, total: number) =>
         `工作台 ${current} / ${total}`,
+    },
+    technicalsTab: {
+      title: "技术分析与交互图表",
+      subtitle: "实时K线形态、经典枢轴点位、筹码分布POC与基本面估值共振审计。",
+      chartCardTitle: "实时交互K线图",
+      chartCardSubtitle:
+        "机构级 TradingView 图表，集成成交量、均线与技术指标。",
+      corridorsCardTitle: "机构三层价格走廊与共振矩阵",
+      corridorsCardSubtitle: "三层支撑阻力层级与压力测试基本面估值锚定。",
+      confluenceSectionTitle: "基本面与技术面共振信号",
+      confluenceEmpty: "当前未在 ±2.5% 容差带内检测到直接共振信号。",
+      trendBullish: "多头排列 (现价 > 200日均线)",
+      trendBearish: "空头排列 (现价 < 200日均线)",
+      distanceTo52WHigh: "距52周最高",
+      distanceTo52WLow: "距52周最低",
+      volumePoc: "1年筹码峰POC",
+      tradingViewWatermark: "技术图表由 TradingView 提供支持",
     },
     newsTab: {
       title: "即时动态与催化剂脉搏",
@@ -3225,6 +3591,7 @@ export const translations: Record<Locale, Translations> = {
         baseVsWfv: "5. 基准公允价 vs 加权公允价",
         moat: "6. 五维经济护城河评级",
         calibration: "7. 确定性情景校准矩阵",
+        technicalCorridors: "8. 技术走廊与估值共振",
       },
       section1: {
         title: "1. 上游需求扰动传导模型",
@@ -3325,6 +3692,28 @@ export const translations: Record<Locale, Translations> = {
         interviewRoadmapTitle: "未来实证校准路径：",
         interviewRoadmapText:
           "在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier Score: B = 1/N ∑ (p_i - o_i)²）与多项对数损失（Multinomial Log-Loss）实现实证最优化校准。",
+      },
+      section8: {
+        title: "8. 确定性价格走廊与估值共振审计",
+        desc: "将压力测试估值锚位与机构市场微观结构无缝桥接。纯代码确定性融合经典场内交易员枢轴点、跳空缺口、一年筹码分布峰（Volume POC）与锚定均价（Anchored VWAP），构建三层机构价格走廊，并对基本面情景目标进行容差共振审计。",
+        formulaLabel: "数学推导公式与共振容差判定",
+        pivotsTitle: "经典枢轴点位延展 (Floor Trader Pivots)",
+        pivotsDesc:
+          "计算经典交易员枢轴点 P = (H + L + C) / 3，第一层 S1 = 2P - H, R1 = 2P - L，第二层 S2 = P - (H - L), R2 = P + (H - L)，以及第三层等距测算扩展 S3 = L - 2(H - P), R3 = H + 2(P - L)。",
+        volumePocTitle: "1年筹码分布峰 (Volume POC) 与锚定 VWAP",
+        volumePocDesc:
+          "将 252 个交易日价格动作离散化至 40 个等距价格区间，累加成交量以精准定位机构筹码换手核心平台（Point of Control），并从 52 周最高点与历史天量 K 线锚定 VWAP 均价。",
+        confluenceTitle: "基本面与技术面共振判定标准",
+        confluenceDesc:
+          "当技术走廊点位与基本面情景估值（恐慌底价、悲观目标、基准估值、牛市目标）在 ±2.5% 容差带内重合时 (|Price_tech - Price_regime| / Price_regime <= 0.025)，触发高确定性机构共振信号。",
+        tier1Title: "第一层：即时枢轴走廊 (S1 / R1)",
+        tier1Desc:
+          "日内交易与算法高频库存边界，衡量初次受阻或企稳的即时反应位。",
+        tier2Title: "第二层：结构性筹码走廊 (S2 / R2)",
+        tier2Desc:
+          "数周横盘平台、跳空日前收盘缺口上沿与筹码换手峰密集套牢/支撑区。",
+        tier3Title: "第三层：宏观底线与周期压制 (S3 / R3)",
+        tier3Desc: "52周高低点、200日均线多空分水岭与破位等距下行测算极限。",
       },
       cta: {
         title: "探索开源代码与 AI Skill 流水线",

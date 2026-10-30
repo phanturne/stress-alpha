@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   SlidersHorizontal,
   ExternalLink,
+  Compass,
 } from "lucide-react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 
@@ -94,6 +95,12 @@ export function MethodologyBody({ locale }: { locale: Locale }) {
             className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
           >
             {tm.nav.calibration}
+          </a>
+          <a
+            href="#technical-corridors"
+            className="rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-slate-300 transition-colors hover:border-accent hover:text-accent"
+          >
+            {tm.nav.technicalCorridors}
           </a>
         </div>
       </div>
@@ -491,6 +498,87 @@ export function MethodologyBody({ locale }: { locale: Locale }) {
               <br />
               <strong>{tm.section7.interviewRoadmapTitle}</strong>{" "}
               {tm.section7.interviewRoadmapText}
+            </p>
+          </div>
+        </section>
+
+        {/* SECTION 8: Deterministic Technical Corridors & Regime Confluence */}
+        <section id="technical-corridors" className="scroll-mt-24 space-y-4">
+          <div className="flex items-center gap-2.5 text-accent">
+            <Compass className="size-5" />
+            <h2 className="text-lg font-bold text-foreground sm:text-xl">
+              {tm.section8.title}
+            </h2>
+          </div>
+
+          <p className="max-w-prose text-pretty text-xs leading-relaxed text-slate-300 sm:text-sm">
+            {tm.section8.desc}
+          </p>
+
+          {/* Formula Card */}
+          <div className="glass-panel shadow-xs space-y-2 overflow-hidden rounded-xl border border-border bg-surface-1/90 p-4 font-mono text-xs text-slate-200">
+            <div className="text-xs font-bold uppercase tracking-wider text-accent">
+              {tm.section8.formulaLabel}
+            </div>
+            <div className="text-foreground">
+              P = (H + L + C) / 3 &nbsp;&nbsp;|&nbsp;&nbsp; S_1 = 2P - H, &nbsp;
+              R_1 = 2P - L
+            </div>
+            <div className="text-foreground">
+              S_2 = P - (H - L), &nbsp; R_2 = P + (H - L)
+              &nbsp;&nbsp;|&nbsp;&nbsp; S_3 = L - 2(H - P), &nbsp; R_3 = H + 2(P
+              - L)
+            </div>
+            <div className="text-foreground">
+              POC = argmax_k ∑ V_t · 1(P_t ∈ Bucket_k) &nbsp;&nbsp;&nbsp; (40
+              equal-range price buckets)
+            </div>
+            <div className="pt-1 font-semibold text-emerald-400 sm:text-sm">
+              Confluence: |Price_tech - Price_regime| / Price_regime ≤ 2.5%
+            </div>
+          </div>
+
+          {/* 3 Tiers Grid */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="glass-panel shadow-xs rounded-xl border border-cyan-500/20 bg-cyan-950/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400">
+                <span className="size-2 rounded-full bg-cyan-400" />
+                <span>{tm.section8.tier1Title}</span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                {tm.section8.tier1Desc}
+              </p>
+            </div>
+
+            <div className="glass-panel shadow-xs rounded-xl border border-amber-500/20 bg-amber-950/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                <span className="size-2 rounded-full bg-amber-400" />
+                <span>{tm.section8.tier2Title}</span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                {tm.section8.tier2Desc}
+              </p>
+            </div>
+
+            <div className="glass-panel shadow-xs rounded-xl border border-rose-500/20 bg-rose-950/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400">
+                <span className="size-2 rounded-full bg-rose-400" />
+                <span>{tm.section8.tier3Title}</span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                {tm.section8.tier3Desc}
+              </p>
+            </div>
+          </div>
+
+          {/* Confluence Callout Box */}
+          <div className="rounded-xl border border-accent/30 bg-accent/10 p-4 text-xs">
+            <div className="flex items-center gap-2 font-bold text-accent">
+              <Compass className="size-4" />
+              <span>{tm.section8.confluenceTitle}</span>
+            </div>
+            <p className="mt-2 max-w-[58ch] text-pretty leading-relaxed text-slate-300">
+              {tm.section8.confluenceDesc}
             </p>
           </div>
         </section>

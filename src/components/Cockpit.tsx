@@ -22,6 +22,7 @@ import type {
 } from "@/lib/schemas";
 import { type StressTestParams, round2 } from "@/lib/valuation";
 import { PriceMeter } from "./PriceMeter";
+import { TechnicalLevelsCard } from "./TechnicalLevelsCard";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import {
@@ -47,6 +48,7 @@ interface CockpitProps {
   onFixedOpexShiftChange: (shiftPct: number) => void;
   onResetDefaults: () => void;
   onOpenSnowflake?: () => void;
+  onOpenTechnicals?: () => void;
   locale?: Locale;
   snowflakeScore?: SnowflakeScoreResult | null;
 }
@@ -67,6 +69,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
   onFixedOpexShiftChange,
   onResetDefaults,
   onOpenSnowflake,
+  onOpenTechnicals,
   locale = "zh",
   snowflakeScore: propSnowflakeScore,
 }) => {
@@ -629,6 +632,23 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Key Technical S/R Matrix & Confluence Card */}
+            {reportData?.technicalLevels && (
+              <TechnicalLevelsCard
+                technicalLevels={reportData.technicalLevels}
+                currentPrice={currentPrice}
+                valuation={{
+                  panic: panicTarget,
+                  bear: targetBear,
+                  base: targetBase,
+                  bull: targetBull,
+                }}
+                locale={locale}
+                compact={true}
+                onOpenTechnicals={onOpenTechnicals}
+              />
+            )}
           </div>
         );
       })()}

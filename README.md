@@ -43,9 +43,10 @@ Instant publication-ready PDF-styled research memo rendering thesis bullets, var
 * **Zero LLM Math Hallucinations**: Target prices, weighted fair values (WFVs), multiple spreads, and snowflake scores are strictly calculated by deterministic TypeScript engines (`src/lib/valuation.ts`, `src/lib/snowflake.ts`). LLMs extract qualitative context only.
 * **Sub-Millisecond Sensitivity Modeling**: Sliders perturbing upstream volume shocks (Hyperscaler CapEx, Consumer Demand, Digital Ad spend), gross margin shifts, and fixed OpEx rigidity evaluate instantly (`<1ms`) client-side.
 * **4-Regime Valuation Spectrum**: Dynamically models cash generation across Bull, Base, Bear, and Panic Floor regimes with Softmax tail-risk heuristics and governance vetos.
+* **3-Tier Price Corridors & Regime Confluence**: Classical floor pivots ($P, S_1-S_3, R_1-R_3$), unfilled gap edges, 1-year volume profile Point of Control (POC), and Anchored VWAPs synthesized into 3 institutional corridors with automated $\pm 2.5\%$ fundamental regime confluence detection and interactive TradingView charting.
 * **30-Point Snowflake Fundamental Radar**: Circular 5-pillar health audit covering Valuation, Future Growth, Earnings Quality, Moat, and Downside Resilience.
-* **Autonomous Ingestion & Scaffolding**: Twice-daily scheduled earnings calendar ingestion (Finnhub API) and SEC 10-Q/10-K statements (Massive API) auto-scaffold complete 8-module bilingual quarterly models.
-* **Bilingual English / Chinese Parity**: First-class internationalization (`en` / `zh`) across all 8 research workspaces, memos, and interactive methodology pages.
+* **Autonomous Ingestion & Scaffolding**: Twice-daily scheduled earnings calendar ingestion (Finnhub API) and SEC 10-Q/10-K statements (Massive API) auto-scaffold complete bilingual quarterly models.
+* **Bilingual English / Chinese Parity**: First-class internationalization (`en` / `zh`) across all 9 research workspaces, memos, and interactive methodology pages.
 
 ---
 

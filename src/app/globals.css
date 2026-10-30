@@ -990,3 +990,12 @@ html[data-methodology-locale="zh"] .methodology-en-inline {
   content-visibility: auto;
   contain-intrinsic-size: auto 240px;
 }
+
+/* TradingView Real-Time Embed Container & Iframe Full Height Expansion */
+.tradingview-widget-container,
+.tradingview-widget-container__widget,
+.tradingview-widget-container iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 560px !important;
+}

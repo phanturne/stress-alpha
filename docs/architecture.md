@@ -96,8 +96,8 @@ flowchart TD
         end
 
         subgraph RightPane["Right Pane: Intelligence Workspaces (flex-1 lg:overflow-y-auto)"]
-            NavRibbon["Sticky Workspace Navigation Ribbon (8 Workspaces + [📄 Research Memo [M]])"]
-            TabsContainer["Active Workspace Viewport\n(1. Valuation | 2. Estimates | 3. Moat | 4. Segments\n5. Catalysts | 6. News | 7. Audit & Risk | 8. Memo)"]
+            NavRibbon["Sticky Workspace Navigation Ribbon (9 Workspaces + [📄 Research Memo [M]])"]
+            TabsContainer["Active Workspace Viewport\n(1. Valuation | 2. Technicals & Chart | 3. Estimates | 4. Moat\n5. Segments | 6. Catalysts | 7. News | 8. Audit & Risk | 9. Notes)"]
             BackToTop["Floating Auto-Centering 'Back to Top' Action"]
         end
     end
@@ -254,6 +254,28 @@ To replace naive symmetrical priors (e.g. 25/50/25) with transparent determinist
 <p align="center">
   <img src="./images/methodology-preview.png" alt="StressAlpha Methodology and Formula Proofs" width="100%" />
 </p>
+
+### Deterministic Technical Corridors & Confluence Engine (`src/lib/technical.ts`)
+To bridge fundamental valuation models with institutional market microstructure without subjective chartist guessing:
+1. **Classical Pivot Point Extensions**:
+   - $P = (H + L + C) / 3$
+   - $S_1 = 2P - H$, $R_1 = 2P - L$
+   - $S_2 = P - (H - L)$, $R_2 = P + (H - L)$
+   - Third-tier measured-move extensions: $S_3 = L - 2(H - P)$, $R_3 = H + 2(P - L)$
+2. **Unfilled Gap Detection**:
+   - Gaps $\ge 3\%$ between prior close and session bounds generate high-volume Gap Fill targets and day boundaries.
+3. **1-Year Volume Profile POC & Anchored VWAPs**:
+   - Discretizes 252-day price series into 40 equal-range volume buckets to isolate high-volume institutional nodes (POC).
+   - Computes Anchored VWAPs from 52-Week High cycle peaks and highest volume trading sessions.
+4. **Smart Clustering & 3-Tier Corridor Hierarchy**:
+   - Levels within $\le 0.85\%$ distance merge into unified price zones.
+   - Synthesizes into:
+     - **Tier 1 (Immediate)**: Day-trader inventory boundaries ($S_1 / R_1$).
+     - **Tier 2 (Structural)**: Multi-week congestion shelves, unfilled gap tops, and Volume POC ($S_2 / R_2$).
+     - **Tier 3 (Macro)**: 52-week cycle extremes, 200-day SMA inflection, and measured breakdown extensions ($S_3 / R_3$).
+5. **Regime Confluence Engine**:
+   - Audits technical corridors against fundamental valuation regimes (Panic Floor, Bear Target, Base Target, Bull Target) within a $\pm 2.5\%$ tolerance band.
+   - Detects high-conviction inflection zones (e.g. Volume POC converging with Base WFV within 0.2%).
 
 ---
 

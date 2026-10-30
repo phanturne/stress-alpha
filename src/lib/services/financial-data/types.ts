@@ -8,6 +8,7 @@ import type {
   MoatCompetitors,
   EarningsSentiment,
   FilingExtracts,
+  TechnicalLevelsPayload,
 } from "@/lib/schemas";
 
 export type {
@@ -20,6 +21,7 @@ export type {
   MoatCompetitors,
   EarningsSentiment,
   FilingExtracts,
+  TechnicalLevelsPayload,
 };
 
 // --- Rating & Action Localization Mappings ---
@@ -106,6 +108,7 @@ export interface FinancialProfile {
   balanceSheet: BalanceSheetSummary;
   cashFlow: CashFlowSummary;
   dataSource: string;
+  technicalLevels?: TechnicalLevelsPayload;
 }
 
 export interface SecFilingItem {
@@ -137,6 +140,7 @@ export interface PipelineDataBundle {
   sentiment: EarningsSentiment;
   filingEn: FilingExtracts;
   filingZh: FilingExtracts;
+  technicalLevels?: TechnicalLevelsPayload;
 }
 
 export interface PipelineBundleOptions {

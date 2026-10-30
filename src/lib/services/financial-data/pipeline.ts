@@ -122,6 +122,7 @@ export async function fetchCompletePipelineBundle(
     sentiment,
     filingEn,
     filingZh,
+    technicalLevels: profile.technicalLevels,
   };
 }
 

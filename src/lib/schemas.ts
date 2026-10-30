@@ -752,6 +752,59 @@ export type ValuationRevisionsList = z.infer<
   typeof ValuationRevisionsListSchema
 >;
 
+export const TechnicalLevelItemSchema = z.object({
+  id: z.string(), // "sma50" | "sma200" | "high52" | "low52" | "pivot_p" | "pivot_s1" | "pivot_r1" | "pivot_s2" | "pivot_r2" | "pivot_s3" | "pivot_r3" | "gap_fill" | "gap_boundary" | "volume_poc" | "avwap_high" | "avwap_volume" | "swing_high" | "swing_low"
+  label: z.string(), // e.g. "200-Day SMA", "52-Week High"
+  price: z.number(),
+  deltaPct: z.number(), // percentage from current price
+  type: z.enum(["support", "resistance", "pivot"]),
+  importance: z.enum(["major", "intermediate", "minor"]),
+  zoneRange: z.tuple([z.number(), z.number()]).optional(),
+  clusterCount: z.number().optional(),
+});
+export type TechnicalLevelItem = z.infer<typeof TechnicalLevelItemSchema>;
+
+export interface PriceCorridorTier {
+  id: string; // "s1" | "s2" | "s3" | "r1" | "r2" | "r3"
+  tierNumber: 1 | 2 | 3;
+  type: "support" | "resistance";
+  tierTitle: string; // e.g. "Immediate Shelf", "Cycle Bedrock Floor", "Measured Breakdown"
+  range: [number, number]; // [min, max]
+  anchorPrice: number; // primary midpoint/anchor
+  deltaPct: number; // percentage from current price
+  rationale: string; // concise institutional rationale
+}
+
+export interface InstitutionalCorridors {
+  supports: PriceCorridorTier[];
+  resistances: PriceCorridorTier[];
+}
+
+export const TechnicalLevelsPayloadSchema = z.object({
+  asOf: z.string(), // ISO date string
+  currentPrice: z.number(),
+  sma50: z.number().optional(),
+  sma200: z.number().optional(),
+  high52: z.number().optional(),
+  low52: z.number().optional(),
+  pivotP: z.number().optional(),
+  support1: z.number().optional(),
+  resistance1: z.number().optional(),
+  support2: z.number().optional(),
+  resistance2: z.number().optional(),
+  support3: z.number().optional(),
+  resistance3: z.number().optional(),
+  volumePoc: z.number().optional(),
+  avwap52High: z.number().optional(),
+  avwapMaxVolume: z.number().optional(),
+  gapFillTarget: z.number().optional(),
+  gapDayBoundary: z.number().optional(),
+  levels: z.array(TechnicalLevelItemSchema),
+});
+export type TechnicalLevelsPayload = z.infer<
+  typeof TechnicalLevelsPayloadSchema
+>;
+
 // --- Full Dataset Loaded in UI ---
 export interface ReportData {
   folderSlug: string;
@@ -778,4 +831,5 @@ export interface ReportData {
   reactionsZh?: Reactions;
   reportMarkdown?: string;
   reportMarkdownZh?: string;
+  technicalLevels?: TechnicalLevelsPayload;
 }

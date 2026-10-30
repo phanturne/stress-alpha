@@ -220,6 +220,8 @@ export async function bulkScaffold(
         filing: bundle.filingEn,
         filingZh: bundle.filingZh,
         reactions: bundle.reactions,
+        technicalLevels:
+          bundle.technicalLevels ?? bundle.profile.technicalLevels,
       };
 
       // 3. Compute Deterministic Valuation

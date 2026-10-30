@@ -22,6 +22,7 @@ import type {
 } from "@/lib/schemas";
 import type { ValuationSchemaType } from "@/lib/valuation";
 import { ScenariosTab } from "@/components/tabs/ScenariosTab";
+import { TechnicalsTab } from "@/components/tabs/TechnicalsTab";
 import { EstimatesTab } from "@/components/tabs/EstimatesTab";
 import { MoatTab } from "@/components/tabs/MoatTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
@@ -320,6 +321,44 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
               revisions={valuationRevisions}
             />
           )}
+
+          {activeTab === "technicals" &&
+            (() => {
+              const val = dynamicValuation ?? reportData?.valuation;
+              const scenarioResults = val?.scenarioResults ?? [];
+              const baseTarget = scenarioResults.find(
+                (s) => s.name === "Base"
+              )?.fairValue;
+              const bullTarget = scenarioResults.find(
+                (s) => s.name === "Bull"
+              )?.fairValue;
+              const bearTarget = scenarioResults.find(
+                (s) => s.name === "Bear"
+              )?.fairValue;
+              const panicTarget =
+                val?.stressTest?.valuationBands?.panic?.targetPrice;
+
+              return (
+                <TechnicalsTab
+                  ticker={
+                    displayFacts?.ticker || reportData?.facts?.ticker || "SPY"
+                  }
+                  currentPrice={
+                    displayFacts?.currentPrice ??
+                    reportData?.technicalLevels?.currentPrice ??
+                    0
+                  }
+                  technicalLevels={reportData?.technicalLevels}
+                  valuation={{
+                    panic: panicTarget,
+                    bear: bearTarget,
+                    base: baseTarget,
+                    bull: bullTarget,
+                  }}
+                  locale={locale}
+                />
+              );
+            })()}
 
           {activeTab === "estimates" && (
             <EstimatesTab
