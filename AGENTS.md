@@ -313,11 +313,12 @@ All code and architectural contributions MUST adhere to a branch and Pull Reques
    - **Always create as a Draft PR outright**: Execute `gh pr create --draft --title "<type>: <title>" --body "<markdown body>"` so the PR is live immediately without risk of premature merging.
    - Provide the live PR link along with the PR title and description summary directly in the turn response.
    - Wait for human review, feedback, or merge approval before proceeding with dependent work. Once approved, the PR can be marked ready (`gh pr ready`) and merged.
-4. **Post-Merge Local Branch Cleanup**:
+4. **Post-Merge Branch Cleanup (Local & Remote)**:
    - Once the pull request has been merged to `main`:
      - Switch back to `main`: `git checkout main`
      - Fast-forward pull latest changes: `git pull origin main`
      - Delete the merged local branch: `git branch -d <branch-name>` (or `-D` if squashed)
+     - Delete the merged remote feature branch: `git push origin --delete <branch-name>`
      - Prune remote-tracking references: `git fetch -p`
      - Verify working directory is clean: `git status`
 
