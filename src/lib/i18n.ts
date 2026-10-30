@@ -1057,6 +1057,7 @@ export interface Translations {
       baseVsWfv: string;
       moat: string;
       calibration: string;
+      technicalCorridors: string;
     };
     section1: {
       title: string;
@@ -1140,6 +1141,23 @@ export interface Translations {
       interviewWhyText: string;
       interviewRoadmapTitle: string;
       interviewRoadmapText: string;
+    };
+    section8: {
+      title: string;
+      desc: string;
+      formulaLabel: string;
+      pivotsTitle: string;
+      pivotsDesc: string;
+      volumePocTitle: string;
+      volumePocDesc: string;
+      confluenceTitle: string;
+      confluenceDesc: string;
+      tier1Title: string;
+      tier1Desc: string;
+      tier2Title: string;
+      tier2Desc: string;
+      tier3Title: string;
+      tier3Desc: string;
     };
     cta: {
       title: string;
@@ -2311,6 +2329,7 @@ export const translations: Record<Locale, Translations> = {
         baseVsWfv: "5. Base FV vs. WFV",
         moat: "6. Economic Moat",
         calibration: "7. Scenario Calibration Matrix",
+        technicalCorridors: "8. Technical Corridors & Confluence",
       },
       section1: {
         title: "1. Upstream Demand Shock Flow-Through",
@@ -2414,6 +2433,29 @@ export const translations: Record<Locale, Translations> = {
         interviewRoadmapTitle: "Empirical Calibration Roadmap:",
         interviewRoadmapText:
           "In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.",
+      },
+      section8: {
+        title: "8. Deterministic Price Corridors & Regime Confluence",
+        desc: "Bridges fundamental stress-test valuations with market microstructure. Synthesizes classical floor pivots, unfilled gap edges, 1-year volume profile Point of Control (POC), and Anchored VWAPs into a 3-tier price corridor hierarchy, auditing for direct convergence against fundamental valuation regimes.",
+        formulaLabel: "Mathematical Formulations & Convergence Criteria",
+        pivotsTitle: "Classical Pivot Extensions",
+        pivotsDesc:
+          "Computes standard floor trader pivots P = (H + L + C) / 3, S1 = 2P - H, R1 = 2P - L, S2 = P - (H - L), R2 = P + (H - L), alongside measured-move extensions S3 = L - 2(H - P) and R3 = H + 2(P - L).",
+        volumePocTitle: "1-Year Volume Profile POC & Anchored VWAPs",
+        volumePocDesc:
+          "Discretizes 252-day price action into 40 equal-range volume buckets to isolate high-volume institutional nodes (POC) and computes Anchored VWAPs from cycle peaks and peak volume bars.",
+        confluenceTitle: "Fundamental-Technical Confluence Criteria",
+        confluenceDesc:
+          "Flags high-conviction inflection zones where technical corridors converge with fundamental valuation regimes (Panic Floor, Bear, Base, Bull) within a ±2.5% band (|Price_tech - Price_regime| / Price_regime <= 0.025).",
+        tier1Title: "Tier 1: Immediate Pivot Corridor (S1 / R1)",
+        tier1Desc:
+          "Day-trader inventory boundaries and initial algorithmic rejection/support bands.",
+        tier2Title: "Tier 2: Structural Congestion Corridor (S2 / R2)",
+        tier2Desc:
+          "Multi-week horizontal shelves, unfilled gap tops, and volume profile POC nodes.",
+        tier3Title: "Tier 3: Macro Bedrock & Cycle Ceiling (S3 / R3)",
+        tier3Desc:
+          "52-week cycle boundaries, 200-day SMAs, and measured-move breakdown extensions.",
       },
       cta: {
         title: "Explore the Open-Source Codebase & AI Skills",
@@ -3549,6 +3591,7 @@ export const translations: Record<Locale, Translations> = {
         baseVsWfv: "5. 基准公允价 vs 加权公允价",
         moat: "6. 五维经济护城河评级",
         calibration: "7. 确定性情景校准矩阵",
+        technicalCorridors: "8. 技术走廊与估值共振",
       },
       section1: {
         title: "1. 上游需求扰动传导模型",
@@ -3649,6 +3692,28 @@ export const translations: Record<Locale, Translations> = {
         interviewRoadmapTitle: "未来实证校准路径：",
         interviewRoadmapText:
           "在更大规模的系统化部署中，各支柱的偏置系数可通过历史财报后真实收益率进行多季度回测，通过最小化布莱尔分数（Brier Score: B = 1/N ∑ (p_i - o_i)²）与多项对数损失（Multinomial Log-Loss）实现实证最优化校准。",
+      },
+      section8: {
+        title: "8. 确定性价格走廊与估值共振审计",
+        desc: "将压力测试估值锚位与机构市场微观结构无缝桥接。纯代码确定性融合经典场内交易员枢轴点、跳空缺口、一年筹码分布峰（Volume POC）与锚定均价（Anchored VWAP），构建三层机构价格走廊，并对基本面情景目标进行容差共振审计。",
+        formulaLabel: "数学推导公式与共振容差判定",
+        pivotsTitle: "经典枢轴点位延展 (Floor Trader Pivots)",
+        pivotsDesc:
+          "计算经典交易员枢轴点 P = (H + L + C) / 3，第一层 S1 = 2P - H, R1 = 2P - L，第二层 S2 = P - (H - L), R2 = P + (H - L)，以及第三层等距测算扩展 S3 = L - 2(H - P), R3 = H + 2(P - L)。",
+        volumePocTitle: "1年筹码分布峰 (Volume POC) 与锚定 VWAP",
+        volumePocDesc:
+          "将 252 个交易日价格动作离散化至 40 个等距价格区间，累加成交量以精准定位机构筹码换手核心平台（Point of Control），并从 52 周最高点与历史天量 K 线锚定 VWAP 均价。",
+        confluenceTitle: "基本面与技术面共振判定标准",
+        confluenceDesc:
+          "当技术走廊点位与基本面情景估值（恐慌底价、悲观目标、基准估值、牛市目标）在 ±2.5% 容差带内重合时 (|Price_tech - Price_regime| / Price_regime <= 0.025)，触发高确定性机构共振信号。",
+        tier1Title: "第一层：即时枢轴走廊 (S1 / R1)",
+        tier1Desc:
+          "日内交易与算法高频库存边界，衡量初次受阻或企稳的即时反应位。",
+        tier2Title: "第二层：结构性筹码走廊 (S2 / R2)",
+        tier2Desc:
+          "数周横盘平台、跳空日前收盘缺口上沿与筹码换手峰密集套牢/支撑区。",
+        tier3Title: "第三层：宏观底线与周期压制 (S3 / R3)",
+        tier3Desc: "52周高低点、200日均线多空分水岭与破位等距下行测算极限。",
       },
       cta: {
         title: "探索开源代码与 AI Skill 流水线",

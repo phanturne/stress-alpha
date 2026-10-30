@@ -169,6 +169,25 @@ To safeguard database integrity and quantify buy-side variant perception against
    - Decomposes the spread into Base Scenario multiple delta, earnings delta, and dynamic regime stress haircut (Bear/Panic drag on Base).
    - Generates pre-localized analytical commentary in English and Chinese attached directly to `ValuationSchema.sanityAudit`.
 
+### Deterministic Technical Corridors & Confluence Engine (`src/lib/technical.ts`)
+To anchor quantitative valuation regimes with institutional market microstructure without LLM hallucinations:
+1. **Classical Pivot Point Extensions**:
+   - Computes standard floor trader pivots: $P = (H + L + C) / 3$, $S_1 = 2P - H$, $R_1 = 2P - L$, $S_2 = P - (H - L)$, $R_2 = P + (H - L)$, and 3rd-tier extensions $S_3 = L - 2(H - P)$, $R_3 = H + 2(P - L)$.
+2. **Unfilled Gap Detection**:
+   - Detects gaps $\ge 3\%$ between prior close and session bounds, establishing high-volume Gap Fill targets and session day boundaries.
+3. **1-Year Volume Profile Point of Control (POC) & Anchored VWAPs**:
+   - Discretizes 252-day historical price action into 40 equal-range volume buckets to isolate institutional High Volume Nodes (POC).
+   - Computes Anchored VWAPs starting from the 52-Week High cycle peak and the highest single-day volume bar.
+4. **Smart Clustering & 3-Tier Corridor Hierarchy**:
+   - Levels within $\le 0.85\%$ distance are clustered into unified support/resistance price bands.
+   - Synthesizes technical levels into a 3-tier institutional hierarchy:
+     - **Tier 1: Immediate Pivot Corridor** ($S_1 / R_1$) — Day-trader and algorithmic inventory floor/ceiling.
+     - **Tier 2: Structural Congestion Corridor** ($S_2 / R_2$) — Multi-week swing pivots, gap edges, and high-volume shelves.
+     - **Tier 3: Macro Bedrock & Cycle Ceiling** ($S_3 / R_3$) — 52-week extremes, 200-day SMAs, and measured-move breakdown extensions.
+5. **Regime Confluence Engine**:
+   - Compares technical levels against quantitative valuation regimes (Panic Floor, Bear Target, Base Target, Bull Target) within $\pm 2.5\%$.
+   - Flags structural confluences (e.g. Volume POC converging with Base WFV, or 200 SMA converging with Panic multiple floor).
+
 ---
 
 ## 5. 5-Pillar Snowflake Radar Scoring
