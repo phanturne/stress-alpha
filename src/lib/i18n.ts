@@ -95,6 +95,8 @@ export interface Translations {
       upsideToBull: string;
       downsideToPanic: string;
       pricedInMultiple: string;
+      pricedInMultipleLoss: string;
+      pricedInMultipleLossTooltip: string;
       asymmetrySkew: string;
     };
     upstreamTitle: string;
@@ -248,16 +250,24 @@ export interface Translations {
       s2BedrockDesc: (low: string, high: string) => string;
       s2Structural: string;
       s2StructuralDesc: (low: string, high: string) => string;
+      s2Sma200: string;
+      s2Sma200Desc: (low: string, high: string) => string;
+      s2Poc: string;
+      s2PocDesc: (low: string, high: string) => string;
       s3Breakdown: string;
       s3BreakdownDesc: (low: string, high: string) => string;
       s3Macro: string;
       s3MacroDesc: (low: string, high: string) => string;
+      s3Low52: string;
+      s3Low52Desc: (low: string, high: string) => string;
       r1Title: string;
       r1Desc: (low: string, high: string) => string;
       r2Gap: string;
       r2GapDesc: (low: string, high: string) => string;
       r2Structural: string;
       r2StructuralDesc: (low: string, high: string) => string;
+      r2Sma200: string;
+      r2Sma200Desc: (low: string, high: string) => string;
       r3Sma: string;
       r3SmaDesc: (low: string, high: string) => string;
       r3High: string;
@@ -308,6 +318,16 @@ export interface Translations {
     confluenceEmpty: string;
     trendBullish: string;
     trendBearish: string;
+    currentPeBadge: string;
+    currentPeSubtext: string;
+    currentPeTooltip: string;
+    currentPeLoss: string;
+    currentPeLossSubtext: string;
+    currentPeLossTooltip: string;
+    sma50Badge: string;
+    sma200Badge: string;
+    range52WBadge: string;
+    fromPrice: string;
     distanceTo52WHigh: string;
     distanceTo52WLow: string;
     volumePoc: string;
@@ -1273,7 +1293,10 @@ export const translations: Record<Locale, Translations> = {
       asymmetry: {
         upsideToBull: "Upside to Bull",
         downsideToPanic: "Downside to Panic",
-        pricedInMultiple: "Priced-in Multiple",
+        pricedInMultiple: "Current P/E",
+        pricedInMultipleLoss: "N/A (Loss)",
+        pricedInMultipleLossTooltip:
+          "P/E is not applicable because operating earnings are negative (net loss)",
         asymmetrySkew: "Risk / Reward Ratio",
       },
       upstreamTitle: "Demand & Volume Drivers",
@@ -1437,12 +1460,21 @@ export const translations: Record<Locale, Translations> = {
         s2Structural: "Structural Pivot Floor",
         s2StructuralDesc: (low: string, high: string) =>
           `Multi-day swing shelf & secondary pivot support (${low} – ${high})`,
+        s2Sma200: "200-Day SMA & Structural Floor",
+        s2Sma200Desc: (low: string, high: string) =>
+          `Institutional 200-day trendline & structural swing support (${low} – ${high})`,
+        s2Poc: "Volume POC Structural Shelf",
+        s2PocDesc: (low: string, high: string) =>
+          `1-Year volume profile Point of Control shelf (${low} – ${high})`,
         s3Breakdown: "Downside Breakdown Extension",
         s3BreakdownDesc: (low: string, high: string) =>
           `Measured-move breakdown target if 52W low fails (${low} – ${high})`,
         s3Macro: "Macro Bedrock Floor",
         s3MacroDesc: (low: string, high: string) =>
           `Macro cycle liquidity floor & downside safety anchor (${low} – ${high})`,
+        s3Low52: "52-Week Low / Cycle Bedrock",
+        s3Low52Desc: (low: string, high: string) =>
+          `52-Week cycle low & downside safety anchor (${low} – ${high})`,
         r1Title: "Immediate Ceiling",
         r1Desc: (low: string, high: string) =>
           `Post-drop intraday high (${high}) & Pivot R1 (${low})`,
@@ -1452,6 +1484,9 @@ export const translations: Record<Locale, Translations> = {
         r2Structural: "Structural Volume Ceiling",
         r2StructuralDesc: (low: string, high: string) =>
           `High-volume node & secondary resistance band (${low} – ${high})`,
+        r2Sma200: "200-Day SMA Resistance",
+        r2Sma200Desc: (low: string, high: string) =>
+          `Institutional 200-day trendline resistance (${low} – ${high})`,
         r3Sma: "Major Trend Confluence",
         r3SmaDesc: (low: string, high: string) =>
           `50-Day (${low}) & 200-Day SMA (${high}) confluence (Death Cross Zone)`,
@@ -1462,7 +1497,7 @@ export const translations: Record<Locale, Translations> = {
       openFullAnalysis: "Full Chart & Analysis →",
       compactSummary: "S/R Telemetry",
       spot: "Spot",
-      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 2) →",
+      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 1) →",
     },
     tabs: {
       valuation: "Valuation & Scenarios",
@@ -1509,6 +1544,17 @@ export const translations: Record<Locale, Translations> = {
         "No direct regime confluence detected within ±2.5% tolerance band.",
       trendBullish: "Bullish Trend (Above 200 SMA)",
       trendBearish: "Bearish Trend (Below 200 SMA)",
+      currentPeBadge: "Current P/E",
+      currentPeSubtext: "at spot price",
+      currentPeTooltip: "Current price divided by normalized operating EPS",
+      currentPeLoss: "N/A (Loss)",
+      currentPeLossSubtext: "Negative EPS",
+      currentPeLossTooltip:
+        "P/E is undefined because normalized operating earnings are negative (loss-making company)",
+      sma50Badge: "50-Day SMA",
+      sma200Badge: "200-Day SMA",
+      range52WBadge: "52-Week Range",
+      fromPrice: "from price",
       distanceTo52WHigh: "from 52W High",
       distanceTo52WLow: "from 52W Low",
       volumePoc: "1-Yr Volume POC",
@@ -2568,7 +2614,9 @@ export const translations: Record<Locale, Translations> = {
       asymmetry: {
         upsideToBull: "牛市上行空间",
         downsideToPanic: "恐慌下行最大回撤",
-        pricedInMultiple: "市场隐含市盈率",
+        pricedInMultiple: "当前市盈率 (P/E)",
+        pricedInMultipleLoss: "N/A (亏损)",
+        pricedInMultipleLossTooltip: "因经营净收益为负（净亏损），市盈率不适用",
         asymmetrySkew: "盈亏收益比 (Risk/Reward)",
       },
       upstreamTitle: "需求与业务量驱动",
@@ -2727,12 +2775,21 @@ export const translations: Record<Locale, Translations> = {
         s2Structural: "中线结构支撑",
         s2StructuralDesc: (low: string, high: string) =>
           `波段筹码平台与次级支撑共振带 (${low} – ${high})`,
+        s2Sma200: "200日均线与中线支撑",
+        s2Sma200Desc: (low: string, high: string) =>
+          `机构200日均线生命线与波段支撑平台 (${low} – ${high})`,
+        s2Poc: "筹码密集区与中线支撑",
+        s2PocDesc: (low: string, high: string) =>
+          `1年期筹码分布最高峰（POC）中线支撑 (${low} – ${high})`,
         s3Breakdown: "破位测算下限",
         s3BreakdownDesc: (low: string, high: string) =>
           `52周低点失守后的等距下行测算位 (${low} – ${high})`,
         s3Macro: "宏观底线支撑",
         s3MacroDesc: (low: string, high: string) =>
           `宏观流动性安全底线与估值支撑带 (${low} – ${high})`,
+        s3Low52: "52周低点 / 周期底线",
+        s3Low52Desc: (low: string, high: string) =>
+          `52周周期低点与宏观安全底线 (${low} – ${high})`,
         r1Title: "即时反弹压制",
         r1Desc: (low: string, high: string) =>
           `跳空日反弹高点 (${high}) 与第一阻力位 (${low}) 抛压`,
@@ -2742,6 +2799,9 @@ export const translations: Record<Locale, Translations> = {
         r2Structural: "结构性筹码压力带",
         r2StructuralDesc: (low: string, high: string) =>
           `高成交量换手区与次级阻力带 (${low} – ${high})`,
+        r2Sma200: "200日均线阻力",
+        r2Sma200Desc: (low: string, high: string) =>
+          `机构200日均线生命线反弹阻力 (${low} – ${high})`,
         r3Sma: "主线均线死叉压力区",
         r3SmaDesc: (low: string, high: string) =>
           `50日 (${low}) 与200日均线 (${high}) 共振压制带 (死叉区)`,
@@ -2752,7 +2812,7 @@ export const translations: Record<Locale, Translations> = {
       openFullAnalysis: "图表与走廊 →",
       compactSummary: "支撑阻力简析",
       spot: "现价",
-      openChartTab: "打开交互K线图与三层走廊 (工作台 2) →",
+      openChartTab: "打开交互K线图与三层走廊 (工作台 1) →",
     },
     tabs: {
       valuation: "估值与情景",
@@ -2796,6 +2856,16 @@ export const translations: Record<Locale, Translations> = {
       confluenceEmpty: "当前未在 ±2.5% 容差带内检测到直接共振信号。",
       trendBullish: "多头排列 (现价 > 200日均线)",
       trendBearish: "空头排列 (现价 < 200日均线)",
+      currentPeBadge: "当前市盈率",
+      currentPeSubtext: "基于最新现价",
+      currentPeTooltip: "当前股价与年化营业每股收益（EPS）之比",
+      currentPeLoss: "N/A (亏损)",
+      currentPeLossSubtext: "净亏损 (EPS为负)",
+      currentPeLossTooltip: "公司当前处于营业亏损状态（EPS ≤ 0），市盈率不适用",
+      sma50Badge: "50日均线",
+      sma200Badge: "200日均线",
+      range52WBadge: "52周价格区间",
+      fromPrice: "距现价",
       distanceTo52WHigh: "距52周最高",
       distanceTo52WLow: "距52周最低",
       volumePoc: "1年筹码峰POC",

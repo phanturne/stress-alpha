@@ -171,7 +171,113 @@ describe("Technical Levels UI Components", () => {
 
       expect(screen.getByText("Key Support & Resistance")).toBeDefined();
       expect(screen.getByText("50-Day SMA")).toBeDefined();
+      expect(screen.getByText("200-Day SMA")).toBeDefined();
+      expect(screen.getByText("52-Week Low")).toBeDefined();
+      expect(screen.getByText("52-Week High")).toBeDefined();
       expect(screen.getByText("Pivot Resistance 1 (R1)")).toBeDefined();
+    });
+
+    it("renders all individual levels without truncation (supports past index 5 like 52W Low)", () => {
+      // Setup payload with 8 supports (similar to AMD)
+      const amdLikePayload: TechnicalLevelsPayload = {
+        asOf: "2026-10-28T12:00:00Z",
+        currentPrice: 505.81,
+        sma200: 409.08,
+        low52: 188.22,
+        high52: 658.52,
+        levels: [
+          {
+            id: "swing_low",
+            label: "Fractal Swing Low",
+            price: 502.6,
+            deltaPct: -0.6,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "pivot_s1",
+            label: "Pivot Support 1 (S1)",
+            price: 491.22,
+            deltaPct: -2.9,
+            type: "support",
+            importance: "intermediate",
+          },
+          {
+            id: "pivot_s2",
+            label: "Pivot Support 2 (S2)",
+            price: 477.65,
+            deltaPct: -5.6,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "pivot_s3",
+            label: "Pivot Support 3 (S3)",
+            price: 463.07,
+            deltaPct: -8.4,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "sma200",
+            label: "200-Day SMA",
+            price: 409.08,
+            deltaPct: -19.1,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "avwap_volume",
+            label: "Anchored VWAP (Max Volume)",
+            price: 348.42,
+            deltaPct: -31.1,
+            type: "support",
+            importance: "intermediate",
+          },
+          {
+            id: "volume_poc",
+            label: "1-Year Volume POC",
+            price: 217.61,
+            deltaPct: -56.9,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "low52",
+            label: "52-Week Low",
+            price: 188.22,
+            deltaPct: -62.8,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "high52",
+            label: "52-Week High",
+            price: 658.52,
+            deltaPct: 30.2,
+            type: "resistance",
+            importance: "major",
+          },
+        ],
+      };
+
+      render(
+        <TechnicalLevelsCard
+          technicalLevels={amdLikePayload}
+          currentPrice={505.81}
+          locale="en"
+        />
+      );
+
+      // Switch to All Levels view
+      const allLevelsBtn = screen.getByRole("button", { name: /All Levels/i });
+      fireEvent.click(allLevelsBtn);
+
+      // Verify that previously truncated items 6, 7 (Volume POC and 52-Week Low) are present
+      expect(screen.getByText("200-Day SMA")).toBeDefined();
+      expect(screen.getByText("1-Year Volume POC")).toBeDefined();
+      expect(screen.getByText("52-Week Low")).toBeDefined();
+      expect(screen.getByText("52-Week High")).toBeDefined();
     });
 
     it("displays confluence banner when technical level converges with fundamental regime", () => {
@@ -329,11 +435,12 @@ describe("Technical Levels UI Components", () => {
   });
 
   describe("TechnicalsTab", () => {
-    it("renders live interactive chart and 3-tier price corridors", () => {
+    it("renders live interactive chart, 3-tier price corridors, and current P/E telemetry", () => {
       render(
         <TechnicalsTab
           ticker="GOOGL"
           currentPrice={283.82}
+          currentPe={28.5}
           technicalLevels={mockPayload}
           valuation={{
             panic: 240,
@@ -348,15 +455,72 @@ describe("Technical Levels UI Components", () => {
       expect(screen.getByText("Technical Analysis & Chart")).toBeDefined();
       expect(screen.getByText("GOOGL")).toBeDefined();
       expect(screen.getByText("$283.82")).toBeDefined();
+      expect(screen.getByText("P/E: 28.5x")).toBeDefined();
+      expect(screen.getByText("28.5x")).toBeDefined();
+      expect(screen.getByText("Current P/E")).toBeDefined();
       expect(screen.getByText("Live Interactive Chart")).toBeDefined();
       expect(screen.getByText("Institutional Price Corridors")).toBeDefined();
+    });
+
+    it("renders localized technical badges in Chinese locale", () => {
+      render(
+        <TechnicalsTab
+          ticker="AMD"
+          currentPrice={505.81}
+          currentPe={32.4}
+          technicalLevels={mockPayload}
+          locale="zh"
+        />
+      );
+
+      expect(screen.getByText("技术分析与交互图表")).toBeDefined();
+      expect(screen.getByText("当前市盈率")).toBeDefined();
+      expect(screen.getByText("32.4x")).toBeDefined();
+      expect(screen.getByText("50日均线")).toBeDefined();
+      expect(screen.getByText("200日均线")).toBeDefined();
+      expect(screen.getByText("52周价格区间")).toBeDefined();
+    });
+
+    it("renders N/A (Loss) and negative EPS for unprofitable companies (e.g. ONDS)", () => {
+      const { rerender } = render(
+        <TechnicalsTab
+          ticker="ONDS"
+          currentPrice={6.32}
+          currentPe={0}
+          operatingEps={-0.01}
+          technicalLevels={mockPayload}
+          locale="en"
+        />
+      );
+
+      // Header strip and KPI card 1
+      expect(screen.getByText("P/E: N/A (Loss)")).toBeDefined();
+      expect(screen.getByText("N/A (Loss)")).toBeDefined();
+      expect(screen.getByText("-$0.01 EPS")).toBeDefined();
+
+      // Chinese locale
+      rerender(
+        <TechnicalsTab
+          ticker="ONDS"
+          currentPrice={6.32}
+          currentPe={0}
+          operatingEps={-0.01}
+          technicalLevels={mockPayload}
+          locale="zh"
+        />
+      );
+
+      expect(screen.getByText("P/E: N/A (亏损)")).toBeDefined();
+      expect(screen.getByText("N/A (亏损)")).toBeDefined();
+      expect(screen.getByText("-$0.01 EPS")).toBeDefined();
     });
   });
 
   describe("Workspace Tabs Registration", () => {
-    it("registers technicals as tab 2 in WORKSPACE_TAB_IDS and getWorkspaceTabs", () => {
+    it("registers technicals as tab 1 in WORKSPACE_TAB_IDS and getWorkspaceTabs", () => {
       expect(WORKSPACE_TAB_IDS).toContain("technicals");
-      expect(WORKSPACE_TAB_IDS[1]).toBe("technicals");
+      expect(WORKSPACE_TAB_IDS[0]).toBe("technicals");
+      expect(WORKSPACE_TAB_IDS[1]).toBe("valuation");
 
       const t = getTranslations("en");
       const mockReportData = {
@@ -365,11 +529,14 @@ describe("Technical Levels UI Components", () => {
       } as unknown as ReportData;
 
       const tabs = getWorkspaceTabs(t, mockReportData, 3, false);
-      expect(tabs[1].id).toBe("technicals");
+      expect(tabs[0].id).toBe("technicals");
+      expect(tabs[0].shortcut).toBe("1");
+      expect(tabs[0].label).toBe("Technicals & Chart");
+      expect(tabs[0].shortLabel).toBe("Technicals");
+      expect(tabs[0].count).toBe(mockPayload.levels.length);
+
+      expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");
-      expect(tabs[1].label).toBe("Technicals & Chart");
-      expect(tabs[1].shortLabel).toBe("Technicals");
-      expect(tabs[1].count).toBe(mockPayload.levels.length);
     });
   });
 });
