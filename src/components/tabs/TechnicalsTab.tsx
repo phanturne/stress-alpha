@@ -18,6 +18,7 @@ import { TechnicalLevelsCard } from "@/components/TechnicalLevelsCard";
 interface TechnicalsTabProps {
   ticker: string;
   currentPrice: number;
+  currentPe?: number;
   technicalLevels?: TechnicalLevelsPayload;
   valuation?: {
     panic?: number;
@@ -31,6 +32,7 @@ interface TechnicalsTabProps {
 export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
   ticker,
   currentPrice,
+  currentPe,
   technicalLevels,
   valuation,
   locale = "zh",
@@ -85,6 +87,14 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
                 <span className="font-mono text-xs font-semibold tabular-nums text-slate-300">
                   {formatCurrency(activePrice, 2)}
                 </span>
+                {currentPe && currentPe > 0 && (
+                  <span
+                    className="rounded-md border border-border/80 bg-surface-2/90 px-2 py-0.5 font-mono text-xs font-bold text-slate-200"
+                    title={tt.currentPeTooltip}
+                  >
+                    P/E: {currentPe.toFixed(1)}x
+                  </span>
+                )}
               </div>
               <p className="mt-0.5 text-xs text-slate-400">{tt.subtitle}</p>
             </div>
@@ -109,8 +119,21 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           )}
         </div>
 
-        {/* 4-KPI Metric Badges */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {/* 5-KPI Metric Badges */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {/* Current P/E */}
+          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
+            <span className="text-[11px] font-medium text-slate-400">
+              {tt.currentPeBadge}
+            </span>
+            <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
+              {currentPe && currentPe > 0 ? `${currentPe.toFixed(1)}x` : "—"}
+            </span>
+            <span className="font-mono text-[10px] text-slate-400">
+              {tt.currentPeSubtext}
+            </span>
+          </div>
+
           {/* 50-Day SMA */}
           <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
             <span className="text-[11px] font-medium text-slate-400">

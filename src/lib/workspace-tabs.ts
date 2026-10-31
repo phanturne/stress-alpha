@@ -14,8 +14,8 @@ import type { Translations } from "@/lib/i18n";
 import type { ReportData } from "@/lib/schemas";
 
 export const WORKSPACE_TAB_IDS = [
-  "valuation",
   "technicals",
+  "valuation",
   "estimates",
   "moat",
   "segments",
@@ -67,20 +67,20 @@ export function getWorkspaceTabs(
 
   return [
     {
-      id: "valuation",
-      shortcut: "1",
-      label: t.tabs.valuation,
-      shortLabel: t.tabs.shortValuation,
-      icon: TrendingUp,
-      count: displayScenarios?.scenarios.length,
-    },
-    {
       id: "technicals",
-      shortcut: "2",
+      shortcut: "1",
       label: t.tabs.technicals,
       shortLabel: t.tabs.shortTechnicals,
       icon: CandlestickChart,
       count: reportData?.technicalLevels?.levels?.length,
+    },
+    {
+      id: "valuation",
+      shortcut: "2",
+      label: t.tabs.valuation,
+      shortLabel: t.tabs.shortValuation,
+      icon: TrendingUp,
+      count: displayScenarios?.scenarios.length,
     },
     {
       id: "estimates",

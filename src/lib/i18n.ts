@@ -316,6 +316,9 @@ export interface Translations {
     confluenceEmpty: string;
     trendBullish: string;
     trendBearish: string;
+    currentPeBadge: string;
+    currentPeSubtext: string;
+    currentPeTooltip: string;
     sma50Badge: string;
     sma200Badge: string;
     range52WBadge: string;
@@ -1285,7 +1288,7 @@ export const translations: Record<Locale, Translations> = {
       asymmetry: {
         upsideToBull: "Upside to Bull",
         downsideToPanic: "Downside to Panic",
-        pricedInMultiple: "Priced-in Multiple",
+        pricedInMultiple: "Current P/E",
         asymmetrySkew: "Risk / Reward Ratio",
       },
       upstreamTitle: "Demand & Volume Drivers",
@@ -1486,7 +1489,7 @@ export const translations: Record<Locale, Translations> = {
       openFullAnalysis: "Full Chart & Analysis →",
       compactSummary: "S/R Telemetry",
       spot: "Spot",
-      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 2) →",
+      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 1) →",
     },
     tabs: {
       valuation: "Valuation & Scenarios",
@@ -1533,6 +1536,9 @@ export const translations: Record<Locale, Translations> = {
         "No direct regime confluence detected within ±2.5% tolerance band.",
       trendBullish: "Bullish Trend (Above 200 SMA)",
       trendBearish: "Bearish Trend (Below 200 SMA)",
+      currentPeBadge: "Current P/E",
+      currentPeSubtext: "at spot price",
+      currentPeTooltip: "Current price divided by normalized operating EPS",
       sma50Badge: "50-Day SMA",
       sma200Badge: "200-Day SMA",
       range52WBadge: "52-Week Range",
@@ -2596,7 +2602,7 @@ export const translations: Record<Locale, Translations> = {
       asymmetry: {
         upsideToBull: "牛市上行空间",
         downsideToPanic: "恐慌下行最大回撤",
-        pricedInMultiple: "市场隐含市盈率",
+        pricedInMultiple: "当前市盈率 (P/E)",
         asymmetrySkew: "盈亏收益比 (Risk/Reward)",
       },
       upstreamTitle: "需求与业务量驱动",
@@ -2792,7 +2798,7 @@ export const translations: Record<Locale, Translations> = {
       openFullAnalysis: "图表与走廊 →",
       compactSummary: "支撑阻力简析",
       spot: "现价",
-      openChartTab: "打开交互K线图与三层走廊 (工作台 2) →",
+      openChartTab: "打开交互K线图与三层走廊 (工作台 1) →",
     },
     tabs: {
       valuation: "估值与情景",
@@ -2836,6 +2842,9 @@ export const translations: Record<Locale, Translations> = {
       confluenceEmpty: "当前未在 ±2.5% 容差带内检测到直接共振信号。",
       trendBullish: "多头排列 (现价 > 200日均线)",
       trendBearish: "空头排列 (现价 < 200日均线)",
+      currentPeBadge: "当前市盈率",
+      currentPeSubtext: "基于最新现价",
+      currentPeTooltip: "当前股价与年化营业每股收益（EPS）之比",
       sma50Badge: "50日均线",
       sma200Badge: "200日均线",
       range52WBadge: "52周价格区间",

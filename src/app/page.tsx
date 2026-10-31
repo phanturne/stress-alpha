@@ -36,7 +36,7 @@ function HomePageContent() {
     (searchParams.get("mode") as
       "cockpit" | "memo" | "screener" | "watchlist" | null) ||
     (!initialSlug ? "screener" : "cockpit");
-  const initialTab = searchParams.get("tab") || "valuation";
+  const initialTab = searchParams.get("tab") || "technicals";
 
   const [currentSlug, setCurrentSlug] = useState<string | null>(initialSlug);
   const [locale, setLocale] = useState<Locale>("en");

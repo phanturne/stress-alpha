@@ -88,7 +88,7 @@ export function serializeScenarioUrlState(state: ScenarioUrlState): string {
   const params = new URLSearchParams();
 
   if (state.report) params.set("report", state.report);
-  if (state.tab && state.tab !== "valuation") params.set("tab", state.tab);
+  if (state.tab && state.tab !== "technicals") params.set("tab", state.tab);
   if (state.mode && state.mode !== "cockpit") params.set("mode", state.mode);
   if (state.lang) params.set("lang", state.lang);
 

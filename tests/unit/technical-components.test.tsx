@@ -435,11 +435,12 @@ describe("Technical Levels UI Components", () => {
   });
 
   describe("TechnicalsTab", () => {
-    it("renders live interactive chart and 3-tier price corridors", () => {
+    it("renders live interactive chart, 3-tier price corridors, and current P/E telemetry", () => {
       render(
         <TechnicalsTab
           ticker="GOOGL"
           currentPrice={283.82}
+          currentPe={28.5}
           technicalLevels={mockPayload}
           valuation={{
             panic: 240,
@@ -454,6 +455,9 @@ describe("Technical Levels UI Components", () => {
       expect(screen.getByText("Technical Analysis & Chart")).toBeDefined();
       expect(screen.getByText("GOOGL")).toBeDefined();
       expect(screen.getByText("$283.82")).toBeDefined();
+      expect(screen.getByText("P/E: 28.5x")).toBeDefined();
+      expect(screen.getByText("28.5x")).toBeDefined();
+      expect(screen.getByText("Current P/E")).toBeDefined();
       expect(screen.getByText("Live Interactive Chart")).toBeDefined();
       expect(screen.getByText("Institutional Price Corridors")).toBeDefined();
     });
@@ -463,12 +467,15 @@ describe("Technical Levels UI Components", () => {
         <TechnicalsTab
           ticker="AMD"
           currentPrice={505.81}
+          currentPe={32.4}
           technicalLevels={mockPayload}
           locale="zh"
         />
       );
 
       expect(screen.getByText("技术分析与交互图表")).toBeDefined();
+      expect(screen.getByText("当前市盈率")).toBeDefined();
+      expect(screen.getByText("32.4x")).toBeDefined();
       expect(screen.getByText("50日均线")).toBeDefined();
       expect(screen.getByText("200日均线")).toBeDefined();
       expect(screen.getByText("52周价格区间")).toBeDefined();
@@ -476,9 +483,10 @@ describe("Technical Levels UI Components", () => {
   });
 
   describe("Workspace Tabs Registration", () => {
-    it("registers technicals as tab 2 in WORKSPACE_TAB_IDS and getWorkspaceTabs", () => {
+    it("registers technicals as tab 1 in WORKSPACE_TAB_IDS and getWorkspaceTabs", () => {
       expect(WORKSPACE_TAB_IDS).toContain("technicals");
-      expect(WORKSPACE_TAB_IDS[1]).toBe("technicals");
+      expect(WORKSPACE_TAB_IDS[0]).toBe("technicals");
+      expect(WORKSPACE_TAB_IDS[1]).toBe("valuation");
 
       const t = getTranslations("en");
       const mockReportData = {
@@ -487,11 +495,14 @@ describe("Technical Levels UI Components", () => {
       } as unknown as ReportData;
 
       const tabs = getWorkspaceTabs(t, mockReportData, 3, false);
-      expect(tabs[1].id).toBe("technicals");
+      expect(tabs[0].id).toBe("technicals");
+      expect(tabs[0].shortcut).toBe("1");
+      expect(tabs[0].label).toBe("Technicals & Chart");
+      expect(tabs[0].shortLabel).toBe("Technicals");
+      expect(tabs[0].count).toBe(mockPayload.levels.length);
+
+      expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");
-      expect(tabs[1].label).toBe("Technicals & Chart");
-      expect(tabs[1].shortLabel).toBe("Technicals");
-      expect(tabs[1].count).toBe(mockPayload.levels.length);
     });
   });
 });

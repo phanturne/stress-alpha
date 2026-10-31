@@ -263,8 +263,18 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 <Info className="size-3 text-slate-500 transition-colors hover:text-accent" />
               </span>
             </div>
-            <div className="mt-0.5 font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
-              {formatCurrency(currentPrice)}
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
+                {formatCurrency(currentPrice)}
+              </span>
+              {asymmetry.marketPricedInMultiple > 0 && (
+                <span
+                  className="rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
+                  title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
+                >
+                  {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                </span>
+              )}
             </div>
 
             {/* Instant CSS hover tooltip */}
@@ -472,6 +482,17 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 >
                   {t.current}: {formatCurrency(currentPrice)}
                 </span>
+                {asymmetry.marketPricedInMultiple > 0 && (
+                  <>
+                    <span className="text-slate-600">•</span>
+                    <span
+                      className="text-slate-300"
+                      title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
+                    >
+                      P/E: {asymmetry.marketPricedInMultiple.toFixed(1)}x
+                    </span>
+                  </>
+                )}
                 {weightedFairValue > 0 && (
                   <>
                     <span className="text-slate-600">•</span>
@@ -627,7 +648,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                   {t.asymmetry.pricedInMultiple}
                 </div>
                 <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-slate-200">
-                  {asymmetry.marketPricedInMultiple.toFixed(1)}x
+                  {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
                 </div>
               </div>
               <div

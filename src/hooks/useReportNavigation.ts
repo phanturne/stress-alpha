@@ -68,7 +68,9 @@ export function useReportNavigation({
   const [viewMode, setViewMode] = useState<
     "cockpit" | "memo" | "screener" | "watchlist"
   >(initialMode || "cockpit");
-  const [activeTab, setActiveTab] = useState<string>(initialTab || "valuation");
+  const [activeTab, setActiveTab] = useState<string>(
+    initialTab || "technicals"
+  );
   const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
     "cockpit"
   );
