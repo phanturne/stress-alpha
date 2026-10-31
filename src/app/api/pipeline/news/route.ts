@@ -1,25 +1,29 @@
+import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { auth } from "@/lib/auth";
 import { formatSafeErrorDetails, normalizeTicker } from "@/lib/utils";
 import { ingestNewsForTicker } from "@/lib/services/news-ingestion";
 
+function isAuthorizedPipelineRequest(request: NextRequest): boolean {
+  if (process.env.NODE_ENV !== "production") return true;
+  const authHeader = request.headers.get("authorization") || "";
+  const secret =
+    process.env.PIPELINE_API_SECRET ||
+    process.env.CRON_SECRET ||
+    process.env.BETTER_AUTH_SECRET;
+  if (!secret) return false;
+  const expected = Buffer.from(`Bearer ${secret}`);
+  const actual = Buffer.from(authHeader);
+  return (
+    expected.length === actual.length &&
+    crypto.timingSafeEqual(expected, actual)
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
-    if (process.env.NODE_ENV === "production") {
-      const authHeader = request.headers.get("authorization");
-      const expectedSecret =
-        process.env.PIPELINE_API_SECRET || process.env.BETTER_AUTH_SECRET;
-      const hasToken =
-        Boolean(expectedSecret) && authHeader === `Bearer ${expectedSecret}`;
-      if (!hasToken) {
-        const session = await auth.api
-          .getSession({ headers: request.headers })
-          .catch(() => null);
-        if (!session?.user) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-      }
+    if (!isAuthorizedPipelineRequest(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json().catch(() => ({}));

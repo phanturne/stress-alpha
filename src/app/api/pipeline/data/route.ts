@@ -1,28 +1,28 @@
+import crypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { auth } from "@/lib/auth";
 import { formatSafeErrorDetails, normalizeTicker } from "@/lib/utils";
 import {
   fetchCompletePipelineBundle,
   writePipelineArtifacts,
 } from "@/lib/services/financial-data";
 
-async function isAuthorizedPipelineRequest(
-  request: NextRequest
-): Promise<boolean> {
+function isAuthorizedPipelineRequest(request: NextRequest): boolean {
   if (process.env.NODE_ENV !== "production") return true;
-  const authHeader = request.headers.get("authorization");
-  const expectedSecret =
-    process.env.PIPELINE_API_SECRET || process.env.BETTER_AUTH_SECRET;
-  if (expectedSecret && authHeader === `Bearer ${expectedSecret}`) {
-    return true;
-  }
-  const session = await auth.api
-    .getSession({ headers: request.headers })
-    .catch(() => null);
-  return Boolean(session?.user);
+  const authHeader = request.headers.get("authorization") || "";
+  const secret =
+    process.env.PIPELINE_API_SECRET ||
+    process.env.CRON_SECRET ||
+    process.env.BETTER_AUTH_SECRET;
+  if (!secret) return false;
+  const expected = Buffer.from(`Bearer ${secret}`);
+  const actual = Buffer.from(authHeader);
+  return (
+    expected.length === actual.length &&
+    crypto.timingSafeEqual(expected, actual)
+  );
 }
 
 function isSafeStagingDir(dir: string): boolean {
@@ -41,7 +41,7 @@ function isSafeStagingDir(dir: string): boolean {
 
 export async function GET(request: NextRequest) {
   try {
-    if (!(await isAuthorizedPipelineRequest(request))) {
+    if (!isAuthorizedPipelineRequest(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!(await isAuthorizedPipelineRequest(request))) {
+    if (!isAuthorizedPipelineRequest(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

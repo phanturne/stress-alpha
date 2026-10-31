@@ -18,6 +18,12 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    if (!slug || !/^[A-Za-z0-9._-]{1,80}$/.test(slug)) {
+      return NextResponse.json(
+        { error: "Invalid report slug" },
+        { status: 400 }
+      );
+    }
     let report;
     try {
       report = await getCachedReportBySlug(slug);
