@@ -283,12 +283,25 @@ export function computeTechnicalLevels(
     return "pivot";
   };
 
+  const bars = options?.historicalBars;
+  const validCloseBars = bars?.filter(
+    (b) => typeof b.close === "number" && b.close > 0
+  );
+
   let sma50: number | undefined;
   if (
     typeof quoteData.fiftyDayAverage === "number" &&
     quoteData.fiftyDayAverage > 0
   ) {
     sma50 = round2(quoteData.fiftyDayAverage);
+  } else if (validCloseBars && validCloseBars.length >= 50) {
+    const slice50 = validCloseBars.slice(-50);
+    const sum = slice50.reduce((acc, b) => acc + (b.close as number), 0);
+    sma50 = round2(sum / 50);
+  } else if (options?.existingLevels?.sma50) {
+    sma50 = options.existingLevels.sma50;
+  }
+  if (sma50 !== undefined) {
     const deltaPct = price > 0 ? round2(((sma50 - price) / price) * 100) : 0;
     levels.push({
       id: "sma50",
@@ -306,6 +319,14 @@ export function computeTechnicalLevels(
     quoteData.twoHundredDayAverage > 0
   ) {
     sma200 = round2(quoteData.twoHundredDayAverage);
+  } else if (validCloseBars && validCloseBars.length >= 200) {
+    const slice200 = validCloseBars.slice(-200);
+    const sum = slice200.reduce((acc, b) => acc + (b.close as number), 0);
+    sma200 = round2(sum / 200);
+  } else if (options?.existingLevels?.sma200) {
+    sma200 = options.existingLevels.sma200;
+  }
+  if (sma200 !== undefined) {
     const deltaPct = price > 0 ? round2(((sma200 - price) / price) * 100) : 0;
     levels.push({
       id: "sma200",
@@ -324,6 +345,17 @@ export function computeTechnicalLevels(
     quoteData.fiftyTwoWeekHigh > 0
   ) {
     high52 = round2(quoteData.fiftyTwoWeekHigh);
+  } else if (bars && bars.length >= 20) {
+    const validHighs = bars
+      .map((b) => b.high)
+      .filter((h): h is number => typeof h === "number" && h > 0);
+    if (validHighs.length > 0) {
+      high52 = round2(Math.max(...validHighs));
+    }
+  } else if (options?.existingLevels?.high52) {
+    high52 = options.existingLevels.high52;
+  }
+  if (high52 !== undefined) {
     const deltaPct = price > 0 ? round2(((high52 - price) / price) * 100) : 0;
     levels.push({
       id: "high52",
@@ -341,6 +373,17 @@ export function computeTechnicalLevels(
     quoteData.fiftyTwoWeekLow > 0
   ) {
     low52 = round2(quoteData.fiftyTwoWeekLow);
+  } else if (bars && bars.length >= 20) {
+    const validLows = bars
+      .map((b) => b.low)
+      .filter((l): l is number => typeof l === "number" && l > 0);
+    if (validLows.length > 0) {
+      low52 = round2(Math.min(...validLows));
+    }
+  } else if (options?.existingLevels?.low52) {
+    low52 = options.existingLevels.low52;
+  }
+  if (low52 !== undefined) {
     const deltaPct = price > 0 ? round2(((low52 - price) / price) * 100) : 0;
     levels.push({
       id: "low52",
@@ -511,7 +554,6 @@ export function computeTechnicalLevels(
   let avwap52High: number | undefined;
   let avwapMaxVolume: number | undefined;
 
-  const bars = options?.historicalBars;
   if (bars && bars.length >= 5) {
     // 1-Year Volume Profile POC
     volumePoc = computeVolumePoc(bars);
@@ -611,6 +653,10 @@ export function computeTechnicalLevels(
     volumePoc = prev.volumePoc;
     avwap52High = prev.avwap52High;
     avwapMaxVolume = prev.avwapMaxVolume;
+    if (!sma50) sma50 = prev.sma50;
+    if (!sma200) sma200 = prev.sma200;
+    if (!high52) high52 = prev.high52;
+    if (!low52) low52 = prev.low52;
 
     const historicalIds = [
       "volume_poc",
@@ -618,6 +664,10 @@ export function computeTechnicalLevels(
       "avwap_volume",
       "swing_high",
       "swing_low",
+      "sma50",
+      "sma200",
+      "high52",
+      "low52",
     ];
     for (const prevLvl of prev.levels) {
       if (historicalIds.includes(prevLvl.id)) {
@@ -868,11 +918,19 @@ export function synthesizePriceCorridors(
     const low = round2(structuralAnchor * 0.995);
     const high = round2(structuralAnchor * 1.005);
     s2Range = [low, high];
-    s2Title = t.s2Structural;
-    s2Rationale = t.s2StructuralDesc(
-      `$${low.toFixed(2)}`,
-      `$${high.toFixed(2)}`
-    );
+    if (structuralAnchor === sma200Below) {
+      s2Title = t.s2Sma200;
+      s2Rationale = t.s2Sma200Desc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
+    } else if (structuralAnchor === pocBelow) {
+      s2Title = t.s2Poc;
+      s2Rationale = t.s2PocDesc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
+    } else {
+      s2Title = t.s2Structural;
+      s2Rationale = t.s2StructuralDesc(
+        `$${low.toFixed(2)}`,
+        `$${high.toFixed(2)}`
+      );
+    }
   }
 
   const s2Anchor = round2((s2Range[0] + s2Range[1]) / 2);
@@ -908,8 +966,8 @@ export function synthesizePriceCorridors(
     const low = round2(payload.low52);
     const high = round2(payload.low52 * 1.01);
     s3Range = [low, high];
-    s3Title = t.s3Macro;
-    s3Rationale = t.s3MacroDesc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
+    s3Title = t.s3Low52;
+    s3Rationale = t.s3Low52Desc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
   } else {
     const low = round2(P * 0.88);
     const high = round2(P * 0.9);
@@ -1004,7 +1062,9 @@ export function synthesizePriceCorridors(
     r2Title = t.r2Gap;
     r2Rationale = t.r2GapDesc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
   } else {
-    // Structural volume POC or R2 / R3 pivot
+    // Structural 200 SMA (if above price), volume POC, or R2 / R3 pivot
+    const sma200Above =
+      payload.sma200 && payload.sma200 > P ? payload.sma200 : undefined;
     const poc =
       payload.volumePoc && payload.volumePoc > P
         ? payload.volumePoc
@@ -1013,15 +1073,24 @@ export function synthesizePriceCorridors(
       payload.resistance2 && payload.resistance2 > P
         ? payload.resistance2
         : undefined;
-    const mid = poc ?? r2Cand ?? (allResistances[1]?.price || round2(P * 1.06));
+    const mid =
+      sma200Above ??
+      poc ??
+      r2Cand ??
+      (allResistances[1]?.price || round2(P * 1.06));
     const low = round2(mid * 0.995);
     const high = round2(mid * 1.01);
     r2Range = [low, high];
-    r2Title = t.r2Structural;
-    r2Rationale = t.r2StructuralDesc(
-      `$${low.toFixed(2)}`,
-      `$${high.toFixed(2)}`
-    );
+    if (mid === sma200Above) {
+      r2Title = t.r2Sma200;
+      r2Rationale = t.r2Sma200Desc(`$${low.toFixed(2)}`, `$${high.toFixed(2)}`);
+    } else {
+      r2Title = t.r2Structural;
+      r2Rationale = t.r2StructuralDesc(
+        `$${low.toFixed(2)}`,
+        `$${high.toFixed(2)}`
+      );
+    }
   }
 
   const r2Anchor = round2((r2Range[0] + r2Range[1]) / 2);

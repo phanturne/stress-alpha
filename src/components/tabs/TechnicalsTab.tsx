@@ -114,7 +114,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           {/* 50-Day SMA */}
           <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
             <span className="text-[11px] font-medium text-slate-400">
-              50-Day SMA
+              {tt.sma50Badge}
             </span>
             <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
               {technicalLevels?.sma50
@@ -128,7 +128,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
                     technicalLevels.sma50) *
                   100
                 ).toFixed(1)}
-                % from price
+                % {tt.fromPrice}
               </span>
             )}
           </div>
@@ -136,7 +136,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           {/* 200-Day SMA */}
           <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
             <span className="text-[11px] font-medium text-slate-400">
-              200-Day SMA
+              {tt.sma200Badge}
             </span>
             <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
               {technicalLevels?.sma200
@@ -150,7 +150,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
                     technicalLevels.sma200) *
                   100
                 ).toFixed(1)}
-                % from price
+                % {tt.fromPrice}
               </span>
             )}
           </div>
@@ -158,7 +158,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           {/* 52-Week High & Low */}
           <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
             <span className="text-[11px] font-medium text-slate-400">
-              52-Week Range
+              {tt.range52WBadge}
             </span>
             <div className="mt-1 flex items-center justify-between font-mono text-xs font-semibold tabular-nums">
               <span className="text-cyan-400">

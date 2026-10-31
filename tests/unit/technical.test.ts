@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import type { TechnicalLevelsPayload } from "@/lib/schemas";
 import {
   computeTechnicalLevels,
   findConfluenceSignals,
@@ -227,6 +228,40 @@ describe("Deterministic Technical S/R Engine", () => {
       expect(updatedPocLvl).toBeDefined();
       expect(updatedPocLvl?.price).toBe(existing.volumePoc);
     });
+
+    it("derives sma50, sma200, high52, and low52 from historical daily bars when quote omits them", () => {
+      // Create 210 dummy daily bars
+      const bars = Array.from({ length: 210 }, (_, i) => ({
+        date: new Date(Date.now() - (210 - i) * 86400000).toISOString(),
+        open: 100,
+        high: 100 + i * 0.5,
+        low: 50 + i * 0.2,
+        close: 100 + (i % 10), // values between 100 and 109
+        volume: 1000000,
+      }));
+
+      const quoteWithoutAverages: YahooQuoteLike = {
+        regularMarketPrice: 150,
+      };
+
+      const result = computeTechnicalLevels(quoteWithoutAverages, 150, {
+        historicalBars: bars,
+      });
+
+      expect(result.sma50).toBeDefined();
+      expect(typeof result.sma50).toBe("number");
+      expect(result.sma200).toBeDefined();
+      expect(typeof result.sma200).toBe("number");
+      expect(result.high52).toBeDefined();
+      expect(result.high52).toBe(Math.max(...bars.map((b) => b.high!)));
+      expect(result.low52).toBeDefined();
+      expect(result.low52).toBe(Math.min(...bars.map((b) => b.low!)));
+
+      const foundSma200 = result.levels.find((l) => l.id === "sma200");
+      const foundLow52 = result.levels.find((l) => l.id === "low52");
+      expect(foundSma200).toBeDefined();
+      expect(foundLow52).toBeDefined();
+    });
   });
 
   describe("findConfluenceSignals", () => {
@@ -395,6 +430,91 @@ describe("Deterministic Technical S/R Engine", () => {
       expect(corridorsZh.resistances[0].tierTitle).toBe("即时反弹压制");
       expect(corridorsZh.resistances[1].tierTitle).toBe("筹码套牢峰与缺口上沿");
       expect(corridorsZh.resistances[2].tierTitle).toBe("主线均线死叉压力区");
+    });
+
+    it("synthesizes explicit 200-Day SMA and 52-Week Low corridor tiers for AMD-like setups", () => {
+      const amdPayload: TechnicalLevelsPayload = {
+        asOf: new Date().toISOString(),
+        currentPrice: 505.81,
+        sma50: 547.58,
+        sma200: 409.08,
+        high52: 658.52,
+        low52: 188.22,
+        support1: 491.22,
+        support2: 477.65,
+        support3: 463.07,
+        resistance1: 519.38,
+        resistance2: 533.97,
+        resistance3: 547.54,
+        volumePoc: 217.61,
+        levels: [
+          {
+            id: "high52",
+            label: "52-Week High",
+            price: 658.52,
+            deltaPct: 30.2,
+            type: "resistance",
+            importance: "major",
+          },
+          {
+            id: "pivot_r1",
+            label: "Pivot Resistance 1 (R1)",
+            price: 519.38,
+            deltaPct: 2.7,
+            type: "resistance",
+            importance: "intermediate",
+          },
+          {
+            id: "pivot_s1",
+            label: "Pivot Support 1 (S1)",
+            price: 491.22,
+            deltaPct: -2.9,
+            type: "support",
+            importance: "intermediate",
+          },
+          {
+            id: "sma200",
+            label: "200-Day SMA",
+            price: 409.08,
+            deltaPct: -19.1,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "low52",
+            label: "52-Week Low",
+            price: 188.22,
+            deltaPct: -62.8,
+            type: "support",
+            importance: "major",
+          },
+        ],
+      };
+
+      const corridorsEn = synthesizePriceCorridors(amdPayload, 505.81, "en");
+      const [s1, s2, s3] = corridorsEn.supports;
+
+      // S2 must explicitly mention 200-Day SMA
+      expect(s2.tierTitle).toBe("200-Day SMA & Structural Floor");
+      expect(s2.rationale).toContain("200-day trendline");
+      expect(s2.anchorPrice).toBeCloseTo(409.08, 0);
+
+      // S3 must explicitly mention 52-Week Low
+      expect(s3.tierTitle).toBe("52-Week Low / Cycle Bedrock");
+      expect(s3.rationale).toContain("52-Week cycle low");
+      expect(s3.range[0]).toBe(188.22);
+      expect(s3.anchorPrice).toBeCloseTo(189.16, 2);
+
+      // R3 must mention 52W High
+      const [, , r3] = corridorsEn.resistances;
+      expect(r3.tierTitle).toBe("Cycle / 52W High Ceiling");
+
+      // Verify Chinese localization
+      const corridorsZh = synthesizePriceCorridors(amdPayload, 505.81, "zh");
+      expect(corridorsZh.supports[1].tierTitle).toBe("200日均线与中线支撑");
+      expect(corridorsZh.supports[1].rationale).toContain("200日均线");
+      expect(corridorsZh.supports[2].tierTitle).toBe("52周低点 / 周期底线");
+      expect(corridorsZh.supports[2].rationale).toContain("52周周期低点");
     });
   });
 });

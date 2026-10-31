@@ -80,16 +80,14 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
       .filter((l) =>
         activePrice > 0 ? l.price < activePrice : l.type === "support"
       )
-      .sort((a, b) => b.price - a.price)
-      .slice(0, 6);
+      .sort((a, b) => b.price - a.price);
 
     // Resistance: strictly above activePrice, sorted ascending (closest to price at top)
     const res = processed
       .filter((l) =>
         activePrice > 0 ? l.price > activePrice : l.type === "resistance"
       )
-      .sort((a, b) => a.price - b.price)
-      .slice(0, 6);
+      .sort((a, b) => a.price - b.price);
 
     return { supports: sup, resistances: res };
   }, [technicalLevels, activePrice]);
@@ -221,7 +219,8 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
             return (
               <div
                 key={supTier.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-border/50 bg-surface-1/60 px-2 py-1.5 font-mono text-xs"
+                title={`${supTier.tierTitle}: ${supTier.rationale}${resTier ? ` | ${resTier.tierTitle}: ${resTier.rationale}` : ""}`}
+                className="flex items-center justify-between gap-2 rounded-lg border border-border/50 bg-surface-1/60 px-2 py-1.5 font-mono text-xs transition-colors hover:border-border"
               >
                 {/* Left: Support */}
                 <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -439,7 +438,7 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
               <Shield className="size-3.5 shrink-0 text-cyan-400" />
               <span className="truncate">{t.supportTitle}</span>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="custom-scrollbar flex max-h-[420px] flex-col gap-1.5 overflow-y-auto pr-1.5">
               {supports.map((lvl) => {
                 const deltaStr =
                   lvl.activeDeltaPct < 0
@@ -490,7 +489,7 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
               <Flame className="size-3.5 shrink-0 text-amber-400" />
               <span className="truncate">{t.resistanceTitle}</span>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="custom-scrollbar flex max-h-[420px] flex-col gap-1.5 overflow-y-auto pr-1.5">
               {resistances.map((lvl) => {
                 const deltaStr =
                   lvl.activeDeltaPct > 0

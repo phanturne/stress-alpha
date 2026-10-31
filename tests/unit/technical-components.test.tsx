@@ -171,7 +171,113 @@ describe("Technical Levels UI Components", () => {
 
       expect(screen.getByText("Key Support & Resistance")).toBeDefined();
       expect(screen.getByText("50-Day SMA")).toBeDefined();
+      expect(screen.getByText("200-Day SMA")).toBeDefined();
+      expect(screen.getByText("52-Week Low")).toBeDefined();
+      expect(screen.getByText("52-Week High")).toBeDefined();
       expect(screen.getByText("Pivot Resistance 1 (R1)")).toBeDefined();
+    });
+
+    it("renders all individual levels without truncation (supports past index 5 like 52W Low)", () => {
+      // Setup payload with 8 supports (similar to AMD)
+      const amdLikePayload: TechnicalLevelsPayload = {
+        asOf: "2026-10-28T12:00:00Z",
+        currentPrice: 505.81,
+        sma200: 409.08,
+        low52: 188.22,
+        high52: 658.52,
+        levels: [
+          {
+            id: "swing_low",
+            label: "Fractal Swing Low",
+            price: 502.6,
+            deltaPct: -0.6,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "pivot_s1",
+            label: "Pivot Support 1 (S1)",
+            price: 491.22,
+            deltaPct: -2.9,
+            type: "support",
+            importance: "intermediate",
+          },
+          {
+            id: "pivot_s2",
+            label: "Pivot Support 2 (S2)",
+            price: 477.65,
+            deltaPct: -5.6,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "pivot_s3",
+            label: "Pivot Support 3 (S3)",
+            price: 463.07,
+            deltaPct: -8.4,
+            type: "support",
+            importance: "minor",
+          },
+          {
+            id: "sma200",
+            label: "200-Day SMA",
+            price: 409.08,
+            deltaPct: -19.1,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "avwap_volume",
+            label: "Anchored VWAP (Max Volume)",
+            price: 348.42,
+            deltaPct: -31.1,
+            type: "support",
+            importance: "intermediate",
+          },
+          {
+            id: "volume_poc",
+            label: "1-Year Volume POC",
+            price: 217.61,
+            deltaPct: -56.9,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "low52",
+            label: "52-Week Low",
+            price: 188.22,
+            deltaPct: -62.8,
+            type: "support",
+            importance: "major",
+          },
+          {
+            id: "high52",
+            label: "52-Week High",
+            price: 658.52,
+            deltaPct: 30.2,
+            type: "resistance",
+            importance: "major",
+          },
+        ],
+      };
+
+      render(
+        <TechnicalLevelsCard
+          technicalLevels={amdLikePayload}
+          currentPrice={505.81}
+          locale="en"
+        />
+      );
+
+      // Switch to All Levels view
+      const allLevelsBtn = screen.getByRole("button", { name: /All Levels/i });
+      fireEvent.click(allLevelsBtn);
+
+      // Verify that previously truncated items 6, 7 (Volume POC and 52-Week Low) are present
+      expect(screen.getByText("200-Day SMA")).toBeDefined();
+      expect(screen.getByText("1-Year Volume POC")).toBeDefined();
+      expect(screen.getByText("52-Week Low")).toBeDefined();
+      expect(screen.getByText("52-Week High")).toBeDefined();
     });
 
     it("displays confluence banner when technical level converges with fundamental regime", () => {
@@ -350,6 +456,22 @@ describe("Technical Levels UI Components", () => {
       expect(screen.getByText("$283.82")).toBeDefined();
       expect(screen.getByText("Live Interactive Chart")).toBeDefined();
       expect(screen.getByText("Institutional Price Corridors")).toBeDefined();
+    });
+
+    it("renders localized technical badges in Chinese locale", () => {
+      render(
+        <TechnicalsTab
+          ticker="AMD"
+          currentPrice={505.81}
+          technicalLevels={mockPayload}
+          locale="zh"
+        />
+      );
+
+      expect(screen.getByText("技术分析与交互图表")).toBeDefined();
+      expect(screen.getByText("50日均线")).toBeDefined();
+      expect(screen.getByText("200日均线")).toBeDefined();
+      expect(screen.getByText("52周价格区间")).toBeDefined();
     });
   });
 
