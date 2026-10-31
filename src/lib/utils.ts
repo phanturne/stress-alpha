@@ -32,15 +32,25 @@ export function formatBillions(value: number, decimals: number = 1): string {
 /**
  * Normalizes a ticker or report slug into an uppercase ticker symbol.
  * E.g. "NVDA-Q2-2027-analysis" -> "NVDA", "nvda" -> "NVDA"
+ * Rejects malformed strings outside /^[A-Z0-9.-]{1,10}$/.
  */
 export function normalizeTicker(tickerOrSlug?: string | null): string {
   if (!tickerOrSlug) return "";
   const cleaned = tickerOrSlug.trim();
-  if (cleaned.includes("-")) {
-    const candidate = cleaned.split("-")[0].toUpperCase().trim();
-    if (candidate) return candidate;
+  const candidate = cleaned.includes("-")
+    ? cleaned.split("-")[0].toUpperCase().trim()
+    : cleaned.toUpperCase();
+  return /^[A-Z0-9.-]{1,10}$/.test(candidate) ? candidate : "";
+}
+
+/**
+ * Redacts raw internal error stack/connection strings in production API responses.
+ */
+export function formatSafeErrorDetails(error: unknown): string | undefined {
+  if (process.env.NODE_ENV === "production") {
+    return undefined;
   }
-  return cleaned.toUpperCase();
+  return error instanceof Error ? error.message : String(error);
 }
 
 export interface ReportRecencyItem {

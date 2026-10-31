@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getReportRepository } from "@/lib/repository";
+import { formatSafeErrorDetails, normalizeTicker } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const ticker = searchParams.get("ticker");
+    const ticker = normalizeTicker(searchParams.get("ticker"));
 
     if (!ticker) {
       return NextResponse.json(
-        { error: "Query parameter 'ticker' is required" },
+        { error: "Valid query parameter 'ticker' is required" },
         { status: 400 }
       );
     }
 
     const limitStr = searchParams.get("limit");
-    const limit = limitStr ? parseInt(limitStr, 10) : 50;
+    const parsedLimit = limitStr ? parseInt(limitStr, 10) : 50;
+    const limit = Number.isFinite(parsedLimit)
+      ? Math.max(1, Math.min(200, parsedLimit))
+      : 50;
 
     const repo = getReportRepository();
     const revisions = await repo.getValuationRevisions(ticker, limit);
@@ -46,7 +50,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to fetch valuation revisions",
-        details: String(error),
+        details: formatSafeErrorDetails(error),
       },
       { status: 500 }
     );

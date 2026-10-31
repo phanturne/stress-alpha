@@ -15,7 +15,7 @@ import {
   EarningsSentimentSchema,
   FilingExtractsSchema,
 } from "@/lib/schemas";
-import type { FinancialProfile } from "./types";
+import type { FinancialProfile, CalendarActualsOverride } from "./types";
 import { round2 } from "./utils";
 
 // --- Pre-Populate Facts Draft ---
@@ -23,12 +23,22 @@ import { round2 } from "./utils";
 export function generateFactsDraft(
   profile: FinancialProfile,
   estimates: AnalystEstimates,
-  quarterStr?: string
+  quarterStr?: string,
+  calendarActuals?: CalendarActualsOverride
 ): Facts {
   const latestStmt = profile.quarterlyStatements[0];
   const priorYearStmt = profile.quarterlyStatements[4]; // 4 quarters ago for YoY
 
-  const revenueBillions = latestStmt?.revenueBillions || 10.0;
+  const normalizeBillions = (val?: number | null): number | undefined => {
+    if (val == null || !Number.isFinite(val) || val <= 0) return undefined;
+    return val > 1000 ? round2(val / 1e9) : round2(val);
+  };
+
+  const calRevBillions = normalizeBillions(calendarActuals?.revenueActual);
+  const calRevEstBillions = normalizeBillions(calendarActuals?.revenueEstimate);
+
+  const revenueBillions =
+    calRevBillions ?? (latestStmt?.revenueBillions || 10.0);
   let revenueGrowthPct = 15.0;
   if (priorYearStmt && priorYearStmt.revenueBillions > 0) {
     revenueGrowthPct = round2(
@@ -36,27 +46,55 @@ export function generateFactsDraft(
         priorYearStmt.revenueBillions) *
         100
     );
+  } else if (calRevBillions && latestStmt && latestStmt.revenueBillions > 0) {
+    revenueGrowthPct = round2(
+      ((calRevBillions - latestStmt.revenueBillions) /
+        latestStmt.revenueBillions) *
+        100
+    );
   }
 
-  const operatingIncomeBillions = latestStmt?.operatingIncomeBillions || 2.5;
   const operatingMarginPct =
     latestStmt && latestStmt.revenueBillions > 0
-      ? round2((operatingIncomeBillions / revenueBillions) * 100)
+      ? round2(
+          (latestStmt.operatingIncomeBillions / latestStmt.revenueBillions) *
+            100
+        )
       : 25.0;
+
+  const operatingIncomeBillions = calRevBillions
+    ? round2(revenueBillions * (operatingMarginPct / 100))
+    : latestStmt?.operatingIncomeBillions || 2.5;
 
   const grossMarginPct =
     latestStmt?.grossProfitBillions && latestStmt.revenueBillions > 0
-      ? round2((latestStmt.grossProfitBillions / revenueBillions) * 100)
+      ? round2(
+          (latestStmt.grossProfitBillions / latestStmt.revenueBillions) * 100
+        )
       : 55.0;
 
-  const epsReported = latestStmt?.dilutedEps ?? 1.25;
+  const epsReported =
+    calendarActuals?.epsActual != null &&
+    Number.isFinite(calendarActuals.epsActual)
+      ? round2(calendarActuals.epsActual)
+      : (latestStmt?.dilutedEps ?? 1.25);
+
+  const epsConsensus =
+    calendarActuals?.epsEstimate != null &&
+    Number.isFinite(calendarActuals.epsEstimate)
+      ? round2(calendarActuals.epsEstimate)
+      : round2(epsReported * 0.97);
+
   const epsOperating = epsReported; // Default clean operating EPS
 
   // Determine Valuation Archetype
   let valuationArchetype: Facts["valuationArchetype"] = "compounder";
-  if (revenueGrowthPct >= 50 && operatingMarginPct < 5) {
+  if (
+    (revenueGrowthPct >= 35 && operatingMarginPct < 8) ||
+    operatingMarginPct < 0
+  ) {
     valuationArchetype = "venture_hypergrowth";
-  } else if (revenueGrowthPct >= 20 && grossMarginPct >= 50) {
+  } else if (revenueGrowthPct >= 18 && grossMarginPct >= 48) {
     valuationArchetype = "operating_scaler";
   }
 
@@ -84,9 +122,30 @@ export function generateFactsDraft(
       ? `${latestStmt.fiscalPeriod} ${latestStmt.fiscalYear}`
       : `Q${Math.floor(new Date().getMonth() / 3) + 1} ${new Date().getFullYear()}`);
 
-  let reportDate = latestStmt?.date;
+  let reportDate = calendarActuals?.date || latestStmt?.date;
   if (!reportDate || !/^\d{4}-\d{2}-\d{2}/.test(reportDate)) {
     reportDate = new Date().toISOString().split("T")[0];
+  }
+
+  // Propagate earnings-day beat/miss surprise into forward EPS consensus
+  let rawForwardEps =
+    profile.forwardEpsConsensus ||
+    round2((profile.trailingEps || epsReported * 4) * 1.15);
+  if (
+    calendarActuals?.epsActual != null &&
+    calendarActuals?.epsEstimate != null &&
+    Number.isFinite(calendarActuals.epsActual) &&
+    Number.isFinite(calendarActuals.epsEstimate)
+  ) {
+    if (calendarActuals.epsEstimate > 0) {
+      const surpriseRatio = Math.max(
+        0.55,
+        Math.min(1.25, calendarActuals.epsActual / calendarActuals.epsEstimate)
+      );
+      rawForwardEps = round2(rawForwardEps * surpriseRatio);
+    } else if (calendarActuals.epsActual < calendarActuals.epsEstimate) {
+      rawForwardEps = round2(rawForwardEps * 0.75);
+    }
   }
 
   const draft: Facts = {
@@ -96,12 +155,13 @@ export function generateFactsDraft(
     reportDate,
     revenueBillions,
     revenueGrowthPct,
-    revenueEstimateBillions: round2(revenueBillions * 0.98),
+    revenueEstimateBillions:
+      calRevEstBillions ?? round2(revenueBillions * 0.98),
     operatingIncomeBillions,
     operatingMarginPct,
     operatingIncomeGrowthPct: round2(revenueGrowthPct * 1.1),
     epsReported,
-    epsConsensus: round2(epsReported * 0.97),
+    epsConsensus,
     epsOperating,
     segments: [
       {
@@ -120,9 +180,7 @@ export function generateFactsDraft(
     currentPrice: profile.currentPrice,
     marketCapBillions: profile.marketCapBillions,
     trailingEps: profile.trailingEps || round2(epsReported * 4),
-    forwardEpsConsensus:
-      profile.forwardEpsConsensus ||
-      round2((profile.trailingEps || epsReported * 4) * 1.15),
+    forwardEpsConsensus: rawForwardEps,
     valuationArchetype,
     grossMarginPct,
     cashAndEquivalentsBillions,
@@ -136,9 +194,9 @@ export function generateFactsDraft(
     shortInterestPct: 1.2,
     sources: [
       {
-        title: `${profile.ticker} SEC Financial Data Feed`,
+        title: `${profile.ticker} SEC EDGAR Filings & Financial Statements`,
         publisher: profile.dataSource,
-        url: `https://api.polygon.io/vX/reference/financials?ticker=${profile.ticker}`,
+        url: `https://www.sec.gov/edgar/searchedgar/companysearch`,
         date: reportDate,
       },
     ],
@@ -316,17 +374,34 @@ export function generateScenariosDraft(
     }
   } else {
     // Guardrail 2 (Negative EPS / Unprofitable Starter Fallback):
-    // For companies with negative forward EPS and negative operating income (biotech, REITs, pre-profit AI),
-    // anchor implied forward earnings power to consensus target (which uses P/FFO, EV/Sales, or pipeline DCF)
-    // or current market price rather than an arbitrary flatline clamp ($0.50 * 26x = $13)
-    const anchorPrice =
-      consensusTarget > 0
+    // For companies with negative forward EPS and negative operating income (biotech, REITs, pre-profit AI, or restructuring),
+    // anchor implied forward earnings power to current price or discounted consensus if operating margins are negative
+    const isDistressedTurnaround =
+      facts.operatingMarginPct < 0 && facts.revenueGrowthPct < 10;
+    const anchorPrice = isDistressedTurnaround
+      ? profile.currentPrice > 0
+        ? profile.currentPrice * 0.85
+        : consensusTarget * 0.75
+      : consensusTarget > 0
         ? consensusTarget
         : profile.currentPrice > 0
           ? profile.currentPrice
           : 50.0;
     const anchorMultiple = Math.max(baseline.multipleRegimes.base, 10.0);
     baseEps = round2(Math.max(anchorPrice / anchorMultiple, 0.1));
+  }
+
+  // Apply earnings-surprise adjustment when actual reported EPS or revenue misses consensus
+  if (
+    facts.epsConsensus !== 0 &&
+    facts.epsReported < facts.epsConsensus &&
+    (facts.forwardEpsConsensus ?? 0) <= 0
+  ) {
+    const missFactor =
+      facts.epsConsensus > 0
+        ? Math.max(0.6, Math.min(1.0, facts.epsReported / facts.epsConsensus))
+        : 0.8;
+    baseEps = round2(Math.max(baseEps * missFactor, 0.1));
   }
 
   const bullEps = round2(baseEps * 1.35);
@@ -462,31 +537,89 @@ export function generateMoatCompetitorsDraft(
   profile: FinancialProfile,
   facts: Facts
 ): { moatEn: MoatCompetitors; moatZh: MoatCompetitors } {
-  const overallMoatRating =
-    facts.valuationArchetype === "compounder" ? "Wide" : "Narrow";
+  const opMargin = facts.operatingMarginPct ?? 0;
+  const grossMargin = facts.grossMarginPct ?? 40;
+  const revGrowth = facts.revenueGrowthPct ?? 0;
+  const mktCap = profile.marketCapBillions ?? 0;
+
+  let overallMoatRating: MoatCompetitors["overallMoatRating"] = "Narrow";
+  if (
+    opMargin < 8 ||
+    (grossMargin < 28 && opMargin < 12) ||
+    (revGrowth < -5 && opMargin < 15)
+  ) {
+    overallMoatRating = "None";
+  } else if (
+    (opMargin >= 22 && grossMargin >= 45 && revGrowth >= 0) ||
+    (opMargin >= 20 && mktCap >= 200 && revGrowth >= 3) ||
+    (opMargin >= 30 && revGrowth >= -2)
+  ) {
+    overallMoatRating = "Wide";
+  }
+
+  let moatTrend: MoatCompetitors["moatTrend"] = "Stable";
+  if (revGrowth >= 15 && opMargin >= 20) {
+    moatTrend = "Widening";
+  } else if (revGrowth < -3 || opMargin < 5) {
+    moatTrend = "Narrowing";
+  }
+
+  const intangibleStrength: "Strong" | "Moderate" | "Weak" =
+    grossMargin >= 55 && overallMoatRating === "Wide"
+      ? "Strong"
+      : overallMoatRating === "None"
+        ? "Weak"
+        : "Moderate";
+  const switchingStrength: "Strong" | "Moderate" | "Weak" =
+    opMargin >= 22 && revGrowth >= 5
+      ? "Strong"
+      : overallMoatRating === "None" && revGrowth < 0
+        ? "Weak"
+        : "Moderate";
+  const costStrength: "Strong" | "Moderate" | "Weak" =
+    mktCap >= 150 && opMargin >= 18
+      ? "Strong"
+      : opMargin < 8
+        ? "Weak"
+        : "Moderate";
 
   const moatEn: MoatCompetitors = {
     ticker: profile.ticker,
     overallMoatRating,
-    moatTrend: "Stable",
+    moatTrend,
     moatSources: [
       {
         source: "Intangible Assets",
-        strength: "Moderate",
+        strength: intangibleStrength,
         description: `Proprietary technology stack, brand reputation, and domain IP across ${profile.companyName}.`,
-        durabilityYears: 6,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 10
+            : overallMoatRating === "Narrow"
+              ? 6
+              : 3,
       },
       {
         source: "Switching Costs",
-        strength: "Moderate",
-        description: `Deep workflow and mission-critical enterprise integration providing strong customer retention.`,
-        durabilityYears: 5,
+        strength: switchingStrength,
+        description: `Deep workflow and mission-critical enterprise integration providing customer retention.`,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 8
+            : overallMoatRating === "Narrow"
+              ? 5
+              : 2,
       },
       {
         source: "Cost Advantage",
-        strength: "Moderate",
-        description: `Operational scale and supply chain integration yielding structural unit cost efficiencies.`,
-        durabilityYears: 5,
+        strength: costStrength,
+        description: `Operational scale and supply chain integration yielding unit cost efficiencies.`,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 8
+            : overallMoatRating === "Narrow"
+              ? 5
+              : 2,
       },
     ],
     competitors: [
@@ -509,25 +642,40 @@ export function generateMoatCompetitorsDraft(
   const moatZh: MoatCompetitors = {
     ticker: profile.ticker,
     overallMoatRating,
-    moatTrend: "Stable",
+    moatTrend,
     moatSources: [
       {
         source: "Intangible Assets",
-        strength: "Moderate",
+        strength: intangibleStrength,
         description: `${profile.companyName} 积累的核心自研技术架构、专有专利资产与行业品牌信誉。`,
-        durabilityYears: 6,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 10
+            : overallMoatRating === "Narrow"
+              ? 6
+              : 3,
       },
       {
         source: "Switching Costs",
-        strength: "Moderate",
+        strength: switchingStrength,
         description: `深度嵌入客户业务流程与关键工作流，带来显著的迁移壁垒与客户黏性。`,
-        durabilityYears: 5,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 8
+            : overallMoatRating === "Narrow"
+              ? 5
+              : 2,
       },
       {
         source: "Cost Advantage",
-        strength: "Moderate",
+        strength: costStrength,
         description: `规模化运营带来的采购议价与供应链单位成本优势。`,
-        durabilityYears: 5,
+        durabilityYears:
+          overallMoatRating === "Wide"
+            ? 8
+            : overallMoatRating === "Narrow"
+              ? 5
+              : 2,
       },
     ],
     competitors: [

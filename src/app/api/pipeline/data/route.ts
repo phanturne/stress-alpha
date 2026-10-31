@@ -1,18 +1,56 @@
+import os from "node:os";
+import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/lib/auth";
+import { formatSafeErrorDetails, normalizeTicker } from "@/lib/utils";
 import {
   fetchCompletePipelineBundle,
   writePipelineArtifacts,
 } from "@/lib/services/financial-data";
 
+async function isAuthorizedPipelineRequest(
+  request: NextRequest
+): Promise<boolean> {
+  if (process.env.NODE_ENV !== "production") return true;
+  const authHeader = request.headers.get("authorization");
+  const expectedSecret =
+    process.env.PIPELINE_API_SECRET || process.env.BETTER_AUTH_SECRET;
+  if (expectedSecret && authHeader === `Bearer ${expectedSecret}`) {
+    return true;
+  }
+  const session = await auth.api
+    .getSession({ headers: request.headers })
+    .catch(() => null);
+  return Boolean(session?.user);
+}
+
+function isSafeStagingDir(dir: string): boolean {
+  if (dir.includes("\0") || dir.split(/[/\\]/).includes("..")) {
+    return false;
+  }
+  const resolved = path.resolve(dir);
+  const reportsRoot = path.resolve(process.cwd(), "reports");
+  const tmpRoot = path.resolve(os.tmpdir());
+  return (
+    resolved.startsWith(reportsRoot + path.sep) ||
+    resolved === reportsRoot ||
+    resolved.startsWith(tmpRoot + path.sep)
+  );
+}
+
 export async function GET(request: NextRequest) {
   try {
+    if (!(await isAuthorizedPipelineRequest(request))) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
-    const ticker = searchParams.get("ticker");
+    const ticker = normalizeTicker(searchParams.get("ticker"));
 
     if (!ticker) {
       return NextResponse.json(
-        { error: "Query parameter 'ticker' is required" },
+        { error: "Valid query parameter 'ticker' is required" },
         { status: 400 }
       );
     }
@@ -45,7 +83,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to fetch financial pipeline data",
-        details: String(error),
+        details: formatSafeErrorDetails(error),
       },
       { status: 500 }
     );
@@ -54,12 +92,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json().catch(() => ({}));
-    const ticker = body.ticker;
+    if (!(await isAuthorizedPipelineRequest(request))) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!ticker || typeof ticker !== "string") {
+    const body = await request.json().catch(() => ({}));
+    const ticker =
+      typeof body.ticker === "string" ? normalizeTicker(body.ticker) : "";
+
+    if (!ticker) {
       return NextResponse.json(
-        { error: "Body field 'ticker' is required" },
+        { error: "Valid body field 'ticker' is required" },
         { status: 400 }
       );
     }
@@ -89,6 +132,15 @@ export async function POST(request: NextRequest) {
 
     let artifactsWritten: string[] | undefined;
     if (effectiveStagingDir) {
+      if (!isSafeStagingDir(effectiveStagingDir)) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid stagingDir: path traversal detected or directory outside allowed reports/ workspace",
+          },
+          { status: 400 }
+        );
+      }
       artifactsWritten = await writePipelineArtifacts(
         effectiveStagingDir,
         bundle,
@@ -118,7 +170,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to process financial pipeline data request",
-        details: String(error),
+        details: formatSafeErrorDetails(error),
       },
       { status: 500 }
     );
