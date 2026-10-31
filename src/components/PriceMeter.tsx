@@ -41,7 +41,10 @@ export const PriceMeter: React.FC<PriceMeterProps> = ({
         <span className="font-semibold tracking-wide text-slate-300">
           {t.title}
         </span>
-        <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface-1 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-200">
+        <div
+          className="flex cursor-help items-center gap-1.5 rounded-full border border-border bg-surface-1 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-200"
+          title={t.currentPriceTooltip}
+        >
           <span>
             {t.current}: {formatCurrency(currentPrice)}
           </span>

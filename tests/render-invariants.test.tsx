@@ -27,6 +27,8 @@ import {
   MAX_DROPDOWN_GROUPS,
 } from "@/components/ReportSelector";
 import { Header } from "@/components/Header";
+import { Cockpit } from "@/components/Cockpit";
+import { computeStressedValuation } from "@/lib/valuation";
 import { ThemeProvider } from "@/context/ThemeContext";
 import {
   useRecentReport,
@@ -519,6 +521,99 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(onSelectReport).toHaveBeenCalledTimes(1);
       expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
       expect(onViewModeChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Cockpit Pricing Telemetry & Last Close Invariants", () => {
+    const mockFacts = {
+      ticker: "NVDA",
+      company: "NVIDIA Corporation",
+      quarter: "Q2 2027",
+      reportDate: "2026-08-26",
+      revenueBillions: 30.0,
+      revenueGrowthPct: 122.0,
+      operatingIncomeBillions: 18.6,
+      operatingMarginPct: 62.0,
+      epsReported: 0.68,
+      epsConsensus: 0.65,
+      epsOperating: 0.68,
+      segments: [
+        { name: "Data Center", revenueBillions: 26.3, growthPct: 154 },
+      ],
+      oneTimeItems: [],
+      currentPrice: 120.0,
+      marketCapBillions: 2900,
+      trailingEps: 2.2,
+      forwardEpsConsensus: 3.5,
+      sources: [],
+    };
+
+    const mockBaseline = {
+      baseRevenueBillions: 120,
+      baseGrossMarginPct: 75,
+      fixedOpexBillions: 15,
+      taxRatePct: 15,
+      dilutedSharesBillions: 24.5,
+      multipleRegimes: { bull: 40, base: 32, panic: 20 },
+      upstreamDrivers: [],
+    };
+
+    const mockStressResult = computeStressedValuation(mockBaseline, 120.0, {});
+
+    it("renders last close badge and tooltip in English locale", () => {
+      render(
+        <Cockpit
+          baseline={mockBaseline}
+          facts={mockFacts}
+          stressParams={{
+            driverShocks: {},
+            grossMarginBpsDelta: 0,
+            fixedOpexShiftPct: 0,
+          }}
+          stressResult={mockStressResult}
+          onDriverShockChange={noop}
+          onGrossMarginDeltaChange={noop}
+          onFixedOpexShiftChange={noop}
+          onResetDefaults={noop}
+          locale="en"
+        />
+      );
+
+      // Invariant: Last close badge is rendered
+      expect(screen.getByText("Last Close")).toBeDefined();
+      // Invariant: Tooltip marking price as last market close (EOD) is present
+      const tooltipElements = screen.getAllByTitle(
+        "Price as of last market close (EOD). Live intraday pricing is not streaming."
+      );
+      expect(tooltipElements.length).toBeGreaterThan(0);
+    });
+
+    it("renders last close badge and tooltip in Chinese locale", () => {
+      render(
+        <Cockpit
+          baseline={mockBaseline}
+          facts={mockFacts}
+          stressParams={{
+            driverShocks: {},
+            grossMarginBpsDelta: 0,
+            fixedOpexShiftPct: 0,
+          }}
+          stressResult={mockStressResult}
+          onDriverShockChange={noop}
+          onGrossMarginDeltaChange={noop}
+          onFixedOpexShiftChange={noop}
+          onResetDefaults={noop}
+          locale="zh"
+        />
+      );
+
+      // Invariant: Chinese last close badge is rendered
+      expect(screen.getByText("收盘价")).toBeDefined();
+      // Invariant: Chinese tooltip is present
+      const tooltipElementsZh = screen.getAllByTitle(
+        "最新收盘价（按日更新），非盘中实时行情。"
+      );
+      expect(tooltipElementsZh.length).toBeGreaterThan(0);
     });
   });
 });

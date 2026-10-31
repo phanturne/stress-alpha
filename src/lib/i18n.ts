@@ -81,6 +81,7 @@ export interface Translations {
     valuationRegimes: string;
     current: string;
     currentPrice: string;
+    currentPriceTooltip: string;
     weightedFairValue: string;
     wfvShort: string;
     regimes: {
@@ -181,6 +182,7 @@ export interface Translations {
   priceMeter: {
     title: string;
     current: string;
+    currentPriceTooltip: string;
     panicFloor: string;
     base: string;
     bullRegime: string;
@@ -1256,7 +1258,9 @@ export const translations: Record<Locale, Translations> = {
       netIncome: "Net Income",
       valuationRegimes: "Scenario Target Prices",
       current: "Current",
-      currentPrice: "Current Price",
+      currentPrice: "Last Close",
+      currentPriceTooltip:
+        "Price as of last market close (EOD). Live intraday pricing is not streaming.",
       weightedFairValue: "Weighted Fair Value",
       wfvShort: "WFV",
       regimes: {
@@ -1363,6 +1367,7 @@ export const translations: Record<Locale, Translations> = {
     priceMeter: {
       title: "Valuation Meter",
       current: "Current",
+      currentPriceTooltip: "Price as of last market close (EOD)",
       panicFloor: "🚨 Panic Floor",
       base: "⚖️ Base",
       bullRegime: "🐂 Bull Regime",
@@ -2549,7 +2554,8 @@ export const translations: Record<Locale, Translations> = {
       netIncome: "净利润",
       valuationRegimes: "情景目标价",
       current: "现价",
-      currentPrice: "当前股价",
+      currentPrice: "收盘价",
+      currentPriceTooltip: "最新收盘价（按日更新），非盘中实时行情。",
       weightedFairValue: "加权公允价值",
       wfvShort: "加权估值",
       regimes: {
@@ -2651,6 +2657,7 @@ export const translations: Record<Locale, Translations> = {
     priceMeter: {
       title: "估值区间标尺",
       current: "现价",
+      currentPriceTooltip: "最新交易日收盘价",
       panicFloor: "🚨 恐慌底价",
       base: "⚖️ 基准目标",
       bullRegime: "🐂 牛市目标",

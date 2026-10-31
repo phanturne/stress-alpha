@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Star,
   History,
+  Info,
 } from "lucide-react";
 import type {
   FinancialModelBaseline,
@@ -249,17 +250,26 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* Live Stock Pricing & Weighted Fair Value Strip */}
-        <div className="relative grid grid-cols-2 gap-3 overflow-hidden rounded-xl border border-border bg-surface-0/80 p-3">
-          {/* Current Price */}
-          <div>
-            <div
-              className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
-              title={t.currentPrice}
-            >
-              {t.currentPrice}
+        <div className="relative grid grid-cols-2 gap-3 rounded-xl border border-border bg-surface-0/80 p-3">
+          {/* Last Close */}
+          <div className="group/price relative">
+            <div className="flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="truncate">{t.currentPrice}</span>
+              <span
+                className="inline-flex cursor-help items-center"
+                title={t.currentPriceTooltip}
+                aria-label={t.currentPriceTooltip}
+              >
+                <Info className="size-3 text-slate-500 transition-colors hover:text-accent" />
+              </span>
             </div>
             <div className="mt-0.5 font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
               {formatCurrency(currentPrice)}
+            </div>
+
+            {/* Instant CSS hover tooltip */}
+            <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 rounded-lg border border-border bg-surface-2/95 p-2 font-sans text-[11px] font-normal normal-case leading-snug text-slate-200 shadow-xl backdrop-blur-md group-hover/price:block">
+              {t.currentPriceTooltip}
             </div>
           </div>
 
@@ -456,7 +466,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <div className="flex items-center justify-between font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
               <span>{t.valuationRegimes}</span>
               <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
-                <span className="text-slate-400">
+                <span
+                  className="cursor-help text-slate-400"
+                  title={t.currentPriceTooltip}
+                >
                   {t.current}: {formatCurrency(currentPrice)}
                 </span>
                 {weightedFairValue > 0 && (
