@@ -8,7 +8,7 @@
 
 import * as dotenv from "dotenv";
 import YahooFinance from "yahoo-finance2";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getDb } from "../src/db";
 import { tickersTable } from "../src/db/schema";
 import {
@@ -80,6 +80,8 @@ async function syncPrices() {
   for (let i = 0; i < tickers.length; i += chunkSize) {
     const chunk = tickers.slice(i, i + chunkSize);
     const symbols = chunk.map((c) => c.ticker);
+    const chunkUpdates: Array<typeof tickersTable.$inferInsert> = [];
+    const now = new Date();
 
     try {
       const rawQuotes = await yf.quote(symbols);
@@ -120,15 +122,14 @@ async function syncPrices() {
             existingLevels: (oldTechLevels as any) ?? undefined,
           });
 
-          await db
-            .update(tickersTable)
-            .set({
-              currentPrice: String(newPrice),
-              previousClose: prevClose != null ? String(prevClose) : undefined,
-              technicalLevels,
-              priceUpdatedAt: new Date(),
-            })
-            .where(eq(tickersTable.ticker, ticker));
+          chunkUpdates.push({
+            ticker,
+            company,
+            currentPrice: String(newPrice),
+            previousClose: prevClose != null ? String(prevClose) : undefined,
+            technicalLevels,
+            priceUpdatedAt: now,
+          });
 
           console.log(
             `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} (${deltaSign}${delta}% vs prior $${Number(oldPrice).toFixed(2)}) — ${company}`
@@ -147,16 +148,14 @@ async function syncPrices() {
               existingLevels: (oldTechLevels as any) ?? undefined,
             });
 
-            await db
-              .update(tickersTable)
-              .set({
-                currentPrice: String(newPrice),
-                previousClose:
-                  prevClose != null ? String(prevClose) : undefined,
-                technicalLevels,
-                priceUpdatedAt: new Date(),
-              })
-              .where(eq(tickersTable.ticker, ticker));
+            chunkUpdates.push({
+              ticker,
+              company,
+              currentPrice: String(newPrice),
+              previousClose: prevClose != null ? String(prevClose) : undefined,
+              technicalLevels,
+              priceUpdatedAt: now,
+            });
 
             console.log(
               `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
@@ -190,15 +189,14 @@ async function syncPrices() {
             existingLevels: (oldTechLevels as any) ?? undefined,
           });
 
-          await db
-            .update(tickersTable)
-            .set({
-              currentPrice: String(newPrice),
-              previousClose: prevClose != null ? String(prevClose) : undefined,
-              technicalLevels,
-              priceUpdatedAt: new Date(),
-            })
-            .where(eq(tickersTable.ticker, ticker));
+          chunkUpdates.push({
+            ticker,
+            company,
+            currentPrice: String(newPrice),
+            previousClose: prevClose != null ? String(prevClose) : undefined,
+            technicalLevels,
+            priceUpdatedAt: now,
+          });
 
           console.log(
             `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
@@ -212,6 +210,21 @@ async function syncPrices() {
           errorCount++;
         }
       }
+    }
+
+    if (chunkUpdates.length > 0) {
+      await db
+        .insert(tickersTable)
+        .values(chunkUpdates)
+        .onConflictDoUpdate({
+          target: tickersTable.ticker,
+          set: {
+            currentPrice: sql`excluded.current_price`,
+            previousClose: sql`COALESCE(excluded.previous_close, ${tickersTable.previousClose})`,
+            technicalLevels: sql`excluded.technical_levels`,
+            priceUpdatedAt: sql`excluded.price_updated_at`,
+          },
+        });
     }
 
     if (i + chunkSize < tickers.length) {

@@ -929,6 +929,24 @@ describe("News & Catalyst Pipeline", () => {
       };
 
       repo.addReport(mockReportData);
+      repo.addReport({
+        ...mockReportData,
+        folderSlug: "KO-Q2-2027-analysis",
+        folderName: "KO-Q2-2027-analysis",
+        facts: {
+          ...mockReportData.facts,
+          ticker: "KO",
+          company: "The Coca-Cola Company",
+        },
+        scenarios: { ...mockReportData.scenarios, ticker: "KO" },
+      });
+
+      const requestedSlugs: string[] = [];
+      const origGetReport = repo.getReport.bind(repo);
+      repo.getReport = async (slug: string) => {
+        requestedSlugs.push(slug);
+        return origGetReport(slug);
+      };
 
       const mockFirehoseResults = {
         results: [
@@ -1006,6 +1024,8 @@ describe("News & Catalyst Pipeline", () => {
         expect(nvdaEvents[0].transmissionType).toBe("driver_shock");
         expect(nvdaEvents[0].impliedWfvImpactPct).toBeDefined();
         expect(Number(nvdaEvents[0].impliedWfvImpactPct)).toBeGreaterThan(0);
+        // Lazy-loading invariant: full report is fetched ONLY for tickers with material news
+        expect(requestedSlugs).toEqual(["NVDA-Q2-2027-analysis"]);
       } finally {
         globalThis.fetch = origFetch;
       }
