@@ -26,6 +26,8 @@ import {
   ReportSelector,
   MAX_DROPDOWN_GROUPS,
 } from "@/components/ReportSelector";
+import { Header } from "@/components/Header";
+import { ThemeProvider } from "@/context/ThemeContext";
 import {
   useRecentReport,
   setStoredLastReport,
@@ -376,7 +378,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
   });
 
   describe("useRecentReport SSR Parity & Hydration Safety", () => {
-    it("initializes with currentSlug synchronously when provided", () => {
+    it("initializes with currentSlug synchronously when provided", async () => {
       let initialRenderValue: unknown = undefined;
       function TestConsumer() {
         const { recentReport } = useRecentReport("AAPL-2025Q1", "AAPL");
@@ -386,7 +388,9 @@ describe("Frontend Render & Efficiency Invariants", () => {
         return <div data-testid="recent">{recentReport?.ticker ?? "none"}</div>;
       }
 
-      render(<TestConsumer />);
+      await act(async () => {
+        render(<TestConsumer />);
+      });
       expect(initialRenderValue).toEqual({
         slug: "AAPL-2025Q1",
         ticker: "AAPL",
@@ -417,6 +421,104 @@ describe("Frontend Render & Efficiency Invariants", () => {
       act(() => {
         clearStoredLastReport();
       });
+    });
+  });
+
+  describe("Header Default Stock & Navigation Invariants", () => {
+    const mockGoogleReport: ReportSummary = {
+      ...mockReport,
+      slug: "GOOGL-Q4-2025-analysis",
+      name: "GOOGL-Q4-2025-analysis",
+      ticker: "GOOGL",
+      company: "Alphabet Inc.",
+    };
+
+    const mockNvdaReport: ReportSummary = {
+      ...mockReport,
+      slug: "NVDA-Q2-2027-analysis",
+      name: "NVDA-Q2-2027-analysis",
+      ticker: "NVDA",
+      company: "NVIDIA Corporation",
+    };
+
+    it("hides ticker button on homepage when no report is selected", async () => {
+      const queryClient = createTestQueryClient();
+      const onSelectReport = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      const reports = [mockGoogleReport, mockNvdaReport];
+
+      await act(async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <Header
+                currentSlug={null}
+                reports={reports}
+                viewMode="screener"
+                onSelectReport={onSelectReport}
+                onViewModeChange={onViewModeChange}
+                onOpenShortcutsModal={noop}
+                onShare={noop}
+                locale="en"
+              />
+            </ThemeProvider>
+          </QueryClientProvider>
+        );
+      });
+
+      // Invariant: On homepage (currentSlug === null), ticker button is hidden
+      expect(screen.queryByTitle(/NVDA/i)).toBeNull();
+      expect(screen.queryByTitle(/GOOGL/i)).toBeNull();
+
+      // Screener and Watchlist are present in center nav
+      expect(screen.getByTitle("Screener (S)")).toBeDefined();
+      expect(screen.getByTitle(/Watchlist/i)).toBeDefined();
+
+      // ReportSelector capsule shows Select Stock...
+      expect(screen.getByText("Select Stock...")).toBeDefined();
+    });
+
+    it("renders ticker button with strictly ticker text (no '· Model' text) and navigates on first click", async () => {
+      const queryClient = createTestQueryClient();
+      const onSelectReport = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      const reports = [mockGoogleReport, mockNvdaReport];
+
+      await act(async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <Header
+                currentSlug="NVDA-Q2-2027-analysis"
+                reports={reports}
+                viewMode="screener"
+                onSelectReport={onSelectReport}
+                onViewModeChange={onViewModeChange}
+                onOpenShortcutsModal={noop}
+                onShare={noop}
+                locale="en"
+              />
+            </ThemeProvider>
+          </QueryClientProvider>
+        );
+      });
+
+      // Invariant: Ticker button is present
+      const tickerButton = screen.getByTitle("Return to NVDA Model (M)");
+      expect(tickerButton).toBeDefined();
+
+      // Invariant: Text inside button is strictly the ticker symbol with NO text after it (no "· Model")
+      expect(tickerButton.textContent?.trim()).toBe("NVDA");
+      expect(tickerButton.textContent).not.toContain("Model");
+      expect(tickerButton.textContent).not.toContain("·");
+
+      // Invariant: First click navigates directly without redundant onViewModeChange
+      fireEvent.click(tickerButton);
+      expect(onSelectReport).toHaveBeenCalledTimes(1);
+      expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
+      expect(onViewModeChange).not.toHaveBeenCalled();
     });
   });
 });

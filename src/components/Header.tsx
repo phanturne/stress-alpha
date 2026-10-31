@@ -27,7 +27,6 @@ import { compareReportsByRecency } from "@/lib/utils";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthModal } from "./AuthModal";
-import { useRecentReport } from "@/lib/recent-report";
 
 function GithubIcon({ className = "size-3.5" }: { className?: string }) {
   return (
@@ -135,19 +134,16 @@ export const Header: React.FC<HeaderProps> = ({
   }, [isMobileMenuOpen]);
 
   const { prefetchReport } = useReportPrefetch();
-  const { recentReport } = useRecentReport(currentSlug, facts?.ticker);
   const currentTicker =
     facts?.ticker ||
     (currentSlug ? currentSlug.split("-")[0].toUpperCase() : undefined);
-  const defaultReport = reports && reports.length > 0 ? reports[0] : null;
-  const activeSlug =
-    currentSlug || recentReport?.slug || defaultReport?.slug || "NVDA-2025Q4";
+  const activeSlug = currentSlug || null;
   const activeTicker =
     currentTicker ||
-    recentReport?.ticker ||
-    reports.find((r) => r.slug === activeSlug)?.ticker ||
-    (activeSlug ? activeSlug.split("-")[0].toUpperCase() : null) ||
-    "NVDA";
+    (currentSlug
+      ? reports?.find((r) => r.slug === currentSlug)?.ticker ||
+        currentSlug.split("-")[0].toUpperCase()
+      : null);
   const siblingReports = React.useMemo(() => {
     if (!reports || reports.length === 0) return [];
     if (currentTicker) {
@@ -204,10 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
           currentDate={facts?.reportDate}
           siblingReports={siblingReports}
           reports={reports}
-          onSelectReport={(slug) => {
-            onViewModeChange("cockpit");
-            onSelectReport(slug);
-          }}
+          onSelectReport={onSelectReport}
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
@@ -216,29 +209,28 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Center Nav: Strictly Geometrically Centered (Zero Layout Shift) */}
       <div className="pointer-events-none absolute inset-x-0 hidden items-center justify-center md:flex">
         <nav className="shadow-xs pointer-events-auto flex items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1">
-          <button
-            type="button"
-            onClick={() => {
-              if (currentSlug !== activeSlug) {
+          {activeSlug && (
+            <button
+              type="button"
+              onClick={() => {
                 onSelectReport(activeSlug);
+              }}
+              onMouseEnter={() => prefetchReport(activeSlug)}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+                viewMode === "cockpit" || viewMode === "memo"
+                  ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                  : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
+              }`}
+              title={
+                viewMode === "cockpit" || viewMode === "memo"
+                  ? `${activeTicker || ""} (M)`
+                  : t.modelNavTooltip(activeTicker || "")
               }
-              onViewModeChange("cockpit");
-            }}
-            onMouseEnter={() => prefetchReport(activeSlug)}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-              viewMode === "cockpit" || viewMode === "memo"
-                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
-                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
-            }`}
-            title={
-              viewMode === "cockpit" || viewMode === "memo"
-                ? `${activeTicker} ${t.cockpit} (M)`
-                : t.modelNavTooltip(activeTicker)
-            }
-          >
-            <SlidersHorizontal className="size-3.5 text-accent" />
-            <span>{`${activeTicker} · ${t.cockpit}`}</span>
-          </button>
+            >
+              <SlidersHorizontal className="size-3.5 text-accent" />
+              <span>{activeTicker}</span>
+            </button>
+          )}
 
           <button
             type="button"
@@ -836,28 +828,24 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (currentSlug !== activeSlug) {
+                {activeSlug && (
+                  <button
+                    type="button"
+                    onClick={() => {
                       onSelectReport(activeSlug);
-                    }
-                    onViewModeChange("cockpit");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
-                    viewMode === "cockpit"
-                      ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
-                      : "border-transparent text-slate-300 hover:bg-surface-2"
-                  }`}
-                >
-                  <SlidersHorizontal className="size-4 text-accent" />
-                  <span>
-                    {activeTicker
-                      ? `${activeTicker} · ${t.cockpit}`
-                      : t.cockpit}
-                  </span>
-                </button>
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                      viewMode === "cockpit"
+                        ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                        : "border-transparent text-slate-300 hover:bg-surface-2"
+                    }`}
+                  >
+                    <SlidersHorizontal className="size-4 text-accent" />
+                    <span>{activeTicker}</span>
+                  </button>
+                )}
+
                 {(viewMode === "cockpit" || viewMode === "memo") && (
                   <button
                     type="button"

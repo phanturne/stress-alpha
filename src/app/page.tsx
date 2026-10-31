@@ -214,12 +214,20 @@ function HomePageContent() {
     currentTabIndex,
     switchWorkspace,
     onResetDefaults: handleResetDefaults,
-    onToggleMemo: () =>
-      setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit")),
+    onToggleMemo: () => {
+      if (!currentSlug) return;
+      setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit"));
+    },
     onOpenScreener: () => handleViewModeChange("screener"),
     onToggleLocale: () => handleToggleLocale(locale === "zh" ? "en" : "zh"),
-    onToggleSocialCard: () => setIsSocialCardOpen((prev) => !prev),
-    onToggleSnowflake: () => setIsSnowflakeOpen((prev) => !prev),
+    onToggleSocialCard: () => {
+      if (!currentSlug || !reportData) return;
+      setIsSocialCardOpen((prev) => !prev);
+    },
+    onToggleSnowflake: () => {
+      if (!currentSlug || !reportData) return;
+      setIsSnowflakeOpen((prev) => !prev);
+    },
     onToggleFavorite: () => {
       const symbol = reportData?.facts?.ticker || currentSlug;
       if (symbol) {
@@ -313,11 +321,9 @@ function HomePageContent() {
               : "hidden"
           }
         >
-          {!currentSlug && !reportData ? (
-            <div className="min-h-[60vh]" />
-          ) : isReportLoading ? (
+          {isReportLoading ? (
             <CockpitSkeleton />
-          ) : !reportData || !stressResult ? (
+          ) : !currentSlug || !reportData || !stressResult ? (
             <NoReportSelected
               onOpenScreener={() => handleViewModeChange("screener")}
               locale={locale}
