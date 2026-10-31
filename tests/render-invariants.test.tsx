@@ -441,12 +441,11 @@ describe("Frontend Render & Efficiency Invariants", () => {
       company: "NVIDIA Corporation",
     };
 
-    it("prioritizes NVDA as default stock on homepage even if another stock is first in reports", async () => {
+    it("hides Model button on homepage when no report is selected (Option B)", async () => {
       const queryClient = createTestQueryClient();
       const onSelectReport = vi.fn();
       const onViewModeChange = vi.fn();
 
-      // GOOGL is first in list, NVDA is second
       const reports = [mockGoogleReport, mockNvdaReport];
 
       await act(async () => {
@@ -468,84 +467,54 @@ describe("Frontend Render & Efficiency Invariants", () => {
         );
       });
 
-      // Verify Cockpit button displays NVDA and NOT GOOGL
+      // Invariant: On homepage (currentSlug === null), Model button is hidden
+      const cockpitButton = screen.queryByTitle(/Model/i);
+      expect(cockpitButton).toBeNull();
+
+      // Screener and Watchlist are present in center nav
+      expect(screen.getByTitle("Screener (S)")).toBeDefined();
+      expect(screen.getByTitle(/Watchlist/i)).toBeDefined();
+
+      // ReportSelector capsule shows Select Stock...
+      expect(screen.getByText("Select Stock...")).toBeDefined();
+    });
+
+    it("renders Model button and navigates directly on first click once a report is selected", async () => {
+      const queryClient = createTestQueryClient();
+      const onSelectReport = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      const reports = [mockGoogleReport, mockNvdaReport];
+
+      await act(async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <Header
+                currentSlug="NVDA-Q2-2027-analysis"
+                reports={reports}
+                viewMode="screener"
+                onSelectReport={onSelectReport}
+                onViewModeChange={onViewModeChange}
+                onOpenShortcutsModal={noop}
+                onShare={noop}
+                locale="en"
+              />
+            </ThemeProvider>
+          </QueryClientProvider>
+        );
+      });
+
+      // Invariant: When currentSlug is set, Model button appears
       const cockpitButton = screen.getByTitle("Return to NVDA Model (M)");
       expect(cockpitButton).toBeDefined();
       expect(cockpitButton.textContent).toContain("NVDA");
-      expect(cockpitButton.textContent).not.toContain("GOOGL");
-    });
 
-    it("navigates to Cockpit on the first click without redundant viewMode calls", async () => {
-      const queryClient = createTestQueryClient();
-      const onSelectReport = vi.fn();
-      const onViewModeChange = vi.fn();
-
-      const reports = [mockGoogleReport, mockNvdaReport];
-
-      await act(async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider>
-              <Header
-                currentSlug={null}
-                reports={reports}
-                viewMode="screener"
-                onSelectReport={onSelectReport}
-                onViewModeChange={onViewModeChange}
-                onOpenShortcutsModal={noop}
-                onShare={noop}
-                locale="en"
-              />
-            </ThemeProvider>
-          </QueryClientProvider>
-        );
-      });
-
-      const cockpitButton = screen.getByTitle("Return to NVDA Model (M)");
       fireEvent.click(cockpitButton);
 
-      // Invariant: onSelectReport must be called with NVDA on the very first click!
+      // Invariant: onSelectReport must be called on first click without redundant onViewModeChange
       expect(onSelectReport).toHaveBeenCalledTimes(1);
       expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
-
-      // Invariant: onViewModeChange should NOT be called directly by Cockpit button
-      // to avoid race condition where empty currentSlug overwrites URL search query
-      expect(onViewModeChange).not.toHaveBeenCalled();
-    });
-
-    it("falls back cleanly to reports[0] when NVDA is not present in universe", async () => {
-      const queryClient = createTestQueryClient();
-      const onSelectReport = vi.fn();
-      const onViewModeChange = vi.fn();
-
-      const reports = [mockGoogleReport];
-
-      await act(async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider>
-              <Header
-                currentSlug={null}
-                reports={reports}
-                viewMode="screener"
-                onSelectReport={onSelectReport}
-                onViewModeChange={onViewModeChange}
-                onOpenShortcutsModal={noop}
-                onShare={noop}
-                locale="en"
-              />
-            </ThemeProvider>
-          </QueryClientProvider>
-        );
-      });
-
-      const cockpitButton = screen.getByTitle("Return to GOOGL Model (M)");
-      expect(cockpitButton).toBeDefined();
-      expect(cockpitButton.textContent).toContain("GOOGL");
-
-      fireEvent.click(cockpitButton);
-      expect(onSelectReport).toHaveBeenCalledTimes(1);
-      expect(onSelectReport).toHaveBeenCalledWith("GOOGL-Q4-2025-analysis");
       expect(onViewModeChange).not.toHaveBeenCalled();
     });
   });
