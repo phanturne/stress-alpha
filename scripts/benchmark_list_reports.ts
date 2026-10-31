@@ -44,7 +44,15 @@ async function main() {
       snowflakeScore: reportsTable.snowflakeScore,
       snowflakeTier: reportsTable.snowflakeTier,
       snowflakePillars: reportsTable.snowflakePillars,
-      estimates: reportsTable.estimates,
+      analystTarget: sql<
+        number | string | null
+      >`(${reportsTable.estimates}->'priceTargets'->>'average')::numeric`,
+      analystRating: sql<
+        string | null
+      >`${reportsTable.estimates}->'consensus'->>'consensus'`,
+      analystCount: sql<
+        number | null
+      >`(${reportsTable.estimates}->'consensus'->>'totalAnalysts')::int`,
       hasFacts: sql<boolean>`(${reportsTable.facts} IS NOT NULL)`,
       hasScenarios: sql<boolean>`(${reportsTable.scenarios} IS NOT NULL)`,
       hasValuation: sql<boolean>`(${reportsTable.valuation} IS NOT NULL)`,
@@ -95,17 +103,21 @@ async function main() {
     let analystRating: string | undefined;
     let analystCount: number | undefined;
 
-    if (row.estimates?.priceTargets?.average) {
-      analystTarget = row.estimates.priceTargets.average;
+    const rawTarget =
+      row.analystTarget != null ? Number(row.analystTarget) : undefined;
+    if (rawTarget && rawTarget > 0) {
+      analystTarget = rawTarget;
       if (effectivePrice > 0) {
         analystUpsidePct = Number(
           (((analystTarget - effectivePrice) / effectivePrice) * 100).toFixed(2)
         );
       }
     }
-    if (row.estimates?.consensus) {
-      analystRating = row.estimates.consensus.consensus;
-      analystCount = row.estimates.consensus.totalAnalysts;
+    if (row.analystRating != null) {
+      analystRating = row.analystRating;
+    }
+    if (row.analystCount != null) {
+      analystCount = Number(row.analystCount);
     }
 
     let consensusSpreadPct: number | undefined;

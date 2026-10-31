@@ -569,15 +569,23 @@ export async function ingestGlobalNewsFirehose(
   // 1. Identify active universe from repository reports and active database tickers
   const reportSummaries = await repo.listReports();
   const activeTickers = new Set<string>();
+  const slugByTicker = new Map<string, string>();
 
   for (const s of reportSummaries) {
     if (s.ticker) {
-      activeTickers.add(s.ticker.toUpperCase());
+      const upper = s.ticker.toUpperCase();
+      activeTickers.add(upper);
+      if (!slugByTicker.has(upper)) {
+        slugByTicker.set(upper, s.slug);
+      }
     }
   }
 
   try {
-    if (process.env.DATABASE_URL) {
+    if (
+      repo.constructor.name !== "InMemoryReportRepository" &&
+      process.env.DATABASE_URL
+    ) {
       const { getDb } = await import("@/db");
       const { tickersTable } = await import("@/db/schema");
       const { eq } = await import("drizzle-orm");
@@ -606,12 +614,9 @@ export async function ingestGlobalNewsFirehose(
     };
   }
 
-  // 2. Pre-load active reports for covered tickers
+  // 2. Lazy-load active reports ONLY for tickers with material vetted news
+  // (Avoids transferring ~25MB+ of full report JSONB payloads for 500+ quiet tickers)
   const reportsByTicker = new Map<string, ReportData | null>();
-  for (const ticker of activeTickers) {
-    const reportData = await getActiveReportForTicker(ticker, repo);
-    reportsByTicker.set(ticker, reportData);
-  }
 
   let totalIngested = 0;
   const tickersWithNewEvents = new Set<string>();
@@ -631,7 +636,10 @@ export async function ingestGlobalNewsFirehose(
       ticker,
     });
 
-    const reportData = reportsByTicker.get(ticker) ?? null;
+    if (filteredCandidates.length === 0) {
+      continue;
+    }
+
     const seenThemes = new Set<string>();
 
     for (const article of filteredCandidates) {
@@ -658,6 +666,13 @@ export async function ingestGlobalNewsFirehose(
         continue;
       }
       seenThemes.add(themeKey);
+
+      if (!reportsByTicker.has(ticker)) {
+        const slug = slugByTicker.get(ticker);
+        const loaded = slug ? await repo.getReport(slug) : null;
+        reportsByTicker.set(ticker, loaded);
+      }
+      const reportData = reportsByTicker.get(ticker) ?? null;
 
       const publishedAt = article.publishedAt
         ? new Date(article.publishedAt)

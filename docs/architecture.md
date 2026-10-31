@@ -53,7 +53,7 @@ flowchart TB
         EvalPipeline --> NeonDB[("Neon Serverless Postgres\n• tickers\n• reports\n• financial_metrics\n• market_events\n• upstream_dependencies\n• valuation_revisions")]
         NewsTransmission --> NeonDB
         
-        NeonDB --> DAL["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)\n60s TTL Server Cache"]
+        NeonDB --> DAL["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)\n15m TTL In-Memory + Next.js Data Cache"]
         DAL -.->|"Implements"| IRepo["IReportRepository\n(src/lib/repository/types.ts)"]
         IRepo --> Factory["Repository Factory\n(src/lib/repository/index.ts)"]
     end
@@ -192,7 +192,11 @@ export interface IReportRepository {
 }
 ```
 
-* **`DrizzleReportRepository`**: Connected directly to Neon Serverless PostgreSQL with a 60-second in-memory server cache and client-side memory caching, delivering <5ms response times.
+* **`DrizzleReportRepository`**: Connected directly to Neon Serverless PostgreSQL (`us-west-2`), projecting scalar JSONB fields directly in SQL (`estimates->'priceTargets'->>'average'`, etc.) to minimize network egress (~380 KB for 640+ reports). Shielded by a 4-tier caching hierarchy:
+  1. **Level 1 (Browser & TanStack Query)**: 5-minute browser disk cache (`max-age=300`) and 30-minute React Query `staleTime` (`gcTime=60m`).
+  2. **Level 2 (Vercel US Edge CDN)**: 1-hour Edge POP cache (`s-maxage=3600, stale-while-revalidate=86400`) across read endpoints.
+  3. **Level 3 (Next.js Data Cache & `pdx1` Co-location)**: Serverless compute pinned to `pdx1` (`us-west-2` in `vercel.json`) with `unstable_cache` and automatic `revalidateTag("reports", "max")` invalidation on pipeline mutations.
+  4. **Level 4 (Warm Lambda In-Memory Shield)**: 15-minute in-memory repository cache (`CACHE_TTL_MS = 900_000`), delivering <1ms warm hits.
 * **`InMemoryReportRepository`**: Complete mock implementation for fast, fully isolated unit testing without external database dependencies.
 
 ---

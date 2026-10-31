@@ -74,7 +74,7 @@ export function useReportData({
   const reportsQuery = useQuery({
     queryKey: ["reports"],
     queryFn: fetchReportsList,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
   });
 
   // Query 2: Active report by slug
@@ -82,7 +82,7 @@ export function useReportData({
     queryKey: ["report", currentSlug],
     queryFn: () => (currentSlug ? fetchReportData(currentSlug) : null),
     enabled: Boolean(currentSlug),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
   });
 
   // Local mutable report override for interactive scenario & catalyst audits
@@ -139,7 +139,7 @@ export function useReportData({
         ? fetchNews(activeTicker)
         : Promise.resolve({ events: [], upstreamDependencies: [] }),
     enabled: Boolean(activeTicker),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
   });
 
   // Query 4: Valuation revisions history for active ticker
@@ -150,7 +150,7 @@ export function useReportData({
         ? fetchRevisions(activeTicker)
         : Promise.resolve({ revisions: [] }),
     enabled: Boolean(activeTicker),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
   });
 
   const isReportLoading = Boolean(currentSlug) && reportQuery.isLoading;

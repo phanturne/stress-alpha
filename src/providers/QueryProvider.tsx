@@ -7,7 +7,8 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60 * 5, // 5 minutes fresh data window
+        staleTime: 1000 * 60 * 30, // 30 minutes fresh data window
+        gcTime: 1000 * 60 * 60, // 1 hour garbage collection retention
         refetchOnWindowFocus: false,
         retry: 1,
       },

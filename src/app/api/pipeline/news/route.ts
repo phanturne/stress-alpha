@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { ingestNewsForTicker } from "@/lib/services/news-ingestion";
 
 export async function POST(request: NextRequest) {
@@ -17,6 +18,12 @@ export async function POST(request: NextRequest) {
       typeof body.lookbackDays === "number" ? body.lookbackDays : undefined;
 
     const result = await ingestNewsForTicker(ticker, { lookbackDays });
+
+    try {
+      revalidateTag("reports", "max");
+    } catch {
+      // Ignore outside Next.js server runtime
+    }
 
     return NextResponse.json(result);
   } catch (error) {

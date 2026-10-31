@@ -103,6 +103,10 @@ All data access is mediated through the **Repository Pattern** defined in [`src/
    - Tests run against this pristine replica with 100% cloud parity, executing read and write operations without corrupting production data.
    - The ephemeral branch is automatically deleted upon test completion, with background reaping of stale branches (>30m) to prevent quota exhaustion.
    - Tests assert **schema and contract invariants** (`toBeGreaterThan(0)`, `typeof x === 'number'`) rather than brittle magic numbers that drift when market prices or analyst targets update.
+6. **Egress Minimization, SQL Scalar Projection & 4-Tier Caching (`vercel.json`, `src/lib/repository/drizzle-report-repository.ts`)**:
+   - Summary listing queries (`listReports()`) must project only required scalar fields from JSONB columns (e.g. `(estimates->'priceTargets'->>'average')::numeric`) and **never** select full qualitative JSONB blobs across the universe.
+   - Batch ingestion pipelines (`ingestGlobalNewsFirehose`) must lazy-load full `ReportData` strictly for tickers with vetted, material catalysts rather than pre-loading the entire coverage universe.
+   - Read traffic is shielded by a 4-tier cache: Browser/TanStack Query (`max-age=300`, `staleTime=30m`), Vercel US Edge CDN (`s-maxage=3600, stale-while-revalidate=86400`), Next.js Data Cache (`unstable_cache` with `revalidateTag("reports", "max")` co-located in `pdx1` / `us-west-2`), and a 15-minute in-memory repository cache (`CACHE_TTL_MS = 900_000`).
 
 ---
 

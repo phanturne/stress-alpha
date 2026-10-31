@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import {
   fetchCompletePipelineBundle,
   writePipelineArtifacts,
@@ -26,6 +27,12 @@ export async function GET(request: NextRequest) {
       benchmarkPrice,
       quarterStr,
     });
+
+    try {
+      revalidateTag("reports", "max");
+    } catch {
+      // Ignore outside Next.js server runtime
+    }
 
     return NextResponse.json({
       success: true,
@@ -90,6 +97,12 @@ export async function POST(request: NextRequest) {
           overwriteAll,
         }
       );
+    }
+
+    try {
+      revalidateTag("reports", "max");
+    } catch {
+      // Ignore outside Next.js server runtime
     }
 
     return NextResponse.json({

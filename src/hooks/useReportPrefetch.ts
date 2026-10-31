@@ -11,7 +11,7 @@ import {
 
 /**
  * Pre-warms TanStack Query cache and Next.js page route chunks on hover or focus.
- * Includes a lightweight hover-intent debounce (75ms) to prevent network thread
+ * Includes a hover-intent debounce (200ms) to prevent network and database egress
  * saturation when scrolling or skimming across rows in the screener table.
  */
 export function useReportPrefetch() {
@@ -42,20 +42,20 @@ export function useReportPrefetch() {
         queryClient.prefetchQuery({
           queryKey: ["report", slug],
           queryFn: () => fetchReportData(slug),
-          staleTime: 1000 * 60 * 5,
+          staleTime: 1000 * 60 * 30,
         });
 
-        // 3. Prefetch ticker news & revisions in parallel
-        if (ticker) {
+        // 3. Prefetch ticker news & revisions only on explicit/immediate intent
+        if (immediate && ticker) {
           queryClient.prefetchQuery({
             queryKey: ["news", ticker],
             queryFn: () => fetchNews(ticker),
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 30,
           });
           queryClient.prefetchQuery({
             queryKey: ["revisions", ticker],
             queryFn: () => fetchRevisions(ticker),
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 30,
           });
         }
       };
@@ -63,7 +63,7 @@ export function useReportPrefetch() {
       if (immediate) {
         execute();
       } else {
-        hoverTimerRef.current = setTimeout(execute, 75);
+        hoverTimerRef.current = setTimeout(execute, 200);
       }
     },
     [queryClient, router]

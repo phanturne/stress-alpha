@@ -46,10 +46,18 @@ export async function GET(request: NextRequest) {
       elasticity: Number(d.elasticity),
     }));
 
-    return NextResponse.json({
-      events: normalizedEvents,
-      upstreamDependencies: normalizedDeps,
-    });
+    return NextResponse.json(
+      {
+        events: normalizedEvents,
+        upstreamDependencies: normalizedDeps,
+      },
+      {
+        headers: {
+          "Cache-Control":
+            "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error in GET /api/news:", error);
     return NextResponse.json(
