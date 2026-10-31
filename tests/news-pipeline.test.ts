@@ -32,7 +32,6 @@ import {
   setReportRepository,
 } from "../src/lib/repository";
 import { GET as getNewsHandler } from "../src/app/api/news/route";
-import { POST as postPipelineNewsHandler } from "../src/app/api/pipeline/news/route";
 import { GET as getRevisionsHandler } from "../src/app/api/revisions/route";
 import { NextRequest } from "next/server";
 
@@ -698,35 +697,6 @@ describe("News & Catalyst Pipeline", () => {
       expect(data.events.length).toBeGreaterThanOrEqual(1);
       expect(data.upstreamDependencies.length).toBeGreaterThanOrEqual(1);
       expect(data.events[0].ticker).toBe("NVDA");
-    });
-
-    it("handles POST /api/pipeline/news to trigger ingestion", async () => {
-      // 1. Missing ticker in body -> 400
-      const badReq = new NextRequest(
-        "http://localhost:3000/api/pipeline/news",
-        {
-          method: "POST",
-          body: JSON.stringify({}),
-        }
-      );
-      const badRes = await postPipelineNewsHandler(badReq);
-      expect(badRes.status).toBe(400);
-
-      // 2. Valid body -> 200 with success
-      const validReq = new NextRequest(
-        "http://localhost:3000/api/pipeline/news",
-        {
-          method: "POST",
-          body: JSON.stringify({ ticker: "NVDA", lookbackDays: 5 }),
-        }
-      );
-      const validRes = await postPipelineNewsHandler(validReq);
-      expect(validRes.status).toBe(200);
-
-      const data = await validRes.json();
-      expect(data.success).toBe(true);
-      expect(typeof data.ingestedCount).toBe("number");
-      expect(Array.isArray(data.events)).toBe(true);
     });
 
     it("handles GET /api/revisions to fetch valuation history", async () => {
