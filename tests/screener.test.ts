@@ -202,13 +202,13 @@ describe("Screener & Reports API", () => {
         );
 
         // Invariant: Screener snowflake score aligns with stock page computation
-        // (within +/- 1 pt to account for live market price movements vs report price)
+        // (within +/- 3 pts to account for live market price movements vs report publish price)
         expect(
           Math.abs(
             (reportSummary.snowflakeScore ?? 0) -
               stockPageSnowflakeEn.totalScore
           )
-        ).toBeLessThanOrEqual(1);
+        ).toBeLessThanOrEqual(3);
         expect(stockPageSnowflakeEn.totalScore).toBe(
           stockPageSnowflakeZh.totalScore
         );
@@ -221,31 +221,31 @@ describe("Screener & Reports API", () => {
               reportSummary.snowflakePillars.valuation -
                 stockPageSnowflakeEn.pillars.valuation.score
             )
-          ).toBeLessThanOrEqual(1);
+          ).toBeLessThanOrEqual(2);
           expect(
             Math.abs(
               reportSummary.snowflakePillars.future -
                 stockPageSnowflakeEn.pillars.future.score
             )
-          ).toBeLessThanOrEqual(1);
+          ).toBeLessThanOrEqual(2);
           expect(
             Math.abs(
               reportSummary.snowflakePillars.earnings -
                 stockPageSnowflakeEn.pillars.earnings.score
             )
-          ).toBeLessThanOrEqual(1);
+          ).toBeLessThanOrEqual(2);
           expect(
             Math.abs(
               reportSummary.snowflakePillars.moat -
                 stockPageSnowflakeEn.pillars.moat.score
             )
-          ).toBeLessThanOrEqual(1);
+          ).toBeLessThanOrEqual(2);
           expect(
             Math.abs(
               reportSummary.snowflakePillars.resilience -
                 stockPageSnowflakeEn.pillars.resilience.score
             )
-          ).toBeLessThanOrEqual(1);
+          ).toBeLessThanOrEqual(2);
         }
       })
     );

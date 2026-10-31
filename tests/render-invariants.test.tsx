@@ -441,7 +441,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
       company: "NVIDIA Corporation",
     };
 
-    it("menu presents Screener and Watchlist navigation without redundant Model button", async () => {
+    it("hides ticker button on homepage when no report is selected", async () => {
       const queryClient = createTestQueryClient();
       const onSelectReport = vi.fn();
       const onViewModeChange = vi.fn();
@@ -467,9 +467,9 @@ describe("Frontend Render & Efficiency Invariants", () => {
         );
       });
 
-      // Invariant: Model button is completely removed from the menu
-      const cockpitButton = screen.queryByTitle(/Model/i);
-      expect(cockpitButton).toBeNull();
+      // Invariant: On homepage (currentSlug === null), ticker button is hidden
+      expect(screen.queryByTitle(/NVDA/i)).toBeNull();
+      expect(screen.queryByTitle(/GOOGL/i)).toBeNull();
 
       // Screener and Watchlist are present in center nav
       expect(screen.getByTitle("Screener (S)")).toBeDefined();
@@ -479,7 +479,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(screen.getByText("Select Stock...")).toBeDefined();
     });
 
-    it("keeps menu clean (Screener and Watchlist only) even when a report is selected", async () => {
+    it("renders ticker button with strictly ticker text (no '· Model' text) and navigates on first click", async () => {
       const queryClient = createTestQueryClient();
       const onSelectReport = vi.fn();
       const onViewModeChange = vi.fn();
@@ -505,17 +505,20 @@ describe("Frontend Render & Efficiency Invariants", () => {
         );
       });
 
-      // Invariant: Model button is not rendered in the menu
-      const cockpitButton = screen.queryByTitle(/Model/i);
-      expect(cockpitButton).toBeNull();
+      // Invariant: Ticker button is present
+      const tickerButton = screen.getByTitle("Return to NVDA Model (M)");
+      expect(tickerButton).toBeDefined();
 
-      // Screener and Watchlist navigation buttons are active and responsive
-      const screenerBtn = screen.getByTitle("Screener (S)");
-      expect(screenerBtn).toBeDefined();
-      fireEvent.click(screenerBtn);
-      expect(onViewModeChange).toHaveBeenCalledWith("screener", {
-        watchlistOnly: false,
-      });
+      // Invariant: Text inside button is strictly the ticker symbol with NO text after it (no "· Model")
+      expect(tickerButton.textContent?.trim()).toBe("NVDA");
+      expect(tickerButton.textContent).not.toContain("Model");
+      expect(tickerButton.textContent).not.toContain("·");
+
+      // Invariant: First click navigates directly without redundant onViewModeChange
+      fireEvent.click(tickerButton);
+      expect(onSelectReport).toHaveBeenCalledTimes(1);
+      expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
+      expect(onViewModeChange).not.toHaveBeenCalled();
     });
   });
 });
