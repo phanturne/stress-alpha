@@ -480,6 +480,40 @@ describe("Technical Levels UI Components", () => {
       expect(screen.getByText("200日均线")).toBeDefined();
       expect(screen.getByText("52周价格区间")).toBeDefined();
     });
+
+    it("renders N/A (Loss) and negative EPS for unprofitable companies (e.g. ONDS)", () => {
+      const { rerender } = render(
+        <TechnicalsTab
+          ticker="ONDS"
+          currentPrice={6.32}
+          currentPe={0}
+          operatingEps={-0.01}
+          technicalLevels={mockPayload}
+          locale="en"
+        />
+      );
+
+      // Header strip and KPI card 1
+      expect(screen.getByText("P/E: N/A (Loss)")).toBeDefined();
+      expect(screen.getByText("N/A (Loss)")).toBeDefined();
+      expect(screen.getByText("-$0.01 EPS")).toBeDefined();
+
+      // Chinese locale
+      rerender(
+        <TechnicalsTab
+          ticker="ONDS"
+          currentPrice={6.32}
+          currentPe={0}
+          operatingEps={-0.01}
+          technicalLevels={mockPayload}
+          locale="zh"
+        />
+      );
+
+      expect(screen.getByText("P/E: N/A (亏损)")).toBeDefined();
+      expect(screen.getByText("N/A (亏损)")).toBeDefined();
+      expect(screen.getByText("-$0.01 EPS")).toBeDefined();
+    });
   });
 
   describe("Workspace Tabs Registration", () => {

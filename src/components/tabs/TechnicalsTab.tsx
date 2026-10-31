@@ -19,6 +19,7 @@ interface TechnicalsTabProps {
   ticker: string;
   currentPrice: number;
   currentPe?: number;
+  operatingEps?: number;
   technicalLevels?: TechnicalLevelsPayload;
   valuation?: {
     panic?: number;
@@ -33,6 +34,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
   ticker,
   currentPrice,
   currentPe,
+  operatingEps,
   technicalLevels,
   valuation,
   locale = "zh",
@@ -87,14 +89,21 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
                 <span className="font-mono text-xs font-semibold tabular-nums text-slate-300">
                   {formatCurrency(activePrice, 2)}
                 </span>
-                {currentPe && currentPe > 0 && (
+                {currentPe && currentPe > 0 ? (
                   <span
                     className="rounded-md border border-border/80 bg-surface-2/90 px-2 py-0.5 font-mono text-xs font-bold text-slate-200"
                     title={tt.currentPeTooltip}
                   >
                     P/E: {currentPe.toFixed(1)}x
                   </span>
-                )}
+                ) : operatingEps !== undefined && operatingEps <= 0 ? (
+                  <span
+                    className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-xs font-bold text-rose-300"
+                    title={tt.currentPeLossTooltip}
+                  >
+                    P/E: {tt.currentPeLoss}
+                  </span>
+                ) : null}
               </div>
               <p className="mt-0.5 text-xs text-slate-400">{tt.subtitle}</p>
             </div>
@@ -122,15 +131,38 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
         {/* 5-KPI Metric Badges */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {/* Current P/E */}
-          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
+          <div
+            className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3"
+            title={
+              currentPe && currentPe > 0
+                ? tt.currentPeTooltip
+                : operatingEps !== undefined && operatingEps <= 0
+                  ? tt.currentPeLossTooltip
+                  : tt.currentPeTooltip
+            }
+          >
             <span className="text-[11px] font-medium text-slate-400">
               {tt.currentPeBadge}
             </span>
-            <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
-              {currentPe && currentPe > 0 ? `${currentPe.toFixed(1)}x` : "—"}
+            <span
+              className={`mt-1 font-mono text-sm font-bold tabular-nums ${
+                currentPe && currentPe > 0 ? "text-foreground" : "text-rose-400"
+              }`}
+            >
+              {currentPe && currentPe > 0
+                ? `${currentPe.toFixed(1)}x`
+                : operatingEps !== undefined && operatingEps <= 0
+                  ? tt.currentPeLoss
+                  : "—"}
             </span>
             <span className="font-mono text-[10px] text-slate-400">
-              {tt.currentPeSubtext}
+              {currentPe && currentPe > 0
+                ? tt.currentPeSubtext
+                : operatingEps !== undefined && operatingEps <= 0
+                  ? operatingEps < 0
+                    ? `-$${Math.abs(operatingEps).toFixed(2)} EPS`
+                    : tt.currentPeLossSubtext
+                  : tt.currentPeSubtext}
             </span>
           </div>
 

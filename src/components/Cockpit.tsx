@@ -267,12 +267,19 @@ export const Cockpit: React.FC<CockpitProps> = ({
               <span className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(currentPrice)}
               </span>
-              {asymmetry.marketPricedInMultiple > 0 && (
+              {asymmetry.marketPricedInMultiple > 0 ? (
                 <span
                   className="rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
                   title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
                 >
                   {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                </span>
+              ) : (
+                <span
+                  className="rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
+                  title={t.asymmetry.pricedInMultipleLossTooltip}
+                >
+                  {t.asymmetry.pricedInMultipleLoss}
                 </span>
               )}
             </div>
@@ -482,7 +489,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 >
                   {t.current}: {formatCurrency(currentPrice)}
                 </span>
-                {asymmetry.marketPricedInMultiple > 0 && (
+                {asymmetry.marketPricedInMultiple > 0 ? (
                   <>
                     <span className="text-slate-600">•</span>
                     <span
@@ -490,6 +497,16 @@ export const Cockpit: React.FC<CockpitProps> = ({
                       title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
                     >
                       P/E: {asymmetry.marketPricedInMultiple.toFixed(1)}x
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-slate-600">•</span>
+                    <span
+                      className="text-rose-400"
+                      title={t.asymmetry.pricedInMultipleLossTooltip}
+                    >
+                      P/E: {t.asymmetry.pricedInMultipleLoss}
                     </span>
                   </>
                 )}
@@ -639,7 +656,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
               </div>
               <div
                 className="border-r border-border/60 p-2.5"
-                title={`${t.asymmetry.pricedInMultiple}: Implied P/E ratio currently priced in at market price`}
+                title={`${t.asymmetry.pricedInMultiple}: ${
+                  asymmetry.marketPricedInMultiple > 0
+                    ? "Implied P/E ratio currently priced in at market price"
+                    : t.asymmetry.pricedInMultipleLossTooltip
+                }`}
               >
                 <div
                   className="truncate text-[11px] font-medium text-slate-400"
@@ -647,8 +668,16 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 >
                   {t.asymmetry.pricedInMultiple}
                 </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-slate-200">
-                  {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                <div
+                  className={`mt-0.5 font-mono text-sm font-bold tabular-nums ${
+                    asymmetry.marketPricedInMultiple > 0
+                      ? "text-slate-200"
+                      : "text-rose-400"
+                  }`}
+                >
+                  {asymmetry.marketPricedInMultiple > 0
+                    ? `${asymmetry.marketPricedInMultiple.toFixed(1)}x P/E`
+                    : t.asymmetry.pricedInMultipleLoss}
                 </div>
               </div>
               <div

@@ -95,6 +95,8 @@ export interface Translations {
       upsideToBull: string;
       downsideToPanic: string;
       pricedInMultiple: string;
+      pricedInMultipleLoss: string;
+      pricedInMultipleLossTooltip: string;
       asymmetrySkew: string;
     };
     upstreamTitle: string;
@@ -319,6 +321,9 @@ export interface Translations {
     currentPeBadge: string;
     currentPeSubtext: string;
     currentPeTooltip: string;
+    currentPeLoss: string;
+    currentPeLossSubtext: string;
+    currentPeLossTooltip: string;
     sma50Badge: string;
     sma200Badge: string;
     range52WBadge: string;
@@ -1289,6 +1294,9 @@ export const translations: Record<Locale, Translations> = {
         upsideToBull: "Upside to Bull",
         downsideToPanic: "Downside to Panic",
         pricedInMultiple: "Current P/E",
+        pricedInMultipleLoss: "N/A (Loss)",
+        pricedInMultipleLossTooltip:
+          "P/E is not applicable because operating earnings are negative (net loss)",
         asymmetrySkew: "Risk / Reward Ratio",
       },
       upstreamTitle: "Demand & Volume Drivers",
@@ -1539,6 +1547,10 @@ export const translations: Record<Locale, Translations> = {
       currentPeBadge: "Current P/E",
       currentPeSubtext: "at spot price",
       currentPeTooltip: "Current price divided by normalized operating EPS",
+      currentPeLoss: "N/A (Loss)",
+      currentPeLossSubtext: "Negative EPS",
+      currentPeLossTooltip:
+        "P/E is undefined because normalized operating earnings are negative (loss-making company)",
       sma50Badge: "50-Day SMA",
       sma200Badge: "200-Day SMA",
       range52WBadge: "52-Week Range",
@@ -2603,6 +2615,8 @@ export const translations: Record<Locale, Translations> = {
         upsideToBull: "牛市上行空间",
         downsideToPanic: "恐慌下行最大回撤",
         pricedInMultiple: "当前市盈率 (P/E)",
+        pricedInMultipleLoss: "N/A (亏损)",
+        pricedInMultipleLossTooltip: "因经营净收益为负（净亏损），市盈率不适用",
         asymmetrySkew: "盈亏收益比 (Risk/Reward)",
       },
       upstreamTitle: "需求与业务量驱动",
@@ -2845,6 +2859,9 @@ export const translations: Record<Locale, Translations> = {
       currentPeBadge: "当前市盈率",
       currentPeSubtext: "基于最新现价",
       currentPeTooltip: "当前股价与年化营业每股收益（EPS）之比",
+      currentPeLoss: "N/A (亏损)",
+      currentPeLossSubtext: "净亏损 (EPS为负)",
+      currentPeLossTooltip: "公司当前处于营业亏损状态（EPS ≤ 0），市盈率不适用",
       sma50Badge: "50日均线",
       sma200Badge: "200日均线",
       range52WBadge: "52周价格区间",

@@ -342,12 +342,21 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                 reportData?.technicalLevels?.currentPrice ??
                 0;
               const currentPe =
-                val?.stressTest?.asymmetry?.marketPricedInMultiple ??
-                (activePrice > 0 &&
-                displayFacts?.epsOperating &&
-                displayFacts.epsOperating > 0
-                  ? Number((activePrice / displayFacts.epsOperating).toFixed(1))
-                  : undefined);
+                val?.stressTest?.asymmetry?.marketPricedInMultiple &&
+                val.stressTest.asymmetry.marketPricedInMultiple > 0
+                  ? val.stressTest.asymmetry.marketPricedInMultiple
+                  : activePrice > 0 &&
+                      displayFacts?.epsOperating &&
+                      displayFacts.epsOperating > 0
+                    ? Number(
+                        (activePrice / displayFacts.epsOperating).toFixed(1)
+                      )
+                    : undefined;
+              const operatingEps =
+                displayFacts?.epsOperating ??
+                reportData?.facts?.epsOperating ??
+                displayFacts?.trailingEps ??
+                reportData?.facts?.trailingEps;
 
               return (
                 <TechnicalsTab
@@ -356,6 +365,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   }
                   currentPrice={activePrice}
                   currentPe={currentPe}
+                  operatingEps={operatingEps}
                   technicalLevels={reportData?.technicalLevels}
                   valuation={{
                     panic: panicTarget,
