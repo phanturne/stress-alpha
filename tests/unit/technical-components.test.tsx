@@ -114,6 +114,9 @@ describe("Technical Levels UI Components", () => {
       // Verify meter rendered
       expect(screen.getByText("Valuation Meter")).toBeDefined();
       expect(screen.getByText(/Current: \$150/)).toBeDefined();
+      expect(
+        screen.getByTitle("Price as of last market close (EOD)")
+      ).toBeDefined();
 
       // Ensure S/R button and technical tick marks are NOT present
       expect(screen.queryByRole("button", { name: /S\/R/i })).toBeNull();
@@ -132,6 +135,7 @@ describe("Technical Levels UI Components", () => {
 
       expect(screen.getByText("估值区间标尺")).toBeDefined();
       expect(screen.getByText(/现价: \$150/)).toBeDefined();
+      expect(screen.getByTitle("最新交易日收盘价")).toBeDefined();
     });
   });
 
