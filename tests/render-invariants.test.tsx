@@ -441,7 +441,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
       company: "NVIDIA Corporation",
     };
 
-    it("hides Model button on homepage when no report is selected (Option B)", async () => {
+    it("menu presents Screener and Watchlist navigation without redundant Model button", async () => {
       const queryClient = createTestQueryClient();
       const onSelectReport = vi.fn();
       const onViewModeChange = vi.fn();
@@ -467,7 +467,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
         );
       });
 
-      // Invariant: On homepage (currentSlug === null), Model button is hidden
+      // Invariant: Model button is completely removed from the menu
       const cockpitButton = screen.queryByTitle(/Model/i);
       expect(cockpitButton).toBeNull();
 
@@ -479,7 +479,7 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(screen.getByText("Select Stock...")).toBeDefined();
     });
 
-    it("renders Model button and navigates directly on first click once a report is selected", async () => {
+    it("keeps menu clean (Screener and Watchlist only) even when a report is selected", async () => {
       const queryClient = createTestQueryClient();
       const onSelectReport = vi.fn();
       const onViewModeChange = vi.fn();
@@ -505,17 +505,17 @@ describe("Frontend Render & Efficiency Invariants", () => {
         );
       });
 
-      // Invariant: When currentSlug is set, Model button appears
-      const cockpitButton = screen.getByTitle("Return to NVDA Model (M)");
-      expect(cockpitButton).toBeDefined();
-      expect(cockpitButton.textContent).toContain("NVDA");
+      // Invariant: Model button is not rendered in the menu
+      const cockpitButton = screen.queryByTitle(/Model/i);
+      expect(cockpitButton).toBeNull();
 
-      fireEvent.click(cockpitButton);
-
-      // Invariant: onSelectReport must be called on first click without redundant onViewModeChange
-      expect(onSelectReport).toHaveBeenCalledTimes(1);
-      expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
-      expect(onViewModeChange).not.toHaveBeenCalled();
+      // Screener and Watchlist navigation buttons are active and responsive
+      const screenerBtn = screen.getByTitle("Screener (S)");
+      expect(screenerBtn).toBeDefined();
+      fireEvent.click(screenerBtn);
+      expect(onViewModeChange).toHaveBeenCalledWith("screener", {
+        watchlistOnly: false,
+      });
     });
   });
 });
