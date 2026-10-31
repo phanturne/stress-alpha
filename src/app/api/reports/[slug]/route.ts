@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
 import { getReportRepository } from "@/lib/repository";
+import { formatSafeErrorDetails } from "@/lib/utils";
 
 const getCachedReportBySlug = unstable_cache(
   async (slug: string) => {
@@ -17,6 +18,12 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    if (!slug || !/^[A-Za-z0-9._-]{1,80}$/.test(slug)) {
+      return NextResponse.json(
+        { error: "Invalid report slug" },
+        { status: 400 }
+      );
+    }
     let report;
     try {
       report = await getCachedReportBySlug(slug);
@@ -42,7 +49,10 @@ export async function GET(
   } catch (error) {
     console.error("Error loading report:", error);
     return NextResponse.json(
-      { error: "Failed to load report", details: String(error) },
+      {
+        error: "Failed to load report",
+        details: formatSafeErrorDetails(error),
+      },
       { status: 500 }
     );
   }

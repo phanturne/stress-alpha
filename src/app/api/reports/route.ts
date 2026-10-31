@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
 import { getReportRepository, type ReportSummary } from "@/lib/repository";
+import { formatSafeErrorDetails } from "@/lib/utils";
 
 export type { ReportSummary };
 
@@ -34,7 +35,10 @@ export async function GET() {
   } catch (error) {
     console.error("Error reading reports:", error);
     return NextResponse.json(
-      { error: "Failed to list reports", details: String(error) },
+      {
+        error: "Failed to list reports",
+        details: formatSafeErrorDetails(error),
+      },
       { status: 500 }
     );
   }

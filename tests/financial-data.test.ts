@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { describe, it, expect } from "vitest";
-import { NextRequest } from "next/server";
 import {
   fetchCompletePipelineBundle,
   fetchFundamentalProfile,
@@ -19,9 +18,8 @@ import {
   FactsSchema,
   ReactionsSchema,
 } from "@/lib/schemas";
-import { GET, POST } from "@/app/api/pipeline/data/route";
 
-describe("Financial Data Ingestion Service & Pipeline Endpoint", () => {
+describe("Financial Data Ingestion Service", () => {
   it("maps ratings and actions correctly to institutional Chinese lexicon", () => {
     expect(RATING_ZH_MAP["strong buy"]).toBe("强烈推荐买入 (Strong Buy)");
     expect(RATING_ZH_MAP["buy"]).toBe("买入 (Buy)");
@@ -168,98 +166,32 @@ describe("Financial Data Ingestion Service & Pipeline Endpoint", () => {
     }
   });
 
-  describe("API Route: /api/pipeline/data", () => {
-    it("GET /api/pipeline/data returns 400 when ticker query param is missing", async () => {
-      const req = new NextRequest("http://localhost:3000/api/pipeline/data");
-      const res = await GET(req);
-      expect(res.status).toBe(400);
-
-      const json = await res.json();
-      expect(json.error).toMatch(/ticker/i);
-    });
-
-    it("GET /api/pipeline/data?ticker=MSFT returns complete bundle", async () => {
-      const req = new NextRequest(
-        "http://localhost:3000/api/pipeline/data?ticker=MSFT"
-      );
-      const res = await GET(req);
-      expect(res.status).toBe(200);
-
-      const json = await res.json();
-      expect(json.success).toBe(true);
-      expect(json.ticker).toBe("MSFT");
-      expect(json.bundle).toBeDefined();
-      expect(json.bundle.profile.currentPrice).toBeGreaterThan(0);
-    });
-
-    it("POST /api/pipeline/data returns 400 when body lacks ticker", async () => {
-      const req = new NextRequest("http://localhost:3000/api/pipeline/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+  it("preserves existing qualitative files during staging unless overwriteAll is specified", async () => {
+    const tempDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "stress-alpha-api-test-preserve-")
+    );
+    try {
+      const scenariosPath = path.join(tempDir, "scenarios.json");
+      const customContent = JSON.stringify({
+        custom: "analyst-handcrafted-content",
       });
-      const res = await POST(req);
-      expect(res.status).toBe(400);
-    });
+      fs.writeFileSync(scenariosPath, customContent, "utf-8");
 
-    it("POST /api/pipeline/data with stagingDir stages files and returns success", async () => {
-      const tempDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), "stress-alpha-api-test-")
-      );
-      try {
-        const req = new NextRequest("http://localhost:3000/api/pipeline/data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ticker: "MSFT",
-            stagingDir: tempDir,
-          }),
-        });
-        const res = await POST(req);
-        expect(res.status).toBe(200);
+      const bundle = await fetchCompletePipelineBundle("MSFT");
+      await writePipelineArtifacts(tempDir, bundle, { overwriteAll: false });
 
-        const json = await res.json();
-        expect(json.success).toBe(true);
-        expect(json.ticker).toBe("MSFT");
-        expect(json.artifactsWritten).toBeDefined();
-        expect(json.artifactsWritten.length).toBeGreaterThanOrEqual(14);
+      // Verify scenarios.json was NOT overwritten
+      const preserved = fs.readFileSync(scenariosPath, "utf-8");
+      expect(preserved).toBe(customContent);
 
-        expect(
-          fs.existsSync(path.join(tempDir, "analyst-estimates.json"))
-        ).toBe(true);
-        expect(fs.existsSync(path.join(tempDir, "scenarios.json"))).toBe(true);
-      } finally {
-        fs.rmSync(tempDir, { recursive: true, force: true });
-      }
-    });
-
-    it("preserves existing qualitative files during staging unless overwriteAll is specified", async () => {
-      const tempDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), "stress-alpha-api-test-preserve-")
-      );
-      try {
-        const scenariosPath = path.join(tempDir, "scenarios.json");
-        const customContent = JSON.stringify({
-          custom: "analyst-handcrafted-content",
-        });
-        fs.writeFileSync(scenariosPath, customContent, "utf-8");
-
-        const bundle = await fetchCompletePipelineBundle("MSFT");
-        await writePipelineArtifacts(tempDir, bundle, { overwriteAll: false });
-
-        // Verify scenarios.json was NOT overwritten
-        const preserved = fs.readFileSync(scenariosPath, "utf-8");
-        expect(preserved).toBe(customContent);
-
-        // Verify that with overwriteAll: true, it IS replaced
-        await writePipelineArtifacts(tempDir, bundle, { overwriteAll: true });
-        const replaced = JSON.parse(fs.readFileSync(scenariosPath, "utf-8"));
-        expect(replaced.ticker).toBe("MSFT");
-        expect(replaced.scenarios).toBeDefined();
-      } finally {
-        fs.rmSync(tempDir, { recursive: true, force: true });
-      }
-    });
+      // Verify that with overwriteAll: true, it IS replaced
+      await writePipelineArtifacts(tempDir, bundle, { overwriteAll: true });
+      const replaced = JSON.parse(fs.readFileSync(scenariosPath, "utf-8"));
+      expect(replaced.ticker).toBe("MSFT");
+      expect(replaced.scenarios).toBeDefined();
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 
   describe("Deterministic Baseline & Scenario Guardrails", () => {

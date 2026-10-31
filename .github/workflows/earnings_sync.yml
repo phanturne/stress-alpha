@@ -53,21 +53,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Audit Repository Secrets
-        run: |
-          echo "::notice title=Secret Audit::DATABASE_URL len=${#DATABASE_URL}, FINNHUB_API_KEY len=${#FINNHUB_API_KEY}, MASSIVE_API_KEY len=${#MASSIVE_API_KEY}, POLYGON_API_KEY len=${#POLYGON_API_KEY}, FINNHUB_KEY len=${#FINNHUB_KEY}, MASSIVE_KEY len=${#MASSIVE_KEY}, POLYGON_KEY len=${#POLYGON_KEY}, FINNHUB_TOKEN len=${#FINNHUB_TOKEN}, MASSIVE_TOKEN len=${#MASSIVE_TOKEN}, POLYGON_TOKEN len=${#POLYGON_TOKEN}"
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
-          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          MASSIVE_KEY: ${{ secrets.MASSIVE_KEY }}
-          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
-          POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
-          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
-
       - name: Run Earnings Calendar Ingestion Script
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -80,18 +65,23 @@ jobs:
           MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
           POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
+          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          INPUT_TARGET_DATE: ${{ github.event.inputs.target_date }}
+          INPUT_FORCE_RESYNC: ${{ github.event.inputs.force_resync }}
+          INPUT_SESSION: ${{ github.event.inputs.session }}
+          INPUT_TICKER: ${{ github.event.inputs.ticker }}
         run: |
-          ARGS=""
-          if [ -n "${{ github.event.inputs.target_date }}" ]; then
-            ARGS="$ARGS --date=${{ github.event.inputs.target_date }}"
+          ARGS=()
+          if [ -n "$INPUT_TARGET_DATE" ]; then
+            ARGS+=("--date=$INPUT_TARGET_DATE")
           fi
-          if [ "${{ github.event.inputs.force_resync }}" = "true" ]; then
-            ARGS="$ARGS --force"
+          if [ "$INPUT_FORCE_RESYNC" = "true" ]; then
+            ARGS+=("--force")
           fi
-          if [ "${{ github.event.inputs.session }}" = "bmo" ] || [ "${{ github.event.inputs.session }}" = "amc" ]; then
-            ARGS="$ARGS --session=${{ github.event.inputs.session }}"
+          if [ "$INPUT_SESSION" = "bmo" ] || [ "$INPUT_SESSION" = "amc" ]; then
+            ARGS+=("--session=$INPUT_SESSION")
           fi
-          if [ -n "${{ github.event.inputs.ticker }}" ]; then
-            ARGS="$ARGS --ticker=${{ github.event.inputs.ticker }}"
+          if [ -n "$INPUT_TICKER" ]; then
+            ARGS+=("--ticker=$INPUT_TICKER")
           fi
-          npx tsx scripts/sync_earnings_calendar.ts $ARGS
+          npx tsx scripts/sync_earnings_calendar.ts "${ARGS[@]}"
