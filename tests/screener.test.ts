@@ -205,7 +205,8 @@ describe("Screener & Reports API", () => {
         // (within +/- 1 pt to account for live market price movements vs report price)
         expect(
           Math.abs(
-            (reportSummary.snowflakeScore ?? 0) - stockPageSnowflakeEn.totalScore
+            (reportSummary.snowflakeScore ?? 0) -
+              stockPageSnowflakeEn.totalScore
           )
         ).toBeLessThanOrEqual(1);
         expect(stockPageSnowflakeEn.totalScore).toBe(
