@@ -139,15 +139,19 @@ export const Header: React.FC<HeaderProps> = ({
   const currentTicker =
     facts?.ticker ||
     (currentSlug ? currentSlug.split("-")[0].toUpperCase() : undefined);
-  const defaultReport = reports && reports.length > 0 ? reports[0] : null;
+  const nvdaReport = React.useMemo(
+    () => reports?.find((r) => r.ticker === "NVDA"),
+    [reports]
+  );
+  const defaultReport =
+    nvdaReport || (reports && reports.length > 0 ? reports[0] : null);
   const activeSlug =
-    currentSlug || recentReport?.slug || defaultReport?.slug || "NVDA-2025Q4";
+    currentSlug || defaultReport?.slug || "NVDA-Q2-2027-analysis";
   const activeTicker =
     currentTicker ||
-    recentReport?.ticker ||
-    reports.find((r) => r.slug === activeSlug)?.ticker ||
-    (activeSlug ? activeSlug.split("-")[0].toUpperCase() : null) ||
-    "NVDA";
+    (currentSlug
+      ? reports?.find((r) => r.slug === currentSlug)?.ticker
+      : defaultReport?.ticker || "NVDA");
   const siblingReports = React.useMemo(() => {
     if (!reports || reports.length === 0) return [];
     if (currentTicker) {
@@ -204,10 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
           currentDate={facts?.reportDate}
           siblingReports={siblingReports}
           reports={reports}
-          onSelectReport={(slug) => {
-            onViewModeChange("cockpit");
-            onSelectReport(slug);
-          }}
+          onSelectReport={onSelectReport}
           locale={locale}
           onOpenScreener={() => onViewModeChange("screener")}
         />
@@ -219,10 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => {
-              if (currentSlug !== activeSlug) {
-                onSelectReport(activeSlug);
-              }
-              onViewModeChange("cockpit");
+              onSelectReport(activeSlug);
             }}
             onMouseEnter={() => prefetchReport(activeSlug)}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
@@ -839,10 +837,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    if (currentSlug !== activeSlug) {
-                      onSelectReport(activeSlug);
-                    }
-                    onViewModeChange("cockpit");
+                    onSelectReport(activeSlug);
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${

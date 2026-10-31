@@ -82,6 +82,7 @@ export function useReportNavigation({
   const activeTabRef = useRef(activeTab);
   const localeRef = useRef(locale);
   const stressParamsRef = useRef(stressParams);
+  const hasParsedInitialUrlRef = useRef(false);
 
   useEffect(() => {
     currentSlugRef.current = currentSlug;
@@ -92,7 +93,9 @@ export function useReportNavigation({
 
   // Initial load: parse URL search or hash to restore exact scenario, report, tab, and mode
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || hasParsedInitialUrlRef.current) return;
+    hasParsedInitialUrlRef.current = true;
+
     const urlState = parseScenarioUrlState(
       window.location.search || window.location.hash
     );
@@ -127,13 +130,13 @@ export function useReportNavigation({
         return;
       }
 
-      if (urlState.report !== currentSlug) {
+      if (urlState.report !== currentSlugRef.current) {
+        currentSlugRef.current = urlState.report;
         setCurrentSlug(urlState.report);
       }
     });
   }, [
     router,
-    currentSlug,
     setCurrentSlug,
     setLocale,
     onSetReportDocLang,
@@ -162,7 +165,8 @@ export function useReportNavigation({
           setStressParams(urlState.stressParams);
         }
       }
-      if (urlState.report && urlState.report !== currentSlug) {
+      if (urlState.report && urlState.report !== currentSlugRef.current) {
+        currentSlugRef.current = urlState.report;
         setCurrentSlug(urlState.report);
       }
     };
@@ -170,7 +174,6 @@ export function useReportNavigation({
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [
-    currentSlug,
     setCurrentSlug,
     setLocale,
     onSetReportDocLang,
@@ -239,6 +242,7 @@ export function useReportNavigation({
   const handleSelectReport = useCallback(
     (slug: string, mode?: "cockpit" | "memo") => {
       const nextMode = mode ?? "cockpit";
+      currentSlugRef.current = slug;
       setViewMode(nextMode);
       setCurrentSlug(slug);
       if (typeof window !== "undefined") {
