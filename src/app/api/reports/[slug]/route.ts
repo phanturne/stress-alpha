@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import { getReportRepository } from "@/lib/repository";
+
+const getCachedReportBySlug = unstable_cache(
+  async (slug: string) => {
+    const repo = getReportRepository();
+    return repo.getReport(slug);
+  },
+  ["report-by-slug"],
+  { revalidate: 3600, tags: ["reports"] }
+);
 
 export async function GET(
   request: NextRequest,
@@ -7,8 +17,12 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const repo = getReportRepository();
-    const report = await repo.getReport(slug);
+    let report;
+    try {
+      report = await getCachedReportBySlug(slug);
+    } catch {
+      report = await getReportRepository().getReport(slug);
+    }
 
     if (!report) {
       return NextResponse.json(
@@ -21,7 +35,8 @@ export async function GET(
 
     return NextResponse.json(report, {
       headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        "Cache-Control":
+          "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
       },
     });
   } catch (error) {

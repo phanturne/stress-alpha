@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Manage account security, privacy settings, theme, language, and quantitative valuation model parameters.",
 };
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function SettingsPage() {
   let initialReports: ReportSummary[] = [];

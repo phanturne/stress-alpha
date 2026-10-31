@@ -24,7 +24,7 @@ import { computeStressedValuation, computeValuation } from "@/lib/valuation";
 export class DrizzleReportRepository implements IReportRepository {
   private cachedSummaries: ReportSummary[] | null = null;
   private lastSummariesTime = 0;
-  private readonly CACHE_TTL_MS = 60_000;
+  private readonly CACHE_TTL_MS = 900_000; // 15 minutes in-memory warm cache
   private cachedReports = new Map<
     string,
     { data: ReportData; timestamp: number }

@@ -42,7 +42,7 @@ export function useReportPrefetch() {
         queryClient.prefetchQuery({
           queryKey: ["report", slug],
           queryFn: () => fetchReportData(slug),
-          staleTime: 1000 * 60 * 5,
+          staleTime: 1000 * 60 * 30,
         });
 
         // 3. Prefetch ticker news & revisions only on explicit/immediate intent
@@ -50,12 +50,12 @@ export function useReportPrefetch() {
           queryClient.prefetchQuery({
             queryKey: ["news", ticker],
             queryFn: () => fetchNews(ticker),
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 30,
           });
           queryClient.prefetchQuery({
             queryKey: ["revisions", ticker],
             queryFn: () => fetchRevisions(ticker),
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 30,
           });
         }
       };
