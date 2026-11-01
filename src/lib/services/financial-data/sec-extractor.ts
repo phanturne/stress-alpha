@@ -40,8 +40,8 @@ export async function extractSecFilingExcerpts(
   const excerpts: SecFilingExcerpts = {};
   if (!filings || filings.length === 0) return excerpts;
 
-  const tenQ = filings.find((f) => f.form === "10-Q" || f.form === "10-K");
-  const eightK = filings.find((f) => f.form === "8-K");
+  const tenQ = filings.find((f) => ["10-Q", "10-K", "20-F"].includes(f.form));
+  const eightK = filings.find((f) => ["8-K", "6-K"].includes(f.form));
 
   // 1. Process 10-Q / 10-K
   if (tenQ?.reportUrl) {
