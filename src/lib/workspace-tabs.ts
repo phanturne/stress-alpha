@@ -28,38 +28,14 @@ export interface WorkspaceTabDescriptor {
   label: string;
   shortLabel: string;
   icon: LucideIcon;
-  count?: number;
 }
 
 export function getWorkspaceTabs(
   t: Translations,
-  reportData: ReportData | null,
-  marketEventsCount: number,
-  isZh: boolean
+  _reportData: ReportData | null,
+  _marketEventsCount: number,
+  _isZh: boolean
 ): WorkspaceTabDescriptor[] {
-  const displayFacts =
-    isZh && reportData?.factsZh ? reportData.factsZh : reportData?.facts;
-  const displayCatalysts =
-    isZh && reportData?.catalystsZh
-      ? reportData.catalystsZh
-      : reportData?.catalysts;
-  const displayScenarios =
-    isZh && reportData?.scenariosZh
-      ? reportData.scenariosZh
-      : reportData?.scenarios;
-  const displayMoat =
-    isZh && reportData?.moatZh ? reportData.moatZh : reportData?.moat;
-  const displayEstimates =
-    isZh && reportData?.estimatesZh
-      ? reportData.estimatesZh
-      : reportData?.estimates;
-  const displayFiling =
-    isZh && reportData?.filingZh ? reportData.filingZh : reportData?.filing;
-  const displayReactions =
-    isZh && reportData?.reactionsZh
-      ? reportData.reactionsZh
-      : reportData?.reactions;
-
   return [
     {
       id: "technicals",
@@ -67,7 +43,6 @@ export function getWorkspaceTabs(
       label: t.tabs.technicals,
       shortLabel: t.tabs.shortTechnicals,
       icon: CandlestickChart,
-      count: reportData?.technicalLevels?.levels?.length,
     },
     {
       id: "valuation",
@@ -75,9 +50,6 @@ export function getWorkspaceTabs(
       label: t.tabs.valuation,
       shortLabel: t.tabs.shortValuation,
       icon: TrendingUp,
-      count:
-        (displayScenarios?.scenarios.length ?? 0) +
-        (displayCatalysts?.catalysts?.length ?? 0),
     },
     {
       id: "estimates",
@@ -85,9 +57,6 @@ export function getWorkspaceTabs(
       label: t.tabs.estimates,
       shortLabel: t.tabs.shortEstimates,
       icon: Target,
-      count:
-        (displayEstimates?.estimates?.length ?? 0) +
-        (displayMoat?.competitors?.length ?? 0),
     },
     {
       id: "news",
@@ -95,10 +64,6 @@ export function getWorkspaceTabs(
       label: t.tabs.news,
       shortLabel: t.tabs.shortNews,
       icon: Radio,
-      count:
-        marketEventsCount +
-        (displayFiling?.newRiskFactors?.length ?? 0) +
-        (displayReactions?.events?.length ?? 0),
     },
   ];
 }

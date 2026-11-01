@@ -316,19 +316,19 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
                 <span className="font-mono text-xs font-bold text-foreground">
                   {report.snowflakeScore}
                 </span>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
                   /30
                 </span>
               </div>
               <span
-                className={`font-mono text-[11px] font-semibold uppercase tracking-wider ${
+                className={`font-mono text-[11px] font-bold uppercase tracking-wider ${
                   report.snowflakeScore >= 24
-                    ? "text-emerald-400"
+                    ? "text-emerald-600 dark:text-emerald-400"
                     : report.snowflakeScore >= 18
-                      ? "text-cyan-400"
+                      ? "text-sky-600 dark:text-cyan-400"
                       : report.snowflakeScore >= 12
-                        ? "text-amber-400"
-                        : "text-rose-400"
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-rose-600 dark:text-rose-400"
                 }`}
               >
                 {report.snowflakeTier ?? "balanced"}

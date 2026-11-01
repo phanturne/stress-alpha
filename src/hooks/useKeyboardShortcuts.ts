@@ -128,12 +128,6 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions) {
         return;
       }
 
-      if (e.key === "e" || e.key === "E") {
-        e.preventDefault();
-        onToggleSocialCard();
-        return;
-      }
-
       if (e.key === "w" || e.key === "W") {
         e.preventDefault();
         onToggleSnowflake();

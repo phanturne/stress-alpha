@@ -229,30 +229,6 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   />
                   <span className="2xl:hidden">{tab.shortLabel}</span>
                   <span className="hidden 2xl:inline">{tab.label}</span>
-                  {tab.count !== undefined && (
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] tabular-nums transition-all ${
-                        isActive
-                          ? "bg-accent/15 font-bold text-accent"
-                          : "bg-surface-3/80 text-slate-400 group-hover:text-slate-300"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                  <kbd
-                    className={`hidden rounded border border-border/80 px-1 py-0.5 font-mono text-[11px] font-medium transition-opacity ${
-                      tab.count !== undefined
-                        ? "opacity-0 group-hover:opacity-100"
-                        : ""
-                    } xl:inline ${
-                      isActive
-                        ? "bg-surface-3 text-slate-300"
-                        : "bg-surface-0/60 text-slate-400 group-hover:text-slate-300"
-                    }`}
-                  >
-                    {tab.shortcut}
-                  </kbd>
                 </button>
               );
             })}
@@ -292,9 +268,6 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
           >
             <FileText className="size-3.5 text-accent" />
             <span className="hidden xl:inline">{t.header.memo}</span>
-            <kbd className="rounded border border-border/80 bg-surface-0/60 px-1 py-0.5 font-mono text-[11px] text-slate-400">
-              M
-            </kbd>
           </button>
         </div>
       </div>

@@ -231,10 +231,10 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                 cy={cy}
                 r={r}
                 fill="none"
-                stroke={
+                className={
                   isOuter
-                    ? "rgba(255, 255, 255, 0.22)"
-                    : "rgba(255, 255, 255, 0.08)"
+                    ? "stroke-border dark:stroke-white/20"
+                    : "stroke-border/60 dark:stroke-white/10"
                 }
                 strokeWidth={isOuter ? "1.25" : "0.75"}
                 strokeDasharray={isOuter ? undefined : "3 3"}
@@ -254,11 +254,11 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                 y1={cy}
                 x2={v.outerX}
                 y2={v.outerY}
-                stroke={
-                  isCurrent ? v.pillar.color : "rgba(255, 255, 255, 0.16)"
-                }
+                className={`transition-colors duration-200 ${
+                  isCurrent ? "" : "stroke-border/70 dark:stroke-white/15"
+                }`}
+                stroke={isCurrent ? v.pillar.color : undefined}
                 strokeWidth={isCurrent ? "1.5" : "0.75"}
-                className="transition-colors duration-200"
               />
             );
           })}
@@ -290,7 +290,8 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           y={cy - 1}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none fill-foreground font-mono text-[11px] font-black sm:text-xs"
+          fill="currentColor"
+          className="pointer-events-none font-mono text-[11px] font-black text-foreground sm:text-xs"
         >
           {scoreResult.totalScore}
         </text>
@@ -301,35 +302,33 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
           y={cy + 8}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none fill-slate-400 font-mono text-[11px] font-semibold"
+          fill="currentColor"
+          className="pointer-events-none font-mono text-[11px] font-semibold text-slate-500 dark:text-slate-400"
         >
           /30
         </text>
 
-        {/* 5 Vertices (Interactive Click & Hover Points) */}
+        {/* 5 Vertices (Interactive Click Points) */}
         <g className="snowflake-vertices">
           {vertices.map((v) => {
-            const isCurrent = selectedOrHovered === v.id;
+            const isSelected = activePillar === v.id;
             return (
               <g
                 key={v.id}
-                className={interactive ? "group cursor-pointer" : ""}
-                onMouseEnter={() => interactive && setHoveredPillar(v.id)}
-                onMouseLeave={() => interactive && setHoveredPillar(null)}
+                className={interactive ? "cursor-pointer" : ""}
                 onClick={() => interactive && onSelectPillar?.(v.id)}
               >
                 {/* Hit area */}
                 <circle cx={v.x} cy={v.y} r={14} fill="transparent" />
 
-                {/* Outer halo when selected */}
-                {isCurrent && (
+                {/* Selection indicator if active */}
+                {isSelected && (
                   <circle
                     cx={v.x}
                     cy={v.y}
-                    r={8}
+                    r={6.5}
                     fill={v.pillar.color}
                     fillOpacity="0.25"
-                    className="animate-pulse"
                   />
                 )}
 
@@ -337,11 +336,10 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                 <circle
                   cx={v.x}
                   cy={v.y}
-                  r={isCurrent ? 5 : 3.5}
+                  r={3.5}
                   fill={v.pillar.color}
                   stroke="#0f172a"
                   strokeWidth="2"
-                  className="transition-all duration-200"
                 />
               </g>
             );
@@ -352,14 +350,11 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
         {showLabels && (
           <g className="snowflake-labels">
             {vertices.map((v) => {
-              const isCurrent = selectedOrHovered === v.id;
               const labelText = v.pillar.shortLabel;
               return (
                 <g
                   key={`label-${v.id}`}
-                  className={interactive ? "group cursor-pointer" : ""}
-                  onMouseEnter={() => interactive && setHoveredPillar(v.id)}
-                  onMouseLeave={() => interactive && setHoveredPillar(null)}
+                  className={interactive ? "cursor-pointer" : ""}
                   onClick={() => interactive && onSelectPillar?.(v.id)}
                 >
                   {/* Label Text */}
@@ -368,27 +363,22 @@ export const SnowflakeRadar: React.FC<SnowflakeRadarProps> = ({
                     y={v.labelY}
                     textAnchor={v.textAnchor}
                     dominantBaseline="central"
-                    className={`font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
-                      isCurrent
-                        ? "fill-foreground text-[11px] font-extrabold"
-                        : "fill-slate-300 text-[11px] group-hover:fill-foreground"
-                    }`}
-                    style={{ fontSize: isCurrent ? fontSize + 1 : fontSize }}
+                    fill="currentColor"
+                    className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                    style={{ fontSize }}
                   >
                     {labelText}
                   </text>
 
-                  {/* Score indicator (e.g. 5/6) */}
+                  {/* Score indicator (e.g. 5/6) - ALWAYS rendered with pillar color without requiring hover */}
                   <text
                     x={v.labelX}
                     y={v.labelY + (v.dy < 0 ? -11 : 12)}
                     textAnchor={v.textAnchor}
                     dominantBaseline="central"
-                    className={`font-mono text-[11px] transition-colors duration-200 ${
-                      isCurrent ? "font-bold" : "text-slate-300"
-                    }`}
+                    className="font-mono text-[11px] font-bold"
                     style={{
-                      fill: isCurrent ? v.pillar.color : "rgb(203, 213, 225)",
+                      fill: v.pillar.color,
                     }}
                   >
                     {v.score}/6

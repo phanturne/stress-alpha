@@ -176,11 +176,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
         {/* Print-Only Document Header */}
         <div className="print-only mb-2 items-center justify-between border-b-2 border-slate-900 pb-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-black tracking-tight text-slate-950">
-              STRESS<span className="text-accent">ALPHA</span>
-            </span>
-            <span className="text-slate-400">|</span>
-            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-800">
               {t.docClassification}
             </span>
           </div>
@@ -251,7 +247,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 。
               </p>
               <p className="text-sm leading-relaxed text-slate-300">
-                基于当前 StressAlpha 压力测试参数设定，测算得出的压力预测 EPS 为{" "}
+                基于当前压力测试基准设定，测算得出的压力预测 EPS 为{" "}
                 <strong className="text-foreground">
                   {formatCurrency(stressResult.stressEps)}
                 </strong>
@@ -283,7 +279,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
                 , normalized for one-time paper accounting noise.
               </p>
               <p className="text-sm leading-relaxed text-slate-300">
-                Under active StressAlpha parameter assumptions, implied forward
+                Under active stress parameter assumptions, implied forward
                 stressed EPS is{" "}
                 <strong className="text-foreground">
                   {formatCurrency(stressResult.stressEps)}

@@ -4,6 +4,7 @@
 
 @layer base {
   :root,
+  [data-theme="dark"],
   [data-theme="cyber"],
   .dark {
     --bg-rgb: 7 9 14; /* #07090e */
@@ -837,24 +838,52 @@ input[type="range"]::-moz-range-thumb {
   fill: rgba(15, 23, 42, 0.35) !important;
 }
 
-.light .snowflake-labels text,
-[data-theme="light"] .snowflake-labels text {
-  fill: #475569;
+.snowflake-labels text {
+  fill: currentColor;
 }
 
-.light .snowflake-labels .fill-white,
-[data-theme="light"] .snowflake-labels .fill-white {
-  fill: #0f172a;
+/* High-contrast 5-Pillar score colors across light & dark themes */
+.pillar-score-valuation {
+  color: #047857;
+}
+.pillar-score-future {
+  color: #0284c7;
+}
+.pillar-score-earnings {
+  color: #4f46e5;
+}
+.pillar-score-moat {
+  color: #b45309;
+}
+.pillar-score-resilience {
+  color: #be123c;
 }
 
-.light .snowflake-labels g:hover text,
-[data-theme="light"] .snowflake-labels g:hover text {
-  fill: #0284c7;
+.dark .pillar-score-valuation,
+[data-theme="dark"] .pillar-score-valuation {
+  color: #10b981;
+}
+.dark .pillar-score-future,
+[data-theme="dark"] .pillar-score-future {
+  color: #06b6d4;
+}
+.dark .pillar-score-earnings,
+[data-theme="dark"] .pillar-score-earnings {
+  color: #818cf8;
+}
+.dark .pillar-score-moat,
+[data-theme="dark"] .pillar-score-moat {
+  color: #f59e0b;
+}
+.dark .pillar-score-resilience,
+[data-theme="dark"] .pillar-score-resilience {
+  color: #ec4899;
 }
 
 .light .snowflake-pillar-score,
 [data-theme="light"] .snowflake-pillar-score {
-  filter: contrast(1.5) brightness(0.75);
+  font-weight: 700;
+  filter: contrast(1.8) brightness(0.65);
 }
 
 .light svg .fill-white,

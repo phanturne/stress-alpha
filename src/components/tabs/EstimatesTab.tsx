@@ -761,14 +761,8 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               </h3>
             </div>
 
-            <div className="relative my-2 border-l-2 border-accent/60 pl-3">
-              <p className="whitespace-pre-line text-xs leading-relaxed text-slate-300">
-                {synthesisNarrative}
-              </p>
-            </div>
-
-            {/* Quick Synthesis Highlights */}
-            <div className="mt-auto space-y-2.5 border-t border-border/60 pt-4">
+            {/* Quick Synthesis Highlights (Top: Visible immediately without scrolling) */}
+            <div className="space-y-2 border-b border-border/60 pb-3.5">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {t.consensusAnatomy}
               </div>
@@ -806,6 +800,15 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                 <span className="font-mono font-bold text-accent">
                   ${(high - low).toFixed(2)}
                 </span>
+              </div>
+            </div>
+
+            {/* Narrative Body */}
+            <div className="my-3 flex-1 overflow-y-auto">
+              <div className="border-l-2 border-accent/60 pl-3">
+                <p className="whitespace-pre-line text-xs leading-relaxed text-slate-300">
+                  {synthesisNarrative}
+                </p>
               </div>
             </div>
           </div>

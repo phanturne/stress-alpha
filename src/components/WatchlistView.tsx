@@ -371,20 +371,24 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
       if (!tier) return null;
       const label = tw.divergenceTiers[tier] || tier;
 
-      let badgeClass = "border-slate-500/30 bg-slate-500/10 text-slate-300";
+      let badgeClass =
+        "border-slate-300 dark:border-slate-500/30 bg-slate-100 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300";
       if (tier === "extreme_divergence") {
-        badgeClass = "border-fuchsia-500/30 bg-fuchsia-500/15 text-fuchsia-300";
+        badgeClass =
+          "border-fuchsia-300 dark:border-fuchsia-500/30 bg-fuchsia-50 dark:bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300";
       } else if (tier === "high_conviction_alpha") {
-        badgeClass = "border-emerald-500/30 bg-emerald-500/15 text-emerald-300";
+        badgeClass =
+          "border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
       } else if (tier === "moderate_alpha") {
-        badgeClass = "border-sky-500/30 bg-sky-500/15 text-sky-300";
+        badgeClass =
+          "border-sky-300 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/15 text-sky-700 dark:text-sky-300";
       }
 
       return (
         <span
-          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide ${badgeClass}`}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide ${badgeClass}`}
         >
-          <Sparkles className="size-2.5 shrink-0" />
+          <span className="size-1.5 shrink-0 rounded-full bg-current opacity-80" />
           <span>{label}</span>
           {spreadPct !== undefined && (
             <span className="opacity-90">
@@ -454,30 +458,30 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
           <div className="glass-panel shadow-xs grid grid-cols-2 divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-1/90 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
             {/* 1. Tracked Equities */}
             <div className="flex flex-col justify-between p-3.5">
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {tw.statsTracked}
               </span>
               <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-mono text-2xl font-black text-foreground">
+                <span className="font-mono text-2xl font-black tabular-nums text-foreground">
                   {portfolioStats.trackedCount}
                 </span>
-                <span className="font-mono text-[11px] text-amber-400">
-                  ★ Core
+                <span className="font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Equities
                 </span>
               </div>
             </div>
 
             {/* 2. Avg Fair Value Upside */}
             <div className="flex flex-col justify-between p-3.5">
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {tw.statsAvgUpside}
               </span>
               <div className="mt-1 flex items-baseline gap-1">
                 <span
-                  className={`font-mono text-2xl font-black ${
+                  className={`font-mono text-2xl font-black tabular-nums ${
                     portfolioStats.avgUpside >= 0
-                      ? "text-emerald-400"
-                      : "text-rose-400"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400"
                   }`}
                 >
                   {portfolioStats.avgUpside >= 0 ? "+" : ""}
@@ -488,7 +492,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
 
             {/* 3. Conviction Leader */}
             <div className="flex flex-col justify-between p-3.5">
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {tw.statsConvictionLeader}
               </span>
               <div className="mt-1 flex items-baseline gap-1.5 truncate">
@@ -497,7 +501,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                     <span className="font-mono text-lg font-black text-foreground">
                       {portfolioStats.convictionLeader.ticker}
                     </span>
-                    <span className="font-mono text-xs font-bold text-emerald-400">
+                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                       +
                       {(portfolioStats.convictionLeader.upsidePct ?? 0).toFixed(
                         1
@@ -513,11 +517,11 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
 
             {/* 4. Wide Moat Share */}
             <div className="flex flex-col justify-between p-3.5">
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {tw.statsWideMoat}
               </span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="font-mono text-2xl font-black text-foreground">
+                <span className="font-mono text-2xl font-black tabular-nums text-foreground">
                   {portfolioStats.wideMoatShare}%
                 </span>
               </div>
@@ -525,14 +529,16 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
 
             {/* 5. Avg Snowflake Health */}
             <div className="col-span-2 flex flex-col justify-between p-3.5 sm:col-span-1">
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {tw.statsAvgSnowflake}
               </span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="font-mono text-2xl font-black text-foreground">
+                <span className="font-mono text-2xl font-black tabular-nums text-foreground">
                   {portfolioStats.avgSnowflake}
                 </span>
-                <span className="font-mono text-xs text-slate-400">/ 30</span>
+                <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                  / 30
+                </span>
               </div>
             </div>
           </div>
@@ -845,27 +851,27 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                       {/* 4-Regime Pricing Telemetry Grid */}
                       <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl border border-border/60 bg-surface-0/60 p-3">
                         <div>
-                          <div className="text-[11px] font-medium text-slate-400">
+                          <div className="font-mono text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                             {tw.colPrice}
                           </div>
-                          <div className="mt-0.5 font-mono text-sm font-bold text-foreground">
+                          <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-foreground">
                             {price > 0 ? formatCurrency(price) : "—"}
                           </div>
                         </div>
 
                         <div>
-                          <div className="text-[11px] font-medium text-slate-400">
+                          <div className="font-mono text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                             {tw.colBaseFv}
                           </div>
-                          <div className="mt-0.5 font-mono text-sm font-semibold text-slate-200">
+                          <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200">
                             {baseFv > 0 ? formatCurrency(baseFv) : "—"}
                           </div>
                           {baseFv > 0 && (
                             <div
                               className={`font-mono text-[11px] font-bold ${
                                 baseUpside >= 0
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
                               }`}
                             >
                               {baseUpside >= 0 ? "+" : ""}
@@ -875,18 +881,18 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </div>
 
                         <div className="text-right">
-                          <div className="text-[11px] font-bold text-accent">
+                          <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-accent">
                             {tw.colWfv}
                           </div>
-                          <div className="mt-0.5 font-mono text-sm font-black text-accent">
+                          <div className="mt-0.5 font-mono text-sm font-black tabular-nums text-accent">
                             {wfv > 0 ? formatCurrency(wfv) : "—"}
                           </div>
                           {wfv > 0 && (
                             <div
                               className={`inline-flex items-center gap-0.5 font-mono text-[11px] font-bold ${
                                 isPositive
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
                               }`}
                             >
                               {isPositive ? (
@@ -903,14 +909,14 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
 
                       {/* 4-Regime Valuation Bounds Spectrum Bar */}
                       {price > 0 && bull > bear && (
-                        <div className="mt-3.5 space-y-1.5 rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
-                          <div className="flex items-center justify-between text-[11px] text-slate-400">
-                            <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
+                        <div className="mt-3 space-y-1.5 rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
+                          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                            <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
                               {tw.regimeSpectrum}
                             </span>
                             {report.analystTarget &&
                               report.analystTarget > 0 && (
-                                <span className="font-mono text-[11px] text-slate-300">
+                                <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300">
                                   Consensus:{" "}
                                   <strong className="text-foreground">
                                     ${Math.round(report.analystTarget)}
@@ -939,9 +945,9 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                               title={`Price: ${formatCurrency(price)}`}
                             />
                           </div>
-                          <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
+                          <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
                             <span>Bear ${Math.round(bear)}</span>
-                            <span className="flex items-center gap-1 text-sky-400">
+                            <span className="flex items-center gap-1 font-medium text-sky-600 dark:text-sky-400">
                               <span className="size-1.5 rounded-full bg-sky-400" />
                               Base ${Math.round(baseFv)}
                             </span>
@@ -950,159 +956,68 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </div>
                       )}
 
-                      {/* 5-Pillar Snowflake Radar & Score Breakdown */}
-                      <div className="mt-3.5 rounded-xl border border-border/60 bg-surface-0/60 p-3">
-                        <div className="flex items-center justify-between border-b border-border/60 pb-2 text-[11px]">
-                          <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                            {tw.snowflakeBreakdown}
-                          </span>
-                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
-                            <span>{report.snowflakeScore ?? 0}</span>
-                            <span className="text-[11px] text-slate-400">
-                              / 30
+                      {/* Fundamentals & Snowflake Radar Row */}
+                      <div className="mt-3 flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 p-3">
+                        <div className="flex items-center gap-3">
+                          <MiniSnowflakeRadar
+                            score={report.snowflakeScore}
+                            tier={report.snowflakeTier}
+                            pillars={report.snowflakePillars}
+                            size={38}
+                          />
+                          <div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="font-mono text-sm font-black text-foreground">
+                                {report.snowflakeScore ?? 0}
+                              </span>
+                              <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                                / 30
+                              </span>
+                            </div>
+                            <span
+                              className={`font-mono text-[10px] font-bold uppercase tracking-wider ${
+                                (report.snowflakeScore ?? 0) >= 24
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : (report.snowflakeScore ?? 0) >= 18
+                                    ? "text-sky-600 dark:text-cyan-400"
+                                    : (report.snowflakeScore ?? 0) >= 12
+                                      ? "text-amber-600 dark:text-amber-400"
+                                      : "text-rose-600 dark:text-rose-400"
+                              }`}
+                            >
+                              {report.snowflakeTier ?? "balanced"}
                             </span>
                           </div>
                         </div>
 
-                        <div className="mt-2.5 flex items-center gap-3">
-                          {/* Left: Mini Radar */}
-                          <div className="shrink-0">
-                            <MiniSnowflakeRadar
-                              score={report.snowflakeScore}
-                              tier={report.snowflakeTier}
-                              pillars={report.snowflakePillars}
-                              size={46}
-                            />
+                        {/* Revenue Growth & Operating Margin */}
+                        <div className="flex flex-col items-end gap-1 font-mono text-[11px]">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-500 dark:text-slate-400">
+                              Rev:
+                            </span>
+                            <span
+                              className={`font-bold ${
+                                (report.revenueGrowthPct ?? 0) >= 0
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
+                              }`}
+                            >
+                              {report.revenueGrowthPct !== undefined
+                                ? formatPercent(report.revenueGrowthPct)
+                                : "—"}
+                            </span>
                           </div>
-
-                          {/* Right: 5 Individual Pillar Progress Bars */}
-                          <div className="flex-1 space-y-1 font-mono text-[11px]">
-                            {/* Valuation */}
-                            <div className="flex items-center justify-between gap-1.5">
-                              <span className="truncate text-slate-400">
-                                {tw.pillarLabels.valuation}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-12 rounded-full bg-surface-3">
-                                  <div
-                                    style={{
-                                      width: `${((pillars.valuation ?? 0) / 6) * 100}%`,
-                                    }}
-                                    className="h-full rounded-full bg-emerald-400"
-                                  />
-                                </div>
-                                <span className="text-[11px] text-slate-300">
-                                  {pillars.valuation ?? 0}/6
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Future Growth */}
-                            <div className="flex items-center justify-between gap-1.5">
-                              <span className="truncate text-slate-400">
-                                {tw.pillarLabels.future}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-12 rounded-full bg-surface-3">
-                                  <div
-                                    style={{
-                                      width: `${((pillars.future ?? 0) / 6) * 100}%`,
-                                    }}
-                                    className="h-full rounded-full bg-cyan-400"
-                                  />
-                                </div>
-                                <span className="text-[11px] text-slate-300">
-                                  {pillars.future ?? 0}/6
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Earnings Quality */}
-                            <div className="flex items-center justify-between gap-1.5">
-                              <span className="truncate text-slate-400">
-                                {tw.pillarLabels.earnings}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-12 rounded-full bg-surface-3">
-                                  <div
-                                    style={{
-                                      width: `${((pillars.earnings ?? 0) / 6) * 100}%`,
-                                    }}
-                                    className="h-full rounded-full bg-indigo-400"
-                                  />
-                                </div>
-                                <span className="text-[11px] text-slate-300">
-                                  {pillars.earnings ?? 0}/6
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Moat */}
-                            <div className="flex items-center justify-between gap-1.5">
-                              <span className="truncate text-slate-400">
-                                {tw.pillarLabels.moat}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-12 rounded-full bg-surface-3">
-                                  <div
-                                    style={{
-                                      width: `${((pillars.moat ?? 0) / 6) * 100}%`,
-                                    }}
-                                    className="h-full rounded-full bg-amber-400"
-                                  />
-                                </div>
-                                <span className="text-[11px] text-slate-300">
-                                  {pillars.moat ?? 0}/6
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Resilience */}
-                            <div className="flex items-center justify-between gap-1.5">
-                              <span className="truncate text-slate-400">
-                                {tw.pillarLabels.resilience}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-12 rounded-full bg-surface-3">
-                                  <div
-                                    style={{
-                                      width: `${((pillars.resilience ?? 0) / 6) * 100}%`,
-                                    }}
-                                    className="h-full rounded-full bg-rose-400"
-                                  />
-                                </div>
-                                <span className="text-[11px] text-slate-300">
-                                  {pillars.resilience ?? 0}/6
-                                </span>
-                              </div>
-                            </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-500 dark:text-slate-400">
+                              Margin:
+                            </span>
+                            <span className="font-bold text-slate-700 dark:text-slate-200">
+                              {report.operatingMarginPct !== undefined
+                                ? `${report.operatingMarginPct.toFixed(1)}%`
+                                : "—"}
+                            </span>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Growth & Operating Margins */}
-                      <div className="mt-3 flex items-center justify-between rounded-lg border border-border/40 bg-surface-0/40 px-3 py-2 font-mono text-[11px]">
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <span>Rev Growth:</span>
-                          <strong
-                            className={`font-bold ${
-                              (report.revenueGrowthPct ?? 0) >= 0
-                                ? "text-emerald-400"
-                                : "text-rose-400"
-                            }`}
-                          >
-                            {report.revenueGrowthPct !== undefined
-                              ? formatPercent(report.revenueGrowthPct)
-                              : "—"}
-                          </strong>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <span>Op Margin:</span>
-                          <strong className="font-bold text-slate-200">
-                            {report.operatingMarginPct !== undefined
-                              ? `${report.operatingMarginPct.toFixed(1)}%`
-                              : "—"}
-                          </strong>
                         </div>
                       </div>
 
@@ -1388,21 +1303,21 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </td>
 
                         {/* Current Price */}
-                        <td className="border-b border-border/40 px-2 py-3 font-semibold text-slate-200">
+                        <td className="border-b border-border/40 px-2 py-3 font-semibold tabular-nums text-foreground">
                           {price > 0 ? formatCurrency(price) : "—"}
                         </td>
 
                         {/* Base Fair Value */}
-                        <td className="border-b border-border/40 px-2 py-3">
-                          <div className="font-semibold text-slate-300">
+                        <td className="border-b border-border/40 px-2 py-3 tabular-nums">
+                          <div className="font-semibold text-slate-700 dark:text-slate-200">
                             {baseFv > 0 ? formatCurrency(baseFv) : "—"}
                           </div>
                           {baseFv > 0 && (
                             <div
-                              className={`text-[11px] ${
+                              className={`text-[11px] font-bold ${
                                 baseUpside >= 0
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
                               }`}
                             >
                               {baseUpside >= 0 ? "+" : ""}
@@ -1412,7 +1327,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </td>
 
                         {/* Weighted Fair Value */}
-                        <td className="border-b border-border/40 px-2 py-3">
+                        <td className="border-b border-border/40 px-2 py-3 tabular-nums">
                           <div className="font-bold text-accent">
                             {wfv > 0 ? formatCurrency(wfv) : "—"}
                           </div>
@@ -1420,8 +1335,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                             <div
                               className={`text-[11px] font-bold ${
                                 isPositive
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
                               }`}
                             >
                               {isPositive ? "+" : ""}
@@ -1431,14 +1346,14 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </td>
 
                         {/* Consensus Target */}
-                        <td className="border-b border-border/40 px-2 py-3">
+                        <td className="border-b border-border/40 px-2 py-3 tabular-nums">
                           {report.analystTarget && report.analystTarget > 0 ? (
                             <div>
-                              <span className="font-bold text-slate-200">
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
                                 ${Math.round(report.analystTarget)}
                               </span>
                               {report.analystRating && (
-                                <div className="text-[11px] text-slate-400">
+                                <div className="text-[11px] text-slate-500 dark:text-slate-400">
                                   {report.analystRating}
                                 </div>
                               )}
@@ -1457,24 +1372,24 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                         </td>
 
                         {/* Growth & Op Margin */}
-                        <td className="border-b border-border/40 px-2 py-3 text-[11px]">
-                          <div className="text-slate-300">
+                        <td className="border-b border-border/40 px-2 py-3 text-[11px] tabular-nums">
+                          <div className="text-slate-600 dark:text-slate-300">
                             Rev:{" "}
                             <span
-                              className={
+                              className={`font-semibold ${
                                 (report.revenueGrowthPct ?? 0) >= 0
-                                  ? "text-emerald-400"
-                                  : "text-rose-400"
-                              }
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-rose-600 dark:text-rose-400"
+                              }`}
                             >
                               {report.revenueGrowthPct !== undefined
                                 ? formatPercent(report.revenueGrowthPct)
                                 : "—"}
                             </span>
                           </div>
-                          <div className="text-slate-400">
+                          <div className="text-slate-500 dark:text-slate-400">
                             OpM:{" "}
-                            <span className="text-slate-200">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
                               {report.operatingMarginPct !== undefined
                                 ? `${report.operatingMarginPct.toFixed(1)}%`
                                 : "—"}

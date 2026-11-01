@@ -46,7 +46,7 @@ export interface CockpitModalsProps {
   showToast: (msg: string) => void;
   showBackToTop: boolean;
   onScrollToTop: () => void;
-  onOpenSocialCard: () => void;
+  onOpenSocialCard?: () => void;
 }
 
 export function CockpitModals({
@@ -170,15 +170,6 @@ export function CockpitModals({
 
               <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
                 <span className="text-xs text-slate-300">
-                  {t.shortcuts.exportCard}
-                </span>
-                <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
-                  E
-                </kbd>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-0/60 px-3 py-2">
-                <span className="text-xs text-slate-300">
                   {t.shortcuts.openSnowflake}
                 </span>
                 <kbd className="shadow-xs rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
@@ -214,19 +205,6 @@ export function CockpitModals({
         </div>
       )}
 
-      {/* Social Media Card Export Modal */}
-      <SocialCardModal
-        isOpen={isSocialCardOpen}
-        onClose={onCloseSocialCard}
-        facts={facts}
-        valuation={valuation}
-        stressResult={stressResult ?? undefined}
-        reportData={reportData ?? undefined}
-        stressParams={stressParams}
-        locale={locale}
-        onShowToast={showToast}
-      />
-
       {/* 30-Point Snowflake Audit Modal */}
       {snowflakeScore && facts && (
         <SnowflakeModal
@@ -236,7 +214,6 @@ export function CockpitModals({
           ticker={facts.ticker}
           company={facts.company}
           locale={locale}
-          onOpenSocialCard={onOpenSocialCard}
         />
       )}
 

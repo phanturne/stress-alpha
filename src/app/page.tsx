@@ -281,10 +281,6 @@ function HomePageContent() {
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
         onOpenShortcutsModal={() => setIsShortcutsOpen(true)}
-        onShare={() => {
-          syncStateToUrl();
-          setIsSocialCardOpen(true);
-        }}
         onOpenSnowflake={() => setIsSnowflakeOpen(true)}
         locale={locale}
         onToggleLocale={handleToggleLocale}
@@ -391,7 +387,6 @@ function HomePageContent() {
             isHistorical={isViewingHistorical}
             onSelectReport={handleSelectReport}
             onBackToCockpit={() => handleViewModeChange("cockpit")}
-            onOpenSocialCard={() => setIsSocialCardOpen(true)}
             onOpenSnowflake={() => setIsSnowflakeOpen(true)}
             locale={locale}
             onLocaleChange={handleToggleLocale}
@@ -403,7 +398,7 @@ function HomePageContent() {
         isShortcutsOpen={isShortcutsOpen}
         onCloseShortcuts={() => setIsShortcutsOpen(false)}
         tabCount={tabItems.length}
-        isSocialCardOpen={isSocialCardOpen}
+        isSocialCardOpen={false}
         onCloseSocialCard={() => setIsSocialCardOpen(false)}
         isSnowflakeOpen={isSnowflakeOpen}
         onCloseSnowflake={() => setIsSnowflakeOpen(false)}
@@ -418,7 +413,6 @@ function HomePageContent() {
         showToast={showToast}
         showBackToTop={showBackToTop}
         onScrollToTop={handleScrollToTop}
-        onOpenSocialCard={() => setIsSocialCardOpen(true)}
       />
     </div>
   );
