@@ -9,21 +9,21 @@ A forward-looking financial decision and scenario-simulation platform for fundam
 ## 📸 Platform Interface Gallery
 
 ### 1. Interactive Flow-Through Cockpit (Desktop Dual-Pane)
-The left pane anchors the deterministic flow-through valuation model and sensitivity sliders, while the right pane navigates 8 deep-dive intelligence workspaces with independent scrolling.
+The left pane anchors the deterministic flow-through valuation model and sensitivity sliders, while the right pane navigates 4 condensed, deep-dive intelligence workspaces (Chart & Levels, Valuation & Drivers, Consensus & Peers, News & Filings) alongside the Investment Committee Memorandum with independent scrolling.
 
 <p align="center">
   <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Dual-Pane Cockpit Preview" width="100%" />
 </p>
 
 ### 2. Cross-Ticker Universe Screener & Radar Matrix
-Analyze valuation multiples, consensus upside spreads, and 30-point Snowflake Fundamental Radars across 630+ covered equities with adaptive card and table views.
+Analyze valuation multiples, consensus upside spreads, and 30-point Snowflake Fundamental Radars across 640+ covered equities with adaptive card and table views.
 
 <p align="center">
   <img src="./docs/images/screener-preview.png" alt="StressAlpha Universe Screener Preview" width="100%" />
 </p>
 
 ### 3. Dedicated Watchlist Portfolio & Telemetry
-Track coverage lists with real-time quote updates, valuation spreads, operating margins, and multi-quarter earnings history.
+Track coverage lists with real-time quote updates, valuation spreads, 4-regime stress test boundaries, and 5-pillar Snowflake health breakdowns across deep-dive cards and matrix table layouts.
 
 <p align="center">
   <img src="./docs/images/watchlist-preview.png" alt="StressAlpha Watchlist Preview" width="100%" />
@@ -45,8 +45,8 @@ Instant publication-ready PDF-styled research memo rendering thesis bullets, var
 * **4-Regime Valuation Spectrum**: Dynamically models cash generation across Bull, Base, Bear, and Panic Floor regimes with Softmax tail-risk heuristics and governance vetos.
 * **3-Tier Price Corridors & Regime Confluence**: Classical floor pivots ($P, S_1-S_3, R_1-R_3$), unfilled gap edges, 1-year volume profile Point of Control (POC), and Anchored VWAPs synthesized into 3 institutional corridors with automated $\pm 2.5\%$ fundamental regime confluence detection and interactive TradingView charting.
 * **30-Point Snowflake Fundamental Radar**: Circular 5-pillar health audit covering Valuation, Future Growth, Earnings Quality, Moat, and Downside Resilience.
-* **Autonomous Ingestion & Scaffolding**: Twice-daily scheduled earnings calendar ingestion (Finnhub API) and SEC 10-Q/10-K statements (Massive API) auto-scaffold complete bilingual quarterly models.
-* **Bilingual English / Chinese Parity**: First-class internationalization (`en` / `zh`) across all 9 research workspaces, memos, and interactive methodology pages.
+* **Autonomous Ingestion & Scaffolding**: Twice-daily scheduled earnings calendar ingestion (Finnhub API) and SEC 10-Q/10-K statements (Massive API) auto-scaffold complete bilingual quarterly models with Vercel AI Gateway enrichment.
+* **Bilingual English / Chinese Parity**: First-class internationalization (`en` / `zh`) across all research workspaces, memos, and interactive methodology pages.
 
 ---
 
@@ -104,5 +104,5 @@ For detailed architectural blueprints, mathematical derivations, and CLI command
 | **Framework** | Next.js 16 App Router (Turbopack, Server Actions) |
 | **UI & Styling** | React 19, Tailwind CSS, Pure SVG Charts, Dual-Theme Engine |
 | **Database & ORM** | Neon Serverless PostgreSQL, Drizzle ORM |
-| **Testing** | Vitest with ephemeral Neon copy-on-write branching (244 tests) |
+| **Testing** | Vitest with ephemeral Neon copy-on-write branching (275 tests across 27 suites) |
 | **Data Feeds** | SEC EDGAR, Massive API, Finnhub API |
