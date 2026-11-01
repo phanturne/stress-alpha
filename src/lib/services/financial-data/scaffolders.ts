@@ -354,6 +354,17 @@ export function generateScenariosDraft(
       consensusTarget < profile.currentPrice * 2.2
     ) {
       baseEps = round2(consensusTarget / baseline.multipleRegimes.base);
+    } else if (
+      // Guardrail 5 (Detached Outlier Consensus Guardrail):
+      // If raw implied target is massively detached from both current price (>3.5x) and consensus target (>2.5x),
+      // detect distant multi-year (e.g. FY3/FY4) or corrupted consensus feeds and re-normalize to consensus target.
+      // Avoids single-quarter seasonality traps (e.g. INTU) and cyclical trough distortions (e.g. MU, NVDA).
+      profile.currentPrice > 0 &&
+      consensusTarget > 0 &&
+      impliedBaseTarget > consensusTarget * 2.5 &&
+      impliedBaseTarget > profile.currentPrice * 3.5
+    ) {
+      baseEps = round2(consensusTarget / baseline.multipleRegimes.base);
     } else {
       baseEps = rawFwdEps;
     }

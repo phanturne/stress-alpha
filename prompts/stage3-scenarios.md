@@ -11,8 +11,8 @@ Build a probability-weighted scenario tree (3–5 scenarios) for **{TICKER}** ov
    - Moat & Margin Resilience (rewarding >65% margins, penalizing <20% margins unless Costco compounder exemption applies)
    - Wall Street consensus skew & target dispersion
    - Market-price Bayesian shrinkage anchor ($w_{\text{mkt}} = 0.20$)
-2. **Base case anchors on consensus** — the forward EPS and typical multiple
-3. **Bull/bear deviate with explicit reasons** — never just "things go well/badly"
+2. **Base case anchors on realistic operational consensus** — use the forward EPS and typical multiple. **Sanity check**: Compare `forwardEpsConsensus` against annualized operating run rate (`facts.epsOperating * 4`). If the consensus feed is stale, unadjusted, or implies implausible earnings growth (>50%) while revenue growth is decelerating (<25%) without legitimate cyclical recovery or seasonal concentration, re-normalize Base forward EPS to reflect realistic operational run-rate and guidance (`epsOperating * 4 * (1 + expectedGrowth)`). Never allow stale consensus to create an artificial valuation bubble.
+3. **Bull/bear deviate with explicit reasons** — never just "things go well/badly". Bull captures operating leverage, market share expansion, and margin accretion; Bear/Panic MUST explicitly stress test the primary structural vulnerability of the specific business model (e.g. distribution/referral decay for consumer web, customer churn & NRR contraction for SaaS, gross margin compression & cycle downturn for semiconductors/hardware, or regulatory/procurement cuts for defense/healthcare).
 4. Each scenario specifies:
    - Forward EPS for the basis year
    - P/E multiple justified by growth rate, margin trajectory, or comparables

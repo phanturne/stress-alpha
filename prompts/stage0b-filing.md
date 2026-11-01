@@ -17,8 +17,8 @@ Download and extract structured insights from **{TICKER}**'s most recent 10-Q fi
 
 | Section | What to look for |
 |---------|-----------------|
-| **MD&A** (Item 2) | Forward-looking statements, management's explanation of segment performance, known trends, uncommitted guidance language ("we expect", "headwinds") |
-| **Risk Factors** (Item 1A) | NEW risks added since prior quarter (diff vs previous filing); risks with updated language suggesting escalation |
+| **MD&A** (Item 2) | Forward-looking statements, management's explanation of segment performance, known trends, core operational KPIs (DAU/MAU for consumer, NRR/cRPO for SaaS, backlog for defense, ASP/yields for semis), distribution/channel dependencies, uncommitted guidance language ("we expect", "headwinds") |
+| **Risk Factors** (Item 1A) | NEW risks added since prior quarter (diff vs previous filing); risks with updated language suggesting escalation (e.g. platform disintermediation, referral traffic shifts, customer concentration, supply chain bottlenecks, or regulatory/export controls) |
 | **Revenue disaggregation** (Notes) | Geographic breakdown, contract vs on-demand mix, recurring vs transactional |
 | **Commitments & contingencies** (Notes) | Legal proceedings, purchase obligations (e.g., long-term cloud infrastructure contracts, lease commitments) |
 

@@ -17,11 +17,16 @@ Run at minimum:
 
 Every analysis MUST include at least one catalyst from EACH category:
 
-### Company-Specific
+### Company-Specific & Operational Trajectory
 - Segment growth trajectory (acceleration/deceleration)
+- Sector-specific operational health:
+  - Consumer Platforms: User acquisition/retention, search referral traffic mix, AI search disintermediation (Google AI Overviews / zero-click answers)
+  - Enterprise SaaS: Net Retention Rate (NRR), customer churn, large deal pipeline velocity
+  - Semiconductors & Tech Hardware: Fab utilization, gross margin cycle, packaging capacity (e.g. CoWoS/HBM), hyperscaler CapEx demand
+  - Defense & Industrials: Backlog book-to-bill, program funding appropriations
 - Margin expansion/compression
 - Management execution (guidance track record, capital allocation)
-- Regulatory/legal (antitrust, compliance deadlines)
+- Regulatory/legal (antitrust, compliance deadlines, export controls)
 
 ### Macro / Rates
 - Interest rate trajectory (fed funds, 10yr) and impact on multiples
@@ -31,9 +36,11 @@ Every analysis MUST include at least one catalyst from EACH category:
 
 ### AI / Technology Narrative
 - Capex ROI realization timeline — are customers actually seeing returns?
+- AI search & answer disintermediation (e.g. Google AI Overviews, Perplexity, ChatGPT directly satisfying queries without referring user traffic)
 - Open-source model risk (Llama, Mistral, etc. matching frontier at lower cost)
 - Hyperscaler capex coordination — if one cuts, does it signal demand saturation?
 - AI investment partner risk (e.g., Anthropic valuation sustainability, competitive position vs OpenAI/Google DeepMind)
+- AI data licensing durability — are AI labs continuing to pay for corpus data or seeking synthetic/in-house alternatives?
 - Enterprise AI adoption rate vs hype cycle
 
 ### Competitive / Sector

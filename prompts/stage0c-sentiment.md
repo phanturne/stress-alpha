@@ -29,7 +29,7 @@ Score each dimension 1–10 (1=defensive/evasive, 10=confident/specific):
 
 Analysts ask about what worries the market. Track:
 
-1. **Most-asked topics** (ranked by frequency): What did multiple analysts probe?
+1. **Most-asked topics** (ranked by frequency): What did multiple analysts probe? (Pay attention to the core vulnerabilities of the business model: customer acquisition & referral health for consumer platforms, enterprise deal cycles & NRR for SaaS, fab yields & CapEx sustainability for semiconductors).
 2. **Dodged questions**: Where did management pivot away or give non-answers?
 3. **Surprising questions**: Anything unexpected that signals a new concern?
 4. **Management defensiveness**: Any moment where tone shifted to justify/defend?

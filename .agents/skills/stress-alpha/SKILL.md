@@ -69,14 +69,17 @@ StressAlpha leverages two primary institutional financial data APIs for report i
 With all quantitative financials automatically staged, the agent audits and enriches qualitative context using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 
 1. `facts.json` (Required):
-   - Ingest headline earnings, segments, and guidance.
+   - Ingest headline earnings, segments, guidance, and sector-relevant operational KPIs (e.g. DAU/MAU for consumer, NRR for SaaS, backlog for defense, wafer shipments for semiconductors).
    - **Income Quality Guardrail:** Identify any non-operating one-time gains/losses (e.g. ASU 2016-01 equity marks) and isolate clean `epsOperating`.
+   - **Forward Consensus Sanity Guardrail:** Compare `forwardEpsConsensus` against the operational run-rate (`epsOperating * 4`). For mature or decelerating non-cyclical businesses, verify that forward EPS is not an unadjusted or stale consensus artifact.
    - **Forensic Governance & Accounting Audit (QPCE Anchor):** Audit for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, restatements, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
    - **Valuation Archetype & Capital Runway:** Classify archetype (`compounder` | `operating_scaler` | `venture_hypergrowth`), gross margin %, and Net Liquid Runway months.
 2. `scenarios.json` (Required):
    - Formulate 3-4 scenarios (Bull, Base, Panic/Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0 (these act as initial raw priors `rawProbability` to be deterministically calibrated by QPCE into `calibratedProbability`).
+   - **Operational Realism in Base EPS:** Base forward EPS must anchor on realistic operational earnings power. If the consensus data feed is stale or unadjusted, re-normalize Base EPS using `epsOperating * 4 * (1 + guidanceGrowth)`. Panic regime MUST model the primary structural vulnerability of the business model (e.g. distribution/traffic decay for consumer web, customer churn for SaaS, cycle downturn for semiconductors).
 3. `moat-competitors.json` (Recommended):
    - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
+   - **Distribution Channel Vulnerability:** If a platform's discovery depends heavily on third-party gateways (e.g. search engine referrals, algorithmic feeds, prime contractors), audit whether channel disintermediation is eroding the network effect. If referral channels are deteriorating without offsetting direct channel growth or pricing power, critically audit whether `moatTrend` is `"Narrowing"` or `"Stable"`.
    - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
 4. `stress-baseline.json` (Recommended):
    - Define base revenue, gross margin %, fixed OpEx, shares outstanding, and upstream drivers (with exposure shares and elasticities).

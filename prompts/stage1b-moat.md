@@ -40,6 +40,7 @@ Audit each dimension and assign specific `durabilityYears` reflective of industr
 2. **Switching Costs**: Frictional costs (monetary, operational, data lock-in, clinical training) that deter customers from moving to rivals.
 3. **Cost Advantage**: Scale-driven unit manufacturing efficiency, automated process patents, or supply chain vertical integration.
 4. **Network Effects**: Value of the platform increases non-linearly as more users/participants join.
+   - *Distribution Gatekeeper Audit:* If top-of-funnel discovery or customer acquisition depends heavily on third-party gateways (e.g. search engine referrals, app store gatekeepers, prime contractors), audit whether platform disintermediation or algorithm changes are eroding the network effect. If referral traffic or channel access is deteriorating without offsetting growth in direct channels or pricing power, critically evaluate whether `moatTrend` is `"Narrowing"` or `"Stable"`.
 5. **Efficient Scale**: Markets of limited size effectively served by one or a few incumbents, where new entrants would depress market returns below WACC.
 
 ## Peer Benchmarking Matrix
