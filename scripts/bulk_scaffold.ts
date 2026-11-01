@@ -12,11 +12,12 @@
  */
 
 import * as dotenv from "dotenv";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { getDb } from "../src/db";
 import { tickersTable, reportsTable } from "../src/db/schema";
 import { getReportRepository } from "../src/lib/repository";
 import { fetchCompletePipelineBundle } from "../src/lib/services/financial-data";
+import { isAiGatewayConfigured } from "../src/lib/services/ai-gateway";
 import { computeStressedValuation } from "../src/lib/valuation";
 import { computeSanityAudit } from "../src/lib/sanity";
 import { renderReport } from "../src/lib/report";
@@ -30,6 +31,8 @@ export interface BulkScaffoldOptions {
   all?: boolean;
   ticker?: string;
   force?: boolean;
+  placeholdersOnly?: boolean;
+  enrichWithAi?: boolean;
   dryRun?: boolean;
   delayMs?: number;
 }
@@ -121,29 +124,61 @@ export async function bulkScaffold(
     }
   }
 
-  // 2. Fetch Existing Populated Reports to Skip Redundant Work
+  // 2. Fetch Existing Populated Reports via SQL Scalar Projection (Zero JSONB Egress Bloat)
   const existingReports = await db
     .select({
       ticker: reportsTable.ticker,
       slug: reportsTable.slug,
-      facts: reportsTable.facts,
+      revenueBillions: sql<number>`COALESCE((${reportsTable.facts}->>'revenueBillions')::numeric, 0)`,
+      firstPeerTicker: sql<
+        string | null
+      >`${reportsTable.moat}->'competitors'->0->>'ticker'`,
+      firstSegmentName: sql<
+        string | null
+      >`${reportsTable.facts}->'segments'->0->>'name'`,
     })
     .from(reportsTable);
 
   const populatedTickers = new Set<string>();
+  const placeholderSlugsByTicker = new Map<string, string>();
+  const handCraftedTickers = new Set<string>();
+
   for (const r of existingReports) {
-    if (r.facts && (r.facts.revenueBillions ?? 0) > 0) {
-      populatedTickers.add(r.ticker.toUpperCase());
+    const t = r.ticker.toUpperCase();
+    const isPopulated = Number(r.revenueBillions ?? 0) > 0;
+    const isPlaceholder =
+      r.firstPeerTicker === "PEER" ||
+      r.firstSegmentName === "Core Business & Solutions";
+
+    if (isPopulated) {
+      populatedTickers.add(t);
+      if (isPlaceholder) {
+        placeholderSlugsByTicker.set(t, r.slug);
+      } else {
+        handCraftedTickers.add(t);
+      }
     }
   }
+
+  const enrichWithAi = options.enrichWithAi ?? isAiGatewayConfigured();
 
   console.log("==============================================================");
   console.log("📊 [Bulk Scaffolding Execution Plan]");
   console.log(` • Universe Candidates:             ${candidates.length}`);
   console.log(` • Existing Populated Reports:      ${populatedTickers.size}`);
+  console.log(
+    ` • Placeholder Reports Detected:    ${placeholderSlugsByTicker.size}`
+  );
+  console.log(` • Hand-Crafted Reports Protected:  ${handCraftedTickers.size}`);
+  console.log(
+    ` • AI Gateway Enrichment Active:    ${enrichWithAi ? "YES (DeepSeek V4.1 Flash + GPT-6.1 Sol)" : "NO (Deterministic Heuristic Only)"}`
+  );
   console.log(` • Delay Between Tickers:           ${delayMs}ms`);
   console.log(
     ` • Simulation Mode (Dry-Run):       ${options.dryRun ? "YES" : "NO"}`
+  );
+  console.log(
+    ` • Placeholders-Only Backfill:      ${options.placeholdersOnly ? "YES" : "NO"}`
   );
   console.log(
     ` • Force Overwrite Existing:        ${options.force ? "YES" : "NO"}`
@@ -165,8 +200,27 @@ export async function bulkScaffold(
     const ticker = item.ticker.toUpperCase();
     const progressLabel = `[${i + 1}/${candidates.length}] (${Math.round(((i + 1) / candidates.length) * 100)}%)`;
 
-    // Skip if already populated and not force
-    if (populatedTickers.has(ticker) && !options.force) {
+    // Skip hand-crafted reports when running --placeholders backfill
+    if (options.placeholdersOnly && handCraftedTickers.has(ticker)) {
+      console.log(
+        `  🛡️ ${progressLabel.padEnd(16)} [${ticker.padEnd(5)}] Hand-crafted report protected. Skipping.`
+      );
+      result.skipped++;
+      result.details.push({
+        ticker,
+        status: "skipped",
+      });
+      continue;
+    }
+
+    // Skip if already populated and neither --force nor --placeholders (on a placeholder) is set
+    const isTargetPlaceholder =
+      options.placeholdersOnly && placeholderSlugsByTicker.has(ticker);
+    if (
+      populatedTickers.has(ticker) &&
+      !options.force &&
+      !isTargetPlaceholder
+    ) {
       console.log(
         `  ⏩ ${progressLabel.padEnd(16)} [${ticker.padEnd(5)}] Already populated. Skipping.`
       );
@@ -195,11 +249,15 @@ export async function bulkScaffold(
     );
 
     try {
-      // 1. Fetch Complete 8-Module Pipeline Bundle
-      const bundle = await fetchCompletePipelineBundle(ticker);
+      // 1. Fetch Complete 8-Module Pipeline Bundle (with AI Gateway enrichment if configured)
+      const bundle = await fetchCompletePipelineBundle(ticker, {
+        enrichWithAi,
+      });
 
       const quarterStr = bundle.factsDraft.quarter || "Q2 2026";
-      const slug = `${ticker}-${quarterStr.replace(/\s+/g, "-")}-analysis`;
+      const slug =
+        placeholderSlugsByTicker.get(ticker) ||
+        `${ticker}-${quarterStr.replace(/\s+/g, "-")}-analysis`;
 
       // 2. Assemble Report Data
       const report: ReportData = {
@@ -328,6 +386,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const dryRun = args.includes("--dry-run");
   const force = args.includes("--force");
   const all = args.includes("--all");
+  const placeholdersOnly = args.includes("--placeholders");
+  const enrichWithAi = args.includes("--no-ai")
+    ? false
+    : args.includes("--enrich")
+      ? true
+      : undefined;
 
   const limitArg = args.find((a) => a.startsWith("--limit="));
   const limit = limitArg
@@ -346,6 +410,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     dryRun,
     force,
     all,
+    placeholdersOnly,
+    enrichWithAi,
     limit,
     ticker,
     delayMs,

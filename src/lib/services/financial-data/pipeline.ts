@@ -17,6 +17,7 @@ import {
   generateEarningsSentimentDraft,
   generateFilingExtractsDraft,
 } from "./scaffolders";
+import { enrichPipelineBundleWithAi } from "../ai-gateway";
 
 // --- Master Orchestrator: Fetch Complete Dataset Bundle ---
 
@@ -72,7 +73,12 @@ export async function fetchCompletePipelineBundle(
   );
 
   // 5. Pre-populate Facts Draft (EN & ZH)
-  const factsDraft = generateFactsDraft(profile, estimatesEn, quarterStr);
+  const factsDraft = generateFactsDraft(
+    profile,
+    estimatesEn,
+    quarterStr,
+    options?.calendarActuals
+  );
   const factsZh = generateFactsZh(factsDraft);
 
   // 6. Pre-populate Baseline Draft
@@ -102,7 +108,7 @@ export async function fetchCompletePipelineBundle(
     factsDraft
   );
 
-  return {
+  const rawBundle: PipelineDataBundle = {
     ticker,
     asOfDate: new Date().toISOString().split("T")[0],
     profile,
@@ -124,6 +130,12 @@ export async function fetchCompletePipelineBundle(
     filingZh,
     technicalLevels: profile.technicalLevels,
   };
+
+  if (options?.enrichWithAi) {
+    return enrichPipelineBundleWithAi(rawBundle);
+  }
+
+  return rawBundle;
 }
 
 // --- Write Artifacts to Disk (Staging Directory) ---

@@ -15,6 +15,7 @@ import {
   fetchCompletePipelineBundle,
   writePipelineArtifacts,
 } from "../src/lib/services/financial-data.js";
+import { isAiGatewayConfigured } from "../src/lib/services/ai-gateway.js";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
@@ -58,9 +59,14 @@ async function main() {
   );
 
   try {
+    const enrichWithAi = args.includes("--no-ai")
+      ? false
+      : args.includes("--enrich") || isAiGatewayConfigured();
+
     const bundle = await fetchCompletePipelineBundle(ticker, {
       benchmarkPrice,
       quarterStr,
+      enrichWithAi,
     });
 
     console.log(`  ✅ Company: ${bundle.profile.companyName}`);

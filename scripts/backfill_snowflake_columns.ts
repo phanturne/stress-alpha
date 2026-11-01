@@ -13,7 +13,7 @@
  */
 
 import * as dotenv from "dotenv";
-import { sql, eq, isNull } from "drizzle-orm";
+import { sql, eq, isNull, and } from "drizzle-orm";
 import { getDb } from "../src/db";
 import { reportsTable, tickersTable } from "../src/db/schema";
 import { computeSnowflakeScore } from "../src/lib/snowflake";
@@ -59,9 +59,17 @@ async function main() {
   );
   console.log("✅ Columns verified.\n");
 
-  // 2. Query target reports
+  // 2. Query target reports directly via SQL WHERE filter (avoiding full-table JSONB egress)
   console.log("🔍 Querying reports needing Snowflake column population...");
-  const baseQuery = db
+  const conditions = [];
+  if (tickerArg) {
+    conditions.push(eq(reportsTable.ticker, tickerArg));
+  }
+  if (!force) {
+    conditions.push(isNull(reportsTable.snowflakeScore));
+  }
+
+  const targets = await db
     .select({
       slug: reportsTable.slug,
       ticker: reportsTable.ticker,
@@ -76,16 +84,8 @@ async function main() {
       snowflakeScore: reportsTable.snowflakeScore,
     })
     .from(reportsTable)
-    .leftJoin(tickersTable, eq(reportsTable.ticker, tickersTable.ticker));
-
-  const allReports = await baseQuery;
-  console.log(`📊 Found ${allReports.length} total reports in Neon DB.`);
-
-  const targets = allReports.filter((r) => {
-    if (tickerArg && r.ticker.toUpperCase() !== tickerArg) return false;
-    if (force) return true;
-    return r.snowflakeScore == null;
-  });
+    .leftJoin(tickersTable, eq(reportsTable.ticker, tickersTable.ticker))
+    .where(conditions.length > 0 ? and(...conditions) : undefined);
 
   console.log(
     `🎯 Identified ${targets.length} reports for Snowflake backfill.\n`

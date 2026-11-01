@@ -12,7 +12,7 @@ import type { ReportSummary } from "@/app/api/reports/route";
 import { setStoredLastReport } from "@/lib/recent-report";
 
 export async function fetchReportsList(): Promise<ReportSummary[]> {
-  const res = await fetch("/api/reports");
+  const res = await fetch("/api/reports?v=2");
   if (!res.ok) {
     throw new Error(`Failed to fetch reports: ${res.statusText}`);
   }
@@ -21,7 +21,7 @@ export async function fetchReportsList(): Promise<ReportSummary[]> {
 }
 
 export async function fetchReportData(slug: string): Promise<ReportData> {
-  const res = await fetch(`/api/reports/${encodeURIComponent(slug)}`);
+  const res = await fetch(`/api/reports/${encodeURIComponent(slug)}?v=2`);
   if (!res.ok) {
     throw new Error(`Failed to fetch report: ${slug}`);
   }

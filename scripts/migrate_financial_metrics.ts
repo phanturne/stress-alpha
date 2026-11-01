@@ -19,6 +19,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import * as dotenv from "dotenv";
+import { eq } from "drizzle-orm";
 import { getDb } from "../src/db";
 import { reportsTable, type FinancialMetricsInsert } from "../src/db/schema";
 import { getReportRepository } from "../src/lib/repository";
@@ -296,11 +297,11 @@ async function main() {
         facts: reportsTable.facts,
         baseline: reportsTable.baseline,
       })
-      .from(reportsTable);
+      .from(reportsTable)
+      .where(targetTicker ? eq(reportsTable.ticker, targetTicker) : undefined);
 
     for (const r of dbReports) {
       const ticker = r.ticker.toUpperCase();
-      if (targetTicker && ticker !== targetTicker) continue;
 
       const facts = r.facts as Facts | null;
       const baseline = r.baseline as FinancialModelBaseline | null;

@@ -31,21 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit Repository Secrets
-        run: |
-          echo "::notice title=Secret Audit::DATABASE_URL len=${#DATABASE_URL}, MASSIVE_API_KEY len=${#MASSIVE_API_KEY}, POLYGON_API_KEY len=${#POLYGON_API_KEY}, FINNHUB_API_KEY len=${#FINNHUB_API_KEY}, MASSIVE_KEY len=${#MASSIVE_KEY}, POLYGON_KEY len=${#POLYGON_KEY}, FINNHUB_KEY len=${#FINNHUB_KEY}, MASSIVE_TOKEN len=${#MASSIVE_TOKEN}, POLYGON_TOKEN len=${#POLYGON_TOKEN}, FINNHUB_TOKEN len=${#FINNHUB_TOKEN}"
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
-          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          MASSIVE_KEY: ${{ secrets.MASSIVE_KEY }}
-          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
-          POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
-          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
-
       - name: Run Price Sync Script
         run: npx tsx scripts/sync_prices.ts
         env:

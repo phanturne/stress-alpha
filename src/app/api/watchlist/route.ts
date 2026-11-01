@@ -3,7 +3,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { getDb } from "@/db";
 import { userWatchlistsTable } from "@/db/schema";
-import { normalizeTicker } from "@/lib/utils";
+import { formatSafeErrorDetails, normalizeTicker } from "@/lib/utils";
 
 export async function GET(request: Request) {
   try {
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   } catch (err: any) {
     console.error("Failed to fetch user watchlist:", err);
     return NextResponse.json(
-      { error: "Internal server error", details: err?.message },
+      { error: "Internal server error", details: formatSafeErrorDetails(err) },
       { status: 500 }
     );
   }
@@ -55,6 +55,7 @@ export async function POST(request: Request) {
       const cleaned = Array.from(
         new Set(
           tickers
+            .slice(0, 200)
             .filter((t): t is string => typeof t === "string")
             .map(normalizeTicker)
             .filter(Boolean)
@@ -207,7 +208,7 @@ export async function POST(request: Request) {
   } catch (err: any) {
     console.error("Failed to mutate user watchlist:", err);
     return NextResponse.json(
-      { error: "Internal server error", details: err?.message },
+      { error: "Internal server error", details: formatSafeErrorDetails(err) },
       { status: 500 }
     );
   }
@@ -232,7 +233,7 @@ export async function DELETE(request: Request) {
   } catch (err: any) {
     console.error("Failed to clear user watchlist:", err);
     return NextResponse.json(
-      { error: "Internal server error", details: err?.message },
+      { error: "Internal server error", details: formatSafeErrorDetails(err) },
       { status: 500 }
     );
   }

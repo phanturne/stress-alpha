@@ -143,9 +143,19 @@ export interface PipelineDataBundle {
   technicalLevels?: TechnicalLevelsPayload;
 }
 
+export interface CalendarActualsOverride {
+  epsActual?: number | null;
+  epsEstimate?: number | null;
+  revenueActual?: number | null;
+  revenueEstimate?: number | null;
+  date?: string;
+}
+
 export interface PipelineBundleOptions {
   benchmarkPrice?: number;
   quarterStr?: string;
   apiKey?: string;
   massiveApiKey?: string;
+  calendarActuals?: CalendarActualsOverride;
+  enrichWithAi?: boolean;
 }

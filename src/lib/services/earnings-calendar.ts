@@ -5,7 +5,9 @@ import { getReportRepository } from "@/lib/repository";
 import type { ReportData } from "@/lib/schemas";
 import { computeStressedValuation } from "@/lib/valuation";
 import { computeSanityAudit } from "@/lib/sanity";
+import { renderReport } from "@/lib/report";
 import { fetchCompletePipelineBundle } from "./financial-data";
+import { isAiGatewayConfigured } from "./ai-gateway";
 import { resilientFetch } from "./http-client";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
@@ -40,6 +42,7 @@ export interface SyncEarningsCalendarOptions {
   massiveApiKey?: string;
   universe?: string[];
   ticker?: string;
+  enrichWithAi?: boolean;
 }
 
 export interface SyncEarningsCalendarResult {
@@ -219,14 +222,20 @@ export async function syncEarningsCalendar(
   // If a single ticker was explicitly requested and not in the day's calendar, synthesize a test candidate
   if (options?.ticker && candidates.length === 0) {
     const targetSymbol = options.ticker.toUpperCase();
-    const now = new Date();
+    const refDate = new Date(targetDate);
+    const month = refDate.getUTCMonth() + 1; // 1-12
+    // Earnings reported in Jan-Feb are Q4 prior year; Apr-May are Q1; Jul-Aug are Q2; Oct-Nov are Q3
+    const reportedQuarter =
+      month <= 2 ? 4 : Math.max(1, Math.ceil(month / 3) - 1);
+    const reportedYear =
+      month <= 2 ? refDate.getUTCFullYear() - 1 : refDate.getUTCFullYear();
     candidates = [
       {
         symbol: targetSymbol,
         date: targetDate,
         hour: "bmo",
-        year: now.getFullYear(),
-        quarter: Math.ceil((now.getMonth() + 1) / 3),
+        year: reportedYear,
+        quarter: reportedQuarter,
       },
     ];
   }
@@ -299,12 +308,89 @@ export async function syncEarningsCalendar(
         `📡 [Scaffolding] Ingesting feeds for ${symbol} (${resolvedSlug})...`
       );
 
+      // Look up prior reports for this ticker to compute accurate WFV deltas and preserve hand-crafted segments/peers
+      const tickerSummaries = reportSummaries.filter(
+        (s) => s.ticker?.toUpperCase() === symbol && s.slug !== resolvedSlug
+      );
+      let priorReport: ReportData | null = null;
+      let handCraftedDonor: ReportData | null = null;
+
+      for (const s of tickerSummaries) {
+        if (!s.slug) continue;
+        const r = await repo.getReport(s.slug);
+        if (!r) continue;
+        if (!priorReport) priorReport = r;
+        if (
+          r.moat?.competitors?.[0]?.ticker &&
+          r.moat.competitors[0].ticker !== "PEER"
+        ) {
+          handCraftedDonor = r;
+        }
+      }
+      if (!priorReport) {
+        priorReport = existingReport;
+      }
+
       const quarterStr = `Q${quarter} ${year}`;
       const bundle = await fetchCompletePipelineBundle(symbol, resolvedSlug, {
         quarterStr,
         apiKey: options?.apiKey,
         massiveApiKey: options?.massiveApiKey,
+        enrichWithAi: options?.enrichWithAi ?? isAiGatewayConfigured(),
+        calendarActuals: {
+          epsActual: entry.epsActual,
+          epsEstimate: entry.epsEstimate,
+          revenueActual: entry.revenueActual,
+          revenueEstimate: entry.revenueEstimate,
+          date: entry.date,
+        },
       });
+
+      // Preserve prior quarter's non-placeholder competitors & segments if AI enrichment did not replace them
+      const donor = handCraftedDonor || priorReport;
+      const isBundlePlaceholderPeers =
+        bundle.moatEn.competitors?.[0]?.ticker === "PEER";
+      const hasDonorRealPeers =
+        donor?.moat?.competitors &&
+        donor.moat.competitors.length > 0 &&
+        donor.moat.competitors[0].ticker !== "PEER";
+
+      if (isBundlePlaceholderPeers && hasDonorRealPeers && donor?.moat) {
+        bundle.moatEn = {
+          ...bundle.moatEn,
+          competitors: donor.moat.competitors,
+          moatSources: donor.moat.moatSources,
+          competitiveDynamicsSummary: donor.moat.competitiveDynamicsSummary,
+        };
+        if (donor.moatZh) {
+          bundle.moatZh = {
+            ...bundle.moatZh,
+            competitors: donor.moatZh.competitors,
+            moatSources: donor.moatZh.moatSources,
+            competitiveDynamicsSummary: donor.moatZh.competitiveDynamicsSummary,
+          };
+        }
+      }
+
+      const isBundlePlaceholderSegments =
+        bundle.factsDraft.segments?.[0]?.name === "Core Business & Solutions";
+      const hasDonorRealSegments =
+        donor?.facts?.segments &&
+        donor.facts.segments.length > 0 &&
+        donor.facts.segments[0].name !== "Core Business & Solutions";
+
+      if (isBundlePlaceholderSegments && hasDonorRealSegments && donor?.facts) {
+        bundle.factsDraft = {
+          ...bundle.factsDraft,
+          segments: donor.facts.segments,
+        };
+        if (donor.factsZh?.segments) {
+          bundle.factsZh = {
+            ...bundle.factsZh,
+            segments: donor.factsZh.segments,
+          };
+        }
+      }
 
       const report: ReportData = {
         folderSlug: resolvedSlug,
@@ -341,10 +427,41 @@ export async function syncEarningsCalendar(
       valuation.sanityAudit = sanityAudit;
       report.valuation = valuation;
 
+      // Render bilingual markdown memos so Memo View has report.md and report_zh.md
+      try {
+        report.reportMarkdown = renderReport(
+          {
+            facts: report.facts,
+            valuation: report.valuation,
+            moat: report.moat,
+            estimates: report.estimates,
+            catalysts: report.catalysts,
+            reactions: report.reactions,
+          },
+          { language: "en" }
+        );
+        report.reportMarkdownZh = renderReport(
+          {
+            facts: report.factsZh || report.facts,
+            valuation: report.valuation,
+            moat: report.moatZh || report.moat,
+            estimates: report.estimatesZh || report.estimates,
+            catalysts: report.catalystsZh || report.catalysts,
+            reactions: report.reactionsZh || report.reactions,
+          },
+          { language: "zh" }
+        );
+      } catch (memoErr) {
+        console.warn(
+          `⚠️ [EarningsCalendar] Memo rendering skipped for ${symbol}:`,
+          memoErr
+        );
+      }
+
       // Persist bilingual report via repository
       await repo.saveReport(report);
 
-      // Record initial valuation revision ledger point if valid
+      // Record valuation revision ledger point with true prior-vs-new delta
       if (valuation && valuation.weightedFairValue > 0) {
         let bullVal = valuation.weightedFairValue;
         let baseVal = valuation.weightedFairValue;
@@ -363,6 +480,34 @@ export async function syncEarningsCalendar(
           }
         }
 
+        const priorWfvNum =
+          priorReport?.valuation?.weightedFairValue &&
+          priorReport.valuation.weightedFairValue > 0
+            ? priorReport.valuation.weightedFairValue
+            : valuation.weightedFairValue;
+
+        let priorBullVal = priorWfvNum;
+        let priorBaseVal = priorWfvNum;
+        let priorPanicVal = priorWfvNum * 0.7;
+        if (priorReport?.scenarios?.scenarios) {
+          for (const s of priorReport.scenarios.scenarios) {
+            const fv = s.forwardEps * s.multiple;
+            const lower = s.name.toLowerCase();
+            if (lower.includes("bull")) priorBullVal = fv;
+            else if (lower.includes("base")) priorBaseVal = fv;
+            else if (lower.includes("panic") || lower.includes("bear"))
+              priorPanicVal = fv;
+          }
+        }
+
+        const wfvDeltaPct =
+          priorWfvNum > 0
+            ? (
+                ((valuation.weightedFairValue - priorWfvNum) / priorWfvNum) *
+                100
+              ).toFixed(2)
+            : "0.00";
+
         try {
           await repo.saveValuationRevision({
             ticker: symbol,
@@ -370,14 +515,14 @@ export async function syncEarningsCalendar(
             triggerType: "quarterly_filing",
             headline: `${symbol} Q${quarter} ${year} Earnings Scaffolding`,
             rationale: `Automated scaffolding from Finnhub & SEC filings for ${symbol} Q${quarter} ${year}.`,
-            priorWfv: String(valuation.weightedFairValue),
+            priorWfv: String(priorWfvNum),
             newWfv: String(valuation.weightedFairValue),
-            wfvDeltaPct: "0.00",
+            wfvDeltaPct,
             fullStateDiff: {
               priorRegimes: {
-                bull: bullVal,
-                base: baseVal,
-                panic: panicVal,
+                bull: priorBullVal,
+                base: priorBaseVal,
+                panic: priorPanicVal,
               },
               newRegimes: {
                 bull: bullVal,
