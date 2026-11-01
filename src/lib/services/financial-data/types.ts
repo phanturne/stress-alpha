@@ -158,4 +158,5 @@ export interface PipelineBundleOptions {
   massiveApiKey?: string;
   calendarActuals?: CalendarActualsOverride;
   enrichWithAi?: boolean;
+  translateZh?: boolean;
 }
