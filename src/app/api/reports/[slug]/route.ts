@@ -8,7 +8,7 @@ const getCachedReportBySlug = unstable_cache(
     const repo = getReportRepository();
     return repo.getReport(slug);
   },
-  ["report-by-slug"],
+  ["report-by-slug-v2"],
   { revalidate: 3600, tags: ["reports"] }
 );
 

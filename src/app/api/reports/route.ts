@@ -10,7 +10,7 @@ const getCachedReportsList = unstable_cache(
     const repo = getReportRepository();
     return repo.listReports();
   },
-  ["reports-list"],
+  ["reports-list-v2"],
   { revalidate: 3600, tags: ["reports"] }
 );
 
