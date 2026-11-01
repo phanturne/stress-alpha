@@ -10,6 +10,7 @@ import type {
   FilingExtracts,
   TechnicalLevelsPayload,
 } from "@/lib/schemas";
+import type { SecFilingExcerpts } from "./sec-extractor";
 
 export type {
   Facts,
@@ -22,6 +23,7 @@ export type {
   EarningsSentiment,
   FilingExtracts,
   TechnicalLevelsPayload,
+  SecFilingExcerpts,
 };
 
 // --- Rating & Action Localization Mappings ---
@@ -128,6 +130,7 @@ export interface PipelineDataBundle {
   analystEstimatesZh: AnalystEstimates;
   reactions: Reactions;
   filings: SecFilingItem[];
+  secExcerpts?: SecFilingExcerpts;
   factsDraft: Facts;
   factsZh: Facts;
   baseline: FinancialModelBaseline;

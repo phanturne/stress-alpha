@@ -219,7 +219,7 @@ export async function fetchFinnhubFilings(
     const data = await res.json();
     if (Array.isArray(data)) {
       return data
-        .filter((f) => ["10-Q", "10-K", "8-K"].includes(f.form))
+        .filter((f) => ["10-Q", "10-K", "8-K", "20-F", "6-K"].includes(f.form))
         .slice(0, 10)
         .map((f) => ({
           form: f.form,

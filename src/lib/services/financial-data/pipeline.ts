@@ -7,6 +7,7 @@ import {
   fetchFinnhubFilings,
   fetchHistoricalReactions,
 } from "./fetchers";
+import { extractSecFilingExcerpts } from "./sec-extractor";
 import {
   generateFactsDraft,
   generateFactsZh,
@@ -63,8 +64,9 @@ export async function fetchCompletePipelineBundle(
     apiKey: options?.apiKey,
   });
 
-  // 3. Fetch SEC Filings
+  // 3. Fetch SEC Filings & Extract Targeted Excerpts
   const filings = await fetchFinnhubFilings(ticker, options?.apiKey);
+  const secExcerpts = await extractSecFilingExcerpts(filings);
 
   // 4. Fetch Historical Reactions
   const reactions = await fetchHistoricalReactions(
@@ -116,6 +118,7 @@ export async function fetchCompletePipelineBundle(
     analystEstimatesZh: estimatesZh,
     reactions,
     filings,
+    secExcerpts,
     factsDraft,
     factsZh,
     baseline,
