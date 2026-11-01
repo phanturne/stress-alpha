@@ -14,7 +14,7 @@ The left pane anchors deterministic flow-through valuation models and real-time 
 </p>
 
 ### 2. Universe Screener & Multi-Factor Matrix
-Filter, rank, and evaluate valuation spreads, consensus price targets, and 30-point Snowflake Fundamental Radars across 640+ covered equities with responsive card and tabular views.
+Filter, rank, and evaluate valuation spreads, consensus price targets, and 30-point Snowflake Fundamental Radars across 521 covered equities (with 640+ multi-quarter earnings reports) with responsive card and tabular views.
 
 <p align="center">
   <img src="./docs/images/screener-preview.png" alt="StressAlpha Universe Screener Preview" width="100%" />
