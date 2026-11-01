@@ -68,7 +68,9 @@ async function main() {
       const dest = path.join(OUT_DIR, filename);
       await fs.writeFile(dest, Buffer.from(shot.data, "base64"));
       const stat = await fs.stat(dest);
-      console.log(`   ✅ Saved ${filename} (${Math.round(stat.size / 1024)} KB)`);
+      console.log(
+        `   ✅ Saved ${filename} (${Math.round(stat.size / 1024)} KB)`
+      );
     }
 
     // 1. Cockpit: Flow-through model + Scenario probability tree
@@ -80,18 +82,13 @@ async function main() {
     );
 
     // 2. Universe Screener
-    await capture(
-      `${BASE_URL}/screener`,
-      "screener-preview.png",
-      null,
-      3000
-    );
+    await capture(`${BASE_URL}/screener`, "screener-preview.png", null, 3000);
 
     // 3. Watchlist Portfolio (pre-populate items before navigating)
     await send("Page.navigate", { url: `${BASE_URL}/screener` });
     await new Promise((r) => setTimeout(r, 1200));
     await send("Runtime.evaluate", {
-      expression: `localStorage.setItem("stress_alpha_watchlist", JSON.stringify(["NVDA", "ORCL", "AVGO", "CRWV", "ONDS"]));`
+      expression: `localStorage.setItem("stress_alpha_watchlist", JSON.stringify(["NVDA", "ORCL", "AVGO", "CRWV", "ONDS"]));`,
     });
     await capture(
       `${BASE_URL}/?report=NVDA-Q2-2027-analysis&mode=watchlist`,
