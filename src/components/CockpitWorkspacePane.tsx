@@ -29,6 +29,7 @@ import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
 import { NewsTab } from "@/components/tabs/NewsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
+import { ReactionsTab } from "@/components/tabs/ReactionsTab";
 export type { WorkspaceTabDescriptor };
 
 export interface CockpitWorkspacePaneProps {
@@ -303,206 +304,167 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
         ref={workspaceScrollRef}
         className="custom-scrollbar min-h-0 w-full flex-1 overflow-y-auto pr-0 lg:pr-1.5"
       >
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-6">
+          {/* WORKSPACE 1: CHART & LEVELS (technicals) */}
+          {activeTab === "technicals" && (
+            <div className="flex flex-col gap-6">
+              {(() => {
+                const val = dynamicValuation ?? reportData?.valuation;
+                const scenarioResults = val?.scenarioResults ?? [];
+                const baseTarget = scenarioResults.find(
+                  (s) => s.name === "Base"
+                )?.fairValue;
+                const bullTarget = scenarioResults.find(
+                  (s) => s.name === "Bull"
+                )?.fairValue;
+                const bearTarget = scenarioResults.find(
+                  (s) => s.name === "Bear"
+                )?.fairValue;
+                const panicTarget =
+                  val?.stressTest?.valuationBands?.panic?.targetPrice;
+                const activePrice =
+                  displayFacts?.currentPrice ??
+                  reportData?.technicalLevels?.currentPrice ??
+                  0;
+                const currentPe =
+                  val?.stressTest?.asymmetry?.marketPricedInMultiple &&
+                  val.stressTest.asymmetry.marketPricedInMultiple > 0
+                    ? val.stressTest.asymmetry.marketPricedInMultiple
+                    : activePrice > 0 &&
+                        displayFacts?.epsOperating &&
+                        displayFacts.epsOperating > 0
+                      ? Number(
+                          (activePrice / displayFacts.epsOperating).toFixed(1)
+                        )
+                      : undefined;
+                const operatingEps =
+                  displayFacts?.epsOperating ??
+                  reportData?.facts?.epsOperating ??
+                  displayFacts?.trailingEps ??
+                  reportData?.facts?.trailingEps;
+
+                return (
+                  <TechnicalsTab
+                    ticker={
+                      displayFacts?.ticker || reportData?.facts?.ticker || "SPY"
+                    }
+                    currentPrice={activePrice}
+                    currentPe={currentPe}
+                    operatingEps={operatingEps}
+                    technicalLevels={reportData?.technicalLevels}
+                    valuation={{
+                      panic: panicTarget,
+                      bear: bearTarget,
+                      base: baseTarget,
+                      bull: bullTarget,
+                    }}
+                    locale={locale}
+                  />
+                );
+              })()}
+
+              {displayReactions &&
+                displayReactions.events &&
+                displayReactions.events.length > 0 && (
+                  <div className="border-t border-border/60 pt-2">
+                    <ReactionsTab
+                      reactionsData={displayReactions}
+                      locale={locale}
+                    />
+                  </div>
+                )}
+            </div>
+          )}
+
+          {/* WORKSPACE 2: VALUATION & DRIVERS (valuation, scenarios, sensitivity, segments, catalysts) */}
           {(activeTab === "valuation" ||
             activeTab === "scenarios" ||
-            activeTab === "sensitivity") && (
-            <ScenariosTab
-              scenariosData={displayScenarios!}
-              currentPrice={displayFacts!.currentPrice}
-              valuation={dynamicValuation ?? reportData?.valuation}
-              sensitivityData={
-                dynamicValuation?.sensitivity ??
-                reportData?.valuation?.sensitivity ??
-                []
-              }
-              onScenarioChange={onScenarioChange}
-              locale={locale}
-              revisions={valuationRevisions}
-            />
+            activeTab === "sensitivity" ||
+            activeTab === "segments" ||
+            activeTab === "catalysts") && (
+            <div className="flex flex-col gap-6">
+              <ScenariosTab
+                scenariosData={displayScenarios!}
+                currentPrice={displayFacts!.currentPrice}
+                valuation={dynamicValuation ?? reportData?.valuation}
+                sensitivityData={
+                  dynamicValuation?.sensitivity ??
+                  reportData?.valuation?.sensitivity ??
+                  []
+                }
+                onScenarioChange={onScenarioChange}
+                locale={locale}
+                revisions={valuationRevisions}
+              />
+
+              {displayFacts &&
+                displayFacts.segments &&
+                displayFacts.segments.length > 0 && (
+                  <div className="border-t border-border/60 pt-2">
+                    <SegmentsTab facts={displayFacts} locale={locale} />
+                  </div>
+                )}
+
+              {displayCatalysts &&
+                displayCatalysts.catalysts &&
+                displayCatalysts.catalysts.length > 0 && (
+                  <div className="border-t border-border/60 pt-2">
+                    <CatalystsTab
+                      catalystsData={displayCatalysts}
+                      onProbabilityChange={onCatalystProbabilityChange}
+                      locale={locale}
+                    />
+                  </div>
+                )}
+            </div>
           )}
 
-          {activeTab === "technicals" &&
-            (() => {
-              const val = dynamicValuation ?? reportData?.valuation;
-              const scenarioResults = val?.scenarioResults ?? [];
-              const baseTarget = scenarioResults.find(
-                (s) => s.name === "Base"
-              )?.fairValue;
-              const bullTarget = scenarioResults.find(
-                (s) => s.name === "Bull"
-              )?.fairValue;
-              const bearTarget = scenarioResults.find(
-                (s) => s.name === "Bear"
-              )?.fairValue;
-              const panicTarget =
-                val?.stressTest?.valuationBands?.panic?.targetPrice;
-              const activePrice =
-                displayFacts?.currentPrice ??
-                reportData?.technicalLevels?.currentPrice ??
-                0;
-              const currentPe =
-                val?.stressTest?.asymmetry?.marketPricedInMultiple &&
-                val.stressTest.asymmetry.marketPricedInMultiple > 0
-                  ? val.stressTest.asymmetry.marketPricedInMultiple
-                  : activePrice > 0 &&
-                      displayFacts?.epsOperating &&
-                      displayFacts.epsOperating > 0
-                    ? Number(
-                        (activePrice / displayFacts.epsOperating).toFixed(1)
-                      )
-                    : undefined;
-              const operatingEps =
-                displayFacts?.epsOperating ??
-                reportData?.facts?.epsOperating ??
-                displayFacts?.trailingEps ??
-                reportData?.facts?.trailingEps;
+          {/* WORKSPACE 3: CONSENSUS & PEERS (estimates, moat) */}
+          {(activeTab === "estimates" || activeTab === "moat") && (
+            <div className="flex flex-col gap-6">
+              <EstimatesTab
+                estimatesData={displayEstimates}
+                currentPrice={displayFacts?.currentPrice}
+                locale={locale}
+              />
 
-              return (
-                <TechnicalsTab
-                  ticker={
-                    displayFacts?.ticker || reportData?.facts?.ticker || "SPY"
-                  }
-                  currentPrice={activePrice}
-                  currentPe={currentPe}
-                  operatingEps={operatingEps}
-                  technicalLevels={reportData?.technicalLevels}
-                  valuation={{
-                    panic: panicTarget,
-                    bear: bearTarget,
-                    base: baseTarget,
-                    bull: bullTarget,
-                  }}
-                  locale={locale}
-                />
-              );
-            })()}
-
-          {activeTab === "estimates" && (
-            <EstimatesTab
-              estimatesData={displayEstimates}
-              currentPrice={displayFacts?.currentPrice}
-              locale={locale}
-            />
+              {displayMoat && (
+                <div className="border-t border-border/60 pt-2">
+                  <MoatTab moatData={displayMoat} locale={locale} />
+                </div>
+              )}
+            </div>
           )}
 
-          {activeTab === "moat" && (
-            <MoatTab moatData={displayMoat} locale={locale} />
-          )}
-
-          {activeTab === "segments" && (
-            <SegmentsTab facts={displayFacts!} locale={locale} />
-          )}
-
-          {activeTab === "catalysts" && (
-            <CatalystsTab
-              catalystsData={displayCatalysts}
-              onProbabilityChange={onCatalystProbabilityChange}
-              locale={locale}
-            />
-          )}
-
-          {activeTab === "news" && (
-            <NewsTab
-              ticker={displayFacts?.ticker}
-              events={marketEvents}
-              upstreamDependencies={upstreamDependencies}
-              currentPrice={displayFacts?.currentPrice}
-              locale={locale}
-              onSimulateShock={onSimulateShock}
-              onSimulateGrossMarginDelta={onSimulateGrossMarginDelta}
-              onSimulateCatalystProb={onSimulateCatalystProb}
-              onNavigateToModel={onNavigateToModel}
-            />
-          )}
-
-          {(activeTab === "audit" ||
+          {/* WORKSPACE 4: NEWS & FILINGS (news, audit, tone, filing) */}
+          {(activeTab === "news" ||
+            activeTab === "audit" ||
             activeTab === "tone" ||
-            activeTab === "filing" ||
-            activeTab === "reactions") && (
-            <AuditTab
-              sentimentData={displaySentiment}
-              filingData={displayFiling}
-              reactionsData={displayReactions}
-              locale={locale}
-              ticker={reportData?.facts?.ticker}
-            />
-          )}
+            activeTab === "filing") && (
+            <div className="flex flex-col gap-6">
+              <NewsTab
+                ticker={displayFacts?.ticker}
+                events={marketEvents}
+                upstreamDependencies={upstreamDependencies}
+                currentPrice={displayFacts?.currentPrice}
+                locale={locale}
+                onSimulateShock={onSimulateShock}
+                onSimulateGrossMarginDelta={onSimulateGrossMarginDelta}
+                onSimulateCatalystProb={onSimulateCatalystProb}
+                onNavigateToModel={onNavigateToModel}
+              />
 
-          {activeTab === "report" && (
-            <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-5 sm:p-6">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
-                <div className="flex items-center gap-2">
-                  <FileText className="size-4 text-accent" />
-                  <div>
-                    <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-                      {reportDocLang === "zh"
-                        ? t.page.reportTitleZh
-                        : t.page.reportTitleEn}
-                    </span>
-                    <span className="font-mono text-[11px] text-slate-400">
-                      {reportData?.folderName}
-                    </span>
-                  </div>
+              {(displaySentiment || displayFiling) && (
+                <div className="border-t border-border/60 pt-2">
+                  <AuditTab
+                    sentimentData={displaySentiment}
+                    filingData={displayFiling}
+                    reactionsData={displayReactions}
+                    locale={locale}
+                    ticker={reportData?.facts?.ticker}
+                  />
                 </div>
-
-                {/* Language Switcher for Report View */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center rounded-lg border border-border bg-surface-0/80 p-0.5 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setReportDocLang("en")}
-                      className={`rounded-md px-3 py-1 font-semibold transition-all ${
-                        reportDocLang === "en"
-                          ? "shadow-xs bg-surface-2 text-accent ring-1 ring-border"
-                          : "text-slate-400 hover:text-foreground"
-                      }`}
-                    >
-                      English (report.md)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setReportDocLang("zh")}
-                      className={`rounded-md px-3 py-1 font-semibold transition-all ${
-                        reportDocLang === "zh"
-                          ? "shadow-xs bg-accent/20 font-bold text-accent ring-1 ring-accent/30"
-                          : "text-slate-400 hover:text-foreground"
-                      }`}
-                    >
-                      🇨🇳 中文研报 (report_zh.md)
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const content =
-                        reportDocLang === "zh"
-                          ? reportData?.reportMarkdownZh
-                          : reportData?.reportMarkdown;
-                      if (content) {
-                        navigator.clipboard.writeText(content);
-                        showToast(
-                          reportDocLang === "zh"
-                            ? t.page.copiedZh
-                            : t.page.copiedEn
-                        );
-                      }
-                    }}
-                    className="shadow-xs flex items-center gap-1.5 rounded-lg border border-border bg-surface-2/90 px-3 py-1.5 text-xs font-medium text-slate-200 transition-all hover:border-accent/40 hover:bg-surface-3 hover:text-foreground"
-                  >
-                    <span>{t.page.copyBtn}</span>
-                  </button>
-                </div>
-              </div>
-              <pre className="custom-scrollbar max-h-[72vh] overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-0/90 p-5 font-mono text-xs leading-relaxed text-slate-200 shadow-inner selection:bg-accent/30 sm:text-[13px]">
-                {(reportDocLang === "zh"
-                  ? reportData?.reportMarkdownZh
-                  : reportData?.reportMarkdown) ||
-                  (reportDocLang === "zh"
-                    ? t.page.noReportFileZh
-                    : t.page.noReportFileEn)}
-              </pre>
+              )}
             </div>
           )}
         </div>

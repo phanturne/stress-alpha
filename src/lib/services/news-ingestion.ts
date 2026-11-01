@@ -263,7 +263,7 @@ export function mapArticleToTransmission(
           action: isPositive ? "Upgraded" : "Downgraded",
           newTarget: isPositive ? 160 : 110,
         },
-        rationale: `${firm} institutional assessment: ${isPositive ? "Overweight / Overdone selloff" : "Cautious outlook"}.`,
+        rationale: `${firm} assessment: ${isPositive ? "Overweight / Overdone selloff" : "Cautious outlook"}.`,
       },
     };
   }

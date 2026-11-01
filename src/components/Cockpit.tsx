@@ -252,7 +252,7 @@ export const Cockpit: React.FC<CockpitProps> = ({
         {/* Live Stock Pricing & Weighted Fair Value Strip */}
         <div className="relative grid grid-cols-2 gap-3 rounded-xl border border-border bg-surface-0/80 p-3">
           {/* Last Close */}
-          <div className="group/price relative">
+          <div className="group/price relative flex flex-col justify-between">
             <div className="flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400">
               <span className="truncate">{t.currentPrice}</span>
               <span
@@ -263,25 +263,27 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 <Info className="size-3 text-slate-500 transition-colors hover:text-accent" />
               </span>
             </div>
-            <div className="mt-0.5 flex items-baseline gap-2">
-              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
+            <div className="mt-1">
+              <div className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(currentPrice)}
-              </span>
-              {asymmetry.marketPricedInMultiple > 0 ? (
-                <span
-                  className="rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
-                  title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
-                >
-                  {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
-                </span>
-              ) : (
-                <span
-                  className="rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
-                  title={t.asymmetry.pricedInMultipleLossTooltip}
-                >
-                  {t.asymmetry.pricedInMultipleLoss}
-                </span>
-              )}
+              </div>
+              <div className="mt-1 flex items-center">
+                {asymmetry.marketPricedInMultiple > 0 ? (
+                  <span
+                    className="inline-flex items-center whitespace-nowrap rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
+                    title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
+                  >
+                    {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                  </span>
+                ) : (
+                  <span
+                    className="inline-flex items-center whitespace-nowrap rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
+                    title={t.asymmetry.pricedInMultipleLossTooltip}
+                  >
+                    {t.asymmetry.pricedInMultipleLoss}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Instant CSS hover tooltip */}
@@ -291,26 +293,28 @@ export const Cockpit: React.FC<CockpitProps> = ({
           </div>
 
           {/* Weighted Fair Value */}
-          <div className="text-right">
+          <div className="flex flex-col justify-between text-right">
             <div
               className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
               title={t.weightedFairValue}
             >
               {t.weightedFairValue}
             </div>
-            <div className="mt-0.5 flex items-baseline justify-end gap-1.5">
-              <span className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
+            <div className="mt-1">
+              <div className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(weightedFairValue, 2)}
-              </span>
-              <span
-                className={`rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
-                  upsidePct >= 0
-                    ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
-                    : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
-                }`}
-              >
-                {formatPercent(upsidePct)}
-              </span>
+              </div>
+              <div className="mt-1 flex items-center justify-end">
+                <span
+                  className={`inline-flex items-center whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
+                    upsidePct >= 0
+                      ? "bg-fintech-greenGlow/15 border-fintech-green/30 text-fintech-green"
+                      : "bg-fintech-redGlow/15 border-fintech-red/30 text-fintech-red"
+                  }`}
+                >
+                  {formatPercent(upsidePct)}
+                </span>
+              </div>
             </div>
           </div>
         </div>

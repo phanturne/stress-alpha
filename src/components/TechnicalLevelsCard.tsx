@@ -54,7 +54,7 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
     return findConfluenceSignals(technicalLevels, valuation, locale);
   }, [technicalLevels, valuation, locale]);
 
-  // 3-Tier Institutional Price Corridors (Immediate, Structural, Macro)
+  // 3-Level Support & Resistance Corridors (Immediate, Structural, Macro)
   const corridors = useMemo(() => {
     if (!technicalLevels) return { supports: [], resistances: [] };
     return synthesizePriceCorridors(technicalLevels, activePrice, locale);
@@ -339,7 +339,7 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
         </div>
       )}
 
-      {/* VIEW 1: 3-TIER INSTITUTIONAL CORRIDORS (DEFAULT) */}
+      {/* VIEW 1: 3-LEVEL SUPPORT & RESISTANCE CORRIDORS (DEFAULT) */}
       {viewMode === "corridors" ? (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {/* Support Corridors (S1, S2, S3) */}

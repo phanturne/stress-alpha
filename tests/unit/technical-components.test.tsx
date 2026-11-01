@@ -154,9 +154,9 @@ describe("Technical Levels UI Components", () => {
         />
       );
 
-      // Default view: 3-Tier Corridors
-      expect(screen.getByText("Institutional Price Corridors")).toBeDefined();
-      expect(screen.getByText("3-Tier Corridors")).toBeDefined();
+      // Default view: 3-Level Support & Resistance
+      expect(screen.getByText("Support & Resistance Levels")).toBeDefined();
+      expect(screen.getByText("3-Level S/R")).toBeDefined();
       expect(screen.getByText("All Levels")).toBeDefined();
       expect(screen.getByText("Key Support")).toBeDefined();
       expect(screen.getByText("Key Resistance")).toBeDefined();
@@ -313,8 +313,8 @@ describe("Technical Levels UI Components", () => {
         />
       );
 
-      expect(screen.getByText("机构级价格走廊")).toBeDefined();
-      expect(screen.getByText("3阶核心走廊")).toBeDefined();
+      expect(screen.getByText("支撑与阻力位")).toBeDefined();
+      expect(screen.getByText("3级核心走廊")).toBeDefined();
       expect(screen.getByText("全部技术位")).toBeDefined();
       expect(screen.getByText("关键支撑位 (Support)")).toBeDefined();
       expect(screen.getByText("关键阻力位 (Resistance)")).toBeDefined();
@@ -455,11 +455,10 @@ describe("Technical Levels UI Components", () => {
       expect(screen.getByText("Technical Analysis & Chart")).toBeDefined();
       expect(screen.getByText("GOOGL")).toBeDefined();
       expect(screen.getByText("$283.82")).toBeDefined();
-      expect(screen.getByText("P/E: 28.5x")).toBeDefined();
       expect(screen.getByText("28.5x")).toBeDefined();
       expect(screen.getByText("Current P/E")).toBeDefined();
       expect(screen.getByText("Live Interactive Chart")).toBeDefined();
-      expect(screen.getByText("Institutional Price Corridors")).toBeDefined();
+      expect(screen.getByText("Support & Resistance Levels")).toBeDefined();
     });
 
     it("renders localized technical badges in Chinese locale", () => {
@@ -493,8 +492,7 @@ describe("Technical Levels UI Components", () => {
         />
       );
 
-      // Header strip and KPI card 1
-      expect(screen.getByText("P/E: N/A (Loss)")).toBeDefined();
+      // KPI card 1
       expect(screen.getByText("N/A (Loss)")).toBeDefined();
       expect(screen.getByText("-$0.01 EPS")).toBeDefined();
 
@@ -510,7 +508,6 @@ describe("Technical Levels UI Components", () => {
         />
       );
 
-      expect(screen.getByText("P/E: N/A (亏损)")).toBeDefined();
       expect(screen.getByText("N/A (亏损)")).toBeDefined();
       expect(screen.getByText("-$0.01 EPS")).toBeDefined();
     });
@@ -531,12 +528,13 @@ describe("Technical Levels UI Components", () => {
       const tabs = getWorkspaceTabs(t, mockReportData, 3, false);
       expect(tabs[0].id).toBe("technicals");
       expect(tabs[0].shortcut).toBe("1");
-      expect(tabs[0].label).toBe("Technicals & Chart");
-      expect(tabs[0].shortLabel).toBe("Technicals");
+      expect(tabs[0].label).toBe("Chart & Levels");
+      expect(tabs[0].shortLabel).toBe("Chart");
       expect(tabs[0].count).toBe(mockPayload.levels.length);
 
       expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");
+      expect(tabs).toHaveLength(4);
     });
   });
 });

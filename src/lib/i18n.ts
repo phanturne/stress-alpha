@@ -1447,9 +1447,9 @@ export const translations: Record<Locale, Translations> = {
       zoneBadge: "Zone Band",
       zoneDesc: (count: number) => `${count} clustered levels`,
       corridors: {
-        title: "Institutional Price Corridors",
-        badge: "3-Tier Hierarchy",
-        viewCorridors: "3-Tier Corridors",
+        title: "Support & Resistance Levels",
+        badge: "3-Level Hierarchy",
+        viewCorridors: "3-Level S/R",
         viewAllLevels: "All Levels",
         s1Title: "Immediate Shelf",
         s1Desc: (low: string, high: string) =>
@@ -1462,7 +1462,7 @@ export const translations: Record<Locale, Translations> = {
           `Multi-day swing shelf & secondary pivot support (${low} – ${high})`,
         s2Sma200: "200-Day SMA & Structural Floor",
         s2Sma200Desc: (low: string, high: string) =>
-          `Institutional 200-day trendline & structural swing support (${low} – ${high})`,
+          `200-day trendline & structural swing support (${low} – ${high})`,
         s2Poc: "Volume POC Structural Shelf",
         s2PocDesc: (low: string, high: string) =>
           `1-Year volume profile Point of Control shelf (${low} – ${high})`,
@@ -1486,7 +1486,7 @@ export const translations: Record<Locale, Translations> = {
           `High-volume node & secondary resistance band (${low} – ${high})`,
         r2Sma200: "200-Day SMA Resistance",
         r2Sma200Desc: (low: string, high: string) =>
-          `Institutional 200-day trendline resistance (${low} – ${high})`,
+          `200-day trendline resistance (${low} – ${high})`,
         r3Sma: "Major Trend Confluence",
         r3SmaDesc: (low: string, high: string) =>
           `50-Day (${low}) & 200-Day SMA (${high}) confluence (Death Cross Zone)`,
@@ -1497,32 +1497,32 @@ export const translations: Record<Locale, Translations> = {
       openFullAnalysis: "Full Chart & Analysis →",
       compactSummary: "S/R Telemetry",
       spot: "Spot",
-      openChartTab: "Open Interactive Chart & 3-Tier Corridors (Tab 1) →",
+      openChartTab: "Open Interactive Chart & Key Levels (Tab 1) →",
     },
     tabs: {
-      valuation: "Valuation & Scenarios",
-      technicals: "Technicals & Chart",
-      estimates: "Analyst Estimates",
+      valuation: "Valuation & Drivers",
+      technicals: "Chart & Levels",
+      estimates: "Consensus & Peers",
       moat: "Moat & Peers",
       segments: "Segments & Financials",
       catalysts: "Catalysts & Risks",
-      news: "News & Pulse",
+      news: "News & Filings",
       audit: "Earnings Audit",
-      report: "Raw Filings & Notes",
+      report: "Research Memo",
       scenarios: "Valuation & Scenarios",
       sensitivity: "Sensitivity Heatmap",
       tone: "Management Tone",
       filing: "10-Q Risks",
       reactions: "Historical Reactions",
       shortValuation: "Valuation",
-      shortTechnicals: "Technicals",
-      shortEstimates: "Estimates",
+      shortTechnicals: "Chart",
+      shortEstimates: "Consensus",
       shortMoat: "Moat",
       shortSegments: "Segments",
       shortCatalysts: "Catalysts",
       shortAudit: "Audit",
       shortNews: "News",
-      shortReport: "Notes",
+      shortReport: "Memo",
       nextTab: "Next Workspace",
       prevTab: "Prev Workspace",
       allTabs: "All Workspaces",
@@ -1535,10 +1535,10 @@ export const translations: Record<Locale, Translations> = {
         "Real-time candlestick price action, classical pivots, volume profile POC, and fundamental confluence.",
       chartCardTitle: "Live Interactive Chart",
       chartCardSubtitle:
-        "Institutional TradingView charting with volume, moving averages, and technical indicators.",
-      corridorsCardTitle: "Institutional Price Corridors & Confluence",
+        "Interactive TradingView charting with volume, moving averages, and technical indicators.",
+      corridorsCardTitle: "Support & Resistance Levels",
       corridorsCardSubtitle:
-        "3-tier S/R hierarchy synthesized with quantitative valuation regimes.",
+        "3-level S/R hierarchy synthesized with quantitative valuation regimes.",
       confluenceSectionTitle: "Fundamental-Technical Confluence Signals",
       confluenceEmpty:
         "No direct regime confluence detected within ±2.5% tolerance band.",
@@ -1749,9 +1749,8 @@ export const translations: Record<Locale, Translations> = {
       modelStanceTitle: "Model Analytical Stance",
       dataNotesTitle: "Data Quality & Invariant Notes",
       closeModal: "Close",
-      revisionsLedgerTitle: "Valuation Revision Ledger",
-      revisionsLedgerSubtitle:
-        "Immutable audit trail of event-driven valuation adjustments",
+      revisionsLedgerTitle: "Revision History",
+      revisionsLedgerSubtitle: "Event-driven valuation adjustments and updates",
       revisionsEmpty:
         "No historical valuation revisions recorded yet. Revisions are logged upon fundamental shocks or quarterly filings.",
       colRevisionDate: "Revision Date",
@@ -1869,17 +1868,17 @@ export const translations: Record<Locale, Translations> = {
       colDate: "Date",
       targetPriorFrom: "from",
       confidentialBadge: "CONFIDENTIAL • INVESTMENT COMMITTEE USE ONLY",
-      docClassification: "Institutional Fundamental Equity Stress Research",
+      docClassification: "Fundamental Equity Stress Research",
       footerMethodologyTitle: "Deterministic Arithmetic Engine",
       footerMethodology:
         "100% Deterministic Financial Arithmetic — Pure TypeScript sensitivity flow-through, zero LLM mathematical hallucinations. Multi-factor volume shocks, operating leverage rigidity, and risk/reward asymmetry ratios are calculated strictly by StressAlpha Engine.",
-      footerDisclaimerTitle: "Governance & Institutional Audit Trail",
+      footerDisclaimerTitle: "Governance & Audit Trail",
       footerDisclaimer:
-        "For institutional investment research and scenario stress testing purposes only. Not investment advice or solicitation. Sourced from SEC Form 10-K / 10-Q filings, transcripts, and audited market consensus data.",
+        "For investment research and scenario stress testing purposes only. Not investment advice or solicitation. Sourced from SEC Form 10-K / 10-Q filings, transcripts, and audited market consensus data.",
       docId: "Document ID",
       footerAuditStatus:
         "Pillar Simplex Calibration: Convex Regularization [0.05, 0.85] | Data Integrity: 100%",
-      printGeneratedOn: "Generated via StressAlpha Institutional Cockpit",
+      printGeneratedOn: "Generated via StressAlpha Cockpit",
     },
     page: {
       loading: "Loading StressAlpha Report...",
@@ -2270,7 +2269,7 @@ export const translations: Record<Locale, Translations> = {
       account: {
         title: "Account & Security",
         description:
-          "Manage your institutional profile, cloud database session, and authentication credentials.",
+          "Manage your profile, cloud database session, and authentication credentials.",
         notSignedIn: "Guest Workspace",
         notSignedInDesc:
           "You are browsing in guest mode. Sign in to synchronize your stock watchlists and custom stress scenarios across devices via Neon PostgreSQL.",
@@ -2299,7 +2298,7 @@ export const translations: Record<Locale, Translations> = {
           "Select your preferred language. All metrics, SEC audits, and analytical commentary adapt in real time.",
         langEnTitle: "English (US)",
         langEnDesc:
-          "Institutional financial terminology, SEC 10-Q/10-K audit logs, and Wall St consensus spreads.",
+          "Financial terminology, SEC 10-Q/10-K audit logs, and Wall St consensus spreads.",
         langZhTitle: "简体中文 (ZH)",
         langZhDesc:
           "全景中文财报审计、30项雪花图雷达、情景压力测试与护城河竞争格局深度分析。",
@@ -2336,7 +2335,7 @@ export const translations: Record<Locale, Translations> = {
       privacy: {
         title: "Privacy & Storage Management",
         description:
-          "Institutional data privacy controls, navigation bar concealment, and local cache controls.",
+          "Data privacy controls, navigation bar concealment, and local cache controls.",
         privacyFirstTitle: "Zero-Tracking Architecture",
         privacyFirstDesc:
           "StressAlpha does not sell user data, run third-party advertising pixels, or compromise financial research confidentiality.",
@@ -2356,7 +2355,7 @@ export const translations: Record<Locale, Translations> = {
       system: {
         title: "System & Architecture",
         description:
-          "Platform versioning, deterministic engines, and institutional documentation links.",
+          "Platform versioning, deterministic engines, and documentation links.",
         versionLabel: "Platform Version",
         engineLabel: "Deterministic Engines",
         databaseLabel: "Database Engine",
@@ -2457,11 +2456,11 @@ export const translations: Record<Locale, Translations> = {
       },
       section7: {
         title: "7. Deterministic Scenario Calibration Matrix",
-        desc: "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha rejects academic window dressing in favor of a pure deterministic TypeScript Softmax Multi-Regime Weighting with Tail Risk Heuristics: scenario priors are mapped into Log-Odds space, modified across 4 institutional pillars with deterministic shifts, and resolved via temperature-controlled Softmax with simplex contraction.",
+        desc: "Traditional financial models often rely on naive, symmetrical priors (e.g., 25% Bull / 50% Base / 25% Panic). When a company suffers severe auditor resignations, DOJ probes, or razor-thin margins, uncalibrated models produce dangerously distorted 'False Alpha'. StressAlpha rejects academic window dressing in favor of a pure deterministic TypeScript Softmax Multi-Regime Weighting with Tail Risk Heuristics: scenario priors are mapped into Log-Odds space, modified across 4 core fundamental pillars with deterministic shifts, and resolved via temperature-controlled Softmax with simplex contraction.",
         formulaLabel: "LOG-ODDS & SOFTMAX PROBABILITY SIMPLEX",
         p1Title: "Pillar 1: Forensic & Governance Tail Veto",
         p1Desc:
-          "Severe governance flags or forensic accounting probes impose asymmetric log-odds shifts (Δz_panic = +1.35, Δz_bull = -1.60) and enforce an institutional fiduciary veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled). Governance failures are existential downside tail events that no operational margin cushion can offset.",
+          "Severe governance flags or forensic accounting probes impose asymmetric log-odds shifts (Δz_panic = +1.35, Δz_bull = -1.60) and enforce a strict fiduciary veto (Panic floor ≥ 45%, Bull cap ≤ 8%, margin buffers disabled). Governance failures are existential downside tail events that no operational margin cushion can offset.",
         p2Title: "Pillar 2: Archetype-Aware Resilience & Capital Runway",
         p2Desc:
           "Categorizes equities into 3 valuation archetypes: 1) Compounder: Operating margins >30% rewarded, <15% penalized unless protected by Wide Moat (Costco Exemption); 2) Operating Scaler: Growth ≥25% and gross margin ≥60% rewarded for operating leverage acceleration; 3) Venture Hypergrowth: High growth (≥50%) scale-ups with negative operating income (e.g. ONDS). Gated by a ≥35% gross margin floor to grant the Unit Economics Exemption; audited for Net Liquid Cash Runway: runways <9 months incur an acute +1.25 Panic logit penalty to reflect emergency secondary equity dilution.",
@@ -2480,10 +2479,10 @@ export const translations: Record<Locale, Translations> = {
         interviewWhyTitle:
           "Why use heuristic logit shifts over unproven academic priors?",
         interviewWhyText:
-          "In buy-side investment committee and quant research interviews, claiming an unsubstantiated “Bayesian posterior” without empirical distributions invites immediate skepticism. StressAlpha is intellectually honest: the baseline logit shifts (Δz) represent transparent institutional heuristic bounds modeling structural downside asymmetries (governance tail vetoes, acute dilution overhang).",
+          "In fundamental equity research and quant modeling, claiming an unsubstantiated “Bayesian posterior” without empirical distributions invites immediate skepticism. StressAlpha is transparent: the baseline logit shifts (Δz) represent clear heuristic bounds modeling structural downside asymmetries (governance tail vetoes, acute dilution overhang).",
         interviewRoadmapTitle: "Empirical Calibration Roadmap:",
         interviewRoadmapText:
-          "In systematic institutional production, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.",
+          "In systematic production setups, these log-odds coefficients can be empirically tuned via multi-quarter historical earnings outturns, minimizing Brier scores (B = 1/N ∑ (p_i - o_i)²) and multinomial log-loss across coverage constituents to achieve data-driven parameter convergence.",
       },
       section8: {
         title: "8. Deterministic Price Corridors & Regime Confluence",
@@ -2494,7 +2493,7 @@ export const translations: Record<Locale, Translations> = {
           "Computes standard floor trader pivots P = (H + L + C) / 3, S1 = 2P - H, R1 = 2P - L, S2 = P - (H - L), R2 = P + (H - L), alongside measured-move extensions S3 = L - 2(H - P) and R3 = H + 2(P - L).",
         volumePocTitle: "1-Year Volume Profile POC & Anchored VWAPs",
         volumePocDesc:
-          "Discretizes 252-day price action into 40 equal-range volume buckets to isolate high-volume institutional nodes (POC) and computes Anchored VWAPs from cycle peaks and peak volume bars.",
+          "Discretizes 252-day price action into 40 equal-range volume buckets to isolate high-volume nodes (POC) and computes Anchored VWAPs from cycle peaks and peak volume bars.",
         confluenceTitle: "Fundamental-Technical Confluence Criteria",
         confluenceDesc:
           "Flags high-conviction inflection zones where technical corridors converge with fundamental valuation regimes (Panic Floor, Bear, Base, Bull) within a ±2.5% band (|Price_tech - Price_regime| / Price_regime <= 0.025).",
@@ -2762,9 +2761,9 @@ export const translations: Record<Locale, Translations> = {
       zoneBadge: "共振带",
       zoneDesc: (count: number) => `${count}重技术位重合`,
       corridors: {
-        title: "机构级价格走廊",
-        badge: "3阶走廊体系",
-        viewCorridors: "3阶核心走廊",
+        title: "支撑与阻力位",
+        badge: "3级走廊体系",
+        viewCorridors: "3级核心走廊",
         viewAllLevels: "全部技术位",
         s1Title: "即时支撑平台",
         s1Desc: (low: string, high: string) =>
@@ -2777,7 +2776,7 @@ export const translations: Record<Locale, Translations> = {
           `波段筹码平台与次级支撑共振带 (${low} – ${high})`,
         s2Sma200: "200日均线与中线支撑",
         s2Sma200Desc: (low: string, high: string) =>
-          `机构200日均线生命线与波段支撑平台 (${low} – ${high})`,
+          `200日均线生命线与波段支撑平台 (${low} – ${high})`,
         s2Poc: "筹码密集区与中线支撑",
         s2PocDesc: (low: string, high: string) =>
           `1年期筹码分布最高峰（POC）中线支撑 (${low} – ${high})`,
@@ -2801,7 +2800,7 @@ export const translations: Record<Locale, Translations> = {
           `高成交量换手区与次级阻力带 (${low} – ${high})`,
         r2Sma200: "200日均线阻力",
         r2Sma200Desc: (low: string, high: string) =>
-          `机构200日均线生命线反弹阻力 (${low} – ${high})`,
+          `200日均线生命线反弹阻力 (${low} – ${high})`,
         r3Sma: "主线均线死叉压力区",
         r3SmaDesc: (low: string, high: string) =>
           `50日 (${low}) 与200日均线 (${high}) 共振压制带 (死叉区)`,
@@ -2815,15 +2814,15 @@ export const translations: Record<Locale, Translations> = {
       openChartTab: "打开交互K线图与三层走廊 (工作台 1) →",
     },
     tabs: {
-      valuation: "估值与情景",
-      technicals: "技术分析与图表",
-      estimates: "分析师共识",
+      valuation: "估值与驱动因素",
+      technicals: "图表与关键位",
+      estimates: "市场预期与竞对",
       moat: "护城河与竞品",
       segments: "分部业务与财务",
       catalysts: "催化剂与风险",
-      news: "即时动态与脉搏",
+      news: "实时动态与呈报",
       audit: "业绩与披露审计",
-      report: "原始底稿与披露",
+      report: "投资研报",
       scenarios: "估值与情景",
       sensitivity: "敏感性热力图",
       tone: "电话会情绪",
@@ -2831,13 +2830,13 @@ export const translations: Record<Locale, Translations> = {
       reactions: "历史股价反应",
       shortValuation: "估值",
       shortTechnicals: "图表",
-      shortEstimates: "共识",
+      shortEstimates: "预期",
       shortMoat: "护城河",
       shortSegments: "分部",
       shortCatalysts: "催化",
       shortAudit: "审计",
       shortNews: "动态",
-      shortReport: "底稿",
+      shortReport: "研报",
       nextTab: "下一工作台",
       prevTab: "上一工作台",
       allTabs: "全部工作台",
@@ -2849,8 +2848,8 @@ export const translations: Record<Locale, Translations> = {
       subtitle: "实时K线形态、经典枢轴点位、筹码分布POC与基本面估值共振审计。",
       chartCardTitle: "实时交互K线图",
       chartCardSubtitle:
-        "机构级 TradingView 图表，集成成交量、均线与技术指标。",
-      corridorsCardTitle: "机构三层价格走廊与共振矩阵",
+        "交互式 TradingView 图表，集成成交量、均线与技术指标。",
+      corridorsCardTitle: "三层支撑阻力走廊与共振矩阵",
       corridorsCardSubtitle: "三层支撑阻力层级与压力测试基本面估值锚定。",
       confluenceSectionTitle: "基本面与技术面共振信号",
       confluenceEmpty: "当前未在 ±2.5% 容差带内检测到直接共振信号。",
@@ -3054,8 +3053,8 @@ export const translations: Record<Locale, Translations> = {
       modelStanceTitle: "模型分析研判",
       dataNotesTitle: "数据质量与审计提示",
       closeModal: "关闭",
-      revisionsLedgerTitle: "公允估值推演历史与修订账本",
-      revisionsLedgerSubtitle: "不可篡改的事件驱动加权公允估值修订审计轨迹",
+      revisionsLedgerTitle: "估值修订历史",
+      revisionsLedgerSubtitle: "事件驱动的加权公允估值修订记录",
       revisionsEmpty:
         "暂无历史公允估值修订记录。当发生重大基本面冲击或季度财报发布时将自动记录修订。",
       colRevisionDate: "修订日期",
@@ -3172,17 +3171,17 @@ export const translations: Record<Locale, Translations> = {
       colDate: "发布日期",
       targetPriorFrom: "前值",
       confidentialBadge: "机密文档 • 仅限投资决策委员会内部使用",
-      docClassification: "机构级基本面量化压力测试研报",
+      docClassification: "基本面量化压力测试研报",
       footerMethodologyTitle: "确定性算术引擎",
       footerMethodology:
         "100% 确定性金融算术内核 — 纯 TypeScript 传导计算，严格杜绝大模型数学幻觉。多因子需求冲击、固定营运支出刚性与盈亏非对称比率均由 StressAlpha 引擎确定性求解。",
       footerDisclaimerTitle: "合规治理与审计跟踪",
       footerDisclaimer:
-        "本研报仅供机构投资研究与极端情景压力测试参考，不构成任何投资建议或证券推介。数据提取自 SEC 10-K / 10-Q 官方呈报文件、财报电话会纪要与经审计的一致预期。",
+        "本研报仅供投资研究与极端情景压力测试参考，不构成任何投资建议或证券推介。数据提取自 SEC 10-K / 10-Q 官方呈报文件、财报电话会纪要与经审计的一致预期。",
       docId: "文档编号",
       footerAuditStatus:
         "概率单纯形校准: 凸收缩正则化 [0.05, 0.85] | 数据完整性: 100%",
-      printGeneratedOn: "由 StressAlpha 机构研报驾驶舱生成",
+      printGeneratedOn: "由 StressAlpha 研报驾驶舱生成",
     },
     page: {
       loading: "正在加载 StressAlpha 研报数据...",
@@ -3562,7 +3561,7 @@ export const translations: Record<Locale, Translations> = {
       tabSystem: "系统与架构信息",
       account: {
         title: "账户与安全",
-        description: "管理您的机构分析师资料、云端数据库会话与身份凭证。",
+        description: "管理您的分析师资料、云端数据库会话与身份凭证。",
         notSignedIn: "访客工作区",
         notSignedInDesc:
           "您当前处于访客模式。登录后可将自选股清单与自定义压力测试模型参数同步至 Neon PostgreSQL 云端数据库。",
@@ -3590,7 +3589,7 @@ export const translations: Record<Locale, Translations> = {
           "选择首选语言。所有指标、SEC 审计底稿和情景评述将实时动态适配。",
         langEnTitle: "English (US)",
         langEnDesc:
-          "机构级英文金融术语、SEC 10-Q/10-K 审计日志及华尔街卖方预期剪刀差。",
+          "专业英文金融术语、SEC 10-Q/10-K 审计日志及华尔街卖方预期剪刀差。",
         langZhTitle: "简体中文 (ZH)",
         langZhDesc:
           "全景中文财报审计、30项雪花图雷达、情景压力测试与护城河竞争格局深度分析。",
@@ -3625,7 +3624,7 @@ export const translations: Record<Locale, Translations> = {
       },
       privacy: {
         title: "隐私与数据管理",
-        description: "机构级隐私防护、导航栏隐蔽策略与本地缓存管理。",
+        description: "数据隐私防护、导航栏隐蔽策略与本地缓存管理。",
         privacyFirstTitle: "零追踪架构",
         privacyFirstDesc:
           "StressAlpha 不出售任何用户数据，不加载任何第三方追踪或广告代码，严格保护买方投资研究的私密性。",
@@ -3772,17 +3771,17 @@ export const translations: Record<Locale, Translations> = {
       },
       section8: {
         title: "8. 确定性价格走廊与估值共振审计",
-        desc: "将压力测试估值锚位与机构市场微观结构无缝桥接。纯代码确定性融合经典场内交易员枢轴点、跳空缺口、一年筹码分布峰（Volume POC）与锚定均价（Anchored VWAP），构建三层机构价格走廊，并对基本面情景目标进行容差共振审计。",
+        desc: "将压力测试估值锚位与市场微观结构无缝桥接。纯代码确定性融合经典场内交易员枢轴点、跳空缺口、一年筹码分布峰（Volume POC）与锚定均价（Anchored VWAP），构建三层核心价格走廊，并对基本面情景目标进行容差共振审计。",
         formulaLabel: "数学推导公式与共振容差判定",
         pivotsTitle: "经典枢轴点位延展 (Floor Trader Pivots)",
         pivotsDesc:
           "计算经典交易员枢轴点 P = (H + L + C) / 3，第一层 S1 = 2P - H, R1 = 2P - L，第二层 S2 = P - (H - L), R2 = P + (H - L)，以及第三层等距测算扩展 S3 = L - 2(H - P), R3 = H + 2(P - L)。",
         volumePocTitle: "1年筹码分布峰 (Volume POC) 与锚定 VWAP",
         volumePocDesc:
-          "将 252 个交易日价格动作离散化至 40 个等距价格区间，累加成交量以精准定位机构筹码换手核心平台（Point of Control），并从 52 周最高点与历史天量 K 线锚定 VWAP 均价。",
+          "将 252 个交易日价格动作离散化至 40 个等距价格区间，累加成交量以精准定位筹码换手核心平台（Point of Control），并从 52 周最高点与历史天量 K 线锚定 VWAP 均价。",
         confluenceTitle: "基本面与技术面共振判定标准",
         confluenceDesc:
-          "当技术走廊点位与基本面情景估值（恐慌底价、悲观目标、基准估值、牛市目标）在 ±2.5% 容差带内重合时 (|Price_tech - Price_regime| / Price_regime <= 0.025)，触发高确定性机构共振信号。",
+          "当技术走廊点位与基本面情景估值（恐慌底价、悲观目标、基准估值、牛市目标）在 ±2.5% 容差带内重合时 (|Price_tech - Price_regime| / Price_regime <= 0.025)，触发高确定性共振信号。",
         tier1Title: "第一层：即时枢轴走廊 (S1 / R1)",
         tier1Desc:
           "日内交易与算法高频库存边界，衡量初次受阻或企稳的即时反应位。",

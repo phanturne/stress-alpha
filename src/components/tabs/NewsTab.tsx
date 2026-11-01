@@ -436,13 +436,13 @@ export const NewsTab: React.FC<NewsTabProps> = ({
       )}
 
       {/* Timeline of All Filtered Events */}
-      <div className="flex flex-col gap-3">
-        {filteredEvents.length === 0 ? (
-          <div className="glass-panel rounded-2xl p-12 text-center text-sm text-slate-400">
-            {t.empty}
-          </div>
-        ) : (
-          filteredEvents.map((event) => {
+      {filteredEvents.length === 0 ? (
+        <div className="glass-panel rounded-2xl p-12 text-center text-sm text-slate-400">
+          {t.empty}
+        </div>
+      ) : (
+        <div className="custom-scrollbar flex max-h-[520px] flex-col gap-3 overflow-y-auto pr-1">
+          {filteredEvents.map((event) => {
             const hasTransmission =
               event.transmissionType && event.transmissionType !== "none";
 
@@ -539,9 +539,9 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 };

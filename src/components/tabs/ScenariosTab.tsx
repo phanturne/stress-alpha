@@ -500,7 +500,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
             {t.revisionsEmpty}
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-surface-0/80 shadow-inner">
+          <div className="custom-scrollbar flex max-h-80 flex-col divide-y divide-border/60 overflow-y-auto rounded-xl border border-border bg-surface-0/80 shadow-inner sm:max-h-96">
             {revisions.map((rev) => {
               const deltaNum = Number(rev.wfvDeltaPct);
               const deltaPct = isNaN(deltaNum) ? 0 : deltaNum;

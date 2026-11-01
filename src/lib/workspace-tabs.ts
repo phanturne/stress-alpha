@@ -17,12 +17,7 @@ export const WORKSPACE_TAB_IDS = [
   "technicals",
   "valuation",
   "estimates",
-  "moat",
-  "segments",
-  "catalysts",
   "news",
-  "audit",
-  "report",
 ] as const;
 
 export type WorkspaceTabId = (typeof WORKSPACE_TAB_IDS)[number];
@@ -80,64 +75,30 @@ export function getWorkspaceTabs(
       label: t.tabs.valuation,
       shortLabel: t.tabs.shortValuation,
       icon: TrendingUp,
-      count: displayScenarios?.scenarios.length,
+      count:
+        (displayScenarios?.scenarios.length ?? 0) +
+        (displayCatalysts?.catalysts?.length ?? 0),
     },
     {
       id: "estimates",
       shortcut: "3",
-      label: t.tabs.estimates || "Estimates",
+      label: t.tabs.estimates,
       shortLabel: t.tabs.shortEstimates,
       icon: Target,
-      count: displayEstimates?.estimates?.length,
-    },
-    {
-      id: "moat",
-      shortcut: "4",
-      label: t.tabs.moat,
-      shortLabel: t.tabs.shortMoat,
-      icon: ShieldCheck,
-      count: displayMoat?.competitors?.length,
-    },
-    {
-      id: "segments",
-      shortcut: "5",
-      label: t.tabs.segments,
-      shortLabel: t.tabs.shortSegments,
-      icon: Layers,
-      count: displayFacts?.segments.length,
-    },
-    {
-      id: "catalysts",
-      shortcut: "6",
-      label: t.tabs.catalysts,
-      shortLabel: t.tabs.shortCatalysts,
-      icon: Sparkles,
-      count: displayCatalysts?.catalysts?.length,
+      count:
+        (displayEstimates?.estimates?.length ?? 0) +
+        (displayMoat?.competitors?.length ?? 0),
     },
     {
       id: "news",
-      shortcut: "7",
+      shortcut: "4",
       label: t.tabs.news,
       shortLabel: t.tabs.shortNews,
       icon: Radio,
-      count: marketEventsCount,
-    },
-    {
-      id: "audit",
-      shortcut: "8",
-      label: t.tabs.audit,
-      shortLabel: t.tabs.shortAudit,
-      icon: FileSearch,
       count:
+        marketEventsCount +
         (displayFiling?.newRiskFactors?.length ?? 0) +
         (displayReactions?.events?.length ?? 0),
-    },
-    {
-      id: "report",
-      shortcut: "9",
-      label: t.tabs.report,
-      shortLabel: t.tabs.shortReport,
-      icon: FileText,
     },
   ];
 }
