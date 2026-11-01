@@ -18,8 +18,9 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * Output: `earnings-sentiment.json`
 
 ## Stage 1: Ingest & Income Quality Audit (`prompts/stage1-ingest.md`)
-* Ingests headline revenues, operating margins, segment data, and forward guidance.
+* Ingests headline revenues, operating margins, segment data, forward guidance, and user/customer metrics (DAU, MAU, traffic & referral sources).
 * **Core Rule (Income Quality Guardrail):** Identifies non-operating or transitory items (e.g. unrealized mark-to-market equity gains/losses under ASU 2016-01) and calculates true **Operating EPS**.
+* **Forward Consensus Sanity Guardrail:** Compares `forwardEpsConsensus` against annualized operating run-rate (`epsOperating * 4`). Flags stale/unadjusted feeds where forward EPS growth severely diverges from decelerating revenue growth.
 * **Forensic Governance Audit (QPCE Anchor):** Audits for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
 * **Institutional Feeds**:
   - **Massive Company Financials API** (`/stocks/financials/v1/*` - Stocks Advanced / Financials expansion, [Massive Pricing](https://massive.com/pricing)): Standardized point-in-time SEC income statements, balance sheets, cash flows, and ratios (`/income-statements`, `/balance-sheets`, `/cash-flow-statements`, `/ratios`).
@@ -28,6 +29,7 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 
 ## Stage 1b: Economic Moat & Competitor Benchmarking (`prompts/stage1b-moat.md`)
 * **Framework:** Morningstar 5-Pillar Economic Moat Assessment (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and Moat Trend (Widening, Stable, Narrowing).
+* **Distribution Channel Vulnerability:** Checks whether platform network effects or discovery depend heavily on third-party gateways (e.g. search engine referrals, app store gatekeepers, prime contractors). If referral channels or external distribution are deteriorating without offsetting direct channel growth or pricing power, critically audit whether `moatTrend` is `Narrowing` or `Stable`.
 * **Modern Sector-Velocity Calibration (Timeline Adjustment):**
   - Replaces rigid 20y/10y blanket perpetuity assumptions with velocity-adjusted durability horizons.
   - *High-Velocity Hardware / AI & Optics:* 4–8 years (2–4 year architecture and tape-out cycles).
@@ -63,6 +65,7 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 
 ## Stage 3: Scenarios & Stress Baseline (`prompts/stage3-scenarios.md`)
 * Constructs discrete Bull, Base, and Panic scenarios with EPS and multiple assumptions. Probabilities assigned here represent initial raw priors (`rawProbability`).
+* **Operational Consensus Realism:** Anchors Base forward EPS to realistic operational earnings power, re-normalizing against annualized run-rate (`epsOperating * 4 * (1 + growth)`) if consensus feeds are stale or unadjusted. Panic scenario MUST explicitly model distribution loss, referral decay, or customer churn.
 * Formulates `stress-baseline.json` specifying upstream demand drivers (with exposure shares and elasticities), fixed cost leverage, and valuation multiple regimes.
 * Output: `scenarios.json` and `stress-baseline.json`
 

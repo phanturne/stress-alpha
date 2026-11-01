@@ -24,6 +24,11 @@ Extract structured financial facts from the most recent quarterly earnings for *
 - [ ] One-time items identified and quantified
 - [ ] Forward guidance (next quarter and/or full year)
 - [ ] Current price, market cap, trailing/forward EPS consensus
+- [ ] User / Customer Metrics & Operational KPIs (Sector-Adaptive):
+  - Consumer Web / Ad Platforms: Active users (DAU, MAU, subscribers), ARPU, and traffic/referral channel exposure
+  - Enterprise Software / SaaS: Net Retention Rate (NRR), cRPO, ARR expansion, and customer churn
+  - Semiconductors & Hardware: Gross margin trajectory, fab capacity/utilization, and hyperscaler CapEx exposure
+  - Defense & Industrials: Backlog book-to-bill, program awards, and delivery milestone cadence
 - [ ] **Forensic Governance & Risk Audit (Critical for QPCE)**:
   - `governanceRisk`: `"none" | "low" | "moderate" | "severe"`
   - `accountingFlags`: Array of detected forensic issues (e.g. auditor resignations, internal control material weaknesses, related-party transactions, revenue recognition pull-forwards, late 10-K/10-Q filings)
@@ -45,6 +50,12 @@ If headline EPS significantly exceeds consensus (>2x), investigate WHY:
 - Restructuring charges
 
 Record each in `oneTimeItems` array and compute `epsOperating` by excluding them.
+
+## Forward Consensus Sanity Guardrail (Valuation Base Integrity)
+
+Compare `forwardEpsConsensus` from data feeds against the annualized operating run rate (`epsOperating * 4`):
+- If forward EPS consensus implies explosive profit growth (>50%) while revenue growth is decelerating (<25%), check whether the consensus feed is stale, unadjusted for post-earnings revisions, or projecting distant-year earnings.
+- When consensus is detached from operating realities, document the discrepancy and highlight the true operational EPS run-rate.
 
 ## Governance & Accounting Risk Rule (QPCE Anchor)
 

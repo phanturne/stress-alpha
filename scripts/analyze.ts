@@ -424,10 +424,32 @@ async function main() {
         validatedValuation.stressTest?.valuationBands?.panic?.targetPrice;
       const year = parseYear(facts.quarter, slug);
 
+      const { and, eq } = await import("drizzle-orm");
+      let targetSlug = slug;
+      try {
+        const existing = await db
+          .select({ slug: reportsTable.slug })
+          .from(reportsTable)
+          .where(
+            and(
+              eq(reportsTable.ticker, facts.ticker),
+              eq(reportsTable.quarter, facts.quarter),
+              eq(reportsTable.year, year)
+            )
+          )
+          .limit(1);
+
+        if (existing[0]?.slug) {
+          targetSlug = existing[0].slug;
+        }
+      } catch {
+        // Fallback to original slug
+      }
+
       await db
         .insert(reportsTable)
         .values({
-          slug,
+          slug: targetSlug,
           ticker: facts.ticker,
           quarter: facts.quarter,
           year,

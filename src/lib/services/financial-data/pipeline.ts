@@ -132,7 +132,9 @@ export async function fetchCompletePipelineBundle(
   };
 
   if (options?.enrichWithAi) {
-    return enrichPipelineBundleWithAi(rawBundle);
+    return enrichPipelineBundleWithAi(rawBundle, {
+      translateZh: options?.translateZh,
+    });
   }
 
   return rawBundle;

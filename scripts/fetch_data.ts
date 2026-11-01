@@ -62,11 +62,13 @@ async function main() {
     const enrichWithAi = args.includes("--no-ai")
       ? false
       : args.includes("--enrich") || isAiGatewayConfigured();
+    const translateZh = args.includes("--translate");
 
     const bundle = await fetchCompletePipelineBundle(ticker, {
       benchmarkPrice,
       quarterStr,
       enrichWithAi,
+      translateZh,
     });
 
     console.log(`  ✅ Company: ${bundle.profile.companyName}`);

@@ -149,10 +149,6 @@ Rules:
 3. Provide 3 moatSources and 4 catalysts (2 growth, 2 risk) tailored specifically to ${ticker}.`,
     prompt: `Generate the bilingual buy-side qualitative modules for ${companyName} (${ticker}):\n${JSON.stringify(promptPayload)}`,
     providerOptions: {
-      gateway: {
-        sort: "cost",
-        models: [AI_GATEWAY_MODELS.SYNTHESIZER],
-      },
       deepseek: {
         thinking: { type: "disabled" },
       },
