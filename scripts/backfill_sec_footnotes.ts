@@ -76,6 +76,33 @@ async function processSingleReport(
   // 1. Resolve SEC Filings
   const filings = await fetchFinnhubFilings(ticker);
   if (!filings || filings.length === 0) {
+    if (!dryRun) {
+      const db = getDb();
+      const updatedFactsEn = {
+        ...facts,
+        purchaseObligationsBillions: facts.purchaseObligationsBillions ?? 0,
+        totalCommitmentsBillions: facts.totalCommitmentsBillions ?? 0,
+        guaranteeExposureBillions: facts.guaranteeExposureBillions ?? 0,
+      };
+      const updatedFactsZh = r.factsZh
+        ? {
+            ...r.factsZh,
+            purchaseObligationsBillions:
+              r.factsZh.purchaseObligationsBillions ?? 0,
+            totalCommitmentsBillions: r.factsZh.totalCommitmentsBillions ?? 0,
+            guaranteeExposureBillions: r.factsZh.guaranteeExposureBillions ?? 0,
+          }
+        : updatedFactsEn;
+
+      await db
+        .update(reportsTable)
+        .set({
+          facts: updatedFactsEn,
+          factsZh: updatedFactsZh,
+          updatedAt: new Date(),
+        })
+        .where(eq(reportsTable.slug, r.slug));
+    }
     return { success: false, ticker, note: "No SEC filings found via Finnhub" };
   }
 
@@ -88,9 +115,37 @@ async function processSingleReport(
   );
 
   if (!hasExcerpts) {
+    if (!dryRun) {
+      const db = getDb();
+      const updatedFactsEn = {
+        ...facts,
+        purchaseObligationsBillions: facts.purchaseObligationsBillions ?? 0,
+        totalCommitmentsBillions: facts.totalCommitmentsBillions ?? 0,
+        guaranteeExposureBillions: facts.guaranteeExposureBillions ?? 0,
+      };
+      const updatedFactsZh = r.factsZh
+        ? {
+            ...r.factsZh,
+            purchaseObligationsBillions:
+              r.factsZh.purchaseObligationsBillions ?? 0,
+            totalCommitmentsBillions: r.factsZh.totalCommitmentsBillions ?? 0,
+            guaranteeExposureBillions: r.factsZh.guaranteeExposureBillions ?? 0,
+          }
+        : updatedFactsEn;
+
+      await db
+        .update(reportsTable)
+        .set({
+          facts: updatedFactsEn,
+          factsZh: updatedFactsZh,
+          updatedAt: new Date(),
+        })
+        .where(eq(reportsTable.slug, r.slug));
+    }
     return {
       success: true,
       ticker,
+      commitments: 0,
       note: "No footnote disclosures found in filing (standard primary statements only)",
     };
   }
@@ -160,17 +215,17 @@ Rules:
         ? Number(ai.customerConcentrationPct)
         : facts.customerConcentrationPct,
     purchaseObligationsBillions:
-      Number(ai.purchaseObligationsBillions) > 0
+      Number(ai.purchaseObligationsBillions) >= 0
         ? Number(ai.purchaseObligationsBillions)
-        : facts.purchaseObligationsBillions,
+        : (facts.purchaseObligationsBillions ?? 0),
     totalCommitmentsBillions:
-      Number(ai.totalCommitmentsBillions) > 0
+      Number(ai.totalCommitmentsBillions) >= 0
         ? Number(ai.totalCommitmentsBillions)
-        : facts.totalCommitmentsBillions,
+        : (facts.totalCommitmentsBillions ?? 0),
     guaranteeExposureBillions:
-      Number(ai.guaranteeExposureBillions) > 0
+      Number(ai.guaranteeExposureBillions) >= 0
         ? Number(ai.guaranteeExposureBillions)
-        : facts.guaranteeExposureBillions,
+        : (facts.guaranteeExposureBillions ?? 0),
     revenueGrowthPct:
       Number(ai.revenueGrowthPct) > 0
         ? Number(ai.revenueGrowthPct)
@@ -337,8 +392,9 @@ Rules:
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
+  const all = args.includes("--all");
 
-  let limit = 25;
+  let limit = all ? 1000 : 25;
   const limitArg = args.find((a) => a.startsWith("--limit="));
   if (limitArg) {
     limit = parseInt(limitArg.split("=")[1], 10) || 25;
@@ -427,7 +483,7 @@ async function main() {
 
     // Rate-limiting delay to strictly protect SEC EDGAR (10 req/s) & Finnhub (60 req/min)
     if (i + concurrency < rows.length) {
-      await sleep(1200);
+      await sleep(1500);
     }
   }
 
