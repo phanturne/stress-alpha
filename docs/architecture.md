@@ -1,10 +1,10 @@
 # StressAlpha — System Architecture Documentation
 
-> **Document Version:** 1.3.0  
+> **Document Version:** 1.4.0  
 > **Status:** Active / Production Baseline  
 > **Target Framework:** Next.js 16 (App Router), React 19, TypeScript 5.5, Neon PostgreSQL, Drizzle ORM  
-> **Test Coverage:** 244 automated unit & integration tests across 24 test suites (100% passing)  
-> **Last Updated:** October 2026  
+> **Test Coverage:** 275 automated unit & integration tests across 27 test suites (100% passing)  
+> **Last Updated:** November 2026  
 
 ---
 
@@ -96,8 +96,8 @@ flowchart TD
         end
 
         subgraph RightPane["Right Pane: Intelligence Workspaces (flex-1 lg:overflow-y-auto)"]
-            NavRibbon["Sticky Workspace Navigation Ribbon (9 Workspaces + [📄 Research Memo [M]])"]
-            TabsContainer["Active Workspace Viewport\n(1. Valuation | 2. Technicals & Chart | 3. Estimates | 4. Moat\n5. Segments | 6. Catalysts | 7. News | 8. Audit & Risk | 9. Notes)"]
+            NavRibbon["Sticky Workspace Navigation Ribbon (4 Condensed Workspaces + [📄 Research Memo [M]])"]
+            TabsContainer["Active Workspace Viewport\n(1. Chart & Levels | 2. Valuation & Drivers\n3. Consensus & Peers | 4. News & Filings)"]
             BackToTop["Floating Auto-Centering 'Back to Top' Action"]
         end
     end
@@ -120,7 +120,7 @@ Dedicated `/screener` route with dual-view modes (interactive cards for mobile, 
 </p>
 
 ### Dedicated Watchlist Portfolio
-Dedicated `/watchlist` route grouping coverage universe constituents by report quarter, with key valuation spreads and operating margins:
+Dedicated `/watchlist` route grouping coverage universe constituents into deep-dive cards and matrix table layouts, tracking sell-side variant perception, 4-regime valuation bounds, and 5-pillar Snowflake health breakdowns:
 
 <p align="center">
   <img src="./images/watchlist-preview.png" alt="StressAlpha Watchlist View" width="100%" />
@@ -151,7 +151,7 @@ flowchart TD
         APIBranch["Neon API Branch Call"]
         ProdDB -->|"Copy-on-Write Clone"| APIBranch
         APIBranch --> TestBranch["Ephemeral Branch\n(test-vitest-<timestamp>)"]
-        TestBranch --> VitestRuns["244 Automated Vitest Assertions\n(DAL, Pipeline, Calendar, News)"]
+        TestBranch --> VitestRuns["275 Automated Vitest Assertions\n(DAL, Pipeline, Calendar, News)"]
         VitestRuns --> ReapBranch["Automatic Branch Deletion & Cleanup"]
     end
 ```
@@ -167,6 +167,7 @@ flowchart TD
 | `upstream_dependencies` | Directed supply chain graph. `sourceTicker` (e.g. `TSM`), `targetTicker` (e.g. `NVDA`), dependency type, and elasticity weight. |
 | `valuation_revisions` | Immutable valuation audit trail. Ticker, trigger type (`quarterly_filing`, `market_event`, `manual_audit`), prior WFV, new WFV, delta percentage, and rationale. |
 | `users`, `sessions`, `accounts`, `verifications` | Better Auth authentication and session management. |
+| `user_watchlists` | Cloud-synchronized ticker watchlists per authenticated user. Composite indexed on `(userId, ticker)` with deletion cascading. |
 
 ### 4.2 The Income Quality Guardrail
 StressAlpha isolates non-operating accounting anomalies in `facts.json` to compute normalized **Operating EPS**:
@@ -320,6 +321,7 @@ flowchart TD
    - Timing accounts for the 5–20 minute XBRL statement normalization delay by SEC aggregators.
 3. **Deduplication**: Verifies if the report already exists in Neon DB with populated statements (`revenueBillions > 0`). Skips populated reports to avoid redundant work unless forced with `--force`.
 4. **Deterministic Scaffolding**: Automatically fetches point-in-time statements, price targets, guidance, and filings, scaffolding all 8 quarterly modules in both English and Chinese, running `computeStressedValuation` and `computeSanityAudit`, and appending a baseline snapshot to `valuation_revisions`.
+5. **Vercel AI Gateway Single-Pass Enrichment**: Consolidates qualitative synthesis into a single high-throughput pass across filing/sentiment and moat/scenarios, with opt-in translation (`--translate`), eliminating token bloat and fallback pricing spikes.
 
 ---
 
@@ -346,14 +348,14 @@ Every commit is gated by a 5-stage verification pipeline in `.husky/pre-push` an
 flowchart LR
     Step1["1. Prettier<br/>(format:check)"] --> Step2["2. ESLint<br/>(eslint .)"]
     Step2 --> Step3["3. TypeScript<br/>(tsc --noEmit)"]
-    Step3 --> Step4["4. Vitest<br/>(244 tests with Neon Branching)"]
+    Step3 --> Step4["4. Vitest<br/>(275 tests with Neon Branching)"]
     Step4 --> Step5["5. Next.js Build<br/>(Turbopack Compile)"]
 ```
 
 1. **Prettier Formatting**: `npm run format:check`
 2. **ESLint Linting**: `npm run lint`
 3. **TypeScript Static Analysis**: `npx tsc --noEmit` (0 errors)
-4. **Vitest Unit Test Suite**: `npm test` (244 tests across 24 suites)
+4. **Vitest Unit Test Suite**: `npm test` (275 tests across 27 suites)
 5. **Next.js Production Build**: `npm run build` (Turbopack compilation)
 
 ---
@@ -441,7 +443,7 @@ stress-alpha/
 │   │   ├── ScreenerView.tsx            # Multi-ticker radar table & adaptive cards
 │   │   ├── WatchlistView.tsx           # Dedicated watchlist telemetry strip & metrics
 │   │   ├── snowflake/                  # 5-Pillar Snowflake Radar chart & modal
-│   │   └── tabs/                       # 8 Specialized intelligence workspaces
+│   │   └── tabs/                       # 4 Condensed intelligence workspaces
 │   ├── db/                             # Neon Serverless Postgres schema & connection pool
 │   └── lib/                            # Core domain logic
 │       ├── valuation.ts                # Deterministic arithmetic, FCF metrics & scenario calibration
@@ -451,5 +453,5 @@ stress-alpha/
 │       ├── news-transmission.ts        # Event-to-valuation transmission engine
 │       ├── services/                   # Earnings calendar, financial data, and news services
 │       └── repository/                 # Data Access Layer (Drizzle & InMemory repositories)
-└── tests/                              # Vitest automated test suite (244 tests across 24 suites)
+└── tests/                              # Vitest automated test suite (275 tests across 27 suites)
 ```

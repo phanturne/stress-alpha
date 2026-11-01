@@ -341,7 +341,7 @@ export function useWatchlist(): WatchlistHook {
 
     if (!userId) {
       activeUserRef.current = null;
-      setWatchlistSnapshot([]);
+      setWatchlistSnapshot(loadInitialSnapshot());
       return;
     }
 
