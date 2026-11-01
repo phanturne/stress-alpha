@@ -183,12 +183,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
     );
   }
 
-  const {
-    consensus,
-    priceTargets,
-    synthesisNarrative,
-    sources = [],
-  } = estimatesData;
+  const { consensus, priceTargets, synthesisNarrative } = estimatesData;
   const effectiveCurrentPrice =
     priceTargets?.currentPrice || propCurrentPrice || 0;
 
@@ -535,7 +530,7 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
 
           {/* Mobile View: Cards */}
-          <div className="divide-y divide-border/60 md:hidden">
+          <div className="custom-scrollbar max-h-[480px] divide-y divide-border/60 overflow-y-auto md:hidden">
             {filteredEstimates.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-400">
                 {t.emptySearch}
@@ -637,10 +632,10 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden overflow-x-auto md:block">
+          <div className="custom-scrollbar hidden max-h-[520px] overflow-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
-              <thead>
-                <tr className="border-b border-border bg-surface-0/40 font-medium text-slate-400">
+              <thead className="shadow-xs sticky top-0 z-10 bg-surface-1">
+                <tr className="border-b border-border bg-surface-1 font-medium text-slate-400">
                   <th className="px-4 py-3">{t.colFirm}</th>
                   <th className="p-3">{t.colRating}</th>
                   <th className="px-4 py-3 text-right">{t.colTarget}</th>
@@ -816,43 +811,6 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Sources & Citations Section if Available */}
-      {sources && sources.length > 0 && (
-        <div className="glass-panel shadow-xs rounded-2xl border border-border bg-surface-1/90 p-5">
-          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <ExternalLink className="size-3.5 text-accent" />
-            <span>{t.sourcesTitle}</span>
-          </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {sources.map((source, idx) => (
-              <a
-                key={idx}
-                href={source.url || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col justify-between rounded-xl border border-border bg-surface-1 p-3 transition-all hover:border-accent/40 hover:bg-surface-2"
-              >
-                <div>
-                  <div className="line-clamp-2 text-xs font-semibold text-slate-200 transition-colors group-hover:text-accent">
-                    {source.title}
-                  </div>
-                  {source.publisher && (
-                    <div className="mt-1 text-[11px] text-slate-400">
-                      {source.publisher}
-                    </div>
-                  )}
-                </div>
-                {source.date && (
-                  <div className="mt-2 font-mono text-[11px] text-slate-400">
-                    {source.date}
-                  </div>
-                )}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

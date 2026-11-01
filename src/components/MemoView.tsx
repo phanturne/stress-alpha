@@ -173,7 +173,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
 
       {/* Printable Memo Sheet */}
       <div className="memo-print-page glass-panel flex flex-col gap-8 rounded-2xl border border-border p-8 text-slate-100 shadow-md md:p-12">
-        {/* Print-Only Institutional Document Header */}
+        {/* Print-Only Document Header */}
         <div className="print-only mb-2 items-center justify-between border-b-2 border-slate-900 pb-3">
           <div className="flex items-center gap-2">
             <span className="font-mono text-sm font-black tracking-tight text-slate-950">
@@ -823,7 +823,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
             </div>
           )}
 
-        {/* Institutional Governance Sign-Off & Audit Trail */}
+        {/* Governance Sign-Off & Audit Trail */}
         <div className="memo-section mt-2 flex break-inside-avoid flex-col gap-3 rounded-xl border border-border/80 bg-surface-0/60 p-4">
           <div className="flex flex-col justify-between gap-3 border-b border-border/60 pb-3 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">

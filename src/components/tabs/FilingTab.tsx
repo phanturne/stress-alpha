@@ -69,7 +69,7 @@ export const FilingTab: React.FC<FilingTabProps> = ({
             </h4>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="custom-scrollbar grid max-h-72 grid-cols-1 gap-2.5 overflow-y-auto pr-1">
             {newRiskFactors.map((r, idx) => (
               <div
                 key={idx}

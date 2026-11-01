@@ -756,8 +756,8 @@ export async function fetchAnalystEstimates(
 
   if (usedFinnhub) {
     sources.unshift({
-      title: `Institutional Analyst Recommendation Trends (${ticker})`,
-      publisher: "Finnhub Institutional Consensus",
+      title: `Analyst Recommendation Trends (${ticker})`,
+      publisher: "Finnhub Consensus",
       url: `https://www.marketwatch.com/investing/stock/${ticker.toLowerCase()}/analystestimates`,
       date: new Date().toISOString().split("T")[0],
     });

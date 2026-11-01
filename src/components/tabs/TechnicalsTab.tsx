@@ -70,69 +70,54 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 sm:gap-5">
       {/* Workspace Header & High-Level Telemetry */}
-      <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-4 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="shadow-xs flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
-              <Compass className="size-5" />
+      <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border p-3.5 sm:p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border/60 pb-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="shadow-xs flex size-8 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-accent/15 text-accent sm:size-9">
+              <Compass className="size-4 sm:size-4.5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-foreground sm:text-lg">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h2 className="text-sm font-bold text-foreground sm:text-base">
                   {tt.title}
                 </h2>
-                <span className="rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-xs font-bold text-accent">
+                <span className="py-0.2 rounded-md border border-accent/30 bg-accent/10 px-1.5 font-mono text-[11px] font-bold text-accent sm:text-xs">
                   {ticker}
                 </span>
                 <span className="font-mono text-xs font-semibold tabular-nums text-slate-300">
                   {formatCurrency(activePrice, 2)}
                 </span>
-                {currentPe && currentPe > 0 ? (
-                  <span
-                    className="rounded-md border border-border/80 bg-surface-2/90 px-2 py-0.5 font-mono text-xs font-bold text-slate-200"
-                    title={tt.currentPeTooltip}
-                  >
-                    P/E: {currentPe.toFixed(1)}x
-                  </span>
-                ) : operatingEps !== undefined && operatingEps <= 0 ? (
-                  <span
-                    className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-xs font-bold text-rose-300"
-                    title={tt.currentPeLossTooltip}
-                  >
-                    P/E: {tt.currentPeLoss}
-                  </span>
-                ) : null}
               </div>
-              <p className="mt-0.5 text-xs text-slate-400">{tt.subtitle}</p>
+              <p className="text-[11px] text-slate-400">{tt.subtitle}</p>
             </div>
           </div>
 
           {/* Trend Status Pill */}
           {isBullishTrend !== null && (
             <div
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold ${
+              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold ${
                 isBullishTrend
                   ? "border-emerald-500/30 bg-emerald-950/20 text-emerald-400"
                   : "border-amber-500/30 bg-amber-950/20 text-amber-400"
               }`}
             >
               {isBullishTrend ? (
-                <TrendingUp className="size-4 shrink-0 text-emerald-400" />
+                <TrendingUp className="size-3.5 shrink-0 text-emerald-400" />
               ) : (
-                <TrendingDown className="size-4 shrink-0 text-amber-400" />
+                <TrendingDown className="size-3.5 shrink-0 text-amber-400" />
               )}
               <span>{isBullishTrend ? tt.trendBullish : tt.trendBearish}</span>
             </div>
           )}
         </div>
 
-        {/* 5-KPI Metric Badges */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {/* 5-KPI Metric Badges (Compact 1-row telemetry) */}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {/* Current P/E */}
           <div
-            className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3"
+            className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-2 sm:p-2.5"
             title={
               currentPe && currentPe > 0
                 ? tt.currentPeTooltip
@@ -141,11 +126,11 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
                   : tt.currentPeTooltip
             }
           >
-            <span className="text-[11px] font-medium text-slate-400">
+            <span className="text-[10px] font-medium text-slate-400 sm:text-[11px]">
               {tt.currentPeBadge}
             </span>
             <span
-              className={`mt-1 font-mono text-sm font-bold tabular-nums ${
+              className={`mt-0.5 font-mono text-xs font-bold tabular-nums sm:text-sm ${
                 currentPe && currentPe > 0 ? "text-foreground" : "text-rose-400"
               }`}
             >
@@ -167,11 +152,11 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           </div>
 
           {/* 50-Day SMA */}
-          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
-            <span className="text-[11px] font-medium text-slate-400">
+          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-2 sm:p-2.5">
+            <span className="text-[10px] font-medium text-slate-400 sm:text-[11px]">
               {tt.sma50Badge}
             </span>
-            <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
+            <span className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {technicalLevels?.sma50
                 ? formatCurrency(technicalLevels.sma50, 2)
                 : "—"}
@@ -189,11 +174,11 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           </div>
 
           {/* 200-Day SMA */}
-          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
-            <span className="text-[11px] font-medium text-slate-400">
+          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-2 sm:p-2.5">
+            <span className="text-[10px] font-medium text-slate-400 sm:text-[11px]">
               {tt.sma200Badge}
             </span>
-            <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
+            <span className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {technicalLevels?.sma200
                 ? formatCurrency(technicalLevels.sma200, 2)
                 : "—"}
@@ -211,11 +196,11 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           </div>
 
           {/* 52-Week High & Low */}
-          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
-            <span className="text-[11px] font-medium text-slate-400">
+          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-2 sm:p-2.5">
+            <span className="text-[10px] font-medium text-slate-400 sm:text-[11px]">
               {tt.range52WBadge}
             </span>
-            <div className="mt-1 flex items-center justify-between font-mono text-xs font-semibold tabular-nums">
+            <div className="mt-0.5 flex items-center justify-between font-mono text-[11px] font-semibold tabular-nums sm:text-xs">
               <span className="text-cyan-400">
                 L: {low52 ? formatCurrency(low52, 2) : "—"}
               </span>
@@ -231,12 +216,12 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
           </div>
 
           {/* 1-Year Volume POC / AVWAP */}
-          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-3">
-            <span className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
+          <div className="flex flex-col rounded-xl border border-border/60 bg-surface-1/70 p-2 sm:p-2.5">
+            <span className="flex items-center gap-1 text-[10px] font-medium text-slate-400 sm:text-[11px]">
               <BarChart2 className="size-3 text-accent" />
               <span>{tt.volumePoc}</span>
             </span>
-            <span className="mt-1 font-mono text-sm font-bold tabular-nums text-foreground">
+            <span className="mt-0.5 font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
               {volumePocItem ? formatCurrency(volumePocItem.price, 2) : "—"}
             </span>
             {avwapHighItem && (
@@ -250,7 +235,7 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
       </div>
 
       {/* Interactive Candlestick Chart (TradingView) */}
-      <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border p-4 sm:p-6">
+      <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-border p-3.5 sm:p-5">
         <div className="flex items-center justify-between border-b border-border/60 pb-3">
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200 sm:text-sm">
