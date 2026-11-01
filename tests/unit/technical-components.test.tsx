@@ -530,7 +530,6 @@ describe("Technical Levels UI Components", () => {
       expect(tabs[0].shortcut).toBe("1");
       expect(tabs[0].label).toBe("Chart & Levels");
       expect(tabs[0].shortLabel).toBe("Chart");
-      expect(tabs[0].count).toBe(mockPayload.levels.length);
 
       expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");

@@ -6,7 +6,10 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: ["class", '[data-theme="dark"], [data-theme="cyber"]'],
+  darkMode: [
+    "variant",
+    [".dark &", '[data-theme="dark"] &', '[data-theme="cyber"] &'],
+  ],
   theme: {
     extend: {
       spacing: {

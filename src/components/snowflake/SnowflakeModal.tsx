@@ -186,8 +186,7 @@ export const SnowflakeModal: React.FC<SnowflakeModalProps> = ({
                         <span className="truncate">{p.shortLabel}</span>
                       </div>
                       <span
-                        className="font-mono text-[11px] font-bold"
-                        style={{ color: p.color }}
+                        className={`pillar-score-${p.id} font-mono text-[11px] font-bold`}
                       >
                         {p.score}/6
                       </span>

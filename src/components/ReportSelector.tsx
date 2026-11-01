@@ -59,9 +59,6 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
   const [internalReports, setInternalReports] = useState<ReportSummary[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedTickers, setExpandedTickers] = useState<
-    Record<string, boolean>
-  >({});
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click without blocking user interactions on the rest of the page
@@ -81,14 +78,6 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       document.removeEventListener("mousedown", handlePointerDown);
     };
   }, [isOpen]);
-
-  const toggleTickerExpanded = (ticker: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedTickers((prev) => ({
-      ...prev,
-      [ticker]: !prev[ticker],
-    }));
-  };
 
   useEffect(() => {
     if (externalReports && externalReports.length > 0) return;
@@ -228,22 +217,22 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
       >
         <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="font-mono font-bold text-foreground">
+            <span className="shrink-0 font-mono font-bold text-foreground">
               {r.ticker || r.name}
             </span>
             {r.quarter && (
-              <span className="font-mono text-[11px] text-slate-400">
+              <span className="shrink-0 font-mono text-[11px] text-slate-400">
                 {r.quarter}
               </span>
             )}
             {r.company && (
-              <span className="truncate text-[11px] text-slate-400">
+              <span className="min-w-0 max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[130px]">
                 {r.company}
               </span>
             )}
           </div>
           {r.weightedFairValue ? (
-            <span className="font-mono text-[11px] text-slate-400">
+            <span className="shrink-0 font-mono text-[11px] text-slate-400">
               ${r.weightedFairValue}
             </span>
           ) : null}
@@ -283,167 +272,75 @@ export const ReportSelector: React.FC<ReportSelectorProps> = ({
     const activeReportInGroup = g.reports.find((r) => r.slug === currentSlug);
     const featuredReport = activeReportInGroup || latestReport;
     const isSelected = Boolean(activeReportInGroup);
-    const isExpanded = Boolean(searchQuery.trim() || expandedTickers[g.ticker]);
 
     return (
-      <div key={g.ticker} className="border-b border-border/40 last:border-b-0">
-        {/* Compact Single-Row Ticker Item - Full-row clickable */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => {
+      <div
+        key={g.ticker}
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          onSelectReport(featuredReport.slug);
+          setIsOpen(false);
+          setSearchQuery("");
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
             onSelectReport(featuredReport.slug);
             setIsOpen(false);
             setSearchQuery("");
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onSelectReport(featuredReport.slug);
-              setIsOpen(false);
-              setSearchQuery("");
-            }
-          }}
-          className={`flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
-            isSelected
-              ? "bg-accent/10 font-semibold text-accent"
-              : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
-          }`}
-          title={g.company || g.ticker}
-        >
-          <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono font-bold text-foreground">
-                {g.ticker}
+          }
+        }}
+        className={`flex w-full cursor-pointer items-center justify-between border-b border-border/40 px-3 py-2 text-left text-xs transition-colors last:border-b-0 ${
+          isSelected
+            ? "bg-accent/10 font-semibold text-accent"
+            : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
+        }`}
+        title={g.company || g.ticker}
+      >
+        <div className="flex min-w-0 flex-1 items-center justify-between pr-2 text-left">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="shrink-0 font-mono font-bold text-foreground">
+              {g.ticker}
+            </span>
+            <span className="shrink-0 font-mono text-[11px] text-slate-400">
+              {featuredReport.quarter || ""}
+            </span>
+            {g.company && (
+              <span className="min-w-0 max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[130px]">
+                {g.company}
               </span>
-              <span className="font-mono text-[11px] text-slate-400">
-                {featuredReport.quarter || ""}
-              </span>
-              {g.company && (
-                <span className="truncate text-[11px] text-slate-400">
-                  {g.company}
-                </span>
-              )}
-            </div>
-            {featuredReport.weightedFairValue ? (
-              <span className="font-mono text-[11px] text-slate-400">
-                ${featuredReport.weightedFairValue}
-              </span>
-            ) : null}
+            )}
           </div>
-
-          {/* Action cluster: Quarters expander pill + Checkmark + Star */}
-          <div className="ml-2 flex shrink-0 items-center gap-1.5">
-            {isSelected && <Check className="size-3.5 shrink-0 text-accent" />}
-
-            {/* Expandable Quarters Badge (Clicking this toggles past quarters without selecting) */}
-            <button
-              type="button"
-              onClick={(e) => toggleTickerExpanded(g.ticker, e)}
-              className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold transition-all ${
-                isExpanded
-                  ? "border border-accent/40 bg-accent/20 text-accent"
-                  : "border border-border bg-surface-2 text-slate-400 hover:border-border-light hover:bg-surface-3 hover:text-slate-200"
-              }`}
-              title={
-                isExpanded
-                  ? t.collapseQuarters
-                  : t.expandQuarters(g.reports.length)
-              }
-            >
-              <span>{g.reports.length}Q</span>
-              <ChevronDown
-                className={`size-2.5 transition-transform duration-150 ${
-                  isExpanded ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(g.ticker);
-              }}
-              className="rounded p-1 text-slate-400 transition-all hover:scale-125"
-              title={t.starredTooltip}
-              aria-label={t.starredTooltip}
-            >
-              <Star
-                className={`size-3.5 transition-colors ${
-                  g.isFav
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-slate-600 hover:text-amber-400"
-                }`}
-              />
-            </button>
-          </div>
+          {featuredReport.weightedFairValue ? (
+            <span className="shrink-0 font-mono text-[11px] text-slate-400">
+              ${featuredReport.weightedFairValue}
+            </span>
+          ) : null}
         </div>
 
-        {/* Indented Sub-quarters: ONLY visible when expanded */}
-        {isExpanded && (
-          <div className="border-t border-border/40 bg-surface-0/30 py-1 pl-6 pr-3 duration-150 animate-in fade-in">
-            {g.reports.map((r, idx) => {
-              const isQuarterSelected = r.slug === currentSlug;
-              const isQuarterLatest = idx === 0;
-              return (
-                <button
-                  key={r.slug}
-                  type="button"
-                  onMouseEnter={() => prefetchReport(r.slug)}
-                  onClick={() => {
-                    onSelectReport(r.slug);
-                    setIsOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className={`flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-xs transition-colors ${
-                    isQuarterSelected
-                      ? "bg-accent/15 font-semibold text-accent"
-                      : "text-slate-400 hover:bg-surface-2 hover:text-foreground"
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 font-mono text-[11px]">
-                    <span
-                      className={
-                        isQuarterSelected
-                          ? "font-bold text-accent"
-                          : "text-slate-300"
-                      }
-                    >
-                      {r.quarter || r.slug}
-                    </span>
-                    <span
-                      className={`rounded px-1 font-mono text-[11px] font-bold ${
-                        isQuarterLatest
-                          ? "bg-emerald-500/20 text-emerald-400"
-                          : "bg-amber-500/20 text-amber-400"
-                      }`}
-                    >
-                      {isQuarterLatest
-                        ? tHeader.latestBadge
-                        : tHeader.historicalBadge}
-                    </span>
-                    {r.reportDate && (
-                      <span className="text-[11px] text-slate-400">
-                        {r.reportDate}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {r.weightedFairValue ? (
-                      <span className="font-mono text-[11px] text-slate-400">
-                        ${r.weightedFairValue}
-                      </span>
-                    ) : null}
-                    {isQuarterSelected && (
-                      <Check className="size-3 text-accent" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
+        {/* Action cluster: Checkmark + Star */}
+        <div className="ml-2 flex shrink-0 items-center gap-1.5">
+          {isSelected && <Check className="size-3.5 shrink-0 text-accent" />}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(g.ticker);
+            }}
+            className="rounded p-1 text-slate-400 transition-all hover:scale-125"
+            title={t.starredTooltip}
+            aria-label={t.starredTooltip}
+          >
+            <Star
+              className={`size-3.5 transition-colors ${
+                g.isFav
+                  ? "fill-amber-400 text-amber-400"
+                  : "text-slate-600 hover:text-amber-400"
+              }`}
+            />
+          </button>
+        </div>
       </div>
     );
   };
