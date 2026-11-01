@@ -10,6 +10,7 @@ import {
   generateBaselineDraft,
   generateScenariosDraft,
   writePipelineArtifacts,
+  extractSecFilingExcerpts,
   RATING_ZH_MAP,
   ACTION_ZH_MAP,
 } from "@/lib/services/financial-data";
@@ -317,6 +318,18 @@ describe("Financial Data Ingestion Service", () => {
       const baseTarget = baseScenario.forwardEps * baseScenario.multiple;
       expect(baseTarget).toBeCloseTo(239.2, 1);
       expect(baseTarget).toBeLessThan(350); // Blowup eliminated!
+    });
+
+    it("extracts SEC filing excerpts gracefully without throwing", async () => {
+      const emptyResult = await extractSecFilingExcerpts([]);
+      expect(emptyResult).toEqual({});
+
+      // Process filings with mock URLs
+      const mockResult = await extractSecFilingExcerpts([
+        { form: "10-Q", filedDate: "2026-08-26", reportUrl: "" },
+        { form: "8-K", filedDate: "2026-08-26", reportUrl: "" },
+      ]);
+      expect(typeof mockResult).toBe("object");
     });
   });
 });

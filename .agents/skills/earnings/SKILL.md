@@ -53,8 +53,13 @@ This single command automatically fetches live feeds and stages all 18 JSON arti
 1. **[Massive.com Financial Data](https://massive.com/pricing)** (Polygon.io):
    - Standardized SEC 10-K/10-Q statements (`/stocks/financials/v1/*`) and historical price aggregates (`/v2/aggs/ticker/{TICKER}/range/1/day/*`).
 2. **[Finnhub.io Financial API](https://finnhub.io/pricing)**:
-   - Consensus recommendations (`/stock/recommendation`), company profile (`/stock/profile2`), SEC filings search (`/stock/filings`), and audio transcripts (`/stock/transcripts`).
-3. **Yahoo Finance & Local Telemetry**:
+   - Consensus recommendations (`/stock/recommendation`), company profile (`/stock/profile2`), and SEC filings links (`/stock/filings`).
+3. **SEC EDGAR Direct Footnote Ingestion (`extractSecFilingExcerpts`)**:
+   - Free, zero-API-key public utility extracting targeted 10-Q and 8-K disclosures in milliseconds:
+     - **Note: Commitments and Contingencies**: Off-balance-sheet supply capacity obligations (e.g. $279B), total future commitments ($366B), and credit/power guarantees (e.g. $105B SB Energy guarantee).
+     - **Note: Customer and Segment Concentrations**: Single-customer (16%) and top-tier customer concentration (44%) to drive QPCE downside stress.
+     - **Form 8-K & Exhibits**: Verbatim CEO (Jensen Huang) and CFO (Colette Kress) commentary, forward quarterly guidance, and architecture transition timelines (e.g. Vera Rubin production in Q3).
+4. **Yahoo Finance & Local Telemetry**:
    - Zero-config automatic fallback for consensus price targets and broker rating history.
 
 #### Qualitative AI Review & Synthesis

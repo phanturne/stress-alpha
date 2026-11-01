@@ -1,6 +1,7 @@
 export * from "./types";
 export * from "./utils";
 export * from "./fetchers";
+export * from "./sec-extractor";
 export * from "./scaffolders";
 export * from "./pipeline";
 

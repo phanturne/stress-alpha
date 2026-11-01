@@ -80,6 +80,9 @@ export const FactsSchema = z.object({
   materialLitigationOrDoj: z.boolean().optional(),
   customerConcentrationPct: z.number().min(0).max(100).optional(),
   shortInterestPct: z.number().min(0).max(100).optional(),
+  purchaseObligationsBillions: z.number().optional(),
+  totalCommitmentsBillions: z.number().optional(),
+  guaranteeExposureBillions: z.number().optional(),
 
   // Valuation Archetype & Capital Runway (Scenario Calibration)
   valuationArchetype: z

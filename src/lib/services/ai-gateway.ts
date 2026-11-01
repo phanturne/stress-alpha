@@ -50,6 +50,11 @@ const UnifiedSynthesisSchema = z.object({
     "operating_scaler",
     "venture_hypergrowth",
   ]),
+  customerConcentrationPct: z.number().min(0).max(100).optional(),
+  purchaseObligationsBillions: z.number().optional(),
+  totalCommitmentsBillions: z.number().optional(),
+  guaranteeExposureBillions: z.number().optional(),
+  revenueGrowthPct: z.number().optional(),
   moatEn: MoatCompetitorsSchema,
   catalystsEn: CatalystsSchema,
   upstreamDrivers: FinancialModelBaselineSchema.shape.upstreamDrivers,
@@ -95,13 +100,16 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
   if (Array.isArray(raw.oneTimeItems)) {
     raw.oneTimeItems = raw.oneTimeItems.map((it: any) =>
       typeof it === "string"
-        ? { item: it, amountBillions: 0, impactOnEps: 0 }
+        ? { description: it, amountBillions: 0, isOperating: false }
         : {
-            item: String(it?.item || it?.description || "Restructuring item"),
+            description: String(
+              it?.description || it?.item || "Non-operating item"
+            ),
             amountBillions: Number(
               it?.amountBillions ?? it?.impactBillions ?? 0
             ),
-            impactOnEps: Number(it?.impactOnEps ?? it?.epsImpact ?? 0),
+            isOperating: Boolean(it?.isOperating ?? false),
+            note: it?.note ? String(it.note) : undefined,
           }
     );
   }
@@ -261,11 +269,32 @@ export async function enrichPipelineBundleWithAi(
       accountingFlags: factsDraft.accountingFlags,
       materialLitigationOrDoj: factsDraft.materialLitigationOrDoj,
       valuationArchetype: factsDraft.valuationArchetype,
+      customerConcentrationPct: factsDraft.customerConcentrationPct ?? 0,
+      purchaseObligationsBillions: factsDraft.purchaseObligationsBillions ?? 0,
+      totalCommitmentsBillions: factsDraft.totalCommitmentsBillions ?? 0,
+      guaranteeExposureBillions: factsDraft.guaranteeExposureBillions ?? 0,
+      revenueGrowthPct: factsDraft.revenueGrowthPct ?? 0,
       moatEn: bundle.moatEn,
       catalystsEn: bundle.catalystsEn,
       upstreamDrivers: baseline.upstreamDrivers,
       scenariosEn: bundle.scenariosEn,
     };
+
+    let secContext = "";
+    if (bundle.secExcerpts) {
+      if (bundle.secExcerpts.pressReleaseText) {
+        secContext += `\n\n--- OFFICIAL FORM 8-K PRESS RELEASE & EXECUTIVE COMMENTARY ---\n${bundle.secExcerpts.pressReleaseText}`;
+      }
+      if (bundle.secExcerpts.commitmentsText) {
+        secContext += `\n\n--- OFFICIAL 10-Q NOTE: COMMITMENTS AND CONTINGENCIES & GUARANTEES ---\n${bundle.secExcerpts.commitmentsText}`;
+      }
+      if (bundle.secExcerpts.customerConcentrationText) {
+        secContext += `\n\n--- OFFICIAL 10-Q NOTE: CUSTOMER & SEGMENT CONCENTRATIONS ---\n${bundle.secExcerpts.customerConcentrationText}`;
+      }
+      if (bundle.secExcerpts.mdaAndRisksText) {
+        secContext += `\n\n--- OFFICIAL 10-Q MD&A & RISK HIGHLIGHTS ---\n${bundle.secExcerpts.mdaAndRisksText}`;
+      }
+    }
 
     const { text: synthesisText } = await generateText({
       model: AI_GATEWAY_MODELS.EXTRACTOR,
@@ -277,8 +306,14 @@ Rules:
 3. In moatEn.competitors, list 3-4 real publicly traded competitors with actual stock tickers (never "PEER") and realistic metrics.
 4. In moatEn.overallMoatRating, choose "Wide", "Narrow", or "None" based on durable ROIC > WACC and structural barriers.
 5. Set governanceRisk to "none" and accountingFlags to [] unless the company has an active auditor resignation, SEC restatement, or DOJ accounting fraud probe.
-6. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice * 1.15}).`,
-      prompt: `Synthesize the complete equity research bundle for ${profile.companyName} (${ticker}, ${factsDraft.quarter}).\n\nJSON Template to match:\n${JSON.stringify(synthesisTemplate, null, 2)}\n\nQuantitative Context:\n${compactContext}`,
+6. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice * 1.15}).
+7. When official SEC 10-Q / 8-K excerpts are provided:
+   a. Populate sentiment.keyQuotes using exact quotes from the CEO and CFO in the 8-K press release / commentary.
+   b. If off-balance-sheet commitments and credit guarantees are disclosed, populate them in filingEn.sections under "Note: Commitments and Contingencies" with exact dollar amounts (e.g. supply capacity, shell buildout guarantees) and set purchaseObligationsBillions, totalCommitmentsBillions, and guaranteeExposureBillions.
+   c. If customer concentration is disclosed (e.g. one direct customer represented X%, or top 3 represented Y%), record it in customerConcentrationPct and include a section in filingEn.sections for "Note: Customer and Geographic Concentrations".
+   d. Set revenueGrowthPct to the reported year-over-year revenue growth rate stated in the 8-K/10-Q.
+   e. In catalystsEn and filingEn.newRiskFactors, capture product architecture ramps (e.g. next-gen architectures entering production) and supply chain / execution constraints mentioned in the disclosures.`,
+      prompt: `Synthesize the complete equity research bundle for ${profile.companyName} (${ticker}, ${factsDraft.quarter}).\n\nJSON Template to match:\n${JSON.stringify(synthesisTemplate, null, 2)}\n\nQuantitative Context:\n${compactContext}${secContext}`,
       providerOptions: {
         deepseek: {
           thinking: { type: "disabled" },
@@ -324,6 +359,16 @@ Rules:
       accountingFlags: synth.accountingFlags,
       materialLitigationOrDoj: synth.materialLitigationOrDoj,
       valuationArchetype: synth.valuationArchetype,
+      customerConcentrationPct:
+        synth.customerConcentrationPct ?? factsDraft.customerConcentrationPct,
+      purchaseObligationsBillions:
+        synth.purchaseObligationsBillions ??
+        factsDraft.purchaseObligationsBillions,
+      totalCommitmentsBillions:
+        synth.totalCommitmentsBillions ?? factsDraft.totalCommitmentsBillions,
+      guaranteeExposureBillions:
+        synth.guaranteeExposureBillions ?? factsDraft.guaranteeExposureBillions,
+      revenueGrowthPct: synth.revenueGrowthPct ?? factsDraft.revenueGrowthPct,
     });
 
     enrichedMoatEn = MoatCompetitorsSchema.parse({

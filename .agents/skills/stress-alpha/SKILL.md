@@ -62,7 +62,7 @@ StressAlpha leverages two primary institutional financial data APIs for report i
 | `moat-competitors.json` | **Massive**: `/stocks/financials/v1/ratios` & peer statements | Massive Stocks Developer / Advanced | EDGAR 10-K / Web peer filings |
 | `analyst-estimates.json` | **Finnhub**: `/stock/price-target`, `/stock/recommendation`, `/stock/upgrade-downgrade` | Finnhub Estimates Tier ($75–$200/mo) or Free (60 req/min) | Yahoo Finance API |
 | `earnings-sentiment.json` | **Finnhub**: `/stock/transcripts` (list & audio text) | Finnhub Fundamentals Tier ($50–$200/mo) | Press release Q&A search |
-| `filing-extracts.json` | **Finnhub**: `/stock/filings?symbol={TICKER}` | Finnhub Fundamentals Tier ($50–$200/mo) or Free | SEC EDGAR full-text search |
+| `filing-extracts.json` | **SEC EDGAR Direct** (`extractSecFilingExcerpts`) & **Finnhub**: `/stock/filings` | 100% Free SEC Utility (10 req/s) / Finnhub Free | Free SEC EDGAR Note Extraction |
 | `reactions.json` | **Massive**: `/v2/aggs/ticker/{TICKER}/range/1/day/*` | Massive Stocks Starter ($29/mo) / Developer | Yahoo Finance historical quotes |
 
 #### Qualitative Review & Specialized Artifact Assembly
