@@ -29,7 +29,7 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 
 ## Stage 1b: Economic Moat & Competitor Benchmarking (`prompts/stage1b-moat.md`)
 * **Framework:** Morningstar 5-Pillar Economic Moat Assessment (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and Moat Trend (Widening, Stable, Narrowing).
-* **Distribution Channel Vulnerability:** Checks whether platform network effects or discovery depend heavily on third-party gateways (e.g. search engine referrals or AI Overviews). If external search/referral channels are disintermediating users, `moatTrend` must be rated `Narrowing` or `Stable` (never `Widening`).
+* **Distribution Channel Vulnerability:** Checks whether platform network effects or discovery depend heavily on third-party gateways (e.g. search engine referrals, app store gatekeepers, prime contractors). If referral channels or external distribution are deteriorating without offsetting direct channel growth or pricing power, critically audit whether `moatTrend` is `Narrowing` or `Stable`.
 * **Modern Sector-Velocity Calibration (Timeline Adjustment):**
   - Replaces rigid 20y/10y blanket perpetuity assumptions with velocity-adjusted durability horizons.
   - *High-Velocity Hardware / AI & Optics:* 4–8 years (2–4 year architecture and tape-out cycles).
