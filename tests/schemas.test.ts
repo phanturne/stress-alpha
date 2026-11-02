@@ -9,7 +9,9 @@ import {
   MoatCompetitorsSchema,
   EarningsSentimentSchema,
   AnalystEstimatesSchema,
+  type ReportData,
 } from "@/lib/schemas";
+import { getLocalizedArtifacts } from "@/lib/localized-report";
 
 describe("FactsSchema Unit Tests", () => {
   const validMinimalFacts = {
@@ -397,5 +399,73 @@ describe("AnalystEstimatesSchema Unit Tests", () => {
       ],
     };
     expect(AnalystEstimatesSchema.safeParse(valid).success).toBe(true);
+  });
+});
+
+describe("getLocalizedArtifacts Fallback Invariants", () => {
+  it("falls back to English sentiment when sentimentZh lacks managementTone", () => {
+    const mockReport: Partial<ReportData> = {
+      sentiment: {
+        ticker: "NVDA",
+        quarter: "Q2 2027",
+        managementTone: {
+          overallConfidence: 9,
+          specificity: 8.5,
+          forwardConfidence: 9,
+          capexJustification: 9,
+          competitivePositioning: 9,
+          riskAcknowledgment: 7,
+        },
+        keyQuotes: [
+          {
+            speaker: "CEO",
+            quote: "Demand is unprecedented",
+            context: "Prepared remarks",
+            sentiment: "bullish",
+          },
+        ],
+      },
+      sentimentZh: {
+        keyQuotes: [],
+      },
+    };
+
+    const artifacts = getLocalizedArtifacts(mockReport as ReportData, "zh");
+    expect(artifacts.sentiment).toBeDefined();
+    expect(artifacts.sentiment?.managementTone).toBeDefined();
+    expect(artifacts.sentiment?.managementTone?.overallConfidence).toBe(9);
+    expect(artifacts.sentiment?.keyQuotes?.length).toBe(1);
+  });
+
+  it("uses sentimentZh when managementTone is populated", () => {
+    const mockReport: Partial<ReportData> = {
+      sentiment: {
+        ticker: "NVDA",
+        keyQuotes: [],
+        managementTone: {
+          overallConfidence: 8,
+          specificity: 8,
+          forwardConfidence: 8,
+          capexJustification: 8,
+          competitivePositioning: 8,
+          riskAcknowledgment: 8,
+        },
+      },
+      sentimentZh: {
+        ticker: "NVDA",
+        keyQuotes: [],
+        managementTone: {
+          overallConfidence: 9,
+          specificity: 9,
+          forwardConfidence: 9,
+          capexJustification: 9,
+          competitivePositioning: 9,
+          riskAcknowledgment: 9,
+        },
+      },
+    };
+
+    const artifacts = getLocalizedArtifacts(mockReport as ReportData, "zh");
+    expect(artifacts.sentiment?.managementTone?.overallConfidence).toBe(9);
   });
 });
