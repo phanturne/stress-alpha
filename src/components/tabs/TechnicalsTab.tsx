@@ -252,13 +252,15 @@ export const TechnicalsTab: React.FC<TechnicalsTabProps> = ({
 
       {/* Full 3-Tier Price Corridors & Confluence Engine */}
       {technicalLevels && (
-        <TechnicalLevelsCard
-          technicalLevels={technicalLevels}
-          currentPrice={activePrice}
-          valuation={valuation}
-          locale={locale}
-          compact={false}
-        />
+        <div id="support-resistance-levels" className="scroll-mt-4">
+          <TechnicalLevelsCard
+            technicalLevels={technicalLevels}
+            currentPrice={activePrice}
+            valuation={valuation}
+            locale={locale}
+            compact={false}
+          />
+        </div>
       )}
     </div>
   );

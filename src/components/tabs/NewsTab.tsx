@@ -247,12 +247,12 @@ export const NewsTab: React.FC<NewsTabProps> = ({
 
       {/* Hero: Latest Market Pulse Banner */}
       {latestPulseEvent && (
-        <div className="shadow-xs relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-surface-1/95 via-surface-2/90 to-accent/5 p-5 backdrop-blur-xl sm:p-6">
+        <div className="shadow-xs relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-surface-1/95 via-surface-2/90 to-accent/5 p-4 backdrop-blur-xl sm:p-5">
           <div className="absolute right-0 top-0 -mr-16 -mt-16 size-48 rounded-full bg-accent/10 blur-3xl" />
 
-          <div className="relative flex flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
-              <div className="flex items-center gap-2">
+          <div className="relative flex flex-col gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="flex size-2 animate-ping rounded-full bg-accent" />
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
                   {t.latestPulse}
@@ -266,9 +266,23 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                   <Clock className="size-3" />
                   {formatDate(latestPulseEvent.publishedAt)}
                 </span>
+                {latestPulseEvent.sourceUrl && (
+                  <>
+                    <span className="text-slate-500">•</span>
+                    <a
+                      href={latestPulseEvent.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-mono text-xs text-slate-300 transition-colors hover:text-accent"
+                    >
+                      <span>{t.viewSource}</span>
+                      <ExternalLink className="size-3" />
+                    </a>
+                  </>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {(() => {
                   const priceMove = parseNumber(latestPulseEvent.priceMovePct);
                   if (priceMove === null) return null;
@@ -306,83 +320,71 @@ export const NewsTab: React.FC<NewsTabProps> = ({
             </div>
 
             <div>
-              <h4 className="text-base font-bold leading-snug text-foreground sm:text-lg">
+              <h4 className="text-base font-bold leading-snug text-foreground">
                 {latestPulseEvent.title}
               </h4>
-              <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
+              <p className="mt-1 text-xs leading-relaxed text-slate-300 sm:text-sm">
                 {latestPulseEvent.summary}
               </p>
             </div>
 
-            {/* Transmission Vector Card */}
-            <div className="mt-1 flex flex-col gap-3 rounded-xl border border-border bg-surface-0/80 p-4 shadow-inner sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-wrap items-center gap-3">
-                {renderChannelBadge(latestPulseEvent.transmissionType)}
+            {/* Transmission Vector Card (Only if transmission exists) */}
+            {latestPulseEvent.transmissionType !== "none" && (
+              <div className="mt-0.5 flex flex-col gap-2.5 rounded-xl border border-border bg-surface-0/80 p-3 shadow-inner sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {renderChannelBadge(latestPulseEvent.transmissionType)}
 
-                {latestPulseEvent.transmissionPayload?.driverId && (
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-slate-300">
-                    <span className="text-slate-400">Driver:</span>
-                    <span className="font-semibold text-foreground">
-                      {latestPulseEvent.transmissionPayload.driverId}
-                    </span>
-                    {(() => {
-                      const deltaShock = parseNumber(
-                        latestPulseEvent.transmissionPayload.deltaShockPct
-                      );
-                      if (deltaShock === null) return null;
-                      return (
-                        <span className="font-bold text-emerald-400">
-                          ({deltaShock > 0 ? "+" : ""}
-                          {deltaShock}%)
-                        </span>
-                      );
-                    })()}
-                  </div>
-                )}
-
-                {(() => {
-                  const wfvImpact = parseNumber(
-                    latestPulseEvent.impliedWfvImpactPct
-                  );
-                  if (wfvImpact === null) return null;
-                  return (
-                    <div className="flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/15 px-2.5 py-1 font-mono text-xs font-bold text-accent">
-                      <span>{t.wfvImpact}:</span>
-                      <span>
-                        {wfvImpact >= 0 ? "+" : ""}
-                        {wfvImpact.toFixed(2)}%
+                  {latestPulseEvent.transmissionPayload?.driverId && (
+                    <div className="flex items-center gap-1.5 font-mono text-xs text-slate-300">
+                      <span className="text-slate-400">Driver:</span>
+                      <span className="font-semibold text-foreground">
+                        {latestPulseEvent.transmissionPayload.driverId}
                       </span>
+                      {(() => {
+                        const deltaShock = parseNumber(
+                          latestPulseEvent.transmissionPayload.deltaShockPct
+                        );
+                        if (deltaShock === null) return null;
+                        return (
+                          <span className="font-bold text-emerald-400">
+                            ({deltaShock > 0 ? "+" : ""}
+                            {deltaShock}%)
+                          </span>
+                        );
+                      })()}
                     </div>
-                  );
-                })()}
-              </div>
+                  )}
 
-              <div className="flex shrink-0 items-center gap-2">
+                  {(() => {
+                    const wfvImpact = parseNumber(
+                      latestPulseEvent.impliedWfvImpactPct
+                    );
+                    if (wfvImpact === null) return null;
+                    return (
+                      <div className="flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/15 px-2.5 py-1 font-mono text-xs font-bold text-accent">
+                        <span>{t.wfvImpact}:</span>
+                        <span>
+                          {wfvImpact >= 0 ? "+" : ""}
+                          {wfvImpact.toFixed(2)}%
+                        </span>
+                      </div>
+                    );
+                  })()}
+                </div>
+
                 {latestPulseEvent.transmissionPayload && (
                   <button
                     type="button"
                     onClick={() => handleSimulate(latestPulseEvent)}
-                    className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 font-mono text-xs font-bold text-surface-0 shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 active:scale-95"
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 font-mono text-xs font-bold text-surface-0 shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 active:scale-95"
                     title={t.simulateTooltip}
                   >
                     <Sliders className="size-3.5" />
                     <span>{t.simulateButton}</span>
                   </button>
                 )}
-
-                {latestPulseEvent.sourceUrl && (
-                  <a
-                    href={latestPulseEvent.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 rounded-lg border border-border bg-surface-2/90 px-3 py-1.5 font-mono text-xs font-medium text-slate-300 transition-all hover:border-accent/40 hover:text-foreground"
-                  >
-                    <span>{t.viewSource}</span>
-                    <ExternalLink className="size-3" />
-                  </a>
-                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -397,37 +399,51 @@ export const NewsTab: React.FC<NewsTabProps> = ({
               {upstreamDependencies.length})
             </span>
           </div>
-          <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {upstreamDependencies.map((dep, i) => (
               <div
                 key={dep.id || i}
-                className="flex items-center justify-between rounded-lg border border-border bg-surface-2/60 p-2.5 font-mono text-xs"
+                className="flex flex-col justify-between gap-2.5 rounded-xl border border-border/80 bg-surface-2/60 p-3 transition-colors hover:border-accent/40 hover:bg-surface-2/90"
               >
-                <div className="min-w-0 pr-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-accent">
+                {/* Top Row: Flow & Metrics */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
+                    <span className="rounded border border-accent/30 bg-accent/15 px-1.5 py-0.5 text-accent">
                       {dep.sourceTicker}
                     </span>
-                    <ArrowRight className="size-3 text-slate-400" />
-                    <span className="font-bold text-foreground">
+                    <ArrowRight className="size-3 text-slate-500" />
+                    <span className="rounded border border-border bg-surface-0 px-1.5 py-0.5 text-foreground">
                       {dep.targetTicker}
                     </span>
                   </div>
-                  <div className="truncate text-[11px] text-slate-400">
-                    {dep.driverName || dep.driverId}
+
+                  <div className="flex items-center gap-1 font-mono text-[11px]">
+                    <span className="rounded border border-border/70 bg-surface-0/80 px-1.5 py-0.5 font-bold text-slate-200">
+                      {parseNumber(dep.exposureShare) !== null
+                        ? `${(parseNumber(dep.exposureShare)! * 100).toFixed(0)}% Exp`
+                        : "0% Exp"}
+                    </span>
+                    <span className="rounded border border-border/70 bg-surface-0/80 px-1.5 py-0.5 font-bold text-accent">
+                      {parseNumber(dep.elasticity) !== null
+                        ? `${parseNumber(dep.elasticity)!.toFixed(2)}x Elas`
+                        : "0.00x Elas"}
+                    </span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-bold text-slate-200">
-                    {parseNumber(dep.exposureShare) !== null
-                      ? `${(parseNumber(dep.exposureShare)! * 100).toFixed(0)}% Exp`
-                      : "0% Exp"}
+
+                {/* Bottom Row: Driver Name and notes (fully visible, no truncated clamp) */}
+                <div className="flex flex-col gap-1">
+                  <div className="text-xs font-semibold leading-snug text-slate-200">
+                    {dep.driverName || dep.driverId}
                   </div>
-                  <div className="text-[11px] text-slate-400">
-                    {parseNumber(dep.elasticity) !== null
-                      ? `${parseNumber(dep.elasticity)!.toFixed(2)}x Elas`
-                      : "0.00x Elas"}
-                  </div>
+                  {dep.notes && (
+                    <p
+                      className="text-[11px] leading-relaxed text-slate-400"
+                      title={dep.notes}
+                    >
+                      {dep.notes}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -445,14 +461,16 @@ export const NewsTab: React.FC<NewsTabProps> = ({
           {filteredEvents.map((event) => {
             const hasTransmission =
               event.transmissionType && event.transmissionType !== "none";
+            const hasRationale = Boolean(event.transmissionPayload?.rationale);
+            const showFooter = hasTransmission || hasRationale;
 
             return (
               <div
                 key={event.id}
-                className="shadow-xs group relative flex flex-col gap-2.5 rounded-xl border border-border bg-surface-1/90 p-4 transition-all hover:border-accent/40 hover:bg-surface-2/95"
+                className="shadow-xs group relative flex flex-col gap-2 rounded-xl border border-border bg-surface-1/90 p-3.5 transition-all hover:border-accent/40 hover:bg-surface-2/95"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {renderChannelBadge(event.transmissionType)}
                     <span className="font-mono text-xs font-semibold text-slate-300">
                       {event.publisher}
@@ -462,9 +480,23 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                       <Clock className="size-3" />
                       {formatDate(event.publishedAt)}
                     </span>
+                    {event.sourceUrl && (
+                      <>
+                        <span className="text-slate-500">•</span>
+                        <a
+                          href={event.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-mono text-xs text-slate-400 transition-colors hover:text-foreground"
+                        >
+                          <span>{t.viewSource}</span>
+                          <ExternalLink className="size-3" />
+                        </a>
+                      </>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     {(() => {
                       const priceMove = parseNumber(event.priceMovePct);
                       if (priceMove === null) return null;
@@ -505,38 +537,26 @@ export const NewsTab: React.FC<NewsTabProps> = ({
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-xs">
-                  <div className="font-mono text-[11px] text-slate-400">
-                    {event.transmissionPayload?.rationale && (
-                      <span>{event.transmissionPayload.rationale}</span>
-                    )}
-                  </div>
+                {showFooter && (
+                  <div className="flex items-center justify-between border-t border-border/50 pt-2 text-xs">
+                    <div className="font-mono text-[11px] text-slate-400">
+                      {event.transmissionPayload?.rationale && (
+                        <span>{event.transmissionPayload.rationale}</span>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-2">
                     {hasTransmission && (
                       <button
                         type="button"
                         onClick={() => handleSimulate(event)}
-                        className="flex items-center gap-1 rounded border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[11px] font-bold text-accent transition-all hover:bg-accent hover:text-surface-0"
+                        className="flex shrink-0 items-center gap-1 rounded border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[11px] font-bold text-accent transition-all hover:bg-accent hover:text-surface-0"
                       >
                         <Sliders className="size-3" />
                         <span>{t.simulateButton}</span>
                       </button>
                     )}
-
-                    {event.sourceUrl && (
-                      <a
-                        href={event.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-foreground"
-                      >
-                        <span>{t.viewSource}</span>
-                        <ExternalLink className="size-3" />
-                      </a>
-                    )}
                   </div>
-                </div>
+                )}
               </div>
             );
           })}

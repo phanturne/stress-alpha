@@ -144,6 +144,14 @@ export const CockpitDualPane = React.memo(function CockpitDualPane({
   const handleOpenTechnicals = React.useCallback(() => {
     switchWorkspace("technicals");
     setMobileSection("workspaces");
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const el = document.getElementById("support-resistance-levels");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 50);
+    });
   }, [switchWorkspace, setMobileSection]);
 
   return (
