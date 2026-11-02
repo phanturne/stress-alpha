@@ -18,7 +18,7 @@ export function getLocalizedArtifacts(
         ? reportData.scenariosZh
         : reportData?.scenarios,
     sentiment:
-      isZh && reportData?.sentimentZh
+      isZh && reportData?.sentimentZh?.managementTone
         ? reportData.sentimentZh
         : reportData?.sentiment,
     filing:
