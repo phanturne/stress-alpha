@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   RotateCcw,
   Sliders,
@@ -165,6 +165,34 @@ export const Cockpit: React.FC<CockpitProps> = ({
     }
   };
 
+  const activePreset = useMemo<
+    "baseline" | "mild" | "severe" | "custom"
+  >(() => {
+    const shocks = stressParams.driverShocks || {};
+    const driverIds = baseline.upstreamDrivers.map((d) => d.id);
+    const allMild =
+      driverIds.length > 0 &&
+      driverIds.every((id) => (shocks[id] ?? 0) === -10) &&
+      (stressParams.grossMarginBpsDelta ?? 0) === -100 &&
+      (stressParams.fixedOpexShiftPct ?? 0) === 2;
+    if (allMild) return "mild";
+
+    const allSevere =
+      driverIds.length > 0 &&
+      driverIds.every((id) => (shocks[id] ?? 0) === -25) &&
+      (stressParams.grossMarginBpsDelta ?? 0) === -300 &&
+      (stressParams.fixedOpexShiftPct ?? 0) === 5;
+    if (allSevere) return "severe";
+
+    const allBaseline =
+      driverIds.every((id) => (shocks[id] ?? 0) === 0) &&
+      (stressParams.grossMarginBpsDelta ?? 0) === 0 &&
+      (stressParams.fixedOpexShiftPct ?? 0) === 0;
+    if (allBaseline) return "baseline";
+
+    return "custom";
+  }, [baseline, stressParams]);
+
   return (
     <aside className="custom-scrollbar flex h-full min-h-0 w-full shrink-0 flex-col gap-4 lg:overflow-y-auto lg:pr-1.5">
       {/* Historical Quarter Notice Banner */}
@@ -320,16 +348,25 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* 1-Click Macro Presets Bar */}
-        <div className="flex items-center gap-1.5 rounded-xl border border-border bg-surface-0/70 p-1 text-[11px]">
-          <span className="flex shrink-0 items-center gap-1 px-1.5 font-mono text-[11px] uppercase tracking-wider text-slate-400">
-            <Sliders className="size-3 text-slate-400" />
-            {t.presets.title}:
-          </span>
+        <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-surface-0/70 p-2 text-[11px]">
+          <div className="flex items-center justify-between gap-1">
+            <span className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wider text-slate-300">
+              <Sliders className="size-3 text-accent" />
+              <span>{t.presets.title}</span>
+            </span>
+            <span className="truncate text-[10px] text-slate-400">
+              {t.presets.caption}
+            </span>
+          </div>
           <div className="grid w-full grid-cols-3 gap-1">
             <button
               type="button"
               onClick={() => handleApplyPreset("baseline")}
-              className="truncate rounded-lg border border-transparent bg-surface-2/70 px-1.5 py-1 text-center text-[11px] font-medium text-slate-300 transition-colors hover:bg-surface-3 hover:text-foreground"
+              className={`truncate rounded-lg border px-1.5 py-1 text-center text-[11px] font-medium transition-all ${
+                activePreset === "baseline"
+                  ? "shadow-xs border-accent/40 bg-accent/15 font-bold text-accent ring-1 ring-accent/30"
+                  : "border-transparent bg-surface-2/70 text-slate-300 hover:bg-surface-3 hover:text-foreground"
+              }`}
               title={t.presets.baselineTooltip}
             >
               {t.presets.baseline}
@@ -337,7 +374,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("mild")}
-              className="truncate rounded-lg border border-amber-500/25 bg-amber-500/10 px-1.5 py-1 text-center text-[11px] font-medium text-amber-400 transition-colors hover:bg-amber-500/20"
+              className={`truncate rounded-lg border px-1.5 py-1 text-center text-[11px] font-medium transition-all ${
+                activePreset === "mild"
+                  ? "shadow-xs border-amber-500/50 bg-amber-500/25 font-bold text-amber-300 ring-1 ring-amber-500/40"
+                  : "border-amber-500/25 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+              }`}
               title={t.presets.mildTooltip}
             >
               {t.presets.mild}
@@ -345,7 +386,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
             <button
               type="button"
               onClick={() => handleApplyPreset("severe")}
-              className="truncate rounded-lg border border-rose-500/25 bg-rose-500/10 px-1.5 py-1 text-center text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20"
+              className={`truncate rounded-lg border px-1.5 py-1 text-center text-[11px] font-medium transition-all ${
+                activePreset === "severe"
+                  ? "shadow-xs border-rose-500/50 bg-rose-500/25 font-bold text-rose-300 ring-1 ring-rose-500/40"
+                  : "border-rose-500/25 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
+              }`}
               title={t.presets.severeTooltip}
             >
               {t.presets.severe}
@@ -483,224 +528,116 @@ export const Cockpit: React.FC<CockpitProps> = ({
           panicDelta < 0 ? round2(Math.abs(deltaBull / panicDelta)) : deltaBull;
 
         return (
-          <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border p-4 sm:p-4.5">
-            <div className="flex items-center justify-between font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>{t.valuationRegimes}</span>
-              <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
+          <>
+            {/* 2. Scenario Target Prices & Stress Valuation */}
+            <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border p-4 sm:p-4.5">
+              <div className="flex items-center justify-between font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <span>{t.valuationRegimes}</span>
                 <span
-                  className="cursor-help text-slate-400"
-                  title={t.currentPriceTooltip}
+                  className="rounded border border-accent/30 bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent"
+                  title={`${t.asymmetry.asymmetrySkew}: Ratio of upside to Bull vs downside to Panic Floor`}
                 >
-                  {t.current}: {formatCurrency(currentPrice)}
+                  {t.asymmetry.asymmetrySkew}: {riskReward.toFixed(2)}x
                 </span>
-                {asymmetry.marketPricedInMultiple > 0 ? (
-                  <>
-                    <span className="text-slate-600">•</span>
-                    <span
-                      className="text-slate-300"
-                      title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
-                    >
-                      P/E: {asymmetry.marketPricedInMultiple.toFixed(1)}x
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-slate-600">•</span>
-                    <span
-                      className="text-rose-400"
-                      title={t.asymmetry.pricedInMultipleLossTooltip}
-                    >
-                      P/E: {t.asymmetry.pricedInMultipleLoss}
-                    </span>
-                  </>
-                )}
-                {weightedFairValue > 0 && (
-                  <>
-                    <span className="text-slate-600">•</span>
-                    <span
-                      className={`font-bold ${
-                        upsidePct >= 0
-                          ? "text-fintech-green"
-                          : "text-fintech-red"
-                      }`}
-                      title={`${t.weightedFairValue}: ${formatCurrency(weightedFairValue, 2)}`}
-                    >
-                      {t.wfvShort}: {formatCurrency(weightedFairValue, 0)} (
-                      {formatPercent(upsidePct)})
-                    </span>
-                  </>
-                )}
               </div>
-            </div>
 
-            {/* 3 Core Scenario Cards: Bull, Base, Bear */}
-            <div className="grid grid-cols-3 gap-2">
-              {/* Bull */}
+              {/* 3 Core Scenario Cards: Bull, Base, Bear */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* Bull */}
+                <div
+                  className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
+                  title={`${t.regimes.bull}: Optimistic expansion regime with premium multiple`}
+                >
+                  <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-green">
+                    <span className="truncate" title={t.regimes.bull}>
+                      {t.regimes.bull}
+                    </span>
+                  </div>
+                  <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
+                    {formatCurrency(targetBull)}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-green">
+                    {formatPercent(deltaBull)}
+                  </div>
+                </div>
+
+                {/* Base */}
+                <div
+                  className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
+                  title={`${t.regimes.base}: Baseline execution matching management consensus guidance`}
+                >
+                  <div className="flex items-center justify-between font-mono text-[11px] font-bold text-slate-300">
+                    <span className="truncate" title={t.regimes.base}>
+                      {t.regimes.base}
+                    </span>
+                  </div>
+                  <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
+                    {formatCurrency(targetBase)}
+                  </div>
+                  <div
+                    className={`mt-0.5 font-mono text-[11px] font-bold tabular-nums ${
+                      deltaBase >= 0 ? "text-fintech-green" : "text-fintech-red"
+                    }`}
+                  >
+                    {formatPercent(deltaBase)}
+                  </div>
+                </div>
+
+                {/* Bear */}
+                <div
+                  className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
+                  title={`${t.regimes.bear}: Contraction regime with macroeconomic multiple de-rating`}
+                >
+                  <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-red">
+                    <span className="truncate" title={t.regimes.bear}>
+                      {t.regimes.bear}
+                    </span>
+                  </div>
+                  <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
+                    {formatCurrency(targetBear)}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-red">
+                    {formatPercent(deltaBear)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
               <div
-                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
-                title={`${t.regimes.bull}: Optimistic expansion regime with premium multiple`}
+                className="flex items-center justify-between rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 py-2 font-mono text-xs"
+                title="Panic Floor: Cycle trough valuation limit during severe recession"
               >
-                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-green">
-                  <span className="truncate" title={t.regimes.bull}>
-                    {t.regimes.bull}
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-fintech-red">
+                  <AlertOctagon className="size-3.5 shrink-0" />
+                  <span
+                    className="truncate"
+                    title={`${t.regimes.panicFloorLabel} (${baseline.multipleRegimes.panic}x P/E)`}
+                  >
+                    {t.regimes.panicFloorLabel} (
+                    {baseline.multipleRegimes.panic}x P/E)
                   </span>
                 </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
-                  {formatCurrency(targetBull)}
-                </div>
-                <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-green">
-                  {formatPercent(deltaBull)}
-                </div>
-              </div>
-
-              {/* Base */}
-              <div
-                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
-                title={`${t.regimes.base}: Baseline execution matching management consensus guidance`}
-              >
-                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-slate-300">
-                  <span className="truncate" title={t.regimes.base}>
-                    {t.regimes.base}
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-xs font-extrabold tabular-nums text-foreground">
+                    {formatCurrency(panicTarget)}
+                  </span>
+                  <span className="font-mono text-[11px] font-bold tabular-nums text-fintech-red">
+                    {formatPercent(panicDelta)}
                   </span>
                 </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
-                  {formatCurrency(targetBase)}
-                </div>
-                <div
-                  className={`mt-0.5 font-mono text-[11px] font-bold tabular-nums ${
-                    deltaBase >= 0 ? "text-fintech-green" : "text-fintech-red"
-                  }`}
-                >
-                  {formatPercent(deltaBase)}
-                </div>
               </div>
 
-              {/* Bear */}
-              <div
-                className="shadow-xs flex flex-col rounded-xl border border-border bg-surface-0/80 p-3"
-                title={`${t.regimes.bear}: Contraction regime with macroeconomic multiple de-rating`}
-              >
-                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-fintech-red">
-                  <span className="truncate" title={t.regimes.bear}>
-                    {t.regimes.bear}
-                  </span>
-                </div>
-                <div className="mt-1 font-mono text-base font-extrabold tabular-nums text-foreground">
-                  {formatCurrency(targetBear)}
-                </div>
-                <div className="mt-0.5 font-mono text-[11px] font-bold tabular-nums text-fintech-red">
-                  {formatPercent(deltaBear)}
-                </div>
-              </div>
+              {/* Visual Price Meter */}
+              <PriceMeter
+                currentPrice={currentPrice}
+                panicTarget={panicTarget}
+                baseTarget={targetBase}
+                bullTarget={targetBull}
+                locale={locale}
+              />
             </div>
 
-            {/* Panic Floor Callout (Stress Test Worst-Case Limit) */}
-            <div
-              className="flex items-center justify-between rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 py-2 font-mono text-xs"
-              title="Panic Floor: Cycle trough valuation limit during severe recession"
-            >
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-fintech-red">
-                <AlertOctagon className="size-3.5 shrink-0" />
-                <span
-                  className="truncate"
-                  title={`${t.regimes.panicFloorLabel} (${baseline.multipleRegimes.panic}x P/E)`}
-                >
-                  {t.regimes.panicFloorLabel} ({baseline.multipleRegimes.panic}x
-                  P/E)
-                </span>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <span className="text-xs font-extrabold tabular-nums text-foreground">
-                  {formatCurrency(panicTarget)}
-                </span>
-                <span className="font-mono text-[11px] font-bold tabular-nums text-fintech-red">
-                  {formatPercent(panicDelta)}
-                </span>
-              </div>
-            </div>
-
-            {/* Visual Price Meter */}
-            <PriceMeter
-              currentPrice={currentPrice}
-              panicTarget={panicTarget}
-              baseTarget={targetBase}
-              bullTarget={targetBull}
-              locale={locale}
-            />
-
-            {/* 2x2 Risk Asymmetry Matrix */}
-            <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface-0/70 pt-0.5">
-              <div
-                className="border-b border-r border-border/60 p-2.5"
-                title={`${t.asymmetry.upsideToBull}: Potential percentage gain if stock expands to Bull multiple`}
-              >
-                <div
-                  className="truncate text-[11px] font-medium text-slate-400"
-                  title={t.asymmetry.upsideToBull}
-                >
-                  {t.asymmetry.upsideToBull}
-                </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-fintech-green">
-                  {formatPercent(deltaBull)}
-                </div>
-              </div>
-              <div
-                className="border-b border-border/60 p-2.5"
-                title={`${t.asymmetry.downsideToPanic}: Maximum downside drawdown to Panic Floor valuation`}
-              >
-                <div
-                  className="truncate text-[11px] font-medium text-slate-400"
-                  title={t.asymmetry.downsideToPanic}
-                >
-                  {t.asymmetry.downsideToPanic}
-                </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-fintech-red">
-                  {formatPercent(panicDelta)}
-                </div>
-              </div>
-              <div
-                className="border-r border-border/60 p-2.5"
-                title={`${t.asymmetry.pricedInMultiple}: ${
-                  asymmetry.marketPricedInMultiple > 0
-                    ? "Implied P/E ratio currently priced in at market price"
-                    : t.asymmetry.pricedInMultipleLossTooltip
-                }`}
-              >
-                <div
-                  className="truncate text-[11px] font-medium text-slate-400"
-                  title={t.asymmetry.pricedInMultiple}
-                >
-                  {t.asymmetry.pricedInMultiple}
-                </div>
-                <div
-                  className={`mt-0.5 font-mono text-sm font-bold tabular-nums ${
-                    asymmetry.marketPricedInMultiple > 0
-                      ? "text-slate-200"
-                      : "text-rose-400"
-                  }`}
-                >
-                  {asymmetry.marketPricedInMultiple > 0
-                    ? `${asymmetry.marketPricedInMultiple.toFixed(1)}x P/E`
-                    : t.asymmetry.pricedInMultipleLoss}
-                </div>
-              </div>
-              <div
-                className="p-2.5"
-                title={`${t.asymmetry.asymmetrySkew}: Ratio of upside to Bull vs downside to Panic Floor (>2.0x is attractive)`}
-              >
-                <div
-                  className="truncate text-[11px] font-medium text-slate-400"
-                  title={t.asymmetry.asymmetrySkew}
-                >
-                  {t.asymmetry.asymmetrySkew}
-                </div>
-                <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-foreground">
-                  {riskReward.toFixed(2)}x
-                </div>
-              </div>
-            </div>
-
-            {/* Key Technical S/R Matrix & Confluence Card */}
+            {/* 3. Key Technical S/R Matrix & Confluence Card (Unnested Standalone Card) */}
             {reportData?.technicalLevels && (
               <TechnicalLevelsCard
                 technicalLevels={reportData.technicalLevels}
@@ -716,53 +653,56 @@ export const Cockpit: React.FC<CockpitProps> = ({
                 onOpenTechnicals={onOpenTechnicals}
               />
             )}
-          </div>
+          </>
         );
       })()}
 
-      {/* 3. Shock Sliders with Tabbed View (Eliminates Vertical Scroll Fatigue) */}
+      {/* 4. Shock Sliders with Tabbed View (Custom Stress Testing Controls) */}
       <div className="glass-panel shadow-xs flex flex-col gap-3.5 rounded-2xl border border-border p-4 sm:p-4.5">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-            <Sliders className="size-3.5 text-accent" />
-            <span>{t.upstreamTitle}</span>
+        <div className="flex flex-col gap-1 border-b border-border/60 pb-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
+              <Sliders className="size-3.5 text-accent" />
+              <span>{t.upstreamTitle}</span>
+            </div>
+            {/* Tab switcher: Volume vs Margins vs All */}
+            <div className="flex items-center rounded-lg border border-border bg-surface-0/90 p-0.5 font-mono text-[11px]">
+              <button
+                type="button"
+                onClick={() => setActiveSliderTab("volume")}
+                className={`rounded-md px-2 py-0.5 font-medium transition-all ${
+                  activeSliderTab === "volume"
+                    ? "bg-accent/20 font-bold text-accent shadow-sm"
+                    : "text-slate-400 hover:text-foreground"
+                }`}
+              >
+                {t.sliderTabs.volume}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSliderTab("margins")}
+                className={`rounded-md px-2 py-0.5 font-medium transition-all ${
+                  activeSliderTab === "margins"
+                    ? "bg-accent/20 font-bold text-accent shadow-sm"
+                    : "text-slate-400 hover:text-foreground"
+                }`}
+              >
+                {t.sliderTabs.margins}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSliderTab("all")}
+                className={`rounded-md px-2 py-0.5 font-medium transition-all ${
+                  activeSliderTab === "all"
+                    ? "bg-accent/20 font-bold text-accent shadow-sm"
+                    : "text-slate-400 hover:text-foreground"
+                }`}
+              >
+                {t.sliderTabs.all}
+              </button>
+            </div>
           </div>
-          {/* Tab switcher: Volume vs Margins vs All */}
-          <div className="flex items-center rounded-lg border border-border bg-surface-0/90 p-0.5 font-mono text-[11px]">
-            <button
-              type="button"
-              onClick={() => setActiveSliderTab("volume")}
-              className={`rounded-md px-2 py-0.5 font-medium transition-all ${
-                activeSliderTab === "volume"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-foreground"
-              }`}
-            >
-              {t.sliderTabs.volume}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveSliderTab("margins")}
-              className={`rounded-md px-2 py-0.5 font-medium transition-all ${
-                activeSliderTab === "margins"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-foreground"
-              }`}
-            >
-              {t.sliderTabs.margins}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveSliderTab("all")}
-              className={`rounded-md px-2 py-0.5 font-medium transition-all ${
-                activeSliderTab === "all"
-                  ? "bg-accent/20 font-bold text-accent shadow-sm"
-                  : "text-slate-400 hover:text-foreground"
-              }`}
-            >
-              {t.sliderTabs.all}
-            </button>
-          </div>
+          <p className="text-[11px] text-slate-400">{t.upstreamSubtitle}</p>
         </div>
 
         {/* Volume / Segment Drivers */}

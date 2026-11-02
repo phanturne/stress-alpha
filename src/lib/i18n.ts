@@ -100,6 +100,7 @@ export interface Translations {
       asymmetrySkew: string;
     };
     upstreamTitle: string;
+    upstreamSubtitle: string;
     exposure: string;
     elasticity: string;
     accountingTitle: string;
@@ -122,6 +123,7 @@ export interface Translations {
     };
     presets: {
       title: string;
+      caption: string;
       baseline: string;
       baselineTooltip: string;
       mild: string;
@@ -1300,6 +1302,8 @@ export const translations: Record<Locale, Translations> = {
         asymmetrySkew: "Risk / Reward Ratio",
       },
       upstreamTitle: "Demand & Volume Drivers",
+      upstreamSubtitle:
+        "Stress-test segment demand and cost inflation to simulate downside resilience",
       exposure: "Exposure",
       elasticity: "Elasticity",
       accountingTitle: "Cost & Margin Controls",
@@ -1323,6 +1327,8 @@ export const translations: Record<Locale, Translations> = {
       },
       presets: {
         title: "Macro Presets",
+        caption:
+          "1-click shocks linking volume, margins & OpEx to Stressed EPS below",
         baseline: "0% Neutral",
         baselineTooltip:
           "Preset: Apply 0% flat baseline across all volume drivers",
@@ -1574,8 +1580,8 @@ export const translations: Record<Locale, Translations> = {
       wfvImpact: "Implied WFV Impact",
       priceReaction: "Price Move",
       abnormalMove: "Abnormal Return",
-      allFilter: "All Events",
-      upstreamFilter: "Upstream & Supply Chain",
+      allFilter: "All",
+      upstreamFilter: "Supply Chain",
       productFilter: "Product Releases",
       analystFilter: "Analyst Actions",
       secFilter: "SEC Filings",
@@ -2619,6 +2625,8 @@ export const translations: Record<Locale, Translations> = {
         asymmetrySkew: "盈亏收益比 (Risk/Reward)",
       },
       upstreamTitle: "需求与业务量驱动",
+      upstreamSubtitle:
+        "调节各业务线需求与成本通胀，实时推演每股收益与估值目标",
       exposure: "敞口",
       elasticity: "弹性",
       accountingTitle: "成本与利润率控制",
@@ -2641,6 +2649,8 @@ export const translations: Record<Locale, Translations> = {
       },
       presets: {
         title: "宏观情景预设",
+        caption:
+          "一键宏观冲击：调节需求与利润率，实时联动下方经压力测试EPS与目标价",
         baseline: "0% 基准中性",
         baselineTooltip: "预设方案：将所有业务因子设为 0% 基准状态",
         mild: "-10% 轻度承压",
@@ -2883,8 +2893,8 @@ export const translations: Record<Locale, Translations> = {
       wfvImpact: "隐含公允价值影响",
       priceReaction: "股价变动",
       abnormalMove: "超额异动",
-      allFilter: "全部事件",
-      upstreamFilter: "供应链与上下游",
+      allFilter: "全部",
+      upstreamFilter: "供应链",
       productFilter: "产品与技术发布",
       analystFilter: "投行评级与目标价",
       secFilter: "SEC 官方披露",

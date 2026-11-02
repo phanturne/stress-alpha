@@ -257,18 +257,6 @@ export const TechnicalLevelsCard: React.FC<TechnicalLevelsCardProps> = ({
             );
           })}
         </div>
-
-        {/* Action Button to switch to Full Technicals Tab */}
-        {onOpenTechnicals && (
-          <button
-            type="button"
-            onClick={onOpenTechnicals}
-            className="active:scale-98 flex w-full items-center justify-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 py-1.5 text-xs font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/20"
-          >
-            <span>{t.openChartTab}</span>
-            <ArrowRight className="size-3.5" />
-          </button>
-        )}
       </div>
     );
   }
