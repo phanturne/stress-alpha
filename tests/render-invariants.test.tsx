@@ -586,6 +586,17 @@ describe("Frontend Render & Efficiency Invariants", () => {
         "Price as of last market close (EOD). Live intraday pricing is not streaming."
       );
       expect(tooltipElements.length).toBeGreaterThan(0);
+
+      // Invariant: Standard market multiples (TTM P/E and NTM P/E) are rendered under Last Close
+      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
+      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+
+      // Invariant: Stressed P/E multiple is explicitly rendered in the Stressed EPS subcard
+      expect(
+        screen.getByText(
+          `${mockStressResult.asymmetry.marketPricedInMultiple.toFixed(1)}x Stressed P/E`
+        )
+      ).toBeDefined();
     });
 
     it("renders last close badge and tooltip in Chinese locale", () => {
@@ -614,6 +625,54 @@ describe("Frontend Render & Efficiency Invariants", () => {
         "最新收盘价（按日更新），非盘中实时行情。"
       );
       expect(tooltipElementsZh.length).toBeGreaterThan(0);
+
+      // Invariant: Standard market multiples rendered under Last Close in Chinese locale
+      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
+      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+
+      // Invariant: Chinese Stressed P/E multiple in Stressed EPS card
+      expect(
+        screen.getByText(
+          `${mockStressResult.asymmetry.marketPricedInMultiple.toFixed(1)}x 承压市盈率`
+        )
+      ).toBeDefined();
+    });
+
+    it("ensures Last Close market multiples remain anchored to consensus and do not drift with stress shocks", () => {
+      // Simulate extreme shock: -30% revenue shock, opex shift
+      const shockedResult = computeStressedValuation(mockBaseline, 120.0, {
+        grossMarginBpsDelta: -500,
+        fixedOpexShiftPct: 10,
+      });
+
+      render(
+        <Cockpit
+          baseline={mockBaseline}
+          facts={mockFacts}
+          stressParams={{
+            driverShocks: {},
+            grossMarginBpsDelta: -500,
+            fixedOpexShiftPct: 10,
+          }}
+          stressResult={shockedResult}
+          onDriverShockChange={noop}
+          onGrossMarginDeltaChange={noop}
+          onFixedOpexShiftChange={noop}
+          onResetDefaults={noop}
+          locale="en"
+        />
+      );
+
+      // Market P/E under Last Close MUST remain anchored to reported TTM / NTM consensus
+      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
+      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+
+      // But Stressed P/E in the Stressed EPS subcard updates dynamically to reflect the shock
+      expect(
+        screen.getByText(
+          `${shockedResult.asymmetry.marketPricedInMultiple.toFixed(1)}x Stressed P/E`
+        )
+      ).toBeDefined();
     });
   });
 });

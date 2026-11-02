@@ -299,22 +299,25 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   displayFacts?.currentPrice ??
                   reportData?.technicalLevels?.currentPrice ??
                   0;
+                const trailingEps =
+                  displayFacts?.trailingEps ??
+                  reportData?.facts?.trailingEps ??
+                  0;
+                const forwardEps =
+                  displayFacts?.forwardEpsConsensus ??
+                  reportData?.facts?.forwardEpsConsensus ??
+                  0;
                 const currentPe =
-                  val?.stressTest?.asymmetry?.marketPricedInMultiple &&
-                  val.stressTest.asymmetry.marketPricedInMultiple > 0
-                    ? val.stressTest.asymmetry.marketPricedInMultiple
-                    : activePrice > 0 &&
-                        displayFacts?.epsOperating &&
-                        displayFacts.epsOperating > 0
-                      ? Number(
-                          (activePrice / displayFacts.epsOperating).toFixed(1)
-                        )
+                  activePrice > 0 && trailingEps > 0
+                    ? Number((activePrice / trailingEps).toFixed(1))
+                    : activePrice > 0 && forwardEps > 0
+                      ? Number((activePrice / forwardEps).toFixed(1))
                       : undefined;
                 const operatingEps =
-                  displayFacts?.epsOperating ??
-                  reportData?.facts?.epsOperating ??
-                  displayFacts?.trailingEps ??
-                  reportData?.facts?.trailingEps;
+                  trailingEps > 0
+                    ? trailingEps
+                    : (displayFacts?.epsOperating ??
+                      reportData?.facts?.epsOperating);
 
                 return (
                   <TechnicalsTab

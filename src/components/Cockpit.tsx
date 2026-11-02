@@ -151,6 +151,22 @@ export const Cockpit: React.FC<CockpitProps> = ({
       ? round2(((weightedFairValue - currentPrice) / currentPrice) * 100)
       : 0);
 
+  const trailingPe =
+    currentPrice > 0 && facts.trailingEps && facts.trailingEps > 0
+      ? round2(currentPrice / facts.trailingEps)
+      : undefined;
+  const forwardPe =
+    currentPrice > 0 &&
+    facts.forwardEpsConsensus &&
+    facts.forwardEpsConsensus > 0
+      ? round2(currentPrice / facts.forwardEpsConsensus)
+      : undefined;
+  const hasNegativeEps =
+    (facts.trailingEps !== undefined && facts.trailingEps < 0) ||
+    (facts.forwardEpsConsensus !== undefined &&
+      facts.forwardEpsConsensus < 0) ||
+    (facts.epsOperating !== undefined && facts.epsOperating < 0);
+
   const handleApplyPreset = (preset: "baseline" | "mild" | "severe") => {
     if (preset === "baseline") {
       onResetDefaults();
@@ -295,20 +311,29 @@ export const Cockpit: React.FC<CockpitProps> = ({
               <div className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(currentPrice)}
               </div>
-              <div className="mt-1 flex items-center">
-                {asymmetry.marketPricedInMultiple > 0 ? (
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                {trailingPe !== undefined && (
                   <span
                     className="inline-flex items-center whitespace-nowrap rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
-                    title={`${t.asymmetry.pricedInMultiple}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x`}
+                    title={`${t.trailingPeTooltip}: ${trailingPe.toFixed(1)}x (${t.trailingPeLabel})`}
                   >
-                    {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                    {`${trailingPe.toFixed(1)}x ${t.trailingPeBadge}`}
                   </span>
-                ) : (
+                )}
+                {forwardPe !== undefined && (
+                  <span
+                    className="inline-flex items-center whitespace-nowrap rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-400"
+                    title={`${t.forwardPeTooltip}: ${forwardPe.toFixed(1)}x (${t.forwardPeLabel})`}
+                  >
+                    {`${forwardPe.toFixed(1)}x ${t.forwardPeBadge}`}
+                  </span>
+                )}
+                {trailingPe === undefined && forwardPe === undefined && (
                   <span
                     className="inline-flex items-center whitespace-nowrap rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
                     title={t.asymmetry.pricedInMultipleLossTooltip}
                   >
-                    {t.asymmetry.pricedInMultipleLoss}
+                    {hasNegativeEps ? t.asymmetry.pricedInMultipleLoss : "—"}
                   </span>
                 )}
               </div>
@@ -407,8 +432,25 @@ export const Cockpit: React.FC<CockpitProps> = ({
             >
               {t.stressedForwardEps}
             </div>
-            <div className="mt-0.5 font-mono text-2xl font-black tabular-nums tracking-tight text-foreground sm:text-3xl">
-              {formatCurrency(stressEps)}
+            <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+              <span className="font-mono text-2xl font-black tabular-nums tracking-tight text-foreground sm:text-3xl">
+                {formatCurrency(stressEps)}
+              </span>
+              {asymmetry.marketPricedInMultiple > 0 ? (
+                <span
+                  className="inline-flex items-center whitespace-nowrap rounded border border-accent/30 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-accent"
+                  title={`${t.asymmetry.stressedPeTooltip}: ${asymmetry.marketPricedInMultiple.toFixed(1)}x (${t.asymmetry.stressedPeLabel})`}
+                >
+                  {`${asymmetry.marketPricedInMultiple.toFixed(1)}x ${t.asymmetry.stressedPeBadge}`}
+                </span>
+              ) : (
+                <span
+                  className="inline-flex items-center whitespace-nowrap rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
+                  title={t.asymmetry.pricedInMultipleLossTooltip}
+                >
+                  {t.asymmetry.pricedInMultipleLoss}
+                </span>
+              )}
             </div>
           </div>
           <div className="text-right">
