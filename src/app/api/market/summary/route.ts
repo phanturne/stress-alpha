@@ -98,7 +98,7 @@ export async function GET() {
     return NextResponse.json(cache.data, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+          "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
       },
     });
   }
@@ -217,7 +217,7 @@ export async function GET() {
     return NextResponse.json(payload, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+          "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
       },
     });
   } catch (err) {
@@ -232,7 +232,7 @@ export async function GET() {
       return NextResponse.json(cache.data, {
         headers: {
           "Cache-Control":
-            "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+            "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
         },
       });
     }
