@@ -886,7 +886,7 @@ export function MarketHomeView({
               />
             </div>
 
-            <div className="custom-scrollbar mt-2 max-h-[350px] divide-y divide-border/40 overflow-y-auto pr-1.5">
+            <div className="custom-scrollbar mt-2 max-h-[350px] divide-y divide-border/40 overflow-y-auto pr-3">
               {moverTab === "watchlist" && moversData.watchlist.length === 0 ? (
                 <div className="px-2 py-5 text-center text-xs text-slate-400">
                   <Star className="mx-auto mb-1.5 size-4 text-slate-600" />
@@ -910,7 +910,7 @@ export function MarketHomeView({
                       key={item.slug}
                       onClick={() => onSelectReport(item.slug, "cockpit")}
                       onMouseEnter={() => prefetchReport(item.slug)}
-                      className="flex cursor-pointer items-center justify-between rounded-lg py-2.5 pl-1.5 pr-2.5 transition-colors hover:bg-surface-2/60"
+                      className="flex cursor-pointer items-center justify-between rounded-lg py-2.5 pl-2 pr-2 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="flex size-7 shrink-0 items-center justify-center rounded border border-border bg-surface-2 font-mono text-xs font-bold text-foreground">
@@ -973,7 +973,7 @@ export function MarketHomeView({
             />
 
             {/* Scrollable list */}
-            <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-1.5">
+            <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-3">
               {filteredEarnings.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
                   {tHome.noUpcomingFound}
@@ -994,7 +994,7 @@ export function MarketHomeView({
                       onMouseEnter={() => {
                         if (item.reportSlug) prefetchReport(item.reportSlug);
                       }}
-                      className="group flex cursor-pointer items-center justify-between rounded py-2.5 pl-1.5 pr-2.5 transition-colors hover:bg-surface-2/60"
+                      className="group flex cursor-pointer items-center justify-between rounded py-2.5 pl-2 pr-2 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <button
@@ -1040,23 +1040,9 @@ export function MarketHomeView({
                       </div>
 
                       <div className="flex flex-col items-end gap-1 text-right font-mono">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-semibold text-foreground">
-                            {item.date.slice(5)}
-                          </span>
-                          {item.reportSlug && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onSelectReport(item.reportSlug!, "cockpit");
-                              }}
-                              className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-accent transition-all hover:bg-accent/20"
-                            >
-                              {tHome.launchModel}
-                            </button>
-                          )}
-                        </div>
+                        <span className="text-xs font-semibold text-foreground">
+                          {item.date.slice(5)}
+                        </span>
                         <div className="text-[10px] text-slate-400">
                           {item.epsEstimate != null
                             ? `EPS $${item.epsEstimate.toFixed(2)}`

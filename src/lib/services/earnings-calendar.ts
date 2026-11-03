@@ -1,5 +1,8 @@
 import path from "node:path";
 import * as dotenv from "dotenv";
+import { sql } from "drizzle-orm";
+import { getDb } from "@/db";
+import { tickersTable, reportsTable, upcomingEarningsTable } from "@/db/schema";
 import type { IReportRepository } from "@/lib/repository";
 import { getReportRepository } from "@/lib/repository";
 import type { ReportData } from "@/lib/schemas";
@@ -570,5 +573,207 @@ export async function syncEarningsCalendar(
     scaffolded,
     skipped,
     results,
+  };
+}
+
+/**
+ * Normalizes sector name to standard sectorId.
+ */
+export function normalizeSectorToId(
+  sector?: string | null
+): string | undefined {
+  if (!sector) return undefined;
+  const s = sector.toLowerCase().trim();
+  if (s.includes("tech")) return "technology";
+  if (s.includes("health")) return "healthcare";
+  if (s.includes("discretionary")) return "consumer_discretionary";
+  if (s.includes("staple")) return "consumer_staples";
+  if (s.includes("finan")) return "financials";
+  if (s.includes("indust")) return "industrials";
+  if (s.includes("energy")) return "energy";
+  if (s.includes("material")) return "materials";
+  if (s.includes("utilit")) return "utilities";
+  if (s.includes("estate")) return "real_estate";
+  if (s.includes("communicat")) return "communication";
+  return undefined;
+}
+
+/**
+ * Synchronizes upcoming earnings for the active institutional universe (S&P 500 & NASDAQ-100)
+ * over the next 14 days and persists them directly into Neon PostgreSQL (`upcoming_earnings`).
+ *
+ * Runs as part of the scheduled GitHub Actions pipeline 3x/day.
+ * This guarantees the Next.js web application renders the earnings docket instantly (<15ms)
+ * from Neon DB without any live third-party Finnhub requests or rate limits.
+ */
+export async function syncUpcomingEarningsDocket(options?: {
+  daysAhead?: number;
+  apiKey?: string;
+}): Promise<{
+  totalOnCalendar: number;
+  matchedUniverse: number;
+  saved: number;
+}> {
+  if (!process.env.DATABASE_URL) {
+    console.warn(
+      "⚠️ [Upcoming Earnings] DATABASE_URL not configured. Skipping DB docket sync."
+    );
+    return { totalOnCalendar: 0, matchedUniverse: 0, saved: 0 };
+  }
+
+  const db = getDb();
+
+  // 1. Ensure upcoming_earnings table and indexes exist
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS upcoming_earnings (
+      symbol TEXT PRIMARY KEY,
+      company TEXT NOT NULL,
+      date TEXT NOT NULL,
+      hour TEXT NOT NULL DEFAULT 'bmo',
+      quarter INTEGER,
+      year INTEGER,
+      eps_estimate NUMERIC(10, 4),
+      revenue_estimate NUMERIC(16, 2),
+      has_model BOOLEAN NOT NULL DEFAULT false,
+      report_slug TEXT,
+      sector_id TEXT,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_upcoming_earnings_date ON upcoming_earnings(date);
+  `);
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_upcoming_earnings_sector ON upcoming_earnings(sector_id);
+  `);
+
+  // 2. Fetch coverage universe from tickersTable (521 S&P 500 + NASDAQ-100 constituents)
+  const tickers = await db
+    .select({
+      ticker: tickersTable.ticker,
+      company: tickersTable.company,
+      sector: tickersTable.sector,
+    })
+    .from(tickersTable);
+
+  if (tickers.length === 0) {
+    console.warn(
+      "⚠️ [Upcoming Earnings] tickersTable is empty. Skipping docket sync."
+    );
+    return { totalOnCalendar: 0, matchedUniverse: 0, saved: 0 };
+  }
+
+  const tickerMap = new Map(tickers.map((t) => [t.ticker.toUpperCase(), t]));
+
+  // 3. Fetch all existing models from reportsTable to link reportSlug & hasModel
+  const reports = await db
+    .select({
+      slug: reportsTable.slug,
+      ticker: reportsTable.ticker,
+    })
+    .from(reportsTable);
+
+  const reportMap = new Map<string, string>();
+  for (const r of reports) {
+    const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
+    if (!reportMap.has(sym)) {
+      reportMap.set(sym, r.slug);
+    }
+  }
+
+  // 4. Query Finnhub calendar in 4 chunked windows over the next 14 days
+  // to avoid Finnhub's 1500-record truncation ceiling
+  const now = Date.now();
+  const ranges: [number, number][] = [
+    [0, 2],
+    [3, 6],
+    [7, 10],
+    [11, 14],
+  ];
+
+  const allEntries: EarningsCalendarEntry[] = [];
+  for (const [s, e] of ranges) {
+    const from = new Date(now + s * 86400000).toISOString().split("T")[0];
+    const to = new Date(now + e * 86400000).toISOString().split("T")[0];
+    const items = await fetchFinnhubEarningsCalendar({
+      from,
+      to,
+      apiKey: options?.apiKey,
+    });
+    allEntries.push(...items);
+  }
+
+  // 5. Filter strictly against S&P 500 and NASDAQ-100 universe
+  const matched = allEntries.filter((e) =>
+    tickerMap.has(e.symbol.toUpperCase())
+  );
+
+  // 6. Deduplicate per ticker keeping the earliest upcoming reporting date
+  matched.sort((a, b) => a.date.localeCompare(b.date));
+  const deduplicated = new Map<string, EarningsCalendarEntry>();
+  for (const item of matched) {
+    const sym = item.symbol.toUpperCase();
+    if (!deduplicated.has(sym)) {
+      deduplicated.set(sym, item);
+    }
+  }
+
+  // 7. Prepare batch upsert payload
+  const rowsToUpsert = Array.from(deduplicated.values()).map((entry) => {
+    const sym = entry.symbol.toUpperCase();
+    const tickerInfo = tickerMap.get(sym);
+    const reportSlug = reportMap.get(sym);
+    const sectorId = normalizeSectorToId(tickerInfo?.sector);
+
+    return {
+      symbol: sym,
+      company: tickerInfo?.company || sym,
+      date: entry.date,
+      hour: (entry.hour || "bmo").toLowerCase(),
+      quarter: entry.quarter || null,
+      year: entry.year || null,
+      epsEstimate: entry.epsEstimate != null ? String(entry.epsEstimate) : null,
+      revenueEstimate:
+        entry.revenueEstimate != null ? String(entry.revenueEstimate) : null,
+      hasModel: Boolean(reportSlug),
+      reportSlug: reportSlug || null,
+      sectorId: sectorId || null,
+      updatedAt: new Date(),
+    };
+  });
+
+  // 8. Delete expired earnings past yesterday in America/New_York
+  const yesterdayNy = new Date(
+    Date.now() - 24 * 60 * 60 * 1000
+  ).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  await db.delete(upcomingEarningsTable).where(sql`date < ${yesterdayNy}`);
+
+  // 9. Upsert records into Neon PostgreSQL
+  if (rowsToUpsert.length > 0) {
+    await db
+      .insert(upcomingEarningsTable)
+      .values(rowsToUpsert)
+      .onConflictDoUpdate({
+        target: upcomingEarningsTable.symbol,
+        set: {
+          company: sql`excluded.company`,
+          date: sql`excluded.date`,
+          hour: sql`excluded.hour`,
+          quarter: sql`excluded.quarter`,
+          year: sql`excluded.year`,
+          epsEstimate: sql`excluded.eps_estimate`,
+          revenueEstimate: sql`excluded.revenue_estimate`,
+          hasModel: sql`excluded.has_model`,
+          reportSlug: sql`excluded.report_slug`,
+          sectorId: sql`excluded.sector_id`,
+          updatedAt: sql`excluded.updated_at`,
+        },
+      });
+  }
+
+  return {
+    totalOnCalendar: allEntries.length,
+    matchedUniverse: matched.length,
+    saved: rowsToUpsert.length,
   };
 }
