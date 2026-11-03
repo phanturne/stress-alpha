@@ -103,6 +103,24 @@ export async function GET() {
     });
   }
 
+  let pipelineUpdatedAt: string | undefined;
+  if (process.env.DATABASE_URL) {
+    try {
+      const db = getDb();
+      const res = await db
+        .select({ maxCreated: sql`max(created_at)` })
+        .from(marketEventsTable);
+      if (res[0]?.maxCreated) {
+        pipelineUpdatedAt = new Date(res[0].maxCreated as any).toISOString();
+      }
+    } catch (dbErr) {
+      console.warn(
+        "⚠️ [Market Summary API] Could not read pipeline max created_at:",
+        dbErr
+      );
+    }
+  }
+
   const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
   const allSymbols = [...INDEX_CONFIG.map((i) => i.symbol), ...SECTOR_ETFS];
 
@@ -184,24 +202,6 @@ export async function GET() {
         sectors[etf] = Number(q.regularMarketChangePercent.toFixed(2));
       } else {
         sectors[etf] = DEFAULT_SECTOR_CHANGES[etf] ?? 0;
-      }
-    }
-
-    let pipelineUpdatedAt: string | undefined;
-    if (process.env.DATABASE_URL) {
-      try {
-        const db = getDb();
-        const res = await db
-          .select({ maxCreated: sql`max(created_at)` })
-          .from(marketEventsTable);
-        if (res[0]?.maxCreated) {
-          pipelineUpdatedAt = new Date(res[0].maxCreated as any).toISOString();
-        }
-      } catch (dbErr) {
-        console.warn(
-          "⚠️ [Market Summary API] Could not read pipeline max created_at:",
-          dbErr
-        );
       }
     }
 
