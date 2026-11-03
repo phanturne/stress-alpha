@@ -35,7 +35,7 @@ import {
   aggregateSectors,
   getTickerSectorId,
 } from "@/lib/sectors";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, deduplicateReportsToLatest } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
@@ -288,21 +288,20 @@ export function MarketHomeView({
   // Market Summary Stories: Synchronous, fully-localized macro docket (zero layout shift/flicker)
   const displayStories = tHome.summaryStories;
 
-  // Deduplicate reports by latest quarter per ticker
+  // Deduplicate reports by latest quarter per ticker using recency scoring
   const latestReports = useMemo(() => {
-    const map = new Map<string, ReportSummary>();
-    for (const r of reports) {
-      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-      const existing = map.get(sym);
-      if (
-        !existing ||
-        (r.quarter && existing.quarter && r.quarter > existing.quarter)
-      ) {
-        map.set(sym, r);
-      }
-    }
-    return Array.from(map.values());
+    return deduplicateReportsToLatest(reports);
   }, [reports]);
+
+  // Lookup map to guarantee navigation from calendar or widgets always routes to latest report
+  const latestSlugByTicker = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const r of latestReports) {
+      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
+      map.set(sym, r.slug);
+    }
+    return map;
+  }, [latestReports]);
 
   // Aggregate sectors with live ETF quotes
   const sectorStats = useMemo(() => {
@@ -311,16 +310,12 @@ export function MarketHomeView({
   }, [latestReports, marketSummary, locale]);
 
   // Standout Stocks: Curated high-conviction movers from covered universe
-  const standoutStocks = useMemo(() => {
-    const tickersToFeature = ["NVDA", "TSLA", "HOOD", "AMD", "RDDT", "PLTR"];
-    const featured = latestReports.filter((r) => {
-      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-      return tickersToFeature.includes(sym);
-    });
-
-    if (featured.length >= 2) return featured.slice(0, 3);
-    return latestReports.slice(0, 3);
-  }, [latestReports]);
+  const featured = latestReports.filter((r) => {
+    const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
+    return ["NVDA", "TSLA", "HOOD", "AMD", "RDDT", "PLTR"].includes(sym);
+  });
+  const standoutStocks =
+    featured.length >= 2 ? featured.slice(0, 3) : latestReports.slice(0, 3);
 
   // Filtered upcoming earnings by timeframe and selected sector (anchored to US Market date)
   const [currentTimestamp] = useState(() => Date.now());
@@ -991,17 +986,21 @@ export function MarketHomeView({
                 filteredEarnings.map((item) => {
                   const isFav = isFavorite(item.symbol);
                   const isBmo = item.hour === "bmo";
+                  const resolvedSlug =
+                    latestSlugByTicker.get(item.symbol.toUpperCase()) ||
+                    item.reportSlug;
+                  const hasModel = Boolean(resolvedSlug);
 
                   return (
                     <div
                       key={`${item.symbol}-${item.date}`}
                       onClick={() => {
-                        if (item.reportSlug) {
-                          onSelectReport(item.reportSlug, "cockpit");
+                        if (resolvedSlug) {
+                          onSelectReport(resolvedSlug, "cockpit");
                         }
                       }}
                       onMouseEnter={() => {
-                        if (item.reportSlug) prefetchReport(item.reportSlug);
+                        if (resolvedSlug) prefetchReport(resolvedSlug);
                       }}
                       className="group flex cursor-pointer items-center justify-between rounded px-2 py-2.5 transition-colors hover:bg-surface-2/60"
                     >
@@ -1035,7 +1034,7 @@ export function MarketHomeView({
                             >
                               {isBmo ? "BMO" : "AMC"}
                             </span>
-                            {item.hasModel && (
+                            {hasModel && (
                               <span
                                 className="size-1.5 rounded-full bg-emerald-400"
                                 title="Interactive Model Ready"
@@ -1055,7 +1054,7 @@ export function MarketHomeView({
                         <div className="text-[10px] text-slate-400">
                           {item.epsEstimate != null
                             ? `EPS $${item.epsEstimate.toFixed(2)}`
-                            : item.hasModel
+                            : hasModel
                               ? "Audited"
                               : "Upcoming"}
                         </div>

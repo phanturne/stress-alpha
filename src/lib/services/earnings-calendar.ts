@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import { sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { tickersTable, reportsTable, upcomingEarningsTable } from "@/db/schema";
+import { deduplicateReportsToLatest } from "@/lib/utils";
 import type { IReportRepository } from "@/lib/repository";
 import { getReportRepository } from "@/lib/repository";
 import type { ReportData } from "@/lib/schemas";
@@ -670,15 +671,17 @@ export async function syncUpcomingEarningsDocket(options?: {
     .select({
       slug: reportsTable.slug,
       ticker: reportsTable.ticker,
+      quarter: reportsTable.quarter,
+      year: reportsTable.year,
+      reportDate: reportsTable.reportDate,
     })
     .from(reportsTable);
 
+  const latestReports = deduplicateReportsToLatest(reports);
   const reportMap = new Map<string, string>();
-  for (const r of reports) {
+  for (const r of latestReports) {
     const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-    if (!reportMap.has(sym)) {
-      reportMap.set(sym, r.slug);
-    }
+    reportMap.set(sym, r.slug);
   }
 
   // 4. Query Finnhub calendar in 4 chunked windows over the next 14 days
