@@ -209,7 +209,7 @@ export function MarketHomeView({
       ) {
         return;
       }
-      if (Date.now() - lastFetched < 60000 && !force) {
+      if (Date.now() - lastFetched < 900000 && !force) {
         return;
       }
 
@@ -238,14 +238,14 @@ export function MarketHomeView({
 
     loadMarketSummary(true);
 
-    const interval = setInterval(() => loadMarketSummary(false), 120000);
+    const interval = setInterval(() => loadMarketSummary(false), 900000);
 
     function handleVisibility() {
       if (
         typeof document !== "undefined" &&
         document.visibilityState === "visible"
       ) {
-        if (Date.now() - lastFetched >= 120000) {
+        if (Date.now() - lastFetched >= 900000) {
           loadMarketSummary(true);
         }
       }

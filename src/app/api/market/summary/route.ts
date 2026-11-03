@@ -89,8 +89,8 @@ const DEFAULT_SECTOR_CHANGES: Record<string, number> = {
 };
 
 let cache: { data: MarketSummaryResponse; timestamp: number } | null = null;
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes fresh cache
-const ERROR_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes cooldown on error to protect upstream rate limits
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes fresh cache (aligned with institutional caching tier)
+const ERROR_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown on error to protect upstream rate limits
 
 export async function GET() {
   const now = Date.now();
