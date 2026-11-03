@@ -323,16 +323,6 @@ export function SP500Treemap({
                   {stock.changePct.toFixed(2)}%
                 </text>
               )}
-
-              {/* Covered Stock Accent Indicator */}
-              {isCovered && cellW >= 32 && cellH >= 24 && (
-                <circle
-                  cx={x + cellW + pad - 5}
-                  cy={y + pad + 5}
-                  r={2}
-                  fill="#38bdf8"
-                />
-              )}
             </g>
           );
         })}
