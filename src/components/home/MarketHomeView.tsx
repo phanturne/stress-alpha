@@ -191,6 +191,7 @@ export function MarketHomeView({
   // Market Summary Data & Upcoming Earnings Data
   const [marketSummary, setMarketSummary] =
     useState<MarketSummaryResponse | null>(null);
+  const [summaryMinutesAgo, setSummaryMinutesAgo] = useState(1);
   const [upcomingEarnings, setUpcomingEarnings] = useState<
     UpcomingEarningsItem[]
   >([]);
@@ -218,6 +219,14 @@ export function MarketHomeView({
           const data: MarketSummaryResponse = await res.json();
           if (isMounted) {
             setMarketSummary(data);
+            if (data.updatedAt) {
+              const diffMs = Date.now() - new Date(data.updatedAt).getTime();
+              setSummaryMinutesAgo(
+                isNaN(diffMs) || diffMs < 0
+                  ? 1
+                  : Math.max(1, Math.floor(diffMs / 60000))
+              );
+            }
             lastFetched = Date.now();
           }
         }
@@ -580,7 +589,7 @@ export function MarketHomeView({
                 </h2>
               </div>
               <span className="font-mono text-xs text-slate-500">
-                {tHome.updatedAgo(4)}
+                {tHome.updatedAgo(summaryMinutesAgo)}
               </span>
             </div>
 
@@ -910,7 +919,7 @@ export function MarketHomeView({
                       key={item.slug}
                       onClick={() => onSelectReport(item.slug, "cockpit")}
                       onMouseEnter={() => prefetchReport(item.slug)}
-                      className="flex cursor-pointer items-center justify-between rounded-lg py-2.5 pl-2 pr-2 transition-colors hover:bg-surface-2/60"
+                      className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-2.5 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="flex size-7 shrink-0 items-center justify-center rounded border border-border bg-surface-2 font-mono text-xs font-bold text-foreground">
@@ -994,7 +1003,7 @@ export function MarketHomeView({
                       onMouseEnter={() => {
                         if (item.reportSlug) prefetchReport(item.reportSlug);
                       }}
-                      className="group flex cursor-pointer items-center justify-between rounded py-2.5 pl-2 pr-2 transition-colors hover:bg-surface-2/60"
+                      className="group flex cursor-pointer items-center justify-between rounded px-2 py-2.5 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <button

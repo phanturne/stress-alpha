@@ -2691,7 +2691,8 @@ export const translations: Record<Locale, Translations> = {
       filterBySector: (sector: string) => `Filtering by sector: ${sector}`,
       clearFilter: "Clear Sector Filter",
       marketSummaryTitle: "Market Summary",
-      updatedAgo: (mins: number) => `Updated ${mins} minutes ago`,
+      updatedAgo: (mins: number) =>
+        mins <= 1 ? "Updated just now" : `Updated ${mins} minutes ago`,
       sourcesCount: (count: number) => `${count} sources`,
       standoutsTitle: "Standouts",
       standoutsSubtitle:
@@ -4134,7 +4135,8 @@ export const translations: Record<Locale, Translations> = {
       filterBySector: (sector: string) => `已筛选行业板块：${sector}`,
       clearFilter: "清除板块筛选",
       marketSummaryTitle: "市场全景速递",
-      updatedAgo: (mins: number) => `${mins} 分钟前更新`,
+      updatedAgo: (mins: number) =>
+        mins <= 1 ? "刚刚更新" : `${mins} 分钟前更新`,
       sourcesCount: (count: number) => `${count} 个信源交叉印证`,
       standoutsTitle: "焦点异动标的",
       standoutsSubtitle:
