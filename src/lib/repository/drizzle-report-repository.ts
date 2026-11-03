@@ -105,7 +105,10 @@ export class DrizzleReportRepository implements IReportRepository {
         hasReactions: sql<boolean>`(${reportsTable.reactions} IS NOT NULL)`,
         hasEstimates: sql<boolean>`(${reportsTable.estimates} IS NOT NULL)`,
         tickerPrice: tickersTable.currentPrice,
+        tickerPreviousClose: tickersTable.previousClose,
         tickerCompany: tickersTable.company,
+        tickerSector: tickersTable.sector,
+        tickerMarketCap: tickersTable.marketCap,
       })
       .from(reportsTable)
       .leftJoin(tickersTable, eq(reportsTable.ticker, tickersTable.ticker))
@@ -135,6 +138,20 @@ export class DrizzleReportRepository implements IReportRepository {
           ? Number(
               (
                 ((baseFairValue - effectivePrice) / effectivePrice) *
+                100
+              ).toFixed(2)
+            )
+          : undefined;
+
+      const previousClose =
+        row.tickerPreviousClose != null
+          ? Number(row.tickerPreviousClose)
+          : undefined;
+      const priceChangePct =
+        effectivePrice > 0 && previousClose != null && previousClose > 0
+          ? Number(
+              (
+                ((effectivePrice - previousClose) / previousClose) *
                 100
               ).toFixed(2)
             )
@@ -261,9 +278,14 @@ export class DrizzleReportRepository implements IReportRepository {
         name: row.slug,
         ticker: row.ticker,
         company: row.tickerCompany ?? undefined,
+        sector: row.tickerSector ?? undefined,
+        marketCap:
+          row.tickerMarketCap != null ? Number(row.tickerMarketCap) : undefined,
         quarter: row.quarter,
         reportDate: row.reportDate,
         currentPrice: effectivePrice,
+        previousClose,
+        priceChangePct,
         weightedFairValue,
         upsidePct,
         baseFairValue,
@@ -625,14 +647,21 @@ export class DrizzleReportRepository implements IReportRepository {
   }
 
   async getMarketEvents(
-    ticker: string,
+    ticker?: string,
     limit = 50
   ): Promise<MarketEventSelect[]> {
     const db = getDb();
+    if (ticker) {
+      return db
+        .select()
+        .from(marketEventsTable)
+        .where(eq(marketEventsTable.ticker, ticker.toUpperCase()))
+        .orderBy(desc(marketEventsTable.publishedAt))
+        .limit(limit);
+    }
     return db
       .select()
       .from(marketEventsTable)
-      .where(eq(marketEventsTable.ticker, ticker.toUpperCase()))
       .orderBy(desc(marketEventsTable.publishedAt))
       .limit(limit);
   }

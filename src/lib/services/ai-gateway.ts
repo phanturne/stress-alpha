@@ -191,6 +191,24 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
     }
   }
 
+  if (raw.catalystsEn && typeof raw.catalystsEn === "object") {
+    if (Array.isArray(raw.catalystsEn.catalysts)) {
+      raw.catalystsEn.catalysts = raw.catalystsEn.catalysts.map((cat: any) => {
+        if (!cat || typeof cat !== "object") return cat;
+        if (Array.isArray(cat.evidence)) {
+          cat.evidence = cat.evidence.map((ev: any) => {
+            if (typeof ev === "string") return { fact: ev };
+            if (ev && typeof ev === "object" && typeof ev.source === "string") {
+              return { ...ev, source: { title: ev.source } };
+            }
+            return ev;
+          });
+        }
+        return cat;
+      });
+    }
+  }
+
   return raw;
 }
 

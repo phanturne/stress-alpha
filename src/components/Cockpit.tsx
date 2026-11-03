@@ -311,26 +311,39 @@ export const Cockpit: React.FC<CockpitProps> = ({
               <div className="font-mono text-xl font-black tabular-nums tracking-tight text-foreground sm:text-2xl">
                 {formatCurrency(currentPrice)}
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <div className="mt-1 flex items-center gap-1.5 font-mono text-xs text-slate-400">
                 {trailingPe !== undefined && (
                   <span
-                    className="inline-flex items-center whitespace-nowrap rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-300"
+                    className="cursor-help whitespace-nowrap transition-colors hover:text-foreground"
                     title={`${t.trailingPeTooltip}: ${trailingPe.toFixed(1)}x (${t.trailingPeLabel})`}
                   >
-                    {`${trailingPe.toFixed(1)}x ${t.trailingPeBadge}`}
+                    <span className="font-bold tabular-nums text-slate-200">
+                      {trailingPe.toFixed(1)}x
+                    </span>{" "}
+                    <span className="text-[11px] text-slate-500">
+                      {t.trailingPeBadge}
+                    </span>
                   </span>
+                )}
+                {trailingPe !== undefined && forwardPe !== undefined && (
+                  <span className="text-slate-600">·</span>
                 )}
                 {forwardPe !== undefined && (
                   <span
-                    className="inline-flex items-center whitespace-nowrap rounded border border-border/80 bg-surface-2/90 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-slate-400"
+                    className="cursor-help whitespace-nowrap transition-colors hover:text-foreground"
                     title={`${t.forwardPeTooltip}: ${forwardPe.toFixed(1)}x (${t.forwardPeLabel})`}
                   >
-                    {`${forwardPe.toFixed(1)}x ${t.forwardPeBadge}`}
+                    <span className="font-bold tabular-nums text-slate-200">
+                      {forwardPe.toFixed(1)}x
+                    </span>{" "}
+                    <span className="text-[11px] text-slate-500">
+                      {t.forwardPeBadge}
+                    </span>
                   </span>
                 )}
                 {trailingPe === undefined && forwardPe === undefined && (
                   <span
-                    className="inline-flex items-center whitespace-nowrap rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-rose-300"
+                    className="font-medium tabular-nums text-rose-400"
                     title={t.asymmetry.pricedInMultipleLossTooltip}
                   >
                     {hasNegativeEps ? t.asymmetry.pricedInMultipleLoss : "—"}
@@ -374,13 +387,13 @@ export const Cockpit: React.FC<CockpitProps> = ({
 
         {/* 1-Click Macro Presets Bar */}
         <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-surface-0/70 p-2 text-[11px]">
-          <div className="flex items-center justify-between gap-1">
-            <span className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wider text-slate-300">
+          <div className="flex items-center gap-1">
+            <span
+              className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wider text-slate-300"
+              title={t.presets.caption}
+            >
               <Sliders className="size-3 text-accent" />
               <span>{t.presets.title}</span>
-            </span>
-            <span className="truncate text-[10px] text-slate-400">
-              {t.presets.caption}
             </span>
           </div>
           <div className="grid w-full grid-cols-3 gap-1">
@@ -424,11 +437,11 @@ export const Cockpit: React.FC<CockpitProps> = ({
         </div>
 
         {/* Big Stressed EPS Tag */}
-        <div className="relative flex items-baseline justify-between overflow-hidden rounded-xl border border-border bg-surface-0/80 p-3.5">
-          <div>
+        <div className="relative flex items-baseline justify-between gap-2 overflow-hidden rounded-xl border border-border bg-surface-0/80 p-3">
+          <div className="min-w-0">
             <div
-              className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
-              title={t.stressedForwardEps}
+              className="whitespace-nowrap font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
+              title={`${t.stressedForwardEps} (Annual)`}
             >
               {t.stressedForwardEps}
             </div>
@@ -453,12 +466,12 @@ export const Cockpit: React.FC<CockpitProps> = ({
               )}
             </div>
           </div>
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <div
-              className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
+              className="whitespace-nowrap font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-400"
               title={`${facts.quarter} ${t.cleanOperatingEps}`}
             >
-              {facts.quarter} {t.cleanOperatingEps}
+              {t.cleanOperatingEps}
             </div>
             <div className="mt-0.5 font-mono text-sm font-bold tabular-nums text-slate-200 sm:text-base">
               {formatCurrency(facts.epsOperating)}

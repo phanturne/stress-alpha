@@ -15,9 +15,13 @@ export interface ReportSummary {
   name: string;
   ticker?: string;
   company?: string;
+  sector?: string;
+  marketCap?: number;
   quarter?: string;
   reportDate?: string;
   currentPrice?: number;
+  previousClose?: number;
+  priceChangePct?: number;
   weightedFairValue?: number;
   upsidePct?: number;
   baseFairValue?: number;
@@ -95,9 +99,12 @@ export interface IReportRepository {
   syncPrice?(ticker: string, price: number): Promise<void>;
 
   /**
-   * Fetch market events for a ticker, sorted newest first.
+   * Fetch market events for a ticker (or all recent events across coverage universe if omitted), sorted newest first.
    */
-  getMarketEvents(ticker: string, limit?: number): Promise<MarketEventSelect[]>;
+  getMarketEvents(
+    ticker?: string,
+    limit?: number
+  ): Promise<MarketEventSelect[]>;
 
   /**
    * Persist a market event with deterministic transmission vector.

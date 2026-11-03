@@ -56,9 +56,9 @@ interface HeaderProps {
   currentSlug?: string | null;
   reports?: ReportSummary[];
   onSelectReport: (slug: string) => void;
-  viewMode: "cockpit" | "memo" | "screener" | "watchlist" | "settings";
+  viewMode: "home" | "cockpit" | "memo" | "screener" | "watchlist" | "settings";
   onViewModeChange: (
-    mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
+    mode: "home" | "cockpit" | "memo" | "screener" | "watchlist" | "settings",
     options?: { watchlistOnly?: boolean }
   ) => void;
   onOpenShortcutsModal?: () => void;
@@ -171,12 +171,12 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="glass-header no-print sticky top-0 z-40 flex h-14 w-full shrink-0 flex-nowrap items-center justify-between gap-2 px-3 transition-all duration-200 sm:gap-4 sm:px-6">
       {/* Left: Brand Identity & Active Workspace */}
       <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
-        {/* Clickable Brand Logo -> Returns to Home (Screener) */}
+        {/* Clickable Brand Logo -> Returns to Home (Market Overview) */}
         <button
           type="button"
-          onClick={() => onViewModeChange("screener")}
+          onClick={() => onViewModeChange("home")}
           className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90"
-          title={`StressAlpha Home — ${t.screener}`}
+          title={`StressAlpha Home — ${t.market || "Market"}`}
         >
           <div className="shadow-xs flex size-8 items-center justify-center rounded-xl border border-accent/40 bg-gradient-to-tr from-accent/20 to-sky-500/20 text-accent transition-transform group-hover:scale-105">
             <span className="font-mono text-sm font-extrabold tracking-tighter">
@@ -209,6 +209,20 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Center Nav: Strictly Geometrically Centered (Zero Layout Shift) */}
       <div className="pointer-events-none absolute inset-x-0 hidden items-center justify-center md:flex">
         <nav className="shadow-xs pointer-events-auto flex items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1">
+          <button
+            type="button"
+            onClick={() => onViewModeChange("home")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "home"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
+            }`}
+            title={t.market || "Market"}
+          >
+            <Globe className="size-3.5 text-accent" />
+            <span>{t.market || "Market"}</span>
+          </button>
+
           {activeSlug && (
             <button
               type="button"
@@ -783,6 +797,22 @@ export const Header: React.FC<HeaderProps> = ({
                 {t.navigation}
               </div>
               <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onViewModeChange("home");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                    viewMode === "home"
+                      ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                      : "border-transparent text-slate-300 hover:bg-surface-2"
+                  }`}
+                >
+                  <Globe className="size-4 text-accent" />
+                  <span>{t.market || "Market"}</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
