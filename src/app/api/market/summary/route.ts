@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
+import { getDb } from "@/db";
+import { marketEventsTable } from "@/db/schema";
+import { sql } from "drizzle-orm";
 
 export interface MarketIndexItem {
   symbol: string;
@@ -24,6 +27,7 @@ export interface MarketSummaryResponse {
   indices: MarketIndexItem[];
   sectors: Record<string, number>; // { XLK: -1.2, XLC: 0.5, ... }
   updatedAt: string;
+  pipelineUpdatedAt?: string;
 }
 
 const INDEX_CONFIG = [
@@ -183,10 +187,29 @@ export async function GET() {
       }
     }
 
+    let pipelineUpdatedAt: string | undefined;
+    if (process.env.DATABASE_URL) {
+      try {
+        const db = getDb();
+        const res = await db
+          .select({ maxCreated: sql`max(created_at)` })
+          .from(marketEventsTable);
+        if (res[0]?.maxCreated) {
+          pipelineUpdatedAt = new Date(res[0].maxCreated as any).toISOString();
+        }
+      } catch (dbErr) {
+        console.warn(
+          "⚠️ [Market Summary API] Could not read pipeline max created_at:",
+          dbErr
+        );
+      }
+    }
+
     const payload: MarketSummaryResponse = {
       indices,
       sectors,
       updatedAt: new Date().toISOString(),
+      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };
@@ -227,6 +250,7 @@ export async function GET() {
       indices: fallbackIndices,
       sectors: DEFAULT_SECTOR_CHANGES,
       updatedAt: new Date().toISOString(),
+      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };

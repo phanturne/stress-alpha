@@ -219,8 +219,9 @@ export function MarketHomeView({
           const data: MarketSummaryResponse = await res.json();
           if (isMounted) {
             setMarketSummary(data);
-            if (data.updatedAt) {
-              const diffMs = Date.now() - new Date(data.updatedAt).getTime();
+            const refTime = data.pipelineUpdatedAt || data.updatedAt;
+            if (refTime) {
+              const diffMs = Date.now() - new Date(refTime).getTime();
               setSummaryMinutesAgo(
                 isNaN(diffMs) || diffMs < 0
                   ? 1
