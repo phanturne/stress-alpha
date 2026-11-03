@@ -35,12 +35,16 @@ import {
   aggregateSectors,
   getTickerSectorId,
 } from "@/lib/sectors";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, deduplicateReportsToLatest } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 import { MiniSnowflakeRadar } from "@/components/snowflake/MiniSnowflakeRadar";
 import { SP500Treemap } from "@/components/home/SP500Treemap";
+import {
+  SegmentedTabs,
+  type SegmentedTabOption,
+} from "@/components/ui/SegmentedTabs";
 
 interface MarketHomeViewProps {
   reports: ReportSummary[];
@@ -187,6 +191,7 @@ export function MarketHomeView({
   // Market Summary Data & Upcoming Earnings Data
   const [marketSummary, setMarketSummary] =
     useState<MarketSummaryResponse | null>(null);
+  const [summaryMinutesAgo, setSummaryMinutesAgo] = useState(1);
   const [upcomingEarnings, setUpcomingEarnings] = useState<
     UpcomingEarningsItem[]
   >([]);
@@ -204,7 +209,7 @@ export function MarketHomeView({
       ) {
         return;
       }
-      if (Date.now() - lastFetched < 60000 && !force) {
+      if (Date.now() - lastFetched < 900000 && !force) {
         return;
       }
 
@@ -214,6 +219,15 @@ export function MarketHomeView({
           const data: MarketSummaryResponse = await res.json();
           if (isMounted) {
             setMarketSummary(data);
+            const refTime = data.pipelineUpdatedAt || data.updatedAt;
+            if (refTime) {
+              const diffMs = Date.now() - new Date(refTime).getTime();
+              setSummaryMinutesAgo(
+                isNaN(diffMs) || diffMs < 0
+                  ? 1
+                  : Math.max(1, Math.floor(diffMs / 60000))
+              );
+            }
             lastFetched = Date.now();
           }
         }
@@ -224,14 +238,14 @@ export function MarketHomeView({
 
     loadMarketSummary(true);
 
-    const interval = setInterval(() => loadMarketSummary(false), 120000);
+    const interval = setInterval(() => loadMarketSummary(false), 900000);
 
     function handleVisibility() {
       if (
         typeof document !== "undefined" &&
         document.visibilityState === "visible"
       ) {
-        if (Date.now() - lastFetched >= 120000) {
+        if (Date.now() - lastFetched >= 900000) {
           loadMarketSummary(true);
         }
       }
@@ -275,21 +289,20 @@ export function MarketHomeView({
   // Market Summary Stories: Synchronous, fully-localized macro docket (zero layout shift/flicker)
   const displayStories = tHome.summaryStories;
 
-  // Deduplicate reports by latest quarter per ticker
+  // Deduplicate reports by latest quarter per ticker using recency scoring
   const latestReports = useMemo(() => {
-    const map = new Map<string, ReportSummary>();
-    for (const r of reports) {
-      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-      const existing = map.get(sym);
-      if (
-        !existing ||
-        (r.quarter && existing.quarter && r.quarter > existing.quarter)
-      ) {
-        map.set(sym, r);
-      }
-    }
-    return Array.from(map.values());
+    return deduplicateReportsToLatest(reports);
   }, [reports]);
+
+  // Lookup map to guarantee navigation from calendar or widgets always routes to latest report
+  const latestSlugByTicker = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const r of latestReports) {
+      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
+      map.set(sym, r.slug);
+    }
+    return map;
+  }, [latestReports]);
 
   // Aggregate sectors with live ETF quotes
   const sectorStats = useMemo(() => {
@@ -298,16 +311,12 @@ export function MarketHomeView({
   }, [latestReports, marketSummary, locale]);
 
   // Standout Stocks: Curated high-conviction movers from covered universe
-  const standoutStocks = useMemo(() => {
-    const tickersToFeature = ["NVDA", "TSLA", "HOOD", "AMD", "RDDT", "PLTR"];
-    const featured = latestReports.filter((r) => {
-      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-      return tickersToFeature.includes(sym);
-    });
-
-    if (featured.length >= 2) return featured.slice(0, 3);
-    return latestReports.slice(0, 3);
-  }, [latestReports]);
+  const featured = latestReports.filter((r) => {
+    const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
+    return ["NVDA", "TSLA", "HOOD", "AMD", "RDDT", "PLTR"].includes(sym);
+  });
+  const standoutStocks =
+    featured.length >= 2 ? featured.slice(0, 3) : latestReports.slice(0, 3);
 
   // Filtered upcoming earnings by timeframe and selected sector (anchored to US Market date)
   const [currentTimestamp] = useState(() => Date.now());
@@ -331,11 +340,57 @@ export function MarketHomeView({
       }
       if (earningsFilter === "today") return item.date === today;
       if (earningsFilter === "tomorrow") return item.date === tomorrowDate;
-      if (earningsFilter === "this_week") return item.date <= nextWeekDate;
+      if (earningsFilter === "this_week")
+        return item.date >= today && item.date <= nextWeekDate;
       if (earningsFilter === "next_week") return item.date > nextWeekDate;
       return true;
     });
-  }, [upcomingEarnings, earningsFilter, selectedSectorFilter]);
+  }, [
+    upcomingEarnings,
+    earningsFilter,
+    selectedSectorFilter,
+    currentTimestamp,
+  ]);
+
+  // Modular segmented tab configurations (eliminates border highlight flicker)
+  const moverTabOptions: SegmentedTabOption<MoverTab>[] = [
+    {
+      id: "gainers",
+      label: tHome.tabGainers,
+      activeClassName: "text-emerald-400",
+    },
+    {
+      id: "losers",
+      label: tHome.tabLosers,
+      activeClassName: "text-rose-400",
+    },
+    {
+      id: "active",
+      label: tHome.tabActive,
+      activeClassName: "text-cyan-400",
+    },
+    {
+      id: "watchlist",
+      label: (
+        <span className="inline-flex items-center gap-1">
+          <Star
+            className={`size-3 ${
+              moverTab === "watchlist" ? "fill-amber-400 text-amber-400" : ""
+            }`}
+          />
+          <span>{tHome.tabWatchlist}</span>
+        </span>
+      ),
+      activeClassName: "text-amber-400",
+    },
+  ];
+
+  const earningsFilterOptions: SegmentedTabOption<EarningsTimeframe>[] = [
+    { id: "all", label: tHome.filterAll },
+    { id: "today", label: tHome.filterToday },
+    { id: "this_week", label: tHome.filterThisWeek },
+    { id: "next_week", label: tHome.filterNextWeek },
+  ];
 
   // Market Breadth: Count advancing vs declining sector ETFs
   const marketBreadth = useMemo(() => {
@@ -530,7 +585,7 @@ export function MarketHomeView({
                 </h2>
               </div>
               <span className="font-mono text-xs text-slate-500">
-                {tHome.updatedAgo(4)}
+                {tHome.updatedAgo(summaryMinutesAgo)}
               </span>
             </div>
 
@@ -829,60 +884,14 @@ export function MarketHomeView({
           {/* Top Movers & Watchlist Widget */}
           <div className="rounded-2xl border border-border/80 bg-surface-1 p-3.5 shadow-sm sm:p-4">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("gainers")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "gainers"
-                      ? "shadow-xs border border-border bg-surface-1 text-emerald-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabGainers}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("losers")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "losers"
-                      ? "shadow-xs border border-border bg-surface-1 text-rose-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabLosers}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("active")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "active"
-                      ? "shadow-xs border border-border bg-surface-1 text-cyan-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabActive}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("watchlist")}
-                  className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "watchlist"
-                      ? "shadow-xs border border-border bg-surface-1 text-amber-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  <Star
-                    className={`size-3 ${
-                      moverTab === "watchlist" ? "fill-amber-400" : ""
-                    }`}
-                  />
-                  <span>{tHome.tabWatchlist}</span>
-                </button>
-              </div>
+              <SegmentedTabs
+                options={moverTabOptions}
+                value={moverTab}
+                onChange={setMoverTab}
+              />
             </div>
 
-            <div className="custom-scrollbar mt-2 max-h-[350px] divide-y divide-border/40 overflow-y-auto pr-1.5">
+            <div className="custom-scrollbar mt-2 max-h-[350px] divide-y divide-border/40 overflow-y-auto pr-3">
               {moverTab === "watchlist" && moversData.watchlist.length === 0 ? (
                 <div className="px-2 py-5 text-center text-xs text-slate-400">
                   <Star className="mx-auto mb-1.5 size-4 text-slate-600" />
@@ -906,7 +915,7 @@ export function MarketHomeView({
                       key={item.slug}
                       onClick={() => onSelectReport(item.slug, "cockpit")}
                       onMouseEnter={() => prefetchReport(item.slug)}
-                      className="flex cursor-pointer items-center justify-between rounded-lg py-2.5 pl-1.5 pr-2.5 transition-colors hover:bg-surface-2/60"
+                      className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-2.5 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="flex size-7 shrink-0 items-center justify-center rounded border border-border bg-surface-2 font-mono text-xs font-bold text-foreground">
@@ -960,55 +969,16 @@ export function MarketHomeView({
             </div>
 
             {/* Timeframe Filter Pills */}
-            <div className="mt-3 flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("all")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "all"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterAll}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("today")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "today"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterToday}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("this_week")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "this_week"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterThisWeek}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("next_week")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "next_week"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterNextWeek}
-              </button>
-            </div>
+            <SegmentedTabs
+              fullWidth
+              options={earningsFilterOptions}
+              value={earningsFilter}
+              onChange={setEarningsFilter}
+              className="mt-3"
+            />
 
             {/* Scrollable list */}
-            <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-1.5">
+            <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-3">
               {filteredEarnings.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
                   {tHome.noUpcomingFound}
@@ -1017,19 +987,23 @@ export function MarketHomeView({
                 filteredEarnings.map((item) => {
                   const isFav = isFavorite(item.symbol);
                   const isBmo = item.hour === "bmo";
+                  const resolvedSlug =
+                    latestSlugByTicker.get(item.symbol.toUpperCase()) ||
+                    item.reportSlug;
+                  const hasModel = Boolean(resolvedSlug);
 
                   return (
                     <div
                       key={`${item.symbol}-${item.date}`}
                       onClick={() => {
-                        if (item.reportSlug) {
-                          onSelectReport(item.reportSlug, "cockpit");
+                        if (resolvedSlug) {
+                          onSelectReport(resolvedSlug, "cockpit");
                         }
                       }}
                       onMouseEnter={() => {
-                        if (item.reportSlug) prefetchReport(item.reportSlug);
+                        if (resolvedSlug) prefetchReport(resolvedSlug);
                       }}
-                      className="group flex cursor-pointer items-center justify-between rounded py-2.5 pl-1.5 pr-2.5 transition-colors hover:bg-surface-2/60"
+                      className="group flex cursor-pointer items-center justify-between rounded px-2 py-2.5 transition-colors hover:bg-surface-2/60"
                     >
                       <div className="flex min-w-0 items-center gap-2">
                         <button
@@ -1061,7 +1035,7 @@ export function MarketHomeView({
                             >
                               {isBmo ? "BMO" : "AMC"}
                             </span>
-                            {item.hasModel && (
+                            {hasModel && (
                               <span
                                 className="size-1.5 rounded-full bg-emerald-400"
                                 title="Interactive Model Ready"
@@ -1075,27 +1049,13 @@ export function MarketHomeView({
                       </div>
 
                       <div className="flex flex-col items-end gap-1 text-right font-mono">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-semibold text-foreground">
-                            {item.date.slice(5)}
-                          </span>
-                          {item.reportSlug && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onSelectReport(item.reportSlug!, "cockpit");
-                              }}
-                              className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-accent transition-all hover:bg-accent/20"
-                            >
-                              {tHome.launchModel}
-                            </button>
-                          )}
-                        </div>
+                        <span className="text-xs font-semibold text-foreground">
+                          {item.date.slice(5)}
+                        </span>
                         <div className="text-[10px] text-slate-400">
                           {item.epsEstimate != null
                             ? `EPS $${item.epsEstimate.toFixed(2)}`
-                            : item.hasModel
+                            : hasModel
                               ? "Audited"
                               : "Upcoming"}
                         </div>

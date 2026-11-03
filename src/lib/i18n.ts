@@ -2691,7 +2691,14 @@ export const translations: Record<Locale, Translations> = {
       filterBySector: (sector: string) => `Filtering by sector: ${sector}`,
       clearFilter: "Clear Sector Filter",
       marketSummaryTitle: "Market Summary",
-      updatedAgo: (mins: number) => `Updated ${mins} minutes ago`,
+      updatedAgo: (mins: number) => {
+        if (mins <= 1) return "Updated just now";
+        if (mins < 60) return `Updated ${mins}m ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `Updated ${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `Updated ${days}d ago`;
+      },
       sourcesCount: (count: number) => `${count} sources`,
       standoutsTitle: "Standouts",
       standoutsSubtitle:
@@ -4134,7 +4141,14 @@ export const translations: Record<Locale, Translations> = {
       filterBySector: (sector: string) => `已筛选行业板块：${sector}`,
       clearFilter: "清除板块筛选",
       marketSummaryTitle: "市场全景速递",
-      updatedAgo: (mins: number) => `${mins} 分钟前更新`,
+      updatedAgo: (mins: number) => {
+        if (mins <= 1) return "刚刚更新";
+        if (mins < 60) return `${mins} 分钟前更新`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours} 小时前更新`;
+        const days = Math.floor(hours / 24);
+        return `${days} 天前更新`;
+      },
       sourcesCount: (count: number) => `${count} 个信源交叉印证`,
       standoutsTitle: "焦点异动标的",
       standoutsSubtitle:

@@ -21,7 +21,10 @@
 
 import path from "node:path";
 import * as dotenv from "dotenv";
-import { syncEarningsCalendar } from "../src/lib/services/earnings-calendar";
+import {
+  syncEarningsCalendar,
+  syncUpcomingEarningsDocket,
+} from "../src/lib/services/earnings-calendar";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
@@ -144,6 +147,21 @@ async function main() {
     }
   }
   console.log("\n");
+
+  if (!dryRun) {
+    try {
+      console.log("\n" + "=".repeat(66));
+      console.log("📅 [Syncing 14-Day Upcoming Earnings Docket into Neon DB]");
+      console.log(" • Scope: S&P 500 & NASDAQ-100 Coverage Universe");
+      const docket = await syncUpcomingEarningsDocket();
+      console.log(
+        ` • Total on Calendar: ${docket.totalOnCalendar} | Matched Universe: ${docket.matchedUniverse} | Saved in DB: ${docket.saved}`
+      );
+      console.log("=".repeat(66) + "\n");
+    } catch (docketErr) {
+      console.warn("⚠️ [Upcoming Earnings Docket Sync Warning]:", docketErr);
+    }
+  }
 
   // Fail workflow if errors occurred and no reports were successfully scaffolded or skipped
   if (errorCount > 0 && result.scaffolded === 0 && result.skipped === 0) {

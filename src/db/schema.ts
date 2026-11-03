@@ -441,6 +441,33 @@ export const financialMetricsTable = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// 8b. Upcoming Earnings Table (S&P 500 & NASDAQ-100 Calendar Docket)
+// ---------------------------------------------------------------------------
+export const upcomingEarningsTable = pgTable(
+  "upcoming_earnings",
+  {
+    symbol: text("symbol").primaryKey(), // Ticker symbol, e.g. "AAPL"
+    company: text("company").notNull(),
+    date: text("date").notNull(), // "YYYY-MM-DD" in US Market time
+    hour: text("hour").default("bmo").notNull(), // "bmo" | "amc"
+    quarter: integer("quarter"),
+    year: integer("year"),
+    epsEstimate: numeric("eps_estimate", { precision: 10, scale: 4 }),
+    revenueEstimate: numeric("revenue_estimate", { precision: 16, scale: 2 }),
+    hasModel: boolean("has_model").default(false).notNull(),
+    reportSlug: text("report_slug"),
+    sectorId: text("sector_id"),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_upcoming_earnings_date").on(table.date),
+    index("idx_upcoming_earnings_sector").on(table.sectorId),
+  ]
+);
+
+// ---------------------------------------------------------------------------
 // 9. Relations
 // ---------------------------------------------------------------------------
 export const userRelations = relations(user, ({ many }) => ({
@@ -517,3 +544,5 @@ export type ValuationRevisionInsert =
 export type FinancialMetric = typeof financialMetricsTable.$inferSelect;
 export type FinancialMetricsInsert = typeof financialMetricsTable.$inferInsert;
 export type FinancialMetricSelect = FinancialMetric;
+export type UpcomingEarningsSelect = typeof upcomingEarningsTable.$inferSelect;
+export type UpcomingEarningsInsert = typeof upcomingEarningsTable.$inferInsert;

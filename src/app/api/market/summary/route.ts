@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
+import { getDb } from "@/db";
+import { marketEventsTable } from "@/db/schema";
+import { sql } from "drizzle-orm";
 
 export interface MarketIndexItem {
   symbol: string;
@@ -24,6 +27,7 @@ export interface MarketSummaryResponse {
   indices: MarketIndexItem[];
   sectors: Record<string, number>; // { XLK: -1.2, XLC: 0.5, ... }
   updatedAt: string;
+  pipelineUpdatedAt?: string;
 }
 
 const INDEX_CONFIG = [
@@ -85,8 +89,8 @@ const DEFAULT_SECTOR_CHANGES: Record<string, number> = {
 };
 
 let cache: { data: MarketSummaryResponse; timestamp: number } | null = null;
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes fresh cache
-const ERROR_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes cooldown on error to protect upstream rate limits
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes fresh cache (aligned with institutional caching tier)
+const ERROR_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown on error to protect upstream rate limits
 
 export async function GET() {
   const now = Date.now();
@@ -94,9 +98,27 @@ export async function GET() {
     return NextResponse.json(cache.data, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+          "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
       },
     });
+  }
+
+  let pipelineUpdatedAt: string | undefined;
+  if (process.env.DATABASE_URL) {
+    try {
+      const db = getDb();
+      const res = await db
+        .select({ maxCreated: sql`max(created_at)` })
+        .from(marketEventsTable);
+      if (res[0]?.maxCreated) {
+        pipelineUpdatedAt = new Date(res[0].maxCreated as any).toISOString();
+      }
+    } catch (dbErr) {
+      console.warn(
+        "⚠️ [Market Summary API] Could not read pipeline max created_at:",
+        dbErr
+      );
+    }
   }
 
   const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -187,6 +209,7 @@ export async function GET() {
       indices,
       sectors,
       updatedAt: new Date().toISOString(),
+      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };
@@ -194,7 +217,7 @@ export async function GET() {
     return NextResponse.json(payload, {
       headers: {
         "Cache-Control":
-          "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+          "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
       },
     });
   } catch (err) {
@@ -209,7 +232,7 @@ export async function GET() {
       return NextResponse.json(cache.data, {
         headers: {
           "Cache-Control":
-            "public, max-age=60, s-maxage=180, stale-while-revalidate=600",
+            "public, max-age=300, s-maxage=900, stale-while-revalidate=1800",
         },
       });
     }
@@ -227,6 +250,7 @@ export async function GET() {
       indices: fallbackIndices,
       sectors: DEFAULT_SECTOR_CHANGES,
       updatedAt: new Date().toISOString(),
+      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };
