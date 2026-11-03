@@ -2,9 +2,11 @@ name: Automated Earnings Sync & Scaffolding
 
 on:
   schedule:
-    # 8:45 AM EST (12:45 UTC or 13:45 UTC depending on DST) - Post-BMO earnings
+    # 8:45 AM EST (12:45 UTC / 13:45 UTC) - Post-BMO earnings & pre-market news
     - cron: "45 12 * * 1-5"
-    # 5:15 PM EST (21:15 UTC or 22:15 UTC depending on DST) - Post-AMC earnings
+    # 1:00 PM EST (17:00 UTC / 18:00 UTC) - Midday market pulse & news
+    - cron: "0 18 * * 1-5"
+    # 5:15 PM EST (21:15 UTC / 22:15 UTC) - Post-AMC earnings & closing news
     - cron: "15 21 * * 1-5"
   workflow_dispatch:
     inputs:
@@ -85,3 +87,17 @@ jobs:
             ARGS+=("--ticker=$INPUT_TICKER")
           fi
           npx tsx scripts/sync_earnings_calendar.ts "${ARGS[@]}"
+
+      - name: Run Global News Firehose Ingestion Script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          MASSIVE_KEY: ${{ secrets.MASSIVE_KEY }}
+          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
+          POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
+          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
+        run: npx tsx scripts/sync_news.ts --firehose

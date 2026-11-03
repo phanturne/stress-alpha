@@ -588,8 +588,10 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(tooltipElements.length).toBeGreaterThan(0);
 
       // Invariant: Standard market multiples (TTM P/E and NTM P/E) are rendered under Last Close
-      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
-      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+      expect(screen.getByText("54.5x")).toBeDefined();
+      expect(screen.getByText("34.3x")).toBeDefined();
+      expect(screen.getByText("TTM")).toBeDefined();
+      expect(screen.getByText("NTM")).toBeDefined();
 
       // Invariant: Stressed P/E multiple is explicitly rendered in the Stressed EPS subcard
       expect(
@@ -627,8 +629,10 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(tooltipElementsZh.length).toBeGreaterThan(0);
 
       // Invariant: Standard market multiples rendered under Last Close in Chinese locale
-      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
-      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+      expect(screen.getByText("54.5x")).toBeDefined();
+      expect(screen.getByText("34.3x")).toBeDefined();
+      expect(screen.getByText("TTM")).toBeDefined();
+      expect(screen.getByText("NTM")).toBeDefined();
 
       // Invariant: Chinese Stressed P/E multiple in Stressed EPS card
       expect(
@@ -664,8 +668,8 @@ describe("Frontend Render & Efficiency Invariants", () => {
       );
 
       // Market P/E under Last Close MUST remain anchored to reported TTM / NTM consensus
-      expect(screen.getByText("54.5x TTM P/E")).toBeDefined();
-      expect(screen.getByText("34.3x NTM P/E")).toBeDefined();
+      expect(screen.getByText("54.5x")).toBeDefined();
+      expect(screen.getByText("34.3x")).toBeDefined();
 
       // But Stressed P/E in the Stressed EPS subcard updates dynamically to reflect the shock
       expect(

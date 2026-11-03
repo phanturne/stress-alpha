@@ -1272,6 +1272,12 @@ export interface Translations {
     defaultStandoutReason: (sym: string) => string;
     heatmapExpand: string;
     liveMicrostructure: string;
+    tabGainers: string;
+    tabLosers: string;
+    tabActive: string;
+    tabWatchlist: string;
+    emptyWatchlist: string;
+    equitySectorsTitle: string;
     summaryStories: Array<{
       id: string;
       headline: string;
@@ -1363,8 +1369,8 @@ export const translations: Record<Locale, Translations> = {
       resetTooltip: "Reset all shock sliders to initial baseline values",
       snowflakeButton: "Snowflake",
       snowflakeTooltip: "30-Point Snowflake Audit (W)",
-      stressedForwardEps: "Stressed Forward EPS (Annual)",
-      cleanOperatingEps: "Clean Operating EPS",
+      stressedForwardEps: "Stressed Fwd EPS",
+      cleanOperatingEps: "Clean EPS",
       stressedRev: "Stressed Rev",
       grossProfit: "Gross Profit",
       operatingIncome: "Op. Income",
@@ -1374,10 +1380,10 @@ export const translations: Record<Locale, Translations> = {
       currentPrice: "Last Close",
       currentPriceTooltip:
         "Price as of last market close (EOD). Live intraday pricing is not streaming.",
-      trailingPeBadge: "TTM P/E",
+      trailingPeBadge: "TTM",
       trailingPeLabel: "TTM P/E",
       trailingPeTooltip: "Trailing 12-Month P/E based on reported EPS",
-      forwardPeBadge: "NTM P/E",
+      forwardPeBadge: "NTM",
       forwardPeLabel: "NTM P/E",
       forwardPeTooltip: "Next 12-Month Forward P/E based on consensus EPS",
       weightedFairValue: "Weighted Fair Value",
@@ -2641,7 +2647,7 @@ export const translations: Record<Locale, Translations> = {
         "Real-time market indices, 10-year Treasury yield & CBOE volatility",
       marketBreadthTitle: "Market Breadth",
       advancersDecliners: (adv: number, dec: number) =>
-        `${adv} Advancing · ${dec} Declining`,
+        `11 Sectors: ${adv} Advancing · ${dec} Declining`,
       sectorHeatmapTitle: "Sector Heatmap & Alpha Breadth",
       sectorHeatmapSubtitle:
         "Cross-sector performance, fundamental margin of safety, and 30-point Snowflake quality",
@@ -2715,6 +2721,13 @@ export const translations: Record<Locale, Translations> = {
         `${sym}: Outsized market volatility driven by fundamental catalyst execution and guidance revisions, creating notable valuation divergence against sell-side consensus.`,
       heatmapExpand: "Expand ⤢",
       liveMicrostructure: "Live Market Microstructure",
+      tabGainers: "Gainers",
+      tabLosers: "Losers",
+      tabActive: "Active",
+      tabWatchlist: "Watchlist",
+      emptyWatchlist:
+        "No stocks in watchlist yet. Star stocks to monitor daily returns.",
+      equitySectorsTitle: "Equity Sectors",
       summaryStories: [
         {
           id: "story-1",
@@ -2839,7 +2852,7 @@ export const translations: Record<Locale, Translations> = {
       resetTooltip: "重置所有滑块至初始基准值",
       snowflakeButton: "雪花图",
       snowflakeTooltip: "30项全景雪花图审计 (W)",
-      stressedForwardEps: "压力测试远期 EPS (年化)",
+      stressedForwardEps: "测算远期 EPS",
       cleanOperatingEps: "核心经营 EPS",
       stressedRev: "测算营收",
       grossProfit: "毛利润",
@@ -2849,11 +2862,11 @@ export const translations: Record<Locale, Translations> = {
       current: "现价",
       currentPrice: "收盘价",
       currentPriceTooltip: "最新收盘价（按日更新），非盘中实时行情。",
-      trailingPeBadge: "TTM P/E",
+      trailingPeBadge: "TTM",
       trailingPeLabel: "滚动市盈率 (TTM)",
       trailingPeTooltip:
         "基于已披露最近12个月每股收益（TTM EPS）计算的标准市场市盈率",
-      forwardPeBadge: "NTM P/E",
+      forwardPeBadge: "NTM",
       forwardPeLabel: "远期市盈率 (NTM)",
       forwardPeTooltip:
         "基于华尔街一致预期未来12个月每股收益（NTM EPS）计算的标准远期市盈率",
@@ -4080,7 +4093,7 @@ export const translations: Record<Locale, Translations> = {
         "实时跟踪美股基准指数、10年期美债收益率与CBOE恐慌指数波动",
       marketBreadthTitle: "市场涨跌广度",
       advancersDecliners: (adv: number, dec: number) =>
-        `${adv} 上涨 · ${dec} 下跌`,
+        `11大板块: ${adv} 上涨 · ${dec} 下跌`,
       sectorHeatmapTitle: "行业板块热力图与阿尔法广度",
       sectorHeatmapSubtitle:
         "全景透视行业涨跌幅、基本面安全边际（WFV上行空间）与30项雪花图基本面雷达评分",
@@ -4151,6 +4164,12 @@ export const translations: Record<Locale, Translations> = {
         `${sym}：由于财报业绩披露、管理层业绩指引修正与基本面催化剂兑现，引发盘面超额异动，形成显著估值预期差。`,
       heatmapExpand: "全屏展开 ⤢",
       liveMicrostructure: "实时市场微观结构",
+      tabGainers: "领涨",
+      tabLosers: "领跌",
+      tabActive: "热门",
+      tabWatchlist: "自选",
+      emptyWatchlist: "暂无自选标的。点击五角星收藏以追踪每日涨跌幅。",
+      equitySectorsTitle: "行业板块",
       summaryStories: [
         {
           id: "story-1",

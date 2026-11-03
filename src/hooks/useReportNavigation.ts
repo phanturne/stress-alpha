@@ -12,7 +12,7 @@ import {
 export interface UseReportNavigationOptions {
   currentSlug: string | null;
   setCurrentSlug: (slug: string | null) => void;
-  initialMode?: "cockpit" | "memo" | "screener" | "watchlist";
+  initialMode?: "home" | "cockpit" | "memo" | "screener" | "watchlist";
   initialTab?: string;
   locale: Locale;
   setLocale: (locale: Locale) => void;
@@ -24,9 +24,9 @@ export interface UseReportNavigationOptions {
 }
 
 export interface UseReportNavigationReturn {
-  viewMode: "cockpit" | "memo" | "screener" | "watchlist";
+  viewMode: "home" | "cockpit" | "memo" | "screener" | "watchlist";
   setViewMode: React.Dispatch<
-    React.SetStateAction<"cockpit" | "memo" | "screener" | "watchlist">
+    React.SetStateAction<"home" | "cockpit" | "memo" | "screener" | "watchlist">
   >;
   activeTab: string;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
@@ -43,7 +43,7 @@ export interface UseReportNavigationReturn {
   switchWorkspace: (tabId: string, smoothScroll?: boolean) => void;
   handleScrollToTop: () => void;
   handleViewModeChange: (
-    mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
+    mode: "home" | "cockpit" | "memo" | "screener" | "watchlist" | "settings",
     options?: { watchlistOnly?: boolean }
   ) => void;
   handleSelectReport: (slug: string, mode?: "cockpit" | "memo") => void;
@@ -66,8 +66,8 @@ export function useReportNavigation({
 }: UseReportNavigationOptions): UseReportNavigationReturn {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<
-    "cockpit" | "memo" | "screener" | "watchlist"
-  >(initialMode || "cockpit");
+    "home" | "cockpit" | "memo" | "screener" | "watchlist"
+  >(initialMode || "home");
   const [activeTab, setActiveTab] = useState<string>(
     initialTab || "technicals"
   );
@@ -124,10 +124,17 @@ export function useReportNavigation({
         }
       }
 
-      // Default to screener view when explicitly requested or when no report is specified
-      if (urlState.mode === "screener" || !urlState.report) {
-        if (!urlState.report) {
-          setViewMode((prev) => (prev !== "screener" ? "screener" : prev));
+      // Default to home/initial view when explicitly requested or when no report is specified
+      if (
+        urlState.mode === "home" ||
+        urlState.mode === "screener" ||
+        !urlState.report
+      ) {
+        if (!urlState.report && !urlState.mode) {
+          const fallbackMode = initialMode || "home";
+          setViewMode((prev) => (prev !== fallbackMode ? fallbackMode : prev));
+        } else if (urlState.mode) {
+          setViewMode(urlState.mode);
         }
         return;
       }
@@ -214,7 +221,7 @@ export function useReportNavigation({
   // View mode navigation with browser history push
   const handleViewModeChange = useCallback(
     (
-      mode: "cockpit" | "memo" | "screener" | "watchlist" | "settings",
+      mode: "home" | "cockpit" | "memo" | "screener" | "watchlist" | "settings",
       options?: { watchlistOnly?: boolean }
     ) => {
       if (mode === "settings") {

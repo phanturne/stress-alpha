@@ -11,6 +11,7 @@ import type {
   FinancialMetricsInsert,
 } from "@/db/schema";
 import { computeSnowflakeScore } from "@/lib/snowflake";
+import { TICKER_SECTOR_MAP } from "../sectors";
 import { computeStressedValuation, computeValuation } from "@/lib/valuation";
 
 export class InMemoryReportRepository implements IReportRepository {
@@ -126,6 +127,7 @@ export class InMemoryReportRepository implements IReportRepository {
       name: report.folderName || slug,
       ticker: report.facts.ticker,
       company: report.facts.company,
+      sector: TICKER_SECTOR_MAP[report.facts.ticker.toUpperCase()],
       quarter: report.facts.quarter,
       reportDate: report.facts.reportDate,
       currentPrice,
@@ -189,12 +191,21 @@ export class InMemoryReportRepository implements IReportRepository {
   }
 
   async getMarketEvents(
-    ticker: string,
+    ticker?: string,
     limit = 50
   ): Promise<MarketEventSelect[]> {
-    const upper = ticker.toUpperCase();
-    return this.marketEvents
-      .filter((e) => e.ticker.toUpperCase() === upper)
+    if (ticker) {
+      const upper = ticker.toUpperCase();
+      return this.marketEvents
+        .filter((e) => e.ticker.toUpperCase() === upper)
+        .sort(
+          (a, b) =>
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
+        )
+        .slice(0, limit);
+    }
+    return [...this.marketEvents]
       .sort(
         (a, b) =>
           new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()

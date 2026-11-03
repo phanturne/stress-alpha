@@ -15,6 +15,7 @@ import { CockpitSkeleton } from "@/components/CockpitSkeleton";
 import { MemoView } from "@/components/MemoView";
 import { ScreenerView } from "@/components/ScreenerView";
 import { WatchlistView } from "@/components/WatchlistView";
+import { MarketHomeView } from "@/components/home/MarketHomeView";
 import { NoReportSelected } from "@/components/NoReportSelected";
 import { CockpitDualPane } from "@/components/CockpitDualPane";
 import { CockpitModals } from "@/components/CockpitModals";
@@ -34,8 +35,8 @@ function HomePageContent() {
   const initialSlug = searchParams.get("report") || null;
   const initialMode =
     (searchParams.get("mode") as
-      "cockpit" | "memo" | "screener" | "watchlist" | null) ||
-    (!initialSlug ? "screener" : "cockpit");
+      "home" | "cockpit" | "memo" | "screener" | "watchlist" | null) ||
+    (!initialSlug ? "home" : "cockpit");
   const initialTab = searchParams.get("tab") || "technicals";
 
   const [currentSlug, setCurrentSlug] = useState<string | null>(initialSlug);
@@ -289,6 +290,17 @@ function HomePageContent() {
       <main
         className={`mx-auto w-full min-w-0 max-w-[1680px] flex-1 p-3 sm:p-5 md:p-6 ${viewMode === "cockpit" ? "lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:overflow-hidden lg:p-4 xl:p-5" : ""}`}
       >
+        {/* Market Home View (Perplexity-Finance style) */}
+        <div className={viewMode === "home" ? "block" : "hidden"}>
+          <MarketHomeView
+            reports={reports}
+            onSelectReport={handleSelectReport}
+            onOpenScreener={() => handleViewModeChange("screener")}
+            locale={locale}
+            isLoading={isReportsLoading}
+          />
+        </div>
+
         {/* Screener View */}
         <div className={viewMode === "screener" ? "block" : "hidden"}>
           <ScreenerView

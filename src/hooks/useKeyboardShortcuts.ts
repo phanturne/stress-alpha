@@ -24,7 +24,7 @@ export interface UseKeyboardShortcutsOptions {
   setIsSocialCardOpen: (open: boolean) => void;
   isShortcutsOpen: boolean;
   setIsShortcutsOpen: (open: boolean) => void;
-  viewMode?: "cockpit" | "memo" | "screener" | "watchlist";
+  viewMode?: "home" | "cockpit" | "memo" | "screener" | "watchlist";
 }
 
 export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions) {

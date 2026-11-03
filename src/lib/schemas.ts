@@ -1,12 +1,15 @@
 import { z } from "zod";
 
 // --- Shared ---
-export const SourceSchema = z.object({
-  url: z.string().optional(),
-  title: z.string().optional(),
-  date: z.string().describe("ISO date or YYYY-MM-DD").optional(),
-  publisher: z.string().optional(),
-});
+export const SourceSchema = z.preprocess(
+  (val) => (typeof val === "string" ? { title: val } : val),
+  z.object({
+    url: z.string().optional(),
+    title: z.string().optional(),
+    date: z.string().describe("ISO date or YYYY-MM-DD").optional(),
+    publisher: z.string().optional(),
+  })
+);
 export type Source = z.infer<typeof SourceSchema>;
 
 // --- Stage 1: Facts ---
