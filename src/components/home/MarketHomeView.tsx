@@ -41,6 +41,10 @@ import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
 import { MiniSnowflakeRadar } from "@/components/snowflake/MiniSnowflakeRadar";
 import { SP500Treemap } from "@/components/home/SP500Treemap";
+import {
+  SegmentedTabs,
+  type SegmentedTabOption,
+} from "@/components/ui/SegmentedTabs";
 
 interface MarketHomeViewProps {
   reports: ReportSummary[];
@@ -331,11 +335,57 @@ export function MarketHomeView({
       }
       if (earningsFilter === "today") return item.date === today;
       if (earningsFilter === "tomorrow") return item.date === tomorrowDate;
-      if (earningsFilter === "this_week") return item.date <= nextWeekDate;
+      if (earningsFilter === "this_week")
+        return item.date >= today && item.date <= nextWeekDate;
       if (earningsFilter === "next_week") return item.date > nextWeekDate;
       return true;
     });
-  }, [upcomingEarnings, earningsFilter, selectedSectorFilter]);
+  }, [
+    upcomingEarnings,
+    earningsFilter,
+    selectedSectorFilter,
+    currentTimestamp,
+  ]);
+
+  // Modular segmented tab configurations (eliminates border highlight flicker)
+  const moverTabOptions: SegmentedTabOption<MoverTab>[] = [
+    {
+      id: "gainers",
+      label: tHome.tabGainers,
+      activeClassName: "text-emerald-400",
+    },
+    {
+      id: "losers",
+      label: tHome.tabLosers,
+      activeClassName: "text-rose-400",
+    },
+    {
+      id: "active",
+      label: tHome.tabActive,
+      activeClassName: "text-cyan-400",
+    },
+    {
+      id: "watchlist",
+      label: (
+        <span className="inline-flex items-center gap-1">
+          <Star
+            className={`size-3 ${
+              moverTab === "watchlist" ? "fill-amber-400 text-amber-400" : ""
+            }`}
+          />
+          <span>{tHome.tabWatchlist}</span>
+        </span>
+      ),
+      activeClassName: "text-amber-400",
+    },
+  ];
+
+  const earningsFilterOptions: SegmentedTabOption<EarningsTimeframe>[] = [
+    { id: "all", label: tHome.filterAll },
+    { id: "today", label: tHome.filterToday },
+    { id: "this_week", label: tHome.filterThisWeek },
+    { id: "next_week", label: tHome.filterNextWeek },
+  ];
 
   // Market Breadth: Count advancing vs declining sector ETFs
   const marketBreadth = useMemo(() => {
@@ -829,57 +879,11 @@ export function MarketHomeView({
           {/* Top Movers & Watchlist Widget */}
           <div className="rounded-2xl border border-border/80 bg-surface-1 p-3.5 shadow-sm sm:p-4">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("gainers")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "gainers"
-                      ? "shadow-xs border border-border bg-surface-1 text-emerald-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabGainers}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("losers")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "losers"
-                      ? "shadow-xs border border-border bg-surface-1 text-rose-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabLosers}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("active")}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "active"
-                      ? "shadow-xs border border-border bg-surface-1 text-cyan-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  {tHome.tabActive}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoverTab("watchlist")}
-                  className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    moverTab === "watchlist"
-                      ? "shadow-xs border border-border bg-surface-1 text-amber-400"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                >
-                  <Star
-                    className={`size-3 ${
-                      moverTab === "watchlist" ? "fill-amber-400" : ""
-                    }`}
-                  />
-                  <span>{tHome.tabWatchlist}</span>
-                </button>
-              </div>
+              <SegmentedTabs
+                options={moverTabOptions}
+                value={moverTab}
+                onChange={setMoverTab}
+              />
             </div>
 
             <div className="custom-scrollbar mt-2 max-h-[350px] divide-y divide-border/40 overflow-y-auto pr-1.5">
@@ -960,52 +964,13 @@ export function MarketHomeView({
             </div>
 
             {/* Timeframe Filter Pills */}
-            <div className="mt-3 flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("all")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "all"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterAll}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("today")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "today"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterToday}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("this_week")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "this_week"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterThisWeek}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEarningsFilter("next_week")}
-                className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition-all ${
-                  earningsFilter === "next_week"
-                    ? "shadow-xs border border-border bg-surface-1 font-bold text-foreground"
-                    : "text-slate-400 hover:text-foreground"
-                }`}
-              >
-                {tHome.filterNextWeek}
-              </button>
-            </div>
+            <SegmentedTabs
+              fullWidth
+              options={earningsFilterOptions}
+              value={earningsFilter}
+              onChange={setEarningsFilter}
+              className="mt-3"
+            />
 
             {/* Scrollable list */}
             <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-1.5">
