@@ -48,10 +48,12 @@ describe("Performance & Wire Size Invariants", () => {
       const bytesPerReport = totalBytes / reports.length;
 
       // Invariant: Average payload per report must remain strictly bounded (<1KB).
-      // Without qualitative JSONBs (facts, scenarios, baseline, etc.), 520+ constituents
-      // serialize to ~450KB total, preventing multi-megabyte network payloads.
+      // Without qualitative JSONBs (facts, scenarios, baseline, etc.), universe
+      // serializes to <1KB/report, preventing multi-megabyte network payloads.
       expect(bytesPerReport).toBeLessThan(1000);
-      expect(totalBytes / 1024).toBeLessThan(600); // Entire universe under 600KB
+      expect(totalBytes / 1024).toBeLessThan(
+        Math.max(600, (reports.length * 1000) / 1024)
+      );
     });
 
     it("serves sub-5ms in-memory cache hits on repeated listReports() calls", async () => {

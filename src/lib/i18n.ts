@@ -50,6 +50,7 @@ export interface Translations {
     closeMenu: string;
     navigation: string;
     modelNavTooltip: (ticker?: string) => string;
+    market: string;
   };
   selector: {
     selectReport: string;
@@ -82,6 +83,12 @@ export interface Translations {
     current: string;
     currentPrice: string;
     currentPriceTooltip: string;
+    trailingPeBadge: string;
+    trailingPeLabel: string;
+    trailingPeTooltip: string;
+    forwardPeBadge: string;
+    forwardPeLabel: string;
+    forwardPeTooltip: string;
     weightedFairValue: string;
     wfvShort: string;
     regimes: {
@@ -98,6 +105,9 @@ export interface Translations {
       pricedInMultipleLoss: string;
       pricedInMultipleLossTooltip: string;
       asymmetrySkew: string;
+      stressedPeBadge: string;
+      stressedPeLabel: string;
+      stressedPeTooltip: string;
     };
     upstreamTitle: string;
     upstreamSubtitle: string;
@@ -868,6 +878,7 @@ export interface Translations {
       riskRewardLabel: string;
       panicDefenseLabel: string;
       marketPricingLabel: string;
+      stressedPeLabel: string;
       bullRegimeLabel: string;
       baseCaseLabel: string;
       panicFloorLabel: string;
@@ -1190,6 +1201,85 @@ export interface Translations {
       githubBtn: string;
     };
   };
+  marketHome: {
+    heroTitle: string;
+    heroSubtitle: string;
+    searchPlaceholder: string;
+    chips: {
+      highUpside: string;
+      wideMoat: string;
+      earningsWeek: string;
+      aiTech: string;
+      deepValue: string;
+    };
+    marketPulseTitle: string;
+    marketPulseSubtitle: string;
+    marketBreadthTitle: string;
+    advancersDecliners: (adv: number, dec: number) => string;
+    sectorHeatmapTitle: string;
+    sectorHeatmapSubtitle: string;
+    metricMarketReturn: string;
+    metricStressUpside: string;
+    metricSnowflakeQuality: string;
+    coveredCount: (count: number) => string;
+    viewSectorReports: (sector: string) => string;
+    upcomingEarningsTitle: string;
+    upcomingEarningsSubtitle: string;
+    filterAll: string;
+    filterToday: string;
+    filterTomorrow: string;
+    filterThisWeek: string;
+    filterNextWeek: string;
+    sessionBmo: string;
+    sessionAmc: string;
+    consensusEps: string;
+    revenueEst: string;
+    statusAudited: string;
+    statusUpcoming: string;
+    launchModel: string;
+    launchMemo: string;
+    noUpcomingFound: string;
+    variantPerceptionTitle: string;
+    variantPerceptionSubtitle: string;
+    topUpsideSectionTitle: string;
+    topUpsideSectionDesc: string;
+    divergenceSectionTitle: string;
+    divergenceSectionDesc: string;
+    qualityLeadersSectionTitle: string;
+    qualityLeadersSectionDesc: string;
+    openCockpitButton: string;
+    viewInScreener: string;
+    liveQuotesUpdated: (time: string) => string;
+    filterBySector: (sector: string) => string;
+    clearFilter: string;
+    marketSummaryTitle: string;
+    updatedAgo: (mins: number) => string;
+    sourcesCount: (count: number) => string;
+    standoutsTitle: string;
+    standoutsSubtitle: string;
+    prevClose: string;
+    volume: string;
+    marketCap: string;
+    peRatio: string;
+    wfvUpside: string;
+    sectorDrilldownTitle: (sector: string, count: number) => string;
+    sectorDrilldownSubtitle: string;
+    scrollHint: string;
+    sp500HeatmapTitle: string;
+    sp500HeatmapSubtitle: string;
+    reasonForMove: string;
+    standoutReasons: Record<string, string>;
+    defaultStandoutReason: (sym: string) => string;
+    heatmapExpand: string;
+    liveMicrostructure: string;
+    summaryStories: Array<{
+      id: string;
+      headline: string;
+      summary: string;
+      sources: number;
+      tickers: string[];
+    }>;
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -1248,6 +1338,7 @@ export const translations: Record<Locale, Translations> = {
       navigation: "Navigation",
       modelNavTooltip: (ticker?: string) =>
         ticker ? `Return to ${ticker} Model (M)` : "Valuation Model (M)",
+      market: "Market",
     },
     selector: {
       selectReport: "Select Stock...",
@@ -1283,6 +1374,12 @@ export const translations: Record<Locale, Translations> = {
       currentPrice: "Last Close",
       currentPriceTooltip:
         "Price as of last market close (EOD). Live intraday pricing is not streaming.",
+      trailingPeBadge: "TTM P/E",
+      trailingPeLabel: "TTM P/E",
+      trailingPeTooltip: "Trailing 12-Month P/E based on reported EPS",
+      forwardPeBadge: "NTM P/E",
+      forwardPeLabel: "NTM P/E",
+      forwardPeTooltip: "Next 12-Month Forward P/E based on consensus EPS",
       weightedFairValue: "Weighted Fair Value",
       wfvShort: "WFV",
       regimes: {
@@ -1300,6 +1397,10 @@ export const translations: Record<Locale, Translations> = {
         pricedInMultipleLossTooltip:
           "P/E is not applicable because operating earnings are negative (net loss)",
         asymmetrySkew: "Risk / Reward Ratio",
+        stressedPeBadge: "Stressed P/E",
+        stressedPeLabel: "Stressed P/E",
+        stressedPeTooltip:
+          "Implied valuation multiple: Current Price / Stressed Forward EPS under active macro shocks",
       },
       upstreamTitle: "Demand & Volume Drivers",
       upstreamSubtitle:
@@ -1551,8 +1652,9 @@ export const translations: Record<Locale, Translations> = {
       trendBullish: "Bullish Trend (Above 200 SMA)",
       trendBearish: "Bearish Trend (Below 200 SMA)",
       currentPeBadge: "Current P/E",
-      currentPeSubtext: "at spot price",
-      currentPeTooltip: "Current price divided by normalized operating EPS",
+      currentPeSubtext: "trailing 12-mo",
+      currentPeTooltip:
+        "Current price divided by reported trailing 12-month EPS",
       currentPeLoss: "N/A (Loss)",
       currentPeLossSubtext: "Negative EPS",
       currentPeLossTooltip:
@@ -2145,6 +2247,7 @@ export const translations: Record<Locale, Translations> = {
         riskRewardLabel: "RISK / REWARD",
         panicDefenseLabel: "PANIC DEFENSE",
         marketPricingLabel: "Market Pricing",
+        stressedPeLabel: "Stressed P/E",
         bullRegimeLabel: "Bull Regime",
         baseCaseLabel: "Base Case",
         panicFloorLabel: "Panic Floor",
@@ -2520,6 +2623,144 @@ export const translations: Record<Locale, Translations> = {
         githubBtn: "View on GitHub",
       },
     },
+    marketHome: {
+      heroTitle: "Institutional Market Intelligence",
+      heroSubtitle:
+        "Deterministic stress valuation, sector breadth heatmaps, and upcoming earnings dockets with zero hallucinated math.",
+      searchPlaceholder:
+        "Search tickers, companies, sectors, or filter valuation...",
+      chips: {
+        highUpside: "🔥 High Upside (>25%)",
+        wideMoat: "🛡️ Wide Moat Compounders",
+        earningsWeek: "📅 Earnings This Week",
+        aiTech: "💻 AI & Tech Infrastructure",
+        deepValue: "📉 Deep Stress Panics",
+      },
+      marketPulseTitle: "Macro Index Pulse",
+      marketPulseSubtitle:
+        "Real-time market indices, 10-year Treasury yield & CBOE volatility",
+      marketBreadthTitle: "Market Breadth",
+      advancersDecliners: (adv: number, dec: number) =>
+        `${adv} Advancing · ${dec} Declining`,
+      sectorHeatmapTitle: "Sector Heatmap & Alpha Breadth",
+      sectorHeatmapSubtitle:
+        "Cross-sector performance, fundamental margin of safety, and 30-point Snowflake quality",
+      metricMarketReturn: "Daily Return %",
+      metricStressUpside: "StressAlpha Upside %",
+      metricSnowflakeQuality: "Snowflake Score (0-30)",
+      coveredCount: (count: number) => `${count} covered`,
+      viewSectorReports: (sector: string) => `View ${sector} stocks`,
+      upcomingEarningsTitle: "Upcoming Earnings Calendar",
+      upcomingEarningsSubtitle:
+        "Institutional reporting schedule, consensus estimates & interactive valuation models",
+      filterAll: "All Upcoming",
+      filterToday: "Today",
+      filterTomorrow: "Tomorrow",
+      filterThisWeek: "This Week",
+      filterNextWeek: "Next Week",
+      sessionBmo: "Before Open (BMO)",
+      sessionAmc: "After Close (AMC)",
+      consensusEps: "Consensus EPS",
+      revenueEst: "Revenue Est",
+      statusAudited: "Audited Model Available",
+      statusUpcoming: "Upcoming Report",
+      launchModel: "Open Model ⚡",
+      launchMemo: "Research Memo 📄",
+      noUpcomingFound: "No reporting companies found for this filter period.",
+      variantPerceptionTitle: "Variant Perception & Alpha Leaders",
+      variantPerceptionSubtitle:
+        "High-conviction fundamental divergence against sell-side Wall Street consensus",
+      topUpsideSectionTitle: "Margin of Safety Leaders",
+      topUpsideSectionDesc:
+        "Highest deterministic upside to Weighted Fair Value (WFV)",
+      divergenceSectionTitle: "Sell-Side Divergence",
+      divergenceSectionDesc:
+        "Widest alpha variance between StressAlpha WFV and Wall St target",
+      qualityLeadersSectionTitle: "Snowflake Quality Tier",
+      qualityLeadersSectionDesc:
+        "Top-ranked businesses across all 5 fundamental pillars",
+      openCockpitButton: "Inspect Cockpit",
+      viewInScreener: "View All in Screener →",
+      liveQuotesUpdated: (time: string) => `Quotes updated ${time}`,
+      filterBySector: (sector: string) => `Filtering by sector: ${sector}`,
+      clearFilter: "Clear Sector Filter",
+      marketSummaryTitle: "Market Summary",
+      updatedAgo: (mins: number) => `Updated ${mins} minutes ago`,
+      sourcesCount: (count: number) => `${count} sources`,
+      standoutsTitle: "Standouts",
+      standoutsSubtitle:
+        "Notable market movers with fundamental catalysts, valuation spreads & interactive models",
+      prevClose: "Prev close",
+      volume: "Volume",
+      marketCap: "Market Cap",
+      peRatio: "P/E Ratio",
+      wfvUpside: "WFV Upside",
+      sectorDrilldownTitle: (sector: string, count: number) =>
+        `${sector} (${count} Covered Stocks)`,
+      sectorDrilldownSubtitle:
+        "Direct access to audited valuation models, multiples & quarterly memos",
+      scrollHint: "Scroll to view upcoming schedule",
+      sp500HeatmapTitle: "S&P 500 Heatmap",
+      sp500HeatmapSubtitle: "Constituent performance grouped by GICS sectors",
+      reasonForMove: "Catalyst & Fundamental Driver",
+      standoutReasons: {
+        NVDA: "NVIDIA pulled back amid sector-wide hyperscaler CapEx monetization debates, despite delivering 94% data center growth and confirmed 12-month sold-out Blackwell allocations.",
+        TSLA: "Tesla moved following automotive gross margin compression and robotaxi regulatory timelines, offset by record 125% energy storage deployments.",
+        HOOD: "Robinhood inflected higher on record net deposit inflows of $4.2B, equity trading volume acceleration, and expanding crypto margin take rates.",
+        AMD: "AMD consolidated as MI300X enterprise acceleration ramp was balanced against conservative gaming segment guidance, while server EPYC share gains persist.",
+        RDDT: "Reddit gained on international user monetization acceleration and high-margin AI data licensing agreements flowing directly to free cash flow.",
+        PLTR: "Palantir advanced following 83% US commercial customer count expansion and Rule of 40 acceleration to 57%, sustaining robust valuation support.",
+      },
+      defaultStandoutReason: (sym: string) =>
+        `${sym}: Outsized market volatility driven by fundamental catalyst execution and guidance revisions, creating notable valuation divergence against sell-side consensus.`,
+      heatmapExpand: "Expand ⤢",
+      liveMicrostructure: "Live Market Microstructure",
+      summaryStories: [
+        {
+          id: "story-1",
+          headline:
+            "AI Selloff Hammers Tech, Nasdaq Posts Worst Day Since June",
+          summary:
+            "The Nasdaq fell 2.86% and the S&P 500 dropped 1.82% as concerns over massive AI hyperscaler CapEx monetization spread across semiconductor and enterprise software supply chains. Mega-cap leaders NVDA, MSFT, and GOOGL saw valuation multiple compression despite resilient operating cash flows.",
+          sources: 69,
+          tickers: ["NVDA", "MSFT", "GOOGL", "AMD"],
+        },
+        {
+          id: "story-2",
+          headline:
+            "Intel Collapses on Guidance Haircut & Foundry Packaging Overhang",
+          summary:
+            "Intel dropped sharply following gross margin compression in client computing and accelerated packaging delays, highlighting widening operational divergence against Broadcom and TSMC foundry peers.",
+          sources: 42,
+          tickers: ["INTC", "AMD", "AVGO"],
+        },
+        {
+          id: "story-3",
+          headline: "Hyperscaler Cloud CapEx Surges Past $200B Annual Run-Rate",
+          summary:
+            "Quarterly 10-Q disclosures from Microsoft, Alphabet, and Meta revealed combined quarterly capital expenditures exceeding $55B, heavily weighted toward NVIDIA Blackwell GPU clusters, liquid cooling, and optical networking.",
+          sources: 54,
+          tickers: ["MSFT", "META", "NVDA", "LITE"],
+        },
+        {
+          id: "story-4",
+          headline:
+            "Treasury Yields Stabilize Near 4.28% Ahead of Fed Policy Decision",
+          summary:
+            "Benchmark 10-year yields held steady as bond traders balanced resilient real GDP growth against cooling labor telemetry, keeping equity valuation discount rates anchored.",
+          sources: 38,
+          tickers: ["SPY", "QQQ"],
+        },
+        {
+          id: "story-5",
+          headline: "Energy & Defensive Staples Outperform in Rotation Shift",
+          summary:
+            "Cash flow rotation favored Energy (XLE +1.9%) and Consumer Staples (XLP +1.4%) as institutional fund flows rotated from high-beta software into high-dividend yield and wide-moat compounders.",
+          sources: 31,
+          tickers: ["XLE", "XLP", "COST"],
+        },
+      ],
+    },
   },
   zh: {
     header: {
@@ -2574,6 +2815,7 @@ export const translations: Record<Locale, Translations> = {
       navigation: "导航",
       modelNavTooltip: (ticker?: string) =>
         ticker ? `返回 ${ticker} 估值模型 (M)` : "估值模型 (M)",
+      market: "市场全景",
     },
     selector: {
       selectReport: "选择标的股票...",
@@ -2607,6 +2849,14 @@ export const translations: Record<Locale, Translations> = {
       current: "现价",
       currentPrice: "收盘价",
       currentPriceTooltip: "最新收盘价（按日更新），非盘中实时行情。",
+      trailingPeBadge: "TTM P/E",
+      trailingPeLabel: "滚动市盈率 (TTM)",
+      trailingPeTooltip:
+        "基于已披露最近12个月每股收益（TTM EPS）计算的标准市场市盈率",
+      forwardPeBadge: "NTM P/E",
+      forwardPeLabel: "远期市盈率 (NTM)",
+      forwardPeTooltip:
+        "基于华尔街一致预期未来12个月每股收益（NTM EPS）计算的标准远期市盈率",
       weightedFairValue: "加权公允价值",
       wfvShort: "加权估值",
       regimes: {
@@ -2623,6 +2873,10 @@ export const translations: Record<Locale, Translations> = {
         pricedInMultipleLoss: "N/A (亏损)",
         pricedInMultipleLossTooltip: "因经营净收益为负（净亏损），市盈率不适用",
         asymmetrySkew: "盈亏收益比 (Risk/Reward)",
+        stressedPeBadge: "承压市盈率",
+        stressedPeLabel: "情景承压市盈率",
+        stressedPeTooltip:
+          "测算隐含估值倍数：当前股价 / 承受宏观冲击后的年化压力测试每股收益",
       },
       upstreamTitle: "需求与业务量驱动",
       upstreamSubtitle:
@@ -2866,8 +3120,8 @@ export const translations: Record<Locale, Translations> = {
       trendBullish: "多头排列 (现价 > 200日均线)",
       trendBearish: "空头排列 (现价 < 200日均线)",
       currentPeBadge: "当前市盈率",
-      currentPeSubtext: "基于最新现价",
-      currentPeTooltip: "当前股价与年化营业每股收益（EPS）之比",
+      currentPeSubtext: "滚动12个月",
+      currentPeTooltip: "当前股价与已披露最近12个月每股收益（TTM EPS）之比",
       currentPeLoss: "N/A (亏损)",
       currentPeLossSubtext: "净亏损 (EPS为负)",
       currentPeLossTooltip: "公司当前处于营业亏损状态（EPS ≤ 0），市盈率不适用",
@@ -3444,6 +3698,7 @@ export const translations: Record<Locale, Translations> = {
         riskRewardLabel: "盈亏比与不对称性",
         panicDefenseLabel: "恐慌防御垫",
         marketPricingLabel: "市场定价",
+        stressedPeLabel: "承压市盈率",
         bullRegimeLabel: "牛市区间",
         baseCaseLabel: "基准情景",
         panicFloorLabel: "恐慌底价",
@@ -3807,6 +4062,139 @@ export const translations: Record<Locale, Translations> = {
         backBtn: "返回测算模型",
         githubBtn: "访问 GitHub 仓库",
       },
+    },
+    marketHome: {
+      heroTitle: "机构级市场全景与财报中枢",
+      heroSubtitle:
+        "纯确定性压力估值、十一大行业热力图与前瞻财报日历，彻底告别大模型数字幻觉。",
+      searchPlaceholder: "搜索股票代码、公司名称、行业板块或筛选估值空间...",
+      chips: {
+        highUpside: "🔥 极高上行空间 (>25%)",
+        wideMoat: "🛡️ 宽护城河复利标的",
+        earningsWeek: "📅 本周披露财报",
+        aiTech: "💻 AI与半导体核心资产",
+        deepValue: "📉 恐慌底价极度超跌",
+      },
+      marketPulseTitle: "宏观股指异动脉搏",
+      marketPulseSubtitle:
+        "实时跟踪美股基准指数、10年期美债收益率与CBOE恐慌指数波动",
+      marketBreadthTitle: "市场涨跌广度",
+      advancersDecliners: (adv: number, dec: number) =>
+        `${adv} 上涨 · ${dec} 下跌`,
+      sectorHeatmapTitle: "行业板块热力图与阿尔法广度",
+      sectorHeatmapSubtitle:
+        "全景透视行业涨跌幅、基本面安全边际（WFV上行空间）与30项雪花图基本面雷达评分",
+      metricMarketReturn: "日涨跌幅 %",
+      metricStressUpside: "压力估值上行空间 %",
+      metricSnowflakeQuality: "雪花图评分 (0-30)",
+      coveredCount: (count: number) => `已覆盖 ${count} 只标的`,
+      viewSectorReports: (sector: string) => `查看 ${sector} 覆盖标的`,
+      upcomingEarningsTitle: "前瞻财报披露日程",
+      upcomingEarningsSubtitle:
+        "机构级排期、一致性彭博预期与一键直达压力估值交互座舱",
+      filterAll: "全部前瞻",
+      filterToday: "今日披露",
+      filterTomorrow: "明日披露",
+      filterThisWeek: "本周披露",
+      filterNextWeek: "下周披露",
+      sessionBmo: "盘前披露 (BMO)",
+      sessionAmc: "盘后披露 (AMC)",
+      consensusEps: "市场一致预期 EPS",
+      revenueEst: "市场预期营收",
+      statusAudited: "已就绪交互估值模型",
+      statusUpcoming: "近期前瞻财报",
+      launchModel: "启动估值座舱 ⚡",
+      launchMemo: "查看分析简报 📄",
+      noUpcomingFound: "该筛选周期内暂未发现符合条件的披露标的。",
+      variantPerceptionTitle: "预期差与阿尔法领跑榜",
+      variantPerceptionSubtitle:
+        "买方深度压力测算 vs 卖方华尔街共识的最高确定性预期差挖掘",
+      topUpsideSectionTitle: "安全边际领跑",
+      topUpsideSectionDesc: "相对加权公允价值 (WFV) 具备最高确定性上行空间",
+      divergenceSectionTitle: "卖方共识预期差",
+      divergenceSectionDesc: "压力公允价值与华尔街卖方目标价差距最大的标的",
+      qualityLeadersSectionTitle: "雪花图基本面优等生",
+      qualityLeadersSectionDesc: "五大基本面审计支柱综合评级最顶尖的优质资产",
+      openCockpitButton: "进入交互座舱",
+      viewInScreener: "在筛选器中查看全部 →",
+      liveQuotesUpdated: (time: string) => `行情更新于 ${time}`,
+      filterBySector: (sector: string) => `已筛选行业板块：${sector}`,
+      clearFilter: "清除板块筛选",
+      marketSummaryTitle: "市场全景速递",
+      updatedAgo: (mins: number) => `${mins} 分钟前更新`,
+      sourcesCount: (count: number) => `${count} 个信源交叉印证`,
+      standoutsTitle: "焦点异动标的",
+      standoutsSubtitle:
+        "市场核心关注股票：基本面催化剂、大幅估值偏离度与交互模型穿透",
+      prevClose: "昨收",
+      volume: "成交量",
+      marketCap: "总市值",
+      peRatio: "市盈率 P/E",
+      wfvUpside: "加权公允价值空间",
+      sectorDrilldownTitle: (sector: string, count: number) =>
+        `${sector}（已覆盖 ${count} 只标的）`,
+      sectorDrilldownSubtitle:
+        "直接访问经审计的交互估值模型、估值倍数与季度财报备忘录",
+      scrollHint: "上下滚动查看完整排期",
+      sp500HeatmapTitle: "标普 500 全景热力图",
+      sp500HeatmapSubtitle: "按 GICS 行业板块划分的核心成分股实时表现",
+      reasonForMove: "异动催化与核心驱动",
+      standoutReasons: {
+        NVDA: "英伟达在超大规模云厂商AI资本开支回报率争论中出现回撤，但数据中心业务实现94%同比增速且Blackwell架构未来12个月订单已全数售罄。",
+        TSLA: "特斯拉受汽车业务毛利率波动与Robotaxi监管进展影响震荡整理，同时储能业务装机量实现125%同比增长构成坚实对冲。",
+        HOOD: "Robinhood受单季净存款流入创下42亿美元纪录、美股交易量重拾增长与加密货币变现率提升推动大幅走强。",
+        AMD: "AMD因MI300X算力加速卡放量与游戏业务指引保守形成博弈整理，同时EPYC服务器芯片在数据中心市场份额持续稳健扩张。",
+        RDDT: "Reddit受海外用户商业化提速与高毛利AI数据授权协议驱动走高，经营性自由现金流实现超预期放量。",
+        PLTR: "Palantir受美国商业AIP客户数同比激增83%与40法则指标加速至57%催化，基本面与估值中枢持续获强力支撑。",
+      },
+      defaultStandoutReason: (sym: string) =>
+        `${sym}：由于财报业绩披露、管理层业绩指引修正与基本面催化剂兑现，引发盘面超额异动，形成显著估值预期差。`,
+      heatmapExpand: "全屏展开 ⤢",
+      liveMicrostructure: "实时市场微观结构",
+      summaryStories: [
+        {
+          id: "story-1",
+          headline:
+            "科技股深度回调纳指创6月以来最差表现，市场担忧AI资本开支变现节奏",
+          summary:
+            "受超大规模云厂商高额AI资本支出回报周期担忧情绪发酵影响，纳斯达克综合指数大跌2.86%，标普500指数下跌1.82%。英伟达、微软与谷歌等龙头资产估值倍数承压收缩，但核心经营现金流仍保持高度韧性。",
+          sources: 69,
+          tickers: ["NVDA", "MSFT", "GOOGL", "AMD"],
+        },
+        {
+          id: "story-2",
+          headline:
+            "英特尔下调业绩指引股价重挫，代工分拆与先进制程延期引发担忧",
+          summary:
+            "英特尔在发布疲软季度指引后大幅重挫，客户端计算毛利率持续承压且先进封装爬坡滞后，与博通、台积电等先进制程供应链伙伴的经营分化进一步拉大。",
+          sources: 42,
+          tickers: ["INTC", "AMD", "AVGO"],
+        },
+        {
+          id: "story-3",
+          headline: "超大规模云厂商年度AI资本开支年化突破2000亿美元",
+          summary:
+            "微软、Alphabet与Meta最新披露的10-Q财报显示，单季度合计资本开支已突破550亿美元，资金主要流向英伟达Blackwell架构GPU集群、液冷基础设施与高速光模块网络。",
+          sources: 54,
+          tickers: ["MSFT", "META", "NVDA", "LITE"],
+        },
+        {
+          id: "story-4",
+          headline: "美联储决议前夕10年期美债收益率持稳于4.28%关键中枢",
+          summary:
+            "在经济增长韧性与就业市场逐步降温的博弈下，基准10年期美债收益率保持窄幅震荡，为权益市场贴现率定价提供了相对稳定的宏观锚点。",
+          sources: 38,
+          tickers: ["SPY", "QQQ"],
+        },
+        {
+          id: "story-5",
+          headline: "资金高低切换明显，传统能源与日常必需消费品逆势走强",
+          summary:
+            "市场避险与价值风格轮动显著，能源板块（XLE +1.9%）与日常消费品（XLP +1.4%）逆势领跑，资金持续从高估值成长软件流入高股息与宽护城河复利资产。",
+          sources: 31,
+          tickers: ["XLE", "XLP", "COST"],
+        },
+      ],
     },
   },
 };

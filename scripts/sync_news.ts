@@ -386,6 +386,45 @@ async function syncNews() {
   console.log(` • Raw Headlines Vetted & Ingested: ${totalEventsIngested}`);
   console.log(` • Fair Value Revisions Recorded:   ${totalRevisionsLogged}`);
   console.log("=".repeat(62) + "\n");
+
+  await triggerRevalidation();
+}
+
+async function triggerRevalidation(): Promise<void> {
+  const appUrl =
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://stressalpha.vercel.app");
+  const secret = process.env.REVALIDATION_SECRET || process.env.CRON_SECRET;
+
+  if (!appUrl) return;
+
+  try {
+    const url = `${appUrl.replace(/\/$/, "")}/api/revalidate?tag=reports`;
+    console.log(
+      `🔄 [StressAlpha Revalidation] Purging CDN & Data Cache at ${url}...`
+    );
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...(secret ? { Authorization: `Bearer ${secret}` } : {}),
+      },
+    });
+    if (res.ok) {
+      console.log("  ✅ Cache revalidated successfully.");
+    } else {
+      console.warn(
+        `  ⚠️ Revalidation returned HTTP ${res.status}: ${await res.text()}`
+      );
+    }
+  } catch (err) {
+    console.warn(
+      "  ℹ️ Revalidation call skipped/failed:",
+      err instanceof Error ? err.message : err
+    );
+  }
 }
 
 syncNews().catch((err) => {

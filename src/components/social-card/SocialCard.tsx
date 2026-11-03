@@ -178,7 +178,7 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
       const fwdPe =
         facts.forwardEpsConsensus > 0
           ? `${(currentPrice / facts.forwardEpsConsensus).toFixed(1)}x`
-          : `${asymmetry.marketPricedInMultiple.toFixed(1)}x`;
+          : undefined;
       const fairPe =
         facts.forwardEpsConsensus > 0
           ? `${(weightedFairValue / facts.forwardEpsConsensus).toFixed(1)}x`
@@ -448,7 +448,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
             <div className="font-mono text-xs text-slate-400">
               {labels.marketPricingLabel}:{" "}
               <strong className="text-white">
-                {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                {asymmetry.marketPricedInMultiple.toFixed(1)}x{" "}
+                {labels.stressedPeLabel}
               </strong>
             </div>
           </div>
@@ -1465,7 +1466,8 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
                 <div className="font-mono text-xs text-slate-400">
                   {labels.marketPricingLabel}:{" "}
                   <strong className="text-white">
-                    {asymmetry.marketPricedInMultiple.toFixed(1)}x P/E
+                    {asymmetry.marketPricedInMultiple.toFixed(1)}x{" "}
+                    {labels.stressedPeLabel}
                   </strong>
                 </div>
               </div>

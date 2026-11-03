@@ -249,7 +249,7 @@ function renderReportEnglish(input: ReportInput): string {
       `- **Downside to Panic Floor:** ${st.asymmetry.downsideToPanicPct}%`
     );
     lines.push(
-      `- **Market Priced-In Multiple:** ${st.asymmetry.marketPricedInMultiple}x`
+      `- **Stressed Implied Multiple:** ${st.asymmetry.marketPricedInMultiple}x`
     );
     lines.push("");
     lines.push(`| Regime | Multiple | Target Price | Delta vs Current |`);
@@ -579,7 +579,7 @@ function renderReportChinese(input: ReportInput): string {
     lines.push(`- **测算压力净利润:** $${st.stressNetIncomeBillions}B`);
     lines.push(`- **恐慌底最大回撤空间:** ${st.asymmetry.downsideToPanicPct}%`);
     lines.push(
-      `- **当前现价对应隐含 PE:** ${st.asymmetry.marketPricedInMultiple}x`
+      `- **测算现价隐含承压市盈率 (Stressed P/E):** ${st.asymmetry.marketPricedInMultiple}x`
     );
     lines.push("");
     lines.push(
