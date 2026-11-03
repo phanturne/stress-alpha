@@ -44,6 +44,8 @@ jobs:
           MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
           POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
+          APP_URL: ${{ secrets.APP_URL || 'https://stressalpha.vercel.app' }}
+          REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET || secrets.CRON_SECRET }}
 
       - name: Run Global News Firehose Sync Script
         run: npx tsx scripts/sync_news.ts --firehose
@@ -58,3 +60,5 @@ jobs:
           MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
           POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
+          APP_URL: ${{ secrets.APP_URL || 'https://stressalpha.vercel.app' }}
+          REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET || secrets.CRON_SECRET }}

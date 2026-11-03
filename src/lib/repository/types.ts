@@ -138,4 +138,9 @@ export interface IReportRepository {
    * Upsert normalized quarterly financial statements into the time-series ledger.
    */
   saveFinancialMetrics(metrics: FinancialMetricsInsert[]): Promise<void>;
+
+  /**
+   * Clears internal in-memory caches (summaries, reports, snowflake)
+   */
+  clearCache?(): void;
 }

@@ -398,4 +398,8 @@ export class InMemoryReportRepository implements IReportRepository {
       }
     }
   }
+
+  clearCache(): void {
+    // In-memory implementation stores data directly in instance arrays/maps
+  }
 }

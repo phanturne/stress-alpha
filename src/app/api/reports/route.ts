@@ -11,7 +11,7 @@ const getCachedReportsList = unstable_cache(
     return repo.listReports();
   },
   ["reports-list-v2"],
-  { revalidate: 3600, tags: ["reports"] }
+  { revalidate: 300, tags: ["reports"] }
 );
 
 export async function GET() {
@@ -28,7 +28,7 @@ export async function GET() {
       {
         headers: {
           "Cache-Control":
-            "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+            "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
         },
       }
     );

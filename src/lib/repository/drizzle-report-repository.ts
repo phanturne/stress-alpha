@@ -617,6 +617,13 @@ export class DrizzleReportRepository implements IReportRepository {
     this.snowflakeCache.delete(slug);
   }
 
+  clearCache(): void {
+    this.cachedSummaries = null;
+    this.lastSummariesTime = 0;
+    this.cachedReports.clear();
+    this.snowflakeCache.clear();
+  }
+
   async getMarketEvents(
     ticker: string,
     limit = 50
