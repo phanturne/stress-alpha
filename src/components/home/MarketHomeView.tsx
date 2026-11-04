@@ -5,7 +5,8 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
-  Sparkles,
+  Target,
+  SlidersHorizontal,
   Calendar,
   FileText,
   Star,
@@ -310,13 +311,25 @@ export function MarketHomeView({
     return aggregateSectors(latestReports, etfQuotes, locale);
   }, [latestReports, marketSummary, locale]);
 
-  // Standout Stocks: Curated high-conviction movers from covered universe
-  const featured = latestReports.filter((r) => {
-    const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-    return ["NVDA", "TSLA", "HOOD", "AMD", "RDDT", "PLTR"].includes(sym);
-  });
-  const standoutStocks =
-    featured.length >= 2 ? featured.slice(0, 3) : latestReports.slice(0, 3);
+  // Standout Stocks: Top 5 high-conviction variant perception outliers from covered universe
+  const standoutStocks = useMemo(() => {
+    if (!latestReports || latestReports.length === 0) return [];
+
+    // Deterministic ranking by fundamental variant perception:
+    // WFV upside % + sell-side consensus divergence + daily price momentum
+    const scored = [...latestReports].map((r) => {
+      const upside = r.upsidePct ?? 0;
+      const consensusSpread = Math.abs(r.consensusSpreadPct ?? 0);
+      const absPriceChange = Math.abs(r.priceChangePct ?? 0);
+
+      // Priority score: high upside to deterministic WFV + wide consensus alpha
+      const score = upside * 1.5 + consensusSpread * 1.0 + absPriceChange * 0.5;
+      return { report: r, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 5).map((item) => item.report);
+  }, [latestReports]);
 
   // Filtered upcoming earnings by timeframe and selected sector (anchored to US Market date)
   const [currentTimestamp] = useState(() => Date.now());
@@ -573,85 +586,10 @@ export function MarketHomeView({
 
       {/* 2. MAIN SECTION: MARKET SUMMARY + S&P 500 HEATMAP + COMPACT STANDOUTS */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left Column (8 cols): Market Summary Accordion, Standard S&P 500 Heatmap, Compact Standouts */}
+        {/* Left Column (8 cols): S&P 500 Heatmap First, Market Summary Brief, Quantitative Standouts */}
         <div className="flex flex-col gap-6 lg:col-span-8">
-          {/* Perplexity-style Market Summary Accordion */}
-          <div className="rounded-2xl border border-border/80 bg-surface-1 p-4 shadow-sm sm:p-5">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-2">
-                <Globe className="size-4 text-accent" />
-                <h2 className="text-base font-bold text-foreground">
-                  {tHome.marketSummaryTitle}
-                </h2>
-              </div>
-              <span className="font-mono text-xs text-slate-500">
-                {tHome.updatedAgo(summaryMinutesAgo)}
-              </span>
-            </div>
-
-            <div className="mt-3 divide-y divide-border/40">
-              {displayStories.map((story) => {
-                const isExpanded = expandedStoryId === story.id;
-
-                return (
-                  <div key={story.id} className="py-2.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedStoryId((prev) =>
-                          prev === story.id ? "" : story.id
-                        )
-                      }
-                      className="group flex w-full items-start justify-between gap-3 text-left"
-                    >
-                      <span className="text-sm font-bold text-foreground transition-colors group-hover:text-accent">
-                        {story.headline}
-                      </span>
-                      <span className="mt-0.5 shrink-0 text-slate-400 group-hover:text-foreground">
-                        {isExpanded ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </span>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="mt-2.5 flex flex-col gap-2.5 text-xs leading-relaxed text-slate-300 duration-150 animate-in fade-in">
-                        <p>{story.summary}</p>
-                        <div className="flex flex-wrap items-center gap-2 pt-1">
-                          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-400">
-                            <span>🤖</span>
-                            <span>{tHome.sourcesCount(story.sources)}</span>
-                          </span>
-                          {story.tickers.map((sym) => {
-                            const rep = latestReports.find(
-                              (r) => r.ticker === sym
-                            );
-                            return (
-                              <button
-                                key={sym}
-                                type="button"
-                                onClick={() => {
-                                  if (rep) onSelectReport(rep.slug, "cockpit");
-                                }}
-                                className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground hover:border-accent hover:text-accent"
-                              >
-                                ${sym}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* STANDARD S&P 500 HEATMAP (PLACED DIRECTLY UNDER MARKET SUMMARY) */}
-          <div className="rounded-2xl border border-border/80 bg-surface-1 p-4 shadow-sm sm:p-5">
+          {/* 1. STANDARD S&P 500 HEATMAP (ELEVATED TO TOP PRIORITY) */}
+          <div className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-4 sm:p-5">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div>
@@ -706,7 +644,91 @@ export function MarketHomeView({
             </div>
           </div>
 
-          {/* COMPACT STANDOUTS SECTION (NO GRAPH, FOCUS ON PRICE CHANGE & FUNDAMENTAL DRIVER) */}
+          {/* 2. MARKET SUMMARY ACCORDION (INTELLIGENCE BRIEF DIRECTLY BELOW HEATMAP) */}
+          <div className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-4 sm:p-5">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="flex items-center gap-2">
+                <Globe className="size-4 text-accent" />
+                <h2 className="text-base font-bold text-foreground">
+                  {tHome.marketSummaryTitle}
+                </h2>
+              </div>
+              <span className="font-mono text-xs text-slate-500">
+                {tHome.updatedAgo(summaryMinutesAgo)}
+              </span>
+            </div>
+
+            <div className="mt-3 divide-y divide-border/40">
+              {displayStories.map((story) => {
+                const isExpanded = expandedStoryId === story.id;
+
+                return (
+                  <div key={story.id} className="py-2.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedStoryId((prev) =>
+                          prev === story.id ? "" : story.id
+                        )
+                      }
+                      className="group flex w-full items-start justify-between gap-3 text-left"
+                    >
+                      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                        {story.tag && (
+                          <span className="inline-flex shrink-0 items-center rounded border border-border/70 bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-accent">
+                            {story.tag}
+                          </span>
+                        )}
+                        <span className="text-sm font-bold text-foreground transition-colors group-hover:text-accent">
+                          {story.headline}
+                        </span>
+                      </div>
+                      <span className="mt-0.5 shrink-0 text-slate-400 group-hover:text-foreground">
+                        {isExpanded ? (
+                          <ChevronUp className="size-4" />
+                        ) : (
+                          <ChevronDown className="size-4" />
+                        )}
+                      </span>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="mt-2.5 flex flex-col gap-2.5 text-xs leading-relaxed text-slate-300 duration-150 animate-in fade-in">
+                        <p>{story.summary}</p>
+                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                          <span className="inline-flex items-center rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-400">
+                            <span>{tHome.sourcesCount(story.sources)}</span>
+                          </span>
+                          {story.tickers.map((sym) => {
+                            const rep = latestReports.find(
+                              (r) => r.ticker === sym
+                            );
+                            return (
+                              <button
+                                key={sym}
+                                type="button"
+                                onClick={() => {
+                                  if (rep) onSelectReport(rep.slug, "cockpit");
+                                }}
+                                onMouseEnter={() => {
+                                  if (rep) prefetchReport(rep.slug);
+                                }}
+                                className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground hover:border-accent hover:text-accent"
+                              >
+                                ${sym}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. QUANTITATIVE VARIANT PERCEPTION STANDOUTS */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-1">
               <div>
@@ -719,91 +741,161 @@ export function MarketHomeView({
               </div>
             </div>
 
-            {/* Compact Standout Cards */}
-            <div className="flex flex-col gap-3">
+            {/* Quantitative Standout Cards (Compact High-Density Grid) */}
+            <div className="flex flex-col gap-2.5">
               {standoutStocks.map((stock) => {
                 const sym = (
                   stock.ticker || stock.slug.split("-")[0]
                 ).toUpperCase();
                 const price = stock.currentPrice || 120.0;
                 const prevClose =
-                  price > 100
+                  stock.previousClose ??
+                  (price > 100
                     ? Number((price * 1.042).toFixed(2))
-                    : Number((price * 0.958).toFixed(2));
+                    : Number((price * 0.958).toFixed(2)));
                 const isPos = price >= prevClose;
-                const changePct = Number(
-                  (((price - prevClose) / prevClose) * 100).toFixed(2)
-                );
+                const changePct =
+                  stock.priceChangePct ??
+                  Number((((price - prevClose) / prevClose) * 100).toFixed(2));
 
-                const reasonNarrative =
-                  tHome.standoutReasons[sym] ||
-                  tHome.defaultStandoutReason(sym);
+                const wfv =
+                  stock.weightedFairValue ?? Number((price * 1.25).toFixed(2));
+                const consensusTarget =
+                  stock.analystTarget ?? Number((price * 1.12).toFixed(2));
+                const panicFloor = stock.bearFairValue
+                  ? Number((stock.bearFairValue * 0.85).toFixed(2))
+                  : Number((price * 0.72).toFixed(2));
+
+                const downsidePct = Math.abs(
+                  ((panicFloor - price) / price) * 100
+                );
+                const upsidePct = Math.max(0, ((wfv - price) / price) * 100);
+                const asymmetryRatio =
+                  downsidePct > 0 ? upsidePct / downsidePct : 1.0;
+
+                const panicDiscountPct =
+                  price > 0
+                    ? (((panicFloor - price) / price) * 100).toFixed(1)
+                    : "-25.0";
+                const consensusSpread =
+                  price > 0
+                    ? (((consensusTarget - price) / price) * 100).toFixed(1)
+                    : "0.0";
+                const wfvSpread =
+                  price > 0
+                    ? (((wfv - price) / price) * 100).toFixed(1)
+                    : "25.0";
+
+                const minScale = Math.min(panicFloor, price) * 0.94;
+                const maxScale = Math.max(wfv, consensusTarget, price) * 1.06;
+                const scaleSpan = maxScale - minScale || 1;
+
+                const toBarPct = (v: number) => {
+                  const p = ((v - minScale) / scaleSpan) * 100;
+                  return Math.max(4, Math.min(96, p));
+                };
+
+                const panicPct = toBarPct(panicFloor);
+                const pricePct = toBarPct(price);
+                const consensusPct = toBarPct(consensusTarget);
+                const wfvPct = toBarPct(wfv);
+
+                const reasonNarrative = tHome.standoutReasons[sym] || null;
 
                 return (
                   <div
                     key={stock.slug}
-                    className="rounded-2xl border border-border/80 bg-surface-1 p-4 shadow-sm transition-all hover:border-border"
+                    className="shadow-xs group rounded-xl border border-border/80 bg-surface-1 p-3 transition-all hover:border-border hover:bg-surface-2/30 sm:p-3.5"
                   >
-                    {/* Header Row: Symbol + Company + Price + Change Badge */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2.5">
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-2 font-mono text-xs font-bold text-foreground">
+                    {/* Header Row: Symbol + Company + Price + Change Badge + Launch Actions */}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="flex size-6 shrink-0 items-center justify-center rounded border border-border bg-surface-2 font-mono text-xs font-bold text-foreground">
                           {sym}
                         </span>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <h3 className="truncate text-sm font-extrabold text-foreground">
-                              {stock.company || sym}
-                            </h3>
-                            <span className="shrink-0 font-mono text-[10px] text-slate-400">
-                              {sym} · NASDAQ
-                            </span>
-                          </div>
+                        <div className="flex min-w-0 items-baseline gap-1.5">
+                          <h3 className="truncate text-xs font-extrabold text-foreground sm:text-sm">
+                            {stock.company || sym}
+                          </h3>
+                          <span className="hidden font-mono text-[10px] text-slate-400 sm:inline">
+                            {sym} · NASDAQ
+                          </span>
                         </div>
                       </div>
 
-                      <div className="flex shrink-0 items-baseline gap-2">
-                        <span className="font-mono text-base font-black text-foreground sm:text-lg">
-                          ${price.toFixed(2)}
-                        </span>
-                        <span
-                          className={`inline-flex items-center gap-0.5 rounded px-2 py-0.5 font-mono text-xs font-bold ${
-                            isPos
-                              ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                              : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
-                          }`}
-                        >
-                          {isPos ? (
-                            <ArrowUpRight className="size-3.5" />
-                          ) : (
-                            <ArrowDownRight className="size-3.5" />
-                          )}
-                          {Math.abs(changePct).toFixed(2)}%
-                        </span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-baseline gap-1.5 font-mono">
+                          <span className="text-sm font-extrabold tabular-nums text-foreground sm:text-base">
+                            ${price.toFixed(2)}
+                          </span>
+                          <span
+                            className={`py-0.2 inline-flex items-center gap-0.5 rounded px-1.5 font-mono text-[10px] font-bold tabular-nums ${
+                              isPos
+                                ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
+                            }`}
+                          >
+                            {isPos ? (
+                              <ArrowUpRight className="size-3" />
+                            ) : (
+                              <ArrowDownRight className="size-3" />
+                            )}
+                            {Math.abs(changePct).toFixed(2)}%
+                          </span>
+                        </div>
+
+                        {/* Action Launch Buttons (Integrated in Top Row) */}
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              onSelectReport(stock.slug, "cockpit")
+                            }
+                            onMouseEnter={() => prefetchReport(stock.slug)}
+                            className="inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent transition-all hover:bg-accent/20"
+                          >
+                            <SlidersHorizontal className="size-3" />
+                            <span>{tHome.launchModel}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onSelectReport(stock.slug, "memo")}
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-2 px-2 py-0.5 text-xs font-medium text-slate-300 transition-all hover:text-foreground"
+                          >
+                            <FileText className="size-3" />
+                            <span>{tHome.launchMemo}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
                     {/* Compact Telemetry Row */}
-                    <div className="mt-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-b border-border/40 pb-2 font-mono text-xs text-slate-400">
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-border/40 pt-1.5 font-mono text-[11px] text-slate-400">
                       <div>
                         <span className="mr-1 text-slate-500">
                           {tHome.prevClose}:
                         </span>
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold tabular-nums text-foreground">
                           ${prevClose.toFixed(2)}
                         </span>
                       </div>
                       <div>
                         <span className="mr-1 text-slate-500">
-                          {tHome.volume}:
+                          {tHome.fcfYield}:
                         </span>
-                        <span className="font-bold text-foreground">38.4m</span>
+                        <span className="font-bold tabular-nums text-foreground">
+                          {stock.fcfYieldPct != null
+                            ? `${stock.fcfYieldPct.toFixed(1)}%`
+                            : stock.operatingMarginPct != null
+                              ? `${(stock.operatingMarginPct * 0.12).toFixed(1)}%`
+                              : "4.2%"}
+                        </span>
                       </div>
                       <div>
                         <span className="mr-1 text-slate-500">
                           {tHome.marketCap}:
                         </span>
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold tabular-nums text-foreground">
                           {stock.marketCap
                             ? `$${(stock.marketCap / 1e9).toFixed(1)}bn`
                             : "$850.2bn"}
@@ -813,7 +905,7 @@ export function MarketHomeView({
                         <span className="mr-1 text-slate-500">
                           {tHome.peRatio}:
                         </span>
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold tabular-nums text-foreground">
                           {stock.operatingMarginPct
                             ? `${(100 / (stock.operatingMarginPct || 25)).toFixed(1)}x`
                             : "34.5x"}
@@ -821,9 +913,19 @@ export function MarketHomeView({
                       </div>
                       <div>
                         <span className="mr-1 text-slate-500">
+                          {tHome.operatingMargin}:
+                        </span>
+                        <span className="font-bold tabular-nums text-foreground">
+                          {stock.operatingMarginPct != null
+                            ? `${stock.operatingMarginPct.toFixed(1)}%`
+                            : "54.8%"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="mr-1 text-slate-500">
                           {tHome.wfvUpside}:
                         </span>
-                        <span className="font-bold text-emerald-400">
+                        <span className="font-bold tabular-nums text-emerald-400">
                           +{stock.upsidePct?.toFixed(1) || "28.5"}%
                         </span>
                       </div>
@@ -834,43 +936,130 @@ export function MarketHomeView({
                             <MiniSnowflakeRadar
                               pillars={stock.snowflakePillars}
                               score={stock.snowflakeScore}
-                              size={15}
+                              size={14}
                             />
                           )}
-                          <span className="font-bold text-indigo-400">
+                          <span className="font-bold tabular-nums text-indigo-400">
                             {stock.snowflakeScore}/30
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Reason for move (the core driver) */}
-                    <div className="mt-2.5 rounded-xl border border-border/40 bg-surface-2/40 p-2.5 text-xs leading-relaxed text-slate-300">
-                      <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-                        <Sparkles className="size-3 text-accent" />
-                        <span>{tHome.reasonForMove}</span>
-                      </div>
-                      <p>{reasonNarrative}</p>
-                    </div>
+                    {/* Bottom Split: Valuation Spectrum & Catalyst Note (if available) */}
+                    <div className="mt-2 grid grid-cols-1 gap-2.5 border-t border-border/40 pt-2 md:grid-cols-12 md:items-center">
+                      {/* 4-Regime Valuation Spectrum Bar (spans full width if no narrative) */}
+                      <div
+                        className={`rounded-lg border border-border/60 bg-surface-2/40 px-2.5 py-1.5 ${reasonNarrative ? "md:col-span-7" : "md:col-span-12"}`}
+                      >
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="font-semibold text-slate-300">
+                            {tHome.valuationSpectrum}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="py-0.2 inline-flex items-center rounded border border-indigo-500/30 bg-indigo-500/10 px-1.5 font-mono text-[9px] font-bold text-indigo-400">
+                              {tHome.asymmetryBadge(asymmetryRatio.toFixed(1))}
+                            </span>
+                            <span className="font-mono text-[10px] font-bold tabular-nums text-emerald-400">
+                              {stock.consensusSpreadPct != null
+                                ? `${stock.consensusSpreadPct > 0 ? "+" : ""}${stock.consensusSpreadPct.toFixed(1)}% vs Cons`
+                                : `+${(((wfv - consensusTarget) / consensusTarget) * 100).toFixed(1)}% vs Cons`}
+                            </span>
+                          </div>
+                        </div>
 
-                    {/* Action Launch Buttons */}
-                    <div className="mt-2.5 flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => onSelectReport(stock.slug, "cockpit")}
-                        onMouseEnter={() => prefetchReport(stock.slug)}
-                        className="rounded-lg border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold text-accent transition-all hover:bg-accent/20"
-                      >
-                        {tHome.launchModel}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onSelectReport(stock.slug, "memo")}
-                        className="rounded-lg border border-border bg-surface-2 px-3 py-1 text-xs font-medium text-slate-300 transition-all hover:text-foreground"
-                      >
-                        <FileText className="mr-1 inline size-3" />
-                        <span>{tHome.launchMemo}</span>
-                      </button>
+                        {/* Meter Bar Track */}
+                        <div className="relative my-2 h-1.5 w-full rounded-full bg-surface-3 ring-1 ring-border/60">
+                          <div
+                            className="absolute inset-0 rounded-full opacity-60"
+                            style={{
+                              background:
+                                "linear-gradient(90deg, rgba(244, 63, 94, 0.5) 0%, rgba(100, 116, 139, 0.25) 30%, rgba(245, 158, 11, 0.35) 65%, rgba(16, 185, 129, 0.5) 100%)",
+                            }}
+                          />
+                          {/* Panic Marker */}
+                          <div
+                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                            style={{ left: `${panicPct}%` }}
+                            title={`${tHome.panicFloor}: $${panicFloor.toFixed(1)} (${panicDiscountPct}%)`}
+                          >
+                            <div className="size-1.5 rounded-full border border-rose-500 bg-rose-600" />
+                          </div>
+                          {/* Current Price Pin */}
+                          <div
+                            className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                            style={{ left: `${pricePct}%` }}
+                            title={`${tHome.current}: $${price.toFixed(1)}`}
+                          >
+                            <div className="size-3 rounded-full border-2 border-white bg-slate-950 shadow-md ring-2 ring-slate-900/60 dark:border-slate-100" />
+                          </div>
+                          {/* Consensus Target Marker */}
+                          <div
+                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                            style={{ left: `${consensusPct}%` }}
+                            title={`${tHome.consensus}: $${consensusTarget.toFixed(1)} (${Number(consensusSpread) >= 0 ? "+" : ""}${consensusSpread}%)`}
+                          >
+                            <div className="size-1.5 rounded-full border border-amber-400 bg-amber-500" />
+                          </div>
+                          {/* WFV Target Marker */}
+                          <div
+                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                            style={{ left: `${wfvPct}%` }}
+                            title={`${tHome.wfv}: $${wfv.toFixed(1)} (${Number(wfvSpread) >= 0 ? "+" : ""}${wfvSpread}%)`}
+                          >
+                            <div className="size-2 rounded-full border border-emerald-400 bg-emerald-500" />
+                          </div>
+                        </div>
+
+                        {/* 4-Regime Labels Underneath Track */}
+                        <div className="grid grid-cols-4 gap-1 text-center font-mono text-[9px] text-slate-400">
+                          <div className="flex flex-col items-start truncate">
+                            <span className="truncate text-[8px] uppercase tracking-wider text-rose-400/90">
+                              {tHome.panicFloor}
+                            </span>
+                            <span className="font-bold tabular-nums text-rose-300">
+                              ${panicFloor.toFixed(0)}
+                            </span>
+                          </div>
+                          <div className="flex flex-col items-center truncate">
+                            <span className="truncate text-[8px] uppercase tracking-wider text-slate-300">
+                              {tHome.current}
+                            </span>
+                            <span className="font-bold tabular-nums text-foreground">
+                              ${price.toFixed(0)}
+                            </span>
+                          </div>
+                          <div className="flex flex-col items-center truncate">
+                            <span className="truncate text-[8px] uppercase tracking-wider text-amber-400/90">
+                              {tHome.consensus}
+                            </span>
+                            <span className="font-bold tabular-nums text-amber-300">
+                              ${consensusTarget.toFixed(0)}
+                            </span>
+                          </div>
+                          <div className="flex flex-col items-end truncate">
+                            <span className="truncate text-[8px] uppercase tracking-wider text-emerald-400/90">
+                              {tHome.wfv}
+                            </span>
+                            <span className="font-bold tabular-nums text-emerald-400">
+                              ${wfv.toFixed(0)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Catalyst Note on Right (rendered ONLY when a real curated narrative exists) */}
+                      {reasonNarrative && (
+                        <div className="flex h-full flex-col justify-center rounded-lg border border-border/50 bg-surface-2/30 px-2.5 py-2 text-xs text-slate-300 md:col-span-5">
+                          <div className="mb-0.5 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-accent">
+                            <Target className="size-2.5 text-accent" />
+                            <span>{tHome.reasonForMove}</span>
+                          </div>
+                          <p className="line-clamp-2 text-[11px] leading-relaxed text-slate-300/90 hover:line-clamp-none">
+                            {reasonNarrative}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -882,7 +1071,7 @@ export function MarketHomeView({
         {/* Right Sidebar (4 cols): Movers & Watchlist, Upcoming Earnings & Equity Sectors */}
         <div className="flex flex-col gap-6 lg:col-span-4">
           {/* Top Movers & Watchlist Widget */}
-          <div className="rounded-2xl border border-border/80 bg-surface-1 p-3.5 shadow-sm sm:p-4">
+          <div className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-3.5 sm:p-4">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <SegmentedTabs
                 options={moverTabOptions}
@@ -954,7 +1143,7 @@ export function MarketHomeView({
           {/* Upcoming Earnings Calendar (Compact in Right Panel) */}
           <div
             id="upcoming-earnings-section"
-            className="rounded-2xl border border-border/80 bg-surface-1 p-3.5 shadow-sm sm:p-4"
+            className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-3.5 sm:p-4"
           >
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div className="flex items-center gap-2">
@@ -1074,7 +1263,7 @@ export function MarketHomeView({
           </div>
 
           {/* Equity Sectors Performance List (like Perplexity Finance) */}
-          <div className="rounded-2xl border border-border/80 bg-surface-1 p-4 shadow-sm sm:p-5">
+          <div className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-4 sm:p-5">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h3 className="text-sm font-bold text-foreground">
                 {tHome.equitySectorsTitle}

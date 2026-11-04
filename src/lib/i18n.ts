@@ -1206,11 +1206,14 @@ export interface Translations {
     heroSubtitle: string;
     searchPlaceholder: string;
     chips: {
+      all: string;
       highUpside: string;
       wideMoat: string;
-      earningsWeek: string;
-      aiTech: string;
+      reportingThisWeek: string;
+      techSemis: string;
       deepValue: string;
+      earningsWeek?: string;
+      aiTech?: string;
     };
     marketPulseTitle: string;
     marketPulseSubtitle: string;
@@ -1259,9 +1262,17 @@ export interface Translations {
     standoutsSubtitle: string;
     prevClose: string;
     volume: string;
+    fcfYield: string;
     marketCap: string;
     peRatio: string;
+    operatingMargin: string;
     wfvUpside: string;
+    valuationSpectrum: string;
+    asymmetryBadge: (ratio: string) => string;
+    panicFloor: string;
+    current: string;
+    consensus: string;
+    wfv: string;
     sectorDrilldownTitle: (sector: string, count: number) => string;
     sectorDrilldownSubtitle: string;
     scrollHint: string;
@@ -1284,6 +1295,7 @@ export interface Translations {
       summary: string;
       sources: number;
       tickers: string[];
+      tag?: string;
     }>;
   };
 }
@@ -2636,11 +2648,14 @@ export const translations: Record<Locale, Translations> = {
       searchPlaceholder:
         "Search tickers, companies, sectors, or filter valuation...",
       chips: {
-        highUpside: "🔥 High Upside (>25%)",
-        wideMoat: "🛡️ Wide Moat Compounders",
-        earningsWeek: "📅 Earnings This Week",
-        aiTech: "💻 AI & Tech Infrastructure",
-        deepValue: "📉 Deep Stress Panics",
+        all: "All",
+        highUpside: "High Upside (>25%)",
+        wideMoat: "Wide Moat",
+        reportingThisWeek: "Reporting This Week",
+        techSemis: "Tech & Semis",
+        deepValue: "Deep Value",
+        earningsWeek: "Reporting This Week",
+        aiTech: "Tech & Semis",
       },
       marketPulseTitle: "Macro Index Pulse",
       marketPulseSubtitle:
@@ -2670,8 +2685,8 @@ export const translations: Record<Locale, Translations> = {
       revenueEst: "Revenue Est",
       statusAudited: "Audited Model Available",
       statusUpcoming: "Upcoming Report",
-      launchModel: "Open Model ⚡",
-      launchMemo: "Research Memo 📄",
+      launchModel: "Open Model",
+      launchMemo: "Research Memo",
       noUpcomingFound: "No reporting companies found for this filter period.",
       variantPerceptionTitle: "Variant Perception & Alpha Leaders",
       variantPerceptionSubtitle:
@@ -2705,9 +2720,17 @@ export const translations: Record<Locale, Translations> = {
         "Notable market movers with fundamental catalysts, valuation spreads & interactive models",
       prevClose: "Prev close",
       volume: "Volume",
+      fcfYield: "FCF Yield",
       marketCap: "Market Cap",
       peRatio: "P/E Ratio",
+      operatingMargin: "Operating Margin",
       wfvUpside: "WFV Upside",
+      valuationSpectrum: "4-Regime Valuation Spectrum",
+      asymmetryBadge: (ratio: string) => `Asymmetry: ${ratio}x`,
+      panicFloor: "Panic Floor",
+      current: "Price",
+      consensus: "Consensus",
+      wfv: "WFV",
       sectorDrilldownTitle: (sector: string, count: number) =>
         `${sector} (${count} Covered Stocks)`,
       sectorDrilldownSubtitle:
@@ -2738,6 +2761,7 @@ export const translations: Record<Locale, Translations> = {
       summaryStories: [
         {
           id: "story-1",
+          tag: "Macro Wire",
           headline:
             "AI Selloff Hammers Tech, Nasdaq Posts Worst Day Since June",
           summary:
@@ -2747,6 +2771,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-2",
+          tag: "Form 8-K",
           headline:
             "Intel Collapses on Guidance Haircut & Foundry Packaging Overhang",
           summary:
@@ -2756,6 +2781,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-3",
+          tag: "SEC Form 10-Q",
           headline: "Hyperscaler Cloud CapEx Surges Past $200B Annual Run-Rate",
           summary:
             "Quarterly 10-Q disclosures from Microsoft, Alphabet, and Meta revealed combined quarterly capital expenditures exceeding $55B, heavily weighted toward NVIDIA Blackwell GPU clusters, liquid cooling, and optical networking.",
@@ -2764,6 +2790,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-4",
+          tag: "Macro Wire",
           headline:
             "Treasury Yields Stabilize Near 4.28% Ahead of Fed Policy Decision",
           summary:
@@ -2773,6 +2800,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-5",
+          tag: "Analyst Revision",
           headline: "Energy & Defensive Staples Outperform in Rotation Shift",
           summary:
             "Cash flow rotation favored Energy (XLE +1.9%) and Consumer Staples (XLP +1.4%) as institutional fund flows rotated from high-beta software into high-dividend yield and wide-moat compounders.",
@@ -4089,11 +4117,14 @@ export const translations: Record<Locale, Translations> = {
         "纯确定性压力估值、十一大行业热力图与前瞻财报日历，彻底告别大模型数字幻觉。",
       searchPlaceholder: "搜索股票代码、公司名称、行业板块或筛选估值空间...",
       chips: {
-        highUpside: "🔥 极高上行空间 (>25%)",
-        wideMoat: "🛡️ 宽护城河复利标的",
-        earningsWeek: "📅 本周披露财报",
-        aiTech: "💻 AI与半导体核心资产",
-        deepValue: "📉 恐慌底价极度超跌",
+        all: "全部",
+        highUpside: "高上行空间 (>25%)",
+        wideMoat: "宽护城河",
+        reportingThisWeek: "本周披露财报",
+        techSemis: "科技与半导体",
+        deepValue: "深度价值",
+        earningsWeek: "本周披露财报",
+        aiTech: "科技与半导体",
       },
       marketPulseTitle: "宏观股指异动脉搏",
       marketPulseSubtitle:
@@ -4123,8 +4154,8 @@ export const translations: Record<Locale, Translations> = {
       revenueEst: "市场预期营收",
       statusAudited: "已就绪交互估值模型",
       statusUpcoming: "近期前瞻财报",
-      launchModel: "启动估值座舱 ⚡",
-      launchMemo: "查看分析简报 📄",
+      launchModel: "打开模型",
+      launchMemo: "研究备忘录",
       noUpcomingFound: "该筛选周期内暂未发现符合条件的披露标的。",
       variantPerceptionTitle: "预期差与阿尔法领跑榜",
       variantPerceptionSubtitle:
@@ -4155,9 +4186,17 @@ export const translations: Record<Locale, Translations> = {
         "市场核心关注股票：基本面催化剂、大幅估值偏离度与交互模型穿透",
       prevClose: "昨收",
       volume: "成交量",
+      fcfYield: "自由现金流收益率",
       marketCap: "总市值",
       peRatio: "市盈率 P/E",
+      operatingMargin: "营业利润率",
       wfvUpside: "加权公允价值空间",
+      valuationSpectrum: "四维动态估值谱系",
+      asymmetryBadge: (ratio: string) => `非对称盈亏比: ${ratio}x`,
+      panicFloor: "恐慌底",
+      current: "现价",
+      consensus: "卖方共识",
+      wfv: "公允价值",
       sectorDrilldownTitle: (sector: string, count: number) =>
         `${sector}（已覆盖 ${count} 只标的）`,
       sectorDrilldownSubtitle:
@@ -4187,6 +4226,7 @@ export const translations: Record<Locale, Translations> = {
       summaryStories: [
         {
           id: "story-1",
+          tag: "宏观快讯",
           headline:
             "科技股深度回调纳指创6月以来最差表现，市场担忧AI资本开支变现节奏",
           summary:
@@ -4196,6 +4236,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-2",
+          tag: "Form 8-K",
           headline:
             "英特尔下调业绩指引股价重挫，代工分拆与先进制程延期引发担忧",
           summary:
@@ -4205,6 +4246,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-3",
+          tag: "SEC Form 10-Q",
           headline: "超大规模云厂商年度AI资本开支年化突破2000亿美元",
           summary:
             "微软、Alphabet与Meta最新披露的10-Q财报显示，单季度合计资本开支已突破550亿美元，资金主要流向英伟达Blackwell架构GPU集群、液冷基础设施与高速光模块网络。",
@@ -4213,6 +4255,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-4",
+          tag: "宏观快讯",
           headline: "美联储决议前夕10年期美债收益率持稳于4.28%关键中枢",
           summary:
             "在经济增长韧性与就业市场逐步降温的博弈下，基准10年期美债收益率保持窄幅震荡，为权益市场贴现率定价提供了相对稳定的宏观锚点。",
@@ -4221,6 +4264,7 @@ export const translations: Record<Locale, Translations> = {
         },
         {
           id: "story-5",
+          tag: "卖方评级修正",
           headline: "资金高低切换明显，传统能源与日常必需消费品逆势走强",
           summary:
             "市场避险与价值风格轮动显著，能源板块（XLE +1.9%）与日常消费品（XLP +1.4%）逆势领跑，资金持续从高估值成长软件流入高股息与宽护城河复利资产。",

@@ -82,6 +82,9 @@ export class DrizzleReportRepository implements IReportRepository {
         moatTrend: reportsTable.moatTrend,
         operatingMarginPct: reportsTable.operatingMarginPct,
         revenueGrowthPct: reportsTable.revenueGrowthPct,
+        fcfYieldPct: sql<
+          number | string | null
+        >`(${reportsTable.valuation}->>'fcfYieldPct')::numeric`,
         publishedAt: reportsTable.publishedAt,
         snowflakeScore: reportsTable.snowflakeScore,
         snowflakeTier: reportsTable.snowflakeTier,
@@ -300,6 +303,8 @@ export class DrizzleReportRepository implements IReportRepository {
         revenueGrowthPct: row.revenueGrowthPct
           ? Number(row.revenueGrowthPct)
           : undefined,
+        fcfYieldPct:
+          row.fcfYieldPct != null ? Number(row.fcfYieldPct) : undefined,
         analystTarget,
         analystUpsidePct,
         analystRating,

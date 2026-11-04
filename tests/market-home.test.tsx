@@ -276,7 +276,7 @@ describe("MarketHomeView Component & Invariants", () => {
     expect(screen.getByText("Volatility (VIX)")).toBeDefined();
   });
 
-  it("renders standard S&P 500 Heatmap placed under Market Summary with constituents and legend", () => {
+  it("renders standard S&P 500 Heatmap elevated to top priority with constituents and legend", () => {
     const { onOpenScreener } = renderMarketHome("en");
 
     expect(screen.getByText("S&P 500 Heatmap")).toBeDefined();
@@ -314,10 +314,13 @@ describe("MarketHomeView Component & Invariants", () => {
     );
   });
 
-  it("renders Market Summary accordion with expandable stories and sources", () => {
+  it("renders Market Summary accordion with expandable stories, sources, and institutional wire tags", () => {
     renderMarketHome("en");
 
     expect(screen.getByText("Market Summary")).toBeDefined();
+    expect(screen.getAllByText("Macro Wire").length).toBeGreaterThan(0);
+    expect(screen.getByText("Form 8-K")).toBeDefined();
+    expect(screen.getByText("SEC Form 10-Q")).toBeDefined();
     expect(
       screen.getByText(
         "AI Selloff Hammers Tech, Nasdaq Posts Worst Day Since June"
@@ -333,13 +336,21 @@ describe("MarketHomeView Component & Invariants", () => {
     expect(screen.getByText(/accelerated packaging delays/i)).toBeDefined();
   });
 
-  it("renders compact Standouts without charts, emphasizing price change and catalyst driver", () => {
+  it("renders quantitative variant perception Standouts with 4-regime spectrum, FCF Yield, and asymmetry skew ratio", () => {
     const { onSelectReport } = renderMarketHome("en");
 
     expect(screen.getByText("Standouts")).toBeDefined();
     expect(screen.getAllByText("NVIDIA Corporation").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Volume:").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("FCF Yield:").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Market Cap:").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("P/E Ratio:").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Operating Margin:").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("4-Regime Valuation Spectrum").length
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Asymmetry:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Panic Floor").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("WFV").length).toBeGreaterThan(0);
     expect(
       screen.getAllByText("Catalyst & Fundamental Driver").length
     ).toBeGreaterThan(0);
@@ -351,8 +362,8 @@ describe("MarketHomeView Component & Invariants", () => {
       )
     ).toBeDefined();
 
-    // Verify launch model button
-    const modelButtons = screen.getAllByText("Open Model ⚡");
+    // Verify launch model button with clean text and no emojis
+    const modelButtons = screen.getAllByText("Open Model");
     expect(modelButtons.length).toBeGreaterThan(0);
     fireEvent.click(modelButtons[0]);
     expect(onSelectReport).toHaveBeenCalled();
@@ -366,10 +377,10 @@ describe("MarketHomeView Component & Invariants", () => {
 
     // Wait for async earnings fetch to populate
     await waitFor(() => {
-      expect(screen.getAllByText("Open Model ⚡").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Open Model").length).toBeGreaterThan(0);
     });
 
-    const modelButtons = screen.getAllByText("Open Model ⚡");
+    const modelButtons = screen.getAllByText("Open Model");
     fireEvent.click(modelButtons[0]);
     expect(onSelectReport).toHaveBeenCalled();
   });
@@ -400,5 +411,10 @@ describe("MarketHomeView Component & Invariants", () => {
     expect(screen.getByText("焦点异动标的")).toBeDefined();
     expect(screen.getByText("前瞻财报披露日程")).toBeDefined();
     expect(screen.getAllByText("异动催化与核心驱动").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("四维动态估值谱系").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/非对称盈亏比:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("自由现金流收益率:").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("宏观快讯").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("打开模型").length).toBeGreaterThan(0);
   });
 });
