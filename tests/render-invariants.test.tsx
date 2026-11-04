@@ -522,6 +522,51 @@ describe("Frontend Render & Efficiency Invariants", () => {
       expect(onSelectReport).toHaveBeenCalledWith("NVDA-Q2-2027-analysis");
       expect(onViewModeChange).not.toHaveBeenCalled();
     });
+
+    it("renders ticker button as the first tab in the center nav menu", async () => {
+      const queryClient = createTestQueryClient();
+      const onSelectReport = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      const reports = [mockGoogleReport, mockNvdaReport];
+
+      let container: HTMLElement | undefined;
+
+      await act(async () => {
+        const res = render(
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <Header
+                currentSlug="NVDA-Q2-2027-analysis"
+                reports={reports}
+                viewMode="cockpit"
+                onSelectReport={onSelectReport}
+                onViewModeChange={onViewModeChange}
+                onOpenShortcutsModal={noop}
+                onShare={noop}
+                locale="en"
+              />
+            </ThemeProvider>
+          </QueryClientProvider>
+        );
+        container = res.container;
+      });
+
+      // Find the desktop center navigation bar
+      const navElement = container?.querySelector("nav");
+      expect(navElement).toBeDefined();
+
+      const buttons = navElement?.querySelectorAll("button");
+      expect(buttons).toBeDefined();
+      expect(buttons?.length).toBe(4);
+
+      // Invariant: First button in nav is strictly the active ticker (e.g. NVDA)
+      expect(buttons?.[0]?.textContent?.trim()).toBe("NVDA");
+      // Followed by Market, Screener, and Watchlist
+      expect(buttons?.[1]?.textContent?.trim()).toBe("Market");
+      expect(buttons?.[2]?.textContent?.trim()).toBe("Screener");
+      expect(buttons?.[3]?.textContent).toContain("Watchlist");
+    });
   });
 
   describe("Cockpit Pricing Telemetry & Last Close Invariants", () => {

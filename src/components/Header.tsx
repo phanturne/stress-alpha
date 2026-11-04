@@ -209,20 +209,6 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Center Nav: Strictly Geometrically Centered (Zero Layout Shift) */}
       <div className="pointer-events-none absolute inset-x-0 hidden items-center justify-center md:flex">
         <nav className="shadow-xs pointer-events-auto flex items-center justify-center gap-1 rounded-xl border border-border bg-surface-1/90 p-1">
-          <button
-            type="button"
-            onClick={() => onViewModeChange("home")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
-              viewMode === "home"
-                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
-                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
-            }`}
-            title={t.market || "Market"}
-          >
-            <Globe className="size-3.5 text-accent" />
-            <span>{t.market || "Market"}</span>
-          </button>
-
           {activeSlug && (
             <button
               type="button"
@@ -245,6 +231,20 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{activeTicker}</span>
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={() => onViewModeChange("home")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all ${
+              viewMode === "home"
+                ? "shadow-xs border border-border bg-surface-2 font-bold text-foreground"
+                : "border border-transparent text-slate-400 hover:text-slate-200 dark:hover:text-white"
+            }`}
+            title={t.market || "Market"}
+          >
+            <Globe className="size-3.5 text-accent" />
+            <span>{t.market || "Market"}</span>
+          </button>
 
           <button
             type="button"
@@ -797,6 +797,24 @@ export const Header: React.FC<HeaderProps> = ({
                 {t.navigation}
               </div>
               <div className="flex flex-col gap-1.5">
+                {activeSlug && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelectReport(activeSlug);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                      viewMode === "cockpit"
+                        ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
+                        : "border-transparent text-slate-300 hover:bg-surface-2"
+                    }`}
+                  >
+                    <SlidersHorizontal className="size-4 text-accent" />
+                    <span>{activeTicker}</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   onClick={() => {
@@ -857,24 +875,6 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   )}
                 </button>
-
-                {activeSlug && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onSelectReport(activeSlug);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
-                      viewMode === "cockpit"
-                        ? "border-accent/30 bg-accent/15 text-accent shadow-sm"
-                        : "border-transparent text-slate-300 hover:bg-surface-2"
-                    }`}
-                  >
-                    <SlidersHorizontal className="size-4 text-accent" />
-                    <span>{activeTicker}</span>
-                  </button>
-                )}
 
                 {(viewMode === "cockpit" || viewMode === "memo") && (
                   <button

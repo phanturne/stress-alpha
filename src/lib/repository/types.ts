@@ -32,6 +32,7 @@ export interface ReportSummary {
   moatTrend?: string;
   operatingMarginPct?: number;
   revenueGrowthPct?: number;
+  fcfYieldPct?: number;
   analystTarget?: number;
   analystUpsidePct?: number;
   analystRating?: string;

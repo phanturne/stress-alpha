@@ -65,6 +65,8 @@ export class InMemoryReportRepository implements IReportRepository {
           resilience: number;
         }
       | undefined;
+    let fcfYieldPct: number | undefined =
+      report.valuation?.stressTest?.fcfYieldPct;
     try {
       const dynamicValuation =
         report.scenarios && report.facts
@@ -80,6 +82,9 @@ export class InMemoryReportRepository implements IReportRepository {
         report.baseline && currentPrice && currentPrice > 0
           ? computeStressedValuation(report.baseline, currentPrice)
           : undefined;
+      if (stressResult?.fcfYieldPct != null) {
+        fcfYieldPct = stressResult.fcfYieldPct;
+      }
       const reportPayload: ReportData = {
         ...report,
         valuation: dynamicValuation,
@@ -137,6 +142,7 @@ export class InMemoryReportRepository implements IReportRepository {
       moatTrend: report.moat?.moatTrend,
       operatingMarginPct: report.facts.operatingMarginPct,
       revenueGrowthPct: report.facts.revenueGrowthPct,
+      fcfYieldPct,
       analystTarget,
       analystUpsidePct,
       analystRating,

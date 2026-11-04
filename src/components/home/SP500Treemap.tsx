@@ -366,7 +366,7 @@ export function SP500Treemap({
                 </span>
               </div>
               <div className="mt-1 font-sans text-[10px] text-accent">
-                ⚡ Click to launch interactive Cockpit model
+                Click to launch interactive Cockpit model
               </div>
             </div>
           )}
