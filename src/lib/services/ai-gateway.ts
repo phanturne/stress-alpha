@@ -324,7 +324,7 @@ Rules:
 3. In moatEn.competitors, list 3-4 real publicly traded competitors with actual stock tickers (never "PEER") and realistic metrics.
 4. In moatEn.overallMoatRating, choose "Wide", "Narrow", or "None" based on durable ROIC > WACC and structural barriers.
 5. Set governanceRisk to "none" and accountingFlags to [] unless the company has an active auditor resignation, SEC restatement, or DOJ accounting fraud probe.
-6. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice * 1.15}).
+6. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice}).
 7. When official SEC 10-Q / 8-K excerpts are provided:
    a. Populate sentiment.keyQuotes using exact quotes from the CEO and CFO in the 8-K press release / commentary.
    b. If off-balance-sheet commitments and credit guarantees are disclosed, populate them in filingEn.sections under "Note: Commitments and Contingencies" with exact dollar amounts (e.g. supply capacity, shell buildout guarantees) and set purchaseObligationsBillions, totalCommitmentsBillions, and guaranteeExposureBillions.

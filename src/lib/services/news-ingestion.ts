@@ -170,15 +170,24 @@ export function mapArticleToTransmission(
     else if (/lowers target|lowered target|price target lowered/i.test(text))
       action = "TargetLowered";
 
-    const targetMatch = text.match(/\$(\d+(?:\.\d+)?)/);
-    const newTarget = targetMatch ? parseFloat(targetMatch[1]) : 150;
-
     const firmRegex =
       /(morgan stanley|goldman sachs|jpmorgan|jp morgan|bank of america|bofa|citi|citigroup|barclays|jefferies|bernstein|rosenblatt|wells fargo|ubs|deutsche bank|mizuho)/i;
     const firmMatch = text.match(firmRegex);
     const firm = firmMatch
       ? firmMatch[0].replace(/\b\w/g, (c) => c.toUpperCase())
       : article.publisher || "Wall Street Consensus";
+
+    const targetMatch = text.match(/\$(\d+(?:\.\d+)?)/);
+    if (!targetMatch) {
+      return {
+        eventType: "analyst_rating",
+        transmissionType: "none",
+        transmissionPayload: {
+          rationale: `${firm} ${action} commentary.`,
+        },
+      };
+    }
+    const newTarget = parseFloat(targetMatch[1]);
 
     return {
       eventType: "analyst_rating",
@@ -254,6 +263,19 @@ export function mapArticleToTransmission(
     const firm = firmMatch
       ? firmMatch[0].replace(/\b\w/g, (c) => c.toUpperCase())
       : "Wall Street";
+
+    const targetMatch = text.match(/\$(\d+(?:\.\d+)?)/);
+    if (!targetMatch) {
+      return {
+        eventType: "analyst_rating",
+        transmissionType: "none",
+        transmissionPayload: {
+          rationale: `${firm} assessment: ${isPositive ? "Overweight / Overdone selloff" : "Cautious outlook"}.`,
+        },
+      };
+    }
+    const newTarget = parseFloat(targetMatch[1]);
+
     return {
       eventType: "analyst_rating",
       transmissionType: "qpce_skew",
@@ -261,9 +283,9 @@ export function mapArticleToTransmission(
         analystAction: {
           firm,
           action: isPositive ? "Upgraded" : "Downgraded",
-          newTarget: isPositive ? 160 : 110,
+          newTarget,
         },
-        rationale: `${firm} assessment: ${isPositive ? "Overweight / Overdone selloff" : "Cautious outlook"}.`,
+        rationale: `${firm} assessment: ${isPositive ? "Overweight" : "Cautious"} with target $${newTarget}.`,
       },
     };
   }

@@ -395,6 +395,29 @@ export class DrizzleReportRepository implements IReportRepository {
       }
     }
 
+    // Decorate facts with live market EPS / market cap telemetry if available
+    if (tickerInfo?.trailingEps != null && Number(tickerInfo.trailingEps) > 0) {
+      const liveTrailingEps = Number(tickerInfo.trailingEps);
+      facts.trailingEps = liveTrailingEps;
+      if (factsZh) {
+        factsZh.trailingEps = liveTrailingEps;
+      }
+    }
+    if (tickerInfo?.forwardEps != null && Number(tickerInfo.forwardEps) > 0) {
+      const liveForwardEps = Number(tickerInfo.forwardEps);
+      facts.forwardEpsConsensus = liveForwardEps;
+      if (factsZh) {
+        factsZh.forwardEpsConsensus = liveForwardEps;
+      }
+    }
+    if (tickerInfo?.marketCap != null && Number(tickerInfo.marketCap) > 0) {
+      const liveMarketCap = Number(tickerInfo.marketCap);
+      facts.marketCapBillions = liveMarketCap;
+      if (factsZh) {
+        factsZh.marketCapBillions = liveMarketCap;
+      }
+    }
+
     const reportData: ReportData = {
       folderSlug: report.slug,
       folderName: report.slug,

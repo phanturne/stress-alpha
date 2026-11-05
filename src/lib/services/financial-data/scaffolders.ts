@@ -67,23 +67,27 @@ export function generateFactsDraft(
     : latestStmt?.operatingIncomeBillions || 2.5;
 
   const grossMarginPct =
-    latestStmt?.grossProfitBillions && latestStmt.revenueBillions > 0
+    latestStmt?.grossProfitBillions != null && latestStmt.revenueBillions > 0
       ? round2(
           (latestStmt.grossProfitBillions / latestStmt.revenueBillions) * 100
         )
-      : 55.0;
+      : undefined;
 
   const epsReported =
     calendarActuals?.epsActual != null &&
     Number.isFinite(calendarActuals.epsActual)
       ? round2(calendarActuals.epsActual)
-      : (latestStmt?.dilutedEps ?? 1.25);
+      : latestStmt?.dilutedEps && latestStmt.dilutedEps > 0
+        ? latestStmt.dilutedEps
+        : profile.trailingEps && profile.trailingEps > 0
+          ? round2(profile.trailingEps / 4)
+          : 0;
 
   const epsConsensus =
     calendarActuals?.epsEstimate != null &&
     Number.isFinite(calendarActuals.epsEstimate)
       ? round2(calendarActuals.epsEstimate)
-      : round2(epsReported * 0.97);
+      : epsReported;
 
   const epsOperating = epsReported; // Default clean operating EPS
 
@@ -94,12 +98,12 @@ export function generateFactsDraft(
     operatingMarginPct < 0
   ) {
     valuationArchetype = "venture_hypergrowth";
-  } else if (revenueGrowthPct >= 18 && grossMarginPct >= 48) {
+  } else if (revenueGrowthPct >= 18 && (grossMarginPct ?? 50) >= 48) {
     valuationArchetype = "operating_scaler";
   }
 
   const cashAndEquivalentsBillions =
-    profile.balanceSheet.totalCashBillions || 5.0;
+    profile.balanceSheet.totalCashBillions || 0.0;
   const shortTermDebtBillions =
     profile.balanceSheet.shortTermDebtBillions || 0.0;
 
@@ -127,26 +131,24 @@ export function generateFactsDraft(
     reportDate = new Date().toISOString().split("T")[0];
   }
 
-  // Propagate earnings-day beat/miss surprise into forward EPS consensus
-  let rawForwardEps =
-    profile.forwardEpsConsensus ||
-    round2((profile.trailingEps || epsReported * 4) * 1.15);
-  if (
-    calendarActuals?.epsActual != null &&
-    calendarActuals?.epsEstimate != null &&
-    Number.isFinite(calendarActuals.epsActual) &&
-    Number.isFinite(calendarActuals.epsEstimate)
-  ) {
-    if (calendarActuals.epsEstimate > 0) {
-      const surpriseRatio = Math.max(
-        0.55,
-        Math.min(1.25, calendarActuals.epsActual / calendarActuals.epsEstimate)
-      );
-      rawForwardEps = round2(rawForwardEps * surpriseRatio);
-    } else if (calendarActuals.epsActual < calendarActuals.epsEstimate) {
-      rawForwardEps = round2(rawForwardEps * 0.75);
-    }
-  }
+  // True 4-quarter statement aggregate calculation
+  const statementTtmEps =
+    profile.quarterlyStatements.length >= 4 &&
+    profile.quarterlyStatements.slice(0, 4).every((s) => s.dilutedEps != null)
+      ? round2(
+          profile.quarterlyStatements
+            .slice(0, 4)
+            .reduce((sum, s) => sum + (s.dilutedEps ?? 0), 0)
+        )
+      : undefined;
+
+  const resolvedTrailingEps =
+    profile.trailingEps ||
+    statementTtmEps ||
+    (epsReported > 0 ? round2(epsReported * 4) : 0);
+
+  // Honest forward EPS consensus from profile feed
+  const rawForwardEps = profile.forwardEpsConsensus || resolvedTrailingEps;
 
   const draft: Facts = {
     ticker: profile.ticker,
@@ -155,11 +157,17 @@ export function generateFactsDraft(
     reportDate,
     revenueBillions,
     revenueGrowthPct,
-    revenueEstimateBillions:
-      calRevEstBillions ?? round2(revenueBillions * 0.98),
+    revenueEstimateBillions: calRevEstBillions ?? undefined,
     operatingIncomeBillions,
     operatingMarginPct,
-    operatingIncomeGrowthPct: round2(revenueGrowthPct * 1.1),
+    operatingIncomeGrowthPct:
+      priorYearStmt && priorYearStmt.operatingIncomeBillions > 0
+        ? round2(
+            ((operatingIncomeBillions - priorYearStmt.operatingIncomeBillions) /
+              priorYearStmt.operatingIncomeBillions) *
+              100
+          )
+        : revenueGrowthPct,
     epsReported,
     epsConsensus,
     epsOperating,
@@ -173,13 +181,13 @@ export function generateFactsDraft(
       },
     ],
     oneTimeItems: [],
-    guidanceRevenueLowBillions: round2(revenueBillions * 1.02),
-    guidanceRevenueHighBillions: round2(revenueBillions * 1.05),
-    guidanceOperatingIncomeLowBillions: round2(operatingIncomeBillions * 1.02),
-    guidanceOperatingIncomeHighBillions: round2(operatingIncomeBillions * 1.06),
+    guidanceRevenueLowBillions: undefined,
+    guidanceRevenueHighBillions: undefined,
+    guidanceOperatingIncomeLowBillions: undefined,
+    guidanceOperatingIncomeHighBillions: undefined,
     currentPrice: profile.currentPrice,
     marketCapBillions: profile.marketCapBillions,
-    trailingEps: profile.trailingEps || round2(epsReported * 4),
+    trailingEps: resolvedTrailingEps,
     forwardEpsConsensus: rawForwardEps,
     valuationArchetype,
     grossMarginPct,
@@ -190,8 +198,8 @@ export function generateFactsDraft(
     governanceRisk: "none",
     accountingFlags: [],
     materialLitigationOrDoj: false,
-    customerConcentrationPct: 5.0,
-    shortInterestPct: 1.2,
+    customerConcentrationPct: undefined,
+    shortInterestPct: undefined,
     sources: [
       {
         title: `${profile.ticker} SEC EDGAR Filings & Financial Statements`,
@@ -225,14 +233,35 @@ export function generateBaselineDraft(
   facts: Facts,
   profile: FinancialProfile
 ): FinancialModelBaseline {
-  const baseRevenue = round2(Math.max(facts.revenueBillions * 4, 0.1));
+  const fourQuarterRevenue =
+    profile.quarterlyStatements?.length >= 4
+      ? round2(
+          profile.quarterlyStatements
+            .slice(0, 4)
+            .reduce((sum, s) => sum + s.revenueBillions, 0)
+        )
+      : undefined;
+
+  const fourQuarterOpIncome =
+    profile.quarterlyStatements?.length >= 4
+      ? round2(
+          profile.quarterlyStatements
+            .slice(0, 4)
+            .reduce((sum, s) => sum + s.operatingIncomeBillions, 0)
+        )
+      : undefined;
+
+  const baseRevenue = round2(
+    Math.max(fourQuarterRevenue || facts.revenueBillions * 4, 0.1)
+  );
   const baseGrossMargin = round2(
     facts.grossMarginPct && facts.grossMarginPct > 0
       ? facts.grossMarginPct
       : 45.0
   );
   const annualizedGrossProfit = baseRevenue * (baseGrossMargin / 100);
-  const annualizedOpIncome = facts.operatingIncomeBillions * 4;
+  const annualizedOpIncome =
+    fourQuarterOpIncome || facts.operatingIncomeBillions * 4;
   const impliedOpex = annualizedGrossProfit - annualizedOpIncome;
   const fixedOpex = round2(
     impliedOpex > 0
@@ -335,7 +364,7 @@ export function generateScenariosDraft(
   const basisYear = `FY${new Date().getFullYear() + 1}`;
   const consensusTarget =
     estimates?.priceTargets?.average ||
-    round2(profile.currentPrice > 0 ? profile.currentPrice * 1.15 : 100);
+    round2(profile.currentPrice > 0 ? profile.currentPrice : 0);
 
   let baseEps: number;
 
@@ -368,21 +397,10 @@ export function generateScenariosDraft(
     } else {
       baseEps = rawFwdEps;
     }
+  } else if (facts.trailingEps && facts.trailingEps > 0) {
+    baseEps = facts.trailingEps;
   } else if (facts.epsOperating && facts.epsOperating > 0) {
-    const impliedBaseTarget =
-      facts.epsOperating * 4 * 1.15 * baseline.multipleRegimes.base;
-    // Guardrail 4 (Early-Stage Hypergrowth Scale-Up Protection):
-    // If annualized trailing operating EPS implies a valuation < 35% of current price while consensus is bullish,
-    // anchor base EPS to consensus price target to avoid collapsing scale-up AI stocks
-    if (
-      profile.currentPrice > 0 &&
-      impliedBaseTarget < profile.currentPrice * 0.35 &&
-      consensusTarget > profile.currentPrice * 0.8
-    ) {
-      baseEps = round2(consensusTarget / baseline.multipleRegimes.base);
-    } else {
-      baseEps = round2(facts.epsOperating * 4 * 1.15);
-    }
+    baseEps = round2(facts.epsOperating * 4);
   } else {
     // Guardrail 2 (Negative EPS / Unprofitable Starter Fallback):
     // For companies with negative forward EPS and negative operating income (biotech, REITs, pre-profit AI, or restructuring),
@@ -633,19 +651,7 @@ export function generateMoatCompetitorsDraft(
               : 2,
       },
     ],
-    competitors: [
-      {
-        ticker: "PEER",
-        name: "Sector Benchmark Peer",
-        marketCapBillions: round2(profile.marketCapBillions * 1.1),
-        revenueBillions: round2(facts.revenueBillions * 4.2),
-        grossMarginPct: round2(facts.grossMarginPct || 42.0),
-        operatingMarginPct: round2(facts.operatingMarginPct || 16.0),
-        productComparison: `Direct industry peer competing across core enterprise and commercial segments.`,
-        pricingPower: "Parity",
-        keyAdvantageOrVulnerability: `Established market presence with comparable technology footprint.`,
-      },
-    ],
+    competitors: [],
     competitiveDynamicsSummary: `${profile.companyName} maintains a defensible market position supported by proprietary technology and customer retention, while operating in an active competitive landscape.`,
     sources: facts.sources,
   };
@@ -689,19 +695,7 @@ export function generateMoatCompetitorsDraft(
               : 2,
       },
     ],
-    competitors: [
-      {
-        ticker: "PEER",
-        name: "同业代表性基准企业",
-        marketCapBillions: round2(profile.marketCapBillions * 1.1),
-        revenueBillions: round2(facts.revenueBillions * 4.2),
-        grossMarginPct: round2(facts.grossMarginPct || 42.0),
-        operatingMarginPct: round2(facts.operatingMarginPct || 16.0),
-        productComparison: `在主营核心产品线及商业解决方案细分领域展开直接对标竞争。`,
-        pricingPower: "Parity",
-        keyAdvantageOrVulnerability: `具备成熟的渠道网络与相似的行业覆盖，在核心领域形成竞合关系。`,
-      },
-    ],
+    competitors: [],
     competitiveDynamicsSummary: `${profile.companyName} 在主营细分赛道具备清晰的护城河壁垒与客户黏性，在行业竞争中保持稳固地位。`,
     sources: facts.sources,
   };

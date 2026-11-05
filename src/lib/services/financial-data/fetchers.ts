@@ -433,7 +433,7 @@ export async function fetchFundamentalProfile(
     shortTermDebtBillions: 0,
     longTermDebtBillions: totalDebtFallback,
     totalDebtBillions: totalDebtFallback,
-    totalAssetsBillions: round2(totalCashFallback * 2),
+    totalAssetsBillions: totalCashFallback,
     totalLiabilitiesBillions: totalDebtFallback,
     totalEquityBillions: round2(
       Math.max(totalCashFallback - totalDebtFallback, 0)
@@ -451,8 +451,6 @@ export async function fetchFundamentalProfile(
     const rawChart = yfSummary.earnings?.financialsChart?.quarterly;
     if (Array.isArray(rawChart) && rawChart.length > 0) {
       const reversed = [...rawChart].reverse();
-      const opMargin = safeNum(yfFin.operatingMargins, 0.25);
-      const grossMargin = safeNum(yfFin.grossMargins, 0.55);
       statements = reversed.map((q: any) => {
         const rev = round2(safeNum(q.revenue) / 1e9);
         const net = round2(safeNum(q.earnings) / 1e9);
@@ -471,10 +469,10 @@ export async function fetchFundamentalProfile(
           fiscalPeriod,
           fiscalYear,
           revenueBillions: rev,
-          grossProfitBillions: round2(rev * grossMargin),
-          operatingIncomeBillions: round2(rev * opMargin),
+          grossProfitBillions: undefined,
+          operatingIncomeBillions: 0,
           netIncomeBillions: net,
-          dilutedEps: trailingEps ? round2(trailingEps / 4) : undefined,
+          dilutedEps: undefined,
         };
       });
     }
@@ -569,10 +567,16 @@ export async function fetchAnalystEstimates(
       100
   );
 
-  const low = round2(finData.targetLowPrice || currentPrice * 0.85);
-  const avg = round2(finData.targetMeanPrice || currentPrice * 1.15);
-  const median = round2(finData.targetMedianPrice || avg);
-  const high = round2(finData.targetHighPrice || currentPrice * 1.45);
+  const low = finData.targetLowPrice
+    ? round2(finData.targetLowPrice)
+    : currentPrice;
+  const avg = finData.targetMeanPrice
+    ? round2(finData.targetMeanPrice)
+    : currentPrice;
+  const median = finData.targetMedianPrice
+    ? round2(finData.targetMedianPrice)
+    : avg;
+  const high = finData.targetHighPrice ? round2(finData.targetHighPrice) : avg;
   const currency = finData.financialCurrency || yfQuote.currency || "USD";
 
   // 2. Fetch Consensus Breakdown (Try Finnhub first, fallback to Yahoo)
@@ -597,27 +601,25 @@ export async function fetchAnalystEstimates(
     }
   }
 
-  let totalAnalysts = bullishCount + neutralCount + bearishCount;
-  if (totalAnalysts === 0) {
-    totalAnalysts = safeNum(finData.numberOfAnalystOpinions, 25);
-    bullishCount = Math.round(totalAnalysts * 0.8);
-    neutralCount = Math.round(totalAnalysts * 0.15);
-    bearishCount = Math.max(totalAnalysts - bullishCount - neutralCount, 0);
-  }
-
-  const bullishPct = round2((bullishCount / totalAnalysts) * 100);
-  const neutralPct = round2((neutralCount / totalAnalysts) * 100);
-  const bearishPct = round2((bearishCount / totalAnalysts) * 100);
+  const totalAnalysts = bullishCount + neutralCount + bearishCount;
+  const bullishPct =
+    totalAnalysts > 0 ? round2((bullishCount / totalAnalysts) * 100) : 0;
+  const neutralPct =
+    totalAnalysts > 0 ? round2((neutralCount / totalAnalysts) * 100) : 0;
+  const bearishPct =
+    totalAnalysts > 0 ? round2((bearishCount / totalAnalysts) * 100) : 0;
 
   const consensusRaw =
     yfQuote.recommendationKey ||
-    (bullishPct >= 70
-      ? "Strong Buy"
-      : bullishPct >= 50
-        ? "Buy"
-        : neutralPct >= 50
-          ? "Hold"
-          : "Underperform");
+    (totalAnalysts === 0
+      ? "Neutral"
+      : bullishPct >= 70
+        ? "Strong Buy"
+        : bullishPct >= 50
+          ? "Buy"
+          : bearishPct >= 40
+            ? "Underperform"
+            : "Hold");
 
   const consensusClean = consensusRaw
     .replace(/_/g, " ")
