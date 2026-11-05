@@ -280,10 +280,10 @@ Rules:
             .toUpperCase()
             .slice(0, 10),
           name: String(c?.name || "Industry Peer"),
-          marketCapBillions: Math.max(Number(c?.marketCapBillions) || 50, 0.5),
-          revenueBillions: Math.max(Number(c?.revenueBillions) || 10, 0.1),
-          grossMarginPct: Number(c?.grossMarginPct ?? 45),
-          operatingMarginPct: Number(c?.operatingMarginPct ?? 18),
+          marketCapBillions: Number(c?.marketCapBillions) || 0,
+          revenueBillions: Number(c?.revenueBillions) || 0,
+          grossMarginPct: Number(c?.grossMarginPct ?? 0),
+          operatingMarginPct: Number(c?.operatingMarginPct ?? 0),
           productComparison: String(
             c?.productComparison || "Direct segment competitor"
           ),

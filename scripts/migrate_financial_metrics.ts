@@ -121,31 +121,19 @@ function normalizeStatementToMetric(
     (stmt.operatingIncomeBillions ? stmt.operatingIncomeBillions * 1e9 : 0);
 
   // Gross profit
-  let grossProfit =
+  const grossProfit =
     stmt["Gross Profit"] ??
-    (stmt.grossProfitBillions ? stmt.grossProfitBillions * 1e9 : undefined);
-  if (grossProfit === undefined) {
-    grossProfit = Math.round(revenue * 0.45);
-  }
+    (stmt.grossProfitBillions ? stmt.grossProfitBillions * 1e9 : 0);
 
   // Net income
-  let netIncome =
+  const netIncome =
     stmt["Net Income"] ??
-    (stmt.netIncomeBillions ? stmt.netIncomeBillions * 1e9 : undefined);
-  if (netIncome === undefined) {
-    netIncome = Math.round(operatingIncome * 0.835); // standard ~16.5% tax rate
-  }
+    (stmt.netIncomeBillions ? stmt.netIncomeBillions * 1e9 : 0);
 
   // Margins
-  const grossMarginPct = revenue > 0 ? (grossProfit / revenue) * 100 : 45.0;
+  const grossMarginPct = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
   const operatingMarginPct =
-    revenue > 0 ? (operatingIncome / revenue) * 100 : 25.0;
-
-  // EPS
-  const dilutedEps =
-    stmt["Diluted EPS"] ??
-    stmt.dilutedEps ??
-    (revenue > 0 ? operatingIncome / 1e10 : 1.0);
+    revenue > 0 ? (operatingIncome / revenue) * 100 : 0;
 
   // Shares
   const dilutedShares =
@@ -153,6 +141,12 @@ function normalizeStatementToMetric(
     (stmt.dilutedAverageSharesBillions
       ? stmt.dilutedAverageSharesBillions * 1e9
       : undefined);
+
+  // EPS (true reported diluted EPS or calculated from net income / shares)
+  const dilutedEps =
+    stmt["Diluted EPS"] ??
+    stmt.dilutedEps ??
+    (dilutedShares && dilutedShares > 0 ? netIncome / dilutedShares : 0);
 
   return {
     ticker: ticker.toUpperCase(),

@@ -23,6 +23,11 @@ const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 interface YahooQuoteResult extends YahooQuoteLike {
   regularMarketVolume?: number;
+  trailingPE?: number;
+  forwardPE?: number;
+  epsTrailingTwelveMonths?: number;
+  epsForward?: number;
+  marketCap?: number;
 }
 
 async function fetchQuoteFromYahoo(ticker: string): Promise<YahooQuoteResult> {
@@ -40,6 +45,56 @@ async function fetchQuoteFromYahoo(ticker: string): Promise<YahooQuoteResult> {
     fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
     fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
     regularMarketVolume: quote.regularMarketVolume,
+    trailingPE: quote.trailingPE,
+    forwardPE: quote.forwardPE,
+    epsTrailingTwelveMonths: quote.epsTrailingTwelveMonths,
+    epsForward: quote.epsForward,
+    marketCap: quote.marketCap,
+  };
+}
+
+function buildTickerUpdate(
+  quote: any,
+  ticker: string,
+  company: string,
+  newPrice: number,
+  prevClose: number | undefined,
+  technicalLevels: any,
+  now: Date
+): typeof tickersTable.$inferInsert {
+  const trailingEps =
+    typeof quote?.epsTrailingTwelveMonths === "number"
+      ? String(quote.epsTrailingTwelveMonths.toFixed(4))
+      : undefined;
+  const forwardEps =
+    typeof quote?.epsForward === "number"
+      ? String(quote.epsForward.toFixed(4))
+      : undefined;
+  const trailingPe =
+    typeof quote?.trailingPE === "number"
+      ? String(quote.trailingPE.toFixed(2))
+      : undefined;
+  const forwardPe =
+    typeof quote?.forwardPE === "number"
+      ? String(quote.forwardPE.toFixed(2))
+      : undefined;
+  const marketCap =
+    typeof quote?.marketCap === "number"
+      ? String((quote.marketCap / 1e9).toFixed(2))
+      : undefined;
+
+  return {
+    ticker,
+    company,
+    currentPrice: String(newPrice),
+    previousClose: prevClose != null ? String(prevClose) : undefined,
+    marketCap,
+    trailingEps,
+    forwardEps,
+    trailingPe,
+    forwardPe,
+    technicalLevels,
+    priceUpdatedAt: now,
   };
 }
 
@@ -49,12 +104,22 @@ async function syncPrices() {
     process.exit(1);
   }
 
+  const args = process.argv.slice(2);
+  let targetTicker: string | undefined;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith("--ticker=")) {
+      targetTicker = args[i].split("=")[1].toUpperCase();
+    } else if (args[i] === "--ticker" || args[i] === "-t") {
+      targetTicker = args[++i]?.toUpperCase();
+    }
+  }
+
   const db = getDb();
   console.log(
     "\n📈 [StressAlpha Price Sync] Fetching universe of active tickers..."
   );
 
-  const tickers = await db
+  let tickers = await db
     .select({
       ticker: tickersTable.ticker,
       company: tickersTable.company,
@@ -63,6 +128,10 @@ async function syncPrices() {
     })
     .from(tickersTable)
     .where(eq(tickersTable.active, true));
+
+  if (targetTicker) {
+    tickers = tickers.filter((t) => t.ticker.toUpperCase() === targetTicker);
+  }
 
   if (tickers.length === 0) {
     console.log("  ℹ️ No active tickers found in database.");
@@ -122,14 +191,17 @@ async function syncPrices() {
             existingLevels: (oldTechLevels as any) ?? undefined,
           });
 
-          chunkUpdates.push({
-            ticker,
-            company,
-            currentPrice: String(newPrice),
-            previousClose: prevClose != null ? String(prevClose) : undefined,
-            technicalLevels,
-            priceUpdatedAt: now,
-          });
+          chunkUpdates.push(
+            buildTickerUpdate(
+              quote,
+              ticker,
+              company,
+              newPrice,
+              prevClose,
+              technicalLevels,
+              now
+            )
+          );
 
           console.log(
             `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} (${deltaSign}${delta}% vs prior $${Number(oldPrice).toFixed(2)}) — ${company}`
@@ -148,14 +220,17 @@ async function syncPrices() {
               existingLevels: (oldTechLevels as any) ?? undefined,
             });
 
-            chunkUpdates.push({
-              ticker,
-              company,
-              currentPrice: String(newPrice),
-              previousClose: prevClose != null ? String(prevClose) : undefined,
-              technicalLevels,
-              priceUpdatedAt: now,
-            });
+            chunkUpdates.push(
+              buildTickerUpdate(
+                single,
+                ticker,
+                company,
+                newPrice,
+                prevClose,
+                technicalLevels,
+                now
+              )
+            );
 
             console.log(
               `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
@@ -189,14 +264,17 @@ async function syncPrices() {
             existingLevels: (oldTechLevels as any) ?? undefined,
           });
 
-          chunkUpdates.push({
-            ticker,
-            company,
-            currentPrice: String(newPrice),
-            previousClose: prevClose != null ? String(prevClose) : undefined,
-            technicalLevels,
-            priceUpdatedAt: now,
-          });
+          chunkUpdates.push(
+            buildTickerUpdate(
+              single,
+              ticker,
+              company,
+              newPrice,
+              prevClose,
+              technicalLevels,
+              now
+            )
+          );
 
           console.log(
             `  ✅ [${ticker.padEnd(5)}] $${newPrice.toFixed(2)} — ${company}`
@@ -221,6 +299,11 @@ async function syncPrices() {
           set: {
             currentPrice: sql`excluded.current_price`,
             previousClose: sql`COALESCE(excluded.previous_close, ${tickersTable.previousClose})`,
+            marketCap: sql`COALESCE(excluded.market_cap, ${tickersTable.marketCap})`,
+            trailingEps: sql`COALESCE(excluded.trailing_eps, ${tickersTable.trailingEps})`,
+            forwardEps: sql`COALESCE(excluded.forward_eps, ${tickersTable.forwardEps})`,
+            trailingPe: sql`COALESCE(excluded.trailing_pe, ${tickersTable.trailingPe})`,
+            forwardPe: sql`COALESCE(excluded.forward_pe, ${tickersTable.forwardPe})`,
             technicalLevels: sql`excluded.technical_levels`,
             priceUpdatedAt: sql`excluded.price_updated_at`,
           },

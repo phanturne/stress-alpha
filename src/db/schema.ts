@@ -46,6 +46,10 @@ export const tickersTable = pgTable("tickers", {
     .notNull(),
 
   marketCap: numeric("market_cap", { precision: 16, scale: 2 }),
+  trailingEps: numeric("trailing_eps", { precision: 12, scale: 4 }),
+  forwardEps: numeric("forward_eps", { precision: 12, scale: 4 }),
+  trailingPe: numeric("trailing_pe", { precision: 12, scale: 2 }),
+  forwardPe: numeric("forward_pe", { precision: 12, scale: 2 }),
   technicalLevels: jsonb("technical_levels").$type<TechnicalLevelsPayload>(),
   active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })

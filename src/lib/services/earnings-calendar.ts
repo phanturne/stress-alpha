@@ -471,7 +471,7 @@ export async function syncEarningsCalendar(
         let baseVal = valuation.weightedFairValue;
         let panicVal =
           valuation.stressTest?.valuationBands?.panic?.targetPrice ??
-          valuation.weightedFairValue * 0.7;
+          valuation.weightedFairValue;
 
         if (report.scenarios?.scenarios) {
           for (const s of report.scenarios.scenarios) {
@@ -492,7 +492,7 @@ export async function syncEarningsCalendar(
 
         let priorBullVal = priorWfvNum;
         let priorBaseVal = priorWfvNum;
-        let priorPanicVal = priorWfvNum * 0.7;
+        let priorPanicVal = priorWfvNum;
         if (priorReport?.scenarios?.scenarios) {
           for (const s of priorReport.scenarios.scenarios) {
             const fv = s.forwardEps * s.multiple;

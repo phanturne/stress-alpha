@@ -31,32 +31,12 @@ export interface MarketSummaryResponse {
 }
 
 const INDEX_CONFIG = [
-  { symbol: "SPY", name: "S&P 500", fallbackPrice: 578.5, fallbackPct: 0.35 },
-  {
-    symbol: "QQQ",
-    name: "Nasdaq 100",
-    fallbackPrice: 495.2,
-    fallbackPct: 0.82,
-  },
-  { symbol: "DIA", name: "Dow Jones", fallbackPrice: 422.4, fallbackPct: 0.15 },
-  {
-    symbol: "IWM",
-    name: "Russell 2000",
-    fallbackPrice: 222.1,
-    fallbackPct: -0.25,
-  },
-  {
-    symbol: "^TNX",
-    name: "10Y Treasury",
-    fallbackPrice: 4.28,
-    fallbackPct: -0.65,
-  },
-  {
-    symbol: "^VIX",
-    name: "Volatility (VIX)",
-    fallbackPrice: 15.8,
-    fallbackPct: -3.2,
-  },
+  { symbol: "SPY", name: "S&P 500" },
+  { symbol: "QQQ", name: "Nasdaq 100" },
+  { symbol: "DIA", name: "Dow Jones" },
+  { symbol: "IWM", name: "Russell 2000" },
+  { symbol: "^TNX", name: "10Y Treasury" },
+  { symbol: "^VIX", name: "Volatility (VIX)" },
 ];
 
 const SECTOR_ETFS = [
@@ -73,20 +53,10 @@ const SECTOR_ETFS = [
   "XLB", // Materials
 ];
 
-// Fallback ETF changes in case network/rate limit blocks Yahoo Finance
-const DEFAULT_SECTOR_CHANGES: Record<string, number> = {
-  XLK: 0.85,
-  XLC: 0.42,
-  XLY: -0.21,
-  XLF: 0.31,
-  XLV: -0.15,
-  XLI: 0.28,
-  XLP: -0.45,
-  XLE: 1.12,
-  XLU: -0.38,
-  XLRE: -0.12,
-  XLB: 0.19,
-};
+// Default sector returns: neutral 0.00% if live quote fails (no synthetic moves)
+const DEFAULT_SECTOR_CHANGES: Record<string, number> = Object.fromEntries(
+  SECTOR_ETFS.map((s) => [s, 0.0])
+);
 
 let cache: { data: MarketSummaryResponse; timestamp: number } | null = null;
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes fresh cache (aligned with institutional caching tier)
@@ -183,15 +153,13 @@ export async function GET() {
         };
       }
 
-      // Fallback for this individual index
+      // Fallback for this individual index if quote is unavailable
       return {
         symbol: cfg.symbol,
         name: cfg.name,
-        price: cfg.fallbackPrice,
-        change: Number(
-          ((cfg.fallbackPrice * cfg.fallbackPct) / 100).toFixed(2)
-        ),
-        changePct: cfg.fallbackPct,
+        price: 0,
+        change: 0,
+        changePct: 0,
       };
     });
 
@@ -237,13 +205,13 @@ export async function GET() {
       });
     }
 
-    // Provide robust fallback response and cache it to prevent repeated failed calls
+    // Provide neutral fallback response without fake prices
     const fallbackIndices: MarketIndexItem[] = INDEX_CONFIG.map((cfg) => ({
       symbol: cfg.symbol,
       name: cfg.name,
-      price: cfg.fallbackPrice,
-      change: Number(((cfg.fallbackPrice * cfg.fallbackPct) / 100).toFixed(2)),
-      changePct: cfg.fallbackPct,
+      price: 0,
+      change: 0,
+      changePct: 0,
     }));
 
     const payload: MarketSummaryResponse = {
