@@ -11,7 +11,12 @@ This document defines the architectural conventions, data modeling rules, intern
 1. **Zero LLM Math Hallucinations**:
    - The LLM must **never** calculate, invent, or guess weighted fair values (WFV), target prices, upside percentages, P/E multiple spreads, or snowflake scores in prompts or raw markdown text.
    - All financial mathematics, operating leverage flows, and risk/reward asymmetries are strictly calculated by deterministic TypeScript engines (`src/lib/valuation.ts`, `src/lib/snowflake.ts`).
-2. **Audited SEC Data Extraction & Financial Feeds**:
+2. **Zero Frontend Calculation Placeholders & Synthetic Heuristics (Trust Guardrail)**:
+   - **Never invent numbers or fallback formulas**: UI components must never fabricate target prices (e.g. `price * 1.25`), consensus spreads (`price * 1.12`), bear targets (`price * 0.7`), market caps (`$850.2bn`), or metric ratios (`operatingMargin * 0.12`).
+   - **Honest Missing Data (`"—"` / N/A)**: If a metric is unpopulated or pending pipeline synchronization, render `"—"`, a loading skeleton, or gracefully hide the uncomputed element. In institutional equity analysis, displaying uncalculated indicators preserves credibility, whereas fabricated placeholders destroy user trust immediately.
+   - **No Synthetic Price Return Calculations**: Heatmaps, index bars, and movers must render real quote telemetry or neutral `0.00%` / `"—"`. Never synthesize constituent equity returns by mixing ETF moves with arbitrary constants (e.g. `etf * 1.05 + default * 0.35`).
+   - **Authentic Visualizations**: If multidimensional pillar scores or scenario bounds are absent, render neutral circular boundaries or omit spectrum tracks rather than drawing fake symmetrical radar polygons or arbitrary boundary pins.
+3. **Audited SEC Data Extraction & Financial Feeds**:
    - Extract facts directly from SEC 10-K / 10-Q filings, press releases, and earnings call transcripts via **Massive.com** ([pricing](https://massive.com/pricing)) for point-in-time statements & ratios, and **Finnhub.io** ([pricing](https://finnhub.io/pricing)) for audio transcripts, SEC filings, and sell-side estimates.
    - Enforce the **Income Quality Guardrail**: Identify non-operating, mark-to-market, or one-off items (e.g., ASU 2016-01 equity adjustments) and isolate normalized `epsOperating` to prevent valuation base inflation.
    - Decoupled Deterministic Data Ingestion & 8-Module Scaffolding (`src/lib/services/financial-data.ts`, `POST /api/pipeline/data`, `npm run fetch:data`):

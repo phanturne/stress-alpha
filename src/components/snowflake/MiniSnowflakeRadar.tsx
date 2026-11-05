@@ -80,20 +80,22 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = React.memo(
     // Concentric guideline rings
     const ringRatios = [0.35, 0.7, 1.0];
 
-    // Calculate polygon vertices
-    const points = AXIS_CONFIGS.map((axis) => {
-      const rawScore = pillars ? (pillars[axis.id] ?? 0) : (score / 30) * 6;
-      const ratio = Math.max(0.18, Math.min(1.0, rawScore / 6));
-      const r = radius * ratio;
-      const rad = (axis.angleDeg * Math.PI) / 180;
-      const x = cx + r * Math.cos(rad);
-      const y = cy + r * Math.sin(rad);
-      return { x, y };
-    });
+    // Calculate polygon vertices only when real pillars are provided
+    const points = pillars
+      ? AXIS_CONFIGS.map((axis) => {
+          const rawScore = pillars[axis.id] ?? 0;
+          const ratio = Math.max(0.18, Math.min(1.0, rawScore / 6));
+          const r = radius * ratio;
+          const rad = (axis.angleDeg * Math.PI) / 180;
+          const x = cx + r * Math.cos(rad);
+          const y = cy + r * Math.sin(rad);
+          return { x, y };
+        })
+      : null;
 
     const pointsString = points
-      .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
-      .join(" ");
+      ? points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ")
+      : null;
 
     return (
       <svg
@@ -137,22 +139,40 @@ export const MiniSnowflakeRadar: React.FC<MiniSnowflakeRadarProps> = React.memo(
           );
         })}
 
-        {/* Filled Polygon Snowflake */}
-        <polygon
-          points={pointsString}
-          fill={tierColor.fill}
-          stroke={tierColor.stroke}
-          strokeWidth="1.2"
-          strokeLinejoin="round"
-          style={{
-            filter: `drop-shadow(0 0 2px ${tierColor.glow})`,
-          }}
-        />
-
-        {/* Vertex Dots */}
-        {points.map((p, idx) => (
-          <circle key={idx} cx={p.x} cy={p.y} r="1.2" fill={tierColor.stroke} />
-        ))}
+        {/* Filled Polygon Snowflake or Neutral Guideline Ring */}
+        {pointsString && points ? (
+          <>
+            <polygon
+              points={pointsString}
+              fill={tierColor.fill}
+              stroke={tierColor.stroke}
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+              style={{
+                filter: `drop-shadow(0 0 2px ${tierColor.glow})`,
+              }}
+            />
+            {points.map((p, idx) => (
+              <circle
+                key={idx}
+                cx={p.x}
+                cy={p.y}
+                r="1.2"
+                fill={tierColor.stroke}
+              />
+            ))}
+          </>
+        ) : (
+          <circle
+            cx={cx}
+            cy={cy}
+            r={radius * 0.5}
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.2)"
+            strokeDasharray="2 2"
+            strokeWidth="0.8"
+          />
+        )}
 
         {/* Center Origin Dot */}
         <circle

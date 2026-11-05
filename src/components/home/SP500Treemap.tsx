@@ -123,13 +123,8 @@ export function SP500Treemap({
       const stockNodes: StockNode[] = rawConstituents.map((c) => {
         const report = reportsByTicker.get(c.ticker.toUpperCase());
         const etfChange = secRect.item.changePct;
-        let changePct = c.defaultChangePct;
-
-        if (etfChange !== 0) {
-          changePct = Number(
-            (etfChange * 1.05 + c.defaultChangePct * 0.35).toFixed(2)
-          );
-        }
+        const changePct =
+          report?.priceChangePct ?? (etfChange !== 0 ? etfChange : 0);
 
         return {
           id: `${sectorId}-${c.ticker}`,

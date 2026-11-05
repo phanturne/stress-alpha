@@ -108,16 +108,9 @@ export const NewsTab: React.FC<NewsTabProps> = ({
     if (payload.grossMarginBpsDelta !== undefined) {
       onSimulateGrossMarginDelta?.(payload.grossMarginBpsDelta);
       simulated = true;
-    } else if (payload.segmentDeltaGrowthPct !== undefined) {
-      // Map segment growth outlook into gross margin bps (e.g. +5% -> +100 bps)
-      onSimulateGrossMarginDelta?.(payload.segmentDeltaGrowthPct * 20);
-      simulated = true;
     }
     if (payload.catalystId && payload.newProbability !== undefined) {
       onSimulateCatalystProb?.(payload.catalystId, payload.newProbability);
-      simulated = true;
-    } else if (event.transmissionType === "catalyst_prob") {
-      onSimulateCatalystProb?.("catalyst", payload.newProbability ?? 0.75);
       simulated = true;
     }
 
