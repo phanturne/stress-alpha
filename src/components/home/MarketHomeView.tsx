@@ -316,8 +316,15 @@ export function MarketHomeView({
     if (!latestReports || latestReports.length === 0) return [];
 
     // Deterministic ranking by fundamental variant perception:
-    // WFV upside % + sell-side consensus divergence + daily price momentum
-    const scored = [...latestReports].map((r) => {
+    // Only select reports with valid valuation data (positive WFV and price)
+    const validReports = latestReports.filter(
+      (r) =>
+        r.weightedFairValue != null &&
+        r.currentPrice != null &&
+        r.currentPrice > 0
+    );
+
+    const scored = validReports.map((r) => {
       const upside = r.upsidePct ?? 0;
       const consensusSpread = Math.abs(r.consensusSpreadPct ?? 0);
       const absPriceChange = Math.abs(r.priceChangePct ?? 0);
@@ -407,7 +414,7 @@ export function MarketHomeView({
 
   // Market Breadth: Count advancing vs declining sector ETFs
   const marketBreadth = useMemo(() => {
-    if (!marketSummary?.sectors) return { advancers: 6, decliners: 5 };
+    if (!marketSummary?.sectors) return { advancers: 0, decliners: 0 };
     const values = Object.values(marketSummary.sectors);
     const advancers = values.filter((v) => v > 0).length;
     const decliners = values.filter((v) => v < 0).length;
@@ -417,25 +424,7 @@ export function MarketHomeView({
   // Top Movers: Gainers, Losers, and Active for the sidebar tab widget (Daily Price Return %)
   const moversData = useMemo(() => {
     const enrichedReports = latestReports.map((r) => {
-      const sym = (r.ticker || r.slug.split("-")[0]).toUpperCase();
-      let changePct = r.priceChangePct;
-
-      if (changePct == null) {
-        const sectorId = getTickerSectorId(sym, r.sector);
-        const sectorStat = sectorStats.find((s) => s.sector.id === sectorId);
-        const etfChange = sectorStat?.changePct ?? 0;
-        const constituent = SP500_SECTOR_CONSTITUENTS[sectorId]?.find(
-          (c) => c.ticker === sym
-        );
-        changePct = constituent
-          ? Number(
-              (etfChange * 1.05 + constituent.defaultChangePct * 0.35).toFixed(
-                2
-              )
-            )
-          : etfChange;
-      }
-
+      const changePct = r.priceChangePct ?? 0;
       return {
         ...r,
         changePct,
@@ -483,104 +472,88 @@ export function MarketHomeView({
 
         {/* 6 Macro Index Cards */}
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-          {(
-            marketSummary?.indices || [
-              {
-                symbol: "SPY",
-                name: "S&P 500",
-                price: 578.5,
-                change: 2.1,
-                changePct: 0.36,
-              },
-              {
-                symbol: "QQQ",
-                name: "Nasdaq 100",
-                price: 495.2,
-                change: 4.0,
-                changePct: 0.81,
-              },
-              {
-                symbol: "DIA",
-                name: "Dow Jones",
-                price: 422.4,
-                change: 0.6,
-                changePct: 0.14,
-              },
-              {
-                symbol: "IWM",
-                name: "Russell 2000",
-                price: 222.1,
-                change: -0.5,
-                changePct: -0.22,
-              },
-              {
-                symbol: "^TNX",
-                name: "10Y Treasury",
-                price: 4.28,
-                change: -0.03,
-                changePct: -0.65,
-              },
-              {
-                symbol: "^VIX",
-                name: "Volatility (VIX)",
-                price: 15.8,
-                change: -0.5,
-                changePct: -3.2,
-              },
-            ]
-          ).map((idx) => {
-            const isPos = idx.changePct >= 0;
-            const isVix = idx.symbol === "^VIX";
-            const isFavorable = isVix ? !isPos : isPos;
+          {marketSummary?.indices
+            ? marketSummary.indices.map((idx) => {
+                const isPos = idx.changePct >= 0;
+                const isVix = idx.symbol === "^VIX";
+                const isFavorable = isVix ? !isPos : isPos;
 
-            return (
-              <div
-                key={idx.symbol}
-                className="shadow-xs group relative flex flex-col justify-between rounded-xl border border-border/80 bg-surface-1 p-3 transition-all hover:border-border hover:bg-surface-2/60"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0">
-                    <span className="block truncate text-xs font-bold text-foreground">
-                      {idx.name}
-                    </span>
-                    <span className="font-mono text-[10px] uppercase text-slate-500">
-                      {idx.symbol}
-                    </span>
-                  </div>
-                  <span
-                    className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
-                      isPos
-                        ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                        : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
-                    }`}
+                return (
+                  <div
+                    key={idx.symbol}
+                    className="shadow-xs group relative flex flex-col justify-between rounded-xl border border-border/80 bg-surface-1 p-3 transition-all hover:border-border hover:bg-surface-2/60"
                   >
-                    {isPos ? (
-                      <ArrowUpRight className="size-3" />
-                    ) : (
-                      <ArrowDownRight className="size-3" />
-                    )}
-                    {Math.abs(idx.changePct).toFixed(2)}%
-                  </span>
-                </div>
+                    <div className="flex items-center justify-between">
+                      <div className="min-w-0">
+                        <span className="block truncate text-xs font-bold text-foreground">
+                          {idx.name}
+                        </span>
+                        <span className="font-mono text-[10px] uppercase text-slate-500">
+                          {idx.symbol}
+                        </span>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                          isFavorable
+                            ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                            : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
+                        }`}
+                      >
+                        {isPos ? (
+                          <ArrowUpRight className="size-3" />
+                        ) : (
+                          <ArrowDownRight className="size-3" />
+                        )}
+                        {Math.abs(idx.changePct).toFixed(2)}%
+                      </span>
+                    </div>
 
-                <div className="mt-2 flex items-baseline justify-between gap-1">
-                  <span className="font-mono text-sm font-extrabold text-foreground sm:text-base">
-                    {idx.symbol === "^TNX"
-                      ? `${idx.price.toFixed(3)}%`
-                      : idx.symbol === "^VIX"
-                        ? idx.price.toFixed(2)
-                        : formatCurrency(idx.price)}
-                  </span>
-                  <div className="hidden shrink-0 sm:block">
-                    <IndexSparkline
-                      sparkline={idx.sparkline}
-                      isPositive={isFavorable}
-                    />
+                    <div className="mt-2 flex items-baseline justify-between gap-1">
+                      <span className="font-mono text-sm font-extrabold text-foreground sm:text-base">
+                        {idx.symbol === "^TNX"
+                          ? `${idx.price.toFixed(3)}%`
+                          : idx.symbol === "^VIX"
+                            ? idx.price.toFixed(2)
+                            : formatCurrency(idx.price)}
+                      </span>
+                      <div className="hidden shrink-0 sm:block">
+                        <IndexSparkline
+                          sparkline={idx.sparkline}
+                          isPositive={isFavorable}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            : [
+                { symbol: "SPY", name: "S&P 500" },
+                { symbol: "QQQ", name: "Nasdaq 100" },
+                { symbol: "DIA", name: "Dow Jones" },
+                { symbol: "IWM", name: "Russell 2000" },
+                { symbol: "^TNX", name: "10Y Treasury" },
+                { symbol: "^VIX", name: "Volatility (VIX)" },
+              ].map((idx) => (
+                <div
+                  key={idx.symbol}
+                  className="shadow-xs group relative flex flex-col justify-between rounded-xl border border-border/80 bg-surface-1 p-3 transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0">
+                      <span className="block truncate text-xs font-bold text-foreground">
+                        {idx.name}
+                      </span>
+                      <span className="font-mono text-[10px] uppercase text-slate-500">
+                        {idx.symbol}
+                      </span>
+                    </div>
+                    <div className="h-4 w-10 animate-pulse rounded bg-surface-2" />
+                  </div>
+                  <div className="mt-2 flex items-baseline justify-between gap-1">
+                    <div className="h-4 w-16 animate-pulse rounded bg-surface-3" />
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              ))}
         </div>
       </section>
 
@@ -747,50 +720,68 @@ export function MarketHomeView({
                 const sym = (
                   stock.ticker || stock.slug.split("-")[0]
                 ).toUpperCase();
-                const price = stock.currentPrice || 120.0;
-                const prevClose =
-                  stock.previousClose ??
-                  (price > 100
-                    ? Number((price * 1.042).toFixed(2))
-                    : Number((price * 0.958).toFixed(2)));
-                const isPos = price >= prevClose;
+                const price = stock.currentPrice!;
+                const prevClose = stock.previousClose ?? null;
+                const isPos =
+                  prevClose != null
+                    ? price >= prevClose
+                    : (stock.priceChangePct ?? 0) >= 0;
                 const changePct =
                   stock.priceChangePct ??
-                  Number((((price - prevClose) / prevClose) * 100).toFixed(2));
+                  (prevClose != null && prevClose > 0
+                    ? Number(
+                        (((price - prevClose) / prevClose) * 100).toFixed(2)
+                      )
+                    : 0);
 
-                const wfv =
-                  stock.weightedFairValue ?? Number((price * 1.25).toFixed(2));
-                const consensusTarget =
-                  stock.analystTarget ?? Number((price * 1.12).toFixed(2));
-                const panicFloor = stock.bearFairValue
-                  ? Number((stock.bearFairValue * 0.85).toFixed(2))
-                  : Number((price * 0.72).toFixed(2));
+                const wfv = stock.weightedFairValue ?? null;
+                const consensusTarget = stock.analystTarget ?? null;
+                const panicFloor = stock.bearFairValue ?? null;
 
-                const downsidePct = Math.abs(
-                  ((panicFloor - price) / price) * 100
-                );
-                const upsidePct = Math.max(0, ((wfv - price) / price) * 100);
+                const downsidePct =
+                  panicFloor != null && price > 0
+                    ? Math.abs(((panicFloor - price) / price) * 100)
+                    : null;
+                const upsidePct =
+                  wfv != null && price > 0
+                    ? Math.max(0, ((wfv - price) / price) * 100)
+                    : null;
                 const asymmetryRatio =
-                  downsidePct > 0 ? upsidePct / downsidePct : 1.0;
+                  downsidePct != null && downsidePct > 0 && upsidePct != null
+                    ? upsidePct / downsidePct
+                    : null;
 
                 const panicDiscountPct =
-                  price > 0
+                  panicFloor != null && price > 0
                     ? (((panicFloor - price) / price) * 100).toFixed(1)
-                    : "-25.0";
+                    : null;
                 const consensusSpread =
-                  price > 0
+                  consensusTarget != null && price > 0
                     ? (((consensusTarget - price) / price) * 100).toFixed(1)
-                    : "0.0";
+                    : null;
                 const wfvSpread =
-                  price > 0
+                  wfv != null && price > 0
                     ? (((wfv - price) / price) * 100).toFixed(1)
-                    : "25.0";
+                    : null;
 
-                const minScale = Math.min(panicFloor, price) * 0.94;
-                const maxScale = Math.max(wfv, consensusTarget, price) * 1.06;
+                const validPrices = [
+                  price,
+                  panicFloor,
+                  consensusTarget,
+                  wfv,
+                ].filter((v): v is number => v != null && v > 0);
+                const minScale =
+                  validPrices.length > 0
+                    ? Math.min(...validPrices) * 0.94
+                    : price * 0.94;
+                const maxScale =
+                  validPrices.length > 0
+                    ? Math.max(...validPrices) * 1.06
+                    : price * 1.06;
                 const scaleSpan = maxScale - minScale || 1;
 
-                const toBarPct = (v: number) => {
+                const toBarPct = (v: number | null) => {
+                  if (v == null) return null;
                   const p = ((v - minScale) / scaleSpan) * 100;
                   return Math.max(4, Math.min(96, p));
                 };
@@ -876,7 +867,7 @@ export function MarketHomeView({
                           {tHome.prevClose}:
                         </span>
                         <span className="font-bold tabular-nums text-foreground">
-                          ${prevClose.toFixed(2)}
+                          {prevClose != null ? `$${prevClose.toFixed(2)}` : "—"}
                         </span>
                       </div>
                       <div>
@@ -886,9 +877,7 @@ export function MarketHomeView({
                         <span className="font-bold tabular-nums text-foreground">
                           {stock.fcfYieldPct != null
                             ? `${stock.fcfYieldPct.toFixed(1)}%`
-                            : stock.operatingMarginPct != null
-                              ? `${(stock.operatingMarginPct * 0.12).toFixed(1)}%`
-                              : "4.2%"}
+                            : "—"}
                         </span>
                       </div>
                       <div>
@@ -898,7 +887,7 @@ export function MarketHomeView({
                         <span className="font-bold tabular-nums text-foreground">
                           {stock.marketCap
                             ? `$${(stock.marketCap / 1e9).toFixed(1)}bn`
-                            : "$850.2bn"}
+                            : "—"}
                         </span>
                       </div>
                       <div>
@@ -906,9 +895,7 @@ export function MarketHomeView({
                           {tHome.peRatio}:
                         </span>
                         <span className="font-bold tabular-nums text-foreground">
-                          {stock.operatingMarginPct
-                            ? `${(100 / (stock.operatingMarginPct || 25)).toFixed(1)}x`
-                            : "34.5x"}
+                          —
                         </span>
                       </div>
                       <div>
@@ -918,15 +905,25 @@ export function MarketHomeView({
                         <span className="font-bold tabular-nums text-foreground">
                           {stock.operatingMarginPct != null
                             ? `${stock.operatingMarginPct.toFixed(1)}%`
-                            : "54.8%"}
+                            : "—"}
                         </span>
                       </div>
                       <div>
                         <span className="mr-1 text-slate-500">
                           {tHome.wfvUpside}:
                         </span>
-                        <span className="font-bold tabular-nums text-emerald-400">
-                          +{stock.upsidePct?.toFixed(1) || "28.5"}%
+                        <span
+                          className={`font-bold tabular-nums ${
+                            stock.upsidePct != null && stock.upsidePct >= 0
+                              ? "text-emerald-400"
+                              : stock.upsidePct != null
+                                ? "text-rose-400"
+                                : "text-slate-400"
+                          }`}
+                        >
+                          {stock.upsidePct != null
+                            ? `${stock.upsidePct >= 0 ? "+" : ""}${stock.upsidePct.toFixed(1)}%`
+                            : "—"}
                         </span>
                       </div>
                       {stock.snowflakeScore != null && (
@@ -958,13 +955,33 @@ export function MarketHomeView({
                           </span>
                           <div className="flex items-center gap-1.5">
                             <span className="py-0.2 inline-flex items-center rounded border border-indigo-500/30 bg-indigo-500/10 px-1.5 font-mono text-[9px] font-bold text-indigo-400">
-                              {tHome.asymmetryBadge(asymmetryRatio.toFixed(1))}
+                              {tHome.asymmetryBadge(
+                                asymmetryRatio != null
+                                  ? asymmetryRatio.toFixed(1)
+                                  : "—"
+                              )}
                             </span>
-                            <span className="font-mono text-[10px] font-bold tabular-nums text-emerald-400">
-                              {stock.consensusSpreadPct != null
-                                ? `${stock.consensusSpreadPct > 0 ? "+" : ""}${stock.consensusSpreadPct.toFixed(1)}% vs Cons`
-                                : `+${(((wfv - consensusTarget) / consensusTarget) * 100).toFixed(1)}% vs Cons`}
-                            </span>
+                            {stock.consensusSpreadPct != null ? (
+                              <span className="font-mono text-[10px] font-bold tabular-nums text-emerald-400">
+                                {stock.consensusSpreadPct > 0 ? "+" : ""}
+                                {stock.consensusSpreadPct.toFixed(1)}% vs Cons
+                              </span>
+                            ) : consensusTarget != null &&
+                              consensusTarget > 0 &&
+                              wfv != null ? (
+                              <span className="font-mono text-[10px] font-bold tabular-nums text-emerald-400">
+                                {((wfv - consensusTarget) / consensusTarget) *
+                                  100 >
+                                0
+                                  ? "+"
+                                  : ""}
+                                {(
+                                  ((wfv - consensusTarget) / consensusTarget) *
+                                  100
+                                ).toFixed(1)}
+                                % vs Cons
+                              </span>
+                            ) : null}
                           </div>
                         </div>
 
@@ -978,37 +995,45 @@ export function MarketHomeView({
                             }}
                           />
                           {/* Panic Marker */}
-                          <div
-                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
-                            style={{ left: `${panicPct}%` }}
-                            title={`${tHome.panicFloor}: $${panicFloor.toFixed(1)} (${panicDiscountPct}%)`}
-                          >
-                            <div className="size-1.5 rounded-full border border-rose-500 bg-rose-600" />
-                          </div>
+                          {panicPct != null && panicFloor != null && (
+                            <div
+                              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                              style={{ left: `${panicPct}%` }}
+                              title={`${tHome.panicFloor}: $${panicFloor.toFixed(1)}${panicDiscountPct ? ` (${panicDiscountPct}%)` : ""}`}
+                            >
+                              <div className="size-1.5 rounded-full border border-rose-500 bg-rose-600" />
+                            </div>
+                          )}
                           {/* Current Price Pin */}
-                          <div
-                            className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-help"
-                            style={{ left: `${pricePct}%` }}
-                            title={`${tHome.current}: $${price.toFixed(1)}`}
-                          >
-                            <div className="size-3 rounded-full border-2 border-white bg-slate-950 shadow-md ring-2 ring-slate-900/60 dark:border-slate-100" />
-                          </div>
+                          {pricePct != null && (
+                            <div
+                              className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                              style={{ left: `${pricePct}%` }}
+                              title={`${tHome.current}: $${price.toFixed(1)}`}
+                            >
+                              <div className="size-3 rounded-full border-2 border-white bg-slate-950 shadow-md ring-2 ring-slate-900/60 dark:border-slate-100" />
+                            </div>
+                          )}
                           {/* Consensus Target Marker */}
-                          <div
-                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
-                            style={{ left: `${consensusPct}%` }}
-                            title={`${tHome.consensus}: $${consensusTarget.toFixed(1)} (${Number(consensusSpread) >= 0 ? "+" : ""}${consensusSpread}%)`}
-                          >
-                            <div className="size-1.5 rounded-full border border-amber-400 bg-amber-500" />
-                          </div>
+                          {consensusPct != null && consensusTarget != null && (
+                            <div
+                              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                              style={{ left: `${consensusPct}%` }}
+                              title={`${tHome.consensus}: $${consensusTarget.toFixed(1)}${consensusSpread ? ` (${Number(consensusSpread) >= 0 ? "+" : ""}${consensusSpread}%)` : ""}`}
+                            >
+                              <div className="size-1.5 rounded-full border border-amber-400 bg-amber-500" />
+                            </div>
+                          )}
                           {/* WFV Target Marker */}
-                          <div
-                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
-                            style={{ left: `${wfvPct}%` }}
-                            title={`${tHome.wfv}: $${wfv.toFixed(1)} (${Number(wfvSpread) >= 0 ? "+" : ""}${wfvSpread}%)`}
-                          >
-                            <div className="size-2 rounded-full border border-emerald-400 bg-emerald-500" />
-                          </div>
+                          {wfvPct != null && wfv != null && (
+                            <div
+                              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-help"
+                              style={{ left: `${wfvPct}%` }}
+                              title={`${tHome.wfv}: $${wfv.toFixed(1)}${wfvSpread ? ` (${Number(wfvSpread) >= 0 ? "+" : ""}${wfvSpread}%)` : ""}`}
+                            >
+                              <div className="size-2 rounded-full border border-emerald-400 bg-emerald-500" />
+                            </div>
+                          )}
                         </div>
 
                         {/* 4-Regime Labels Underneath Track */}
@@ -1018,7 +1043,9 @@ export function MarketHomeView({
                               {tHome.panicFloor}
                             </span>
                             <span className="font-bold tabular-nums text-rose-300">
-                              ${panicFloor.toFixed(0)}
+                              {panicFloor != null
+                                ? `$${panicFloor.toFixed(0)}`
+                                : "—"}
                             </span>
                           </div>
                           <div className="flex flex-col items-center truncate">
@@ -1034,7 +1061,9 @@ export function MarketHomeView({
                               {tHome.consensus}
                             </span>
                             <span className="font-bold tabular-nums text-amber-300">
-                              ${consensusTarget.toFixed(0)}
+                              {consensusTarget != null
+                                ? `$${consensusTarget.toFixed(0)}`
+                                : "—"}
                             </span>
                           </div>
                           <div className="flex flex-col items-end truncate">
@@ -1042,7 +1071,7 @@ export function MarketHomeView({
                               {tHome.wfv}
                             </span>
                             <span className="font-bold tabular-nums text-emerald-400">
-                              ${wfv.toFixed(0)}
+                              {wfv != null ? `$${wfv.toFixed(0)}` : "—"}
                             </span>
                           </div>
                         </div>

@@ -739,33 +739,30 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                 const price = report.currentPrice ?? 0;
                 const wfv = report.weightedFairValue ?? 0;
                 const baseFv = report.baseFairValue ?? 0;
-                const bull = report.bullFairValue ?? wfv * 1.3;
-                const bear = report.bearFairValue ?? wfv * 0.7;
+                const bull = report.bullFairValue ?? null;
+                const bear = report.bearFairValue ?? null;
                 const upside = report.upsidePct ?? 0;
                 const baseUpside = report.baseUpsidePct ?? 0;
                 const isPositive = upside >= 0;
 
-                const rangeSpan = Math.max(bull - bear, 1);
-                const pricePos = Math.min(
-                  100,
-                  Math.max(0, ((price - bear) / rangeSpan) * 100)
-                );
-                const basePos = Math.min(
-                  100,
-                  Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-                );
-                const wfvPos = Math.min(
-                  100,
-                  Math.max(0, ((wfv - bear) / rangeSpan) * 100)
-                );
-
-                const pillars = report.snowflakePillars ?? {
-                  valuation: 4,
-                  future: 4,
-                  earnings: 4,
-                  moat: 4,
-                  resilience: 4,
-                };
+                const hasRange =
+                  price > 0 && bull !== null && bear !== null && bull > bear;
+                const rangeSpan = hasRange ? Math.max(bull - bear, 1) : 1;
+                const pricePos = hasRange
+                  ? Math.min(
+                      100,
+                      Math.max(0, ((price - bear) / rangeSpan) * 100)
+                    )
+                  : 0;
+                const basePos = hasRange
+                  ? Math.min(
+                      100,
+                      Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
+                    )
+                  : 0;
+                const wfvPos = hasRange
+                  ? Math.min(100, Math.max(0, ((wfv - bear) / rangeSpan) * 100))
+                  : 0;
 
                 return (
                   <div
@@ -908,7 +905,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                       </div>
 
                       {/* 4-Regime Valuation Bounds Spectrum Bar */}
-                      {price > 0 && bull > bear && (
+                      {hasRange && (
                         <div className="mt-3 space-y-1.5 rounded-lg border border-border/40 bg-surface-0/40 p-2.5">
                           <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                             <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -946,12 +943,12 @@ export const WatchlistView: React.FC<WatchlistViewProps> = React.memo(
                             />
                           </div>
                           <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
-                            <span>Bear ${Math.round(bear)}</span>
+                            <span>Bear ${Math.round(bear!)}</span>
                             <span className="flex items-center gap-1 font-medium text-sky-600 dark:text-sky-400">
                               <span className="size-1.5 rounded-full bg-sky-400" />
                               Base ${Math.round(baseFv)}
                             </span>
-                            <span>Bull ${Math.round(bull)}</span>
+                            <span>Bull ${Math.round(bull!)}</span>
                           </div>
                         </div>
                       )}

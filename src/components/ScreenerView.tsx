@@ -185,18 +185,17 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
   const wfv = report.weightedFairValue ?? 0;
   const baseFv = report.baseFairValue ?? 0;
   const baseUpside = report.baseUpsidePct ?? 0;
-  const bear = report.bearFairValue ?? price * 0.7;
-  const bull = report.bullFairValue ?? price * 1.4;
+  const bear = report.bearFairValue ?? null;
+  const bull = report.bullFairValue ?? null;
+  const hasRange = price > 0 && bear !== null && bull !== null && bull > bear;
 
-  const rangeSpan = Math.max(bull - bear, 1);
-  const pricePos = Math.min(
-    100,
-    Math.max(0, ((price - bear) / rangeSpan) * 100)
-  );
-  const basePos = Math.min(
-    100,
-    Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-  );
+  const rangeSpan = hasRange ? Math.max(bull - bear, 1) : 1;
+  const pricePos = hasRange
+    ? Math.min(100, Math.max(0, ((price - bear) / rangeSpan) * 100))
+    : 0;
+  const basePos = hasRange
+    ? Math.min(100, Math.max(0, ((baseFv - bear) / rangeSpan) * 100))
+    : 0;
 
   return (
     <tr
@@ -437,9 +436,13 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       {/* Stress Range Bar */}
       <td
         className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5"
-        title={`${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull)}`}
+        title={
+          hasRange
+            ? `${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear!)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull!)}`
+            : undefined
+        }
       >
-        {price > 0 && bull > bear ? (
+        {hasRange ? (
           <div className="space-y-1">
             <div className="relative h-1.5 w-full rounded-full bg-surface-3">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
@@ -455,8 +458,8 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
               />
             </div>
             <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
-              <span title={`${ts.bearLabel}: ${formatCurrency(bear)}`}>
-                ${Math.round(bear)}
+              <span title={`${ts.bearLabel}: ${formatCurrency(bear!)}`}>
+                ${Math.round(bear!)}
               </span>
               <span
                 className="flex items-center gap-1 font-mono text-[11px] text-slate-400"
@@ -465,8 +468,8 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
                 <span className="size-1.5 rounded-full bg-sky-400" />$
                 {Math.round(baseFv)}
               </span>
-              <span title={`${ts.bullLabel}: ${formatCurrency(bull)}`}>
-                ${Math.round(bull)}
+              <span title={`${ts.bullLabel}: ${formatCurrency(bull!)}`}>
+                ${Math.round(bull!)}
               </span>
             </div>
           </div>
@@ -518,18 +521,17 @@ export const ScreenerCard = React.memo(function ScreenerCard({
   const wfv = report.weightedFairValue ?? 0;
   const baseFv = report.baseFairValue ?? 0;
   const baseUpside = report.baseUpsidePct ?? 0;
-  const bear = report.bearFairValue ?? price * 0.7;
-  const bull = report.bullFairValue ?? price * 1.4;
+  const bear = report.bearFairValue ?? null;
+  const bull = report.bullFairValue ?? null;
+  const hasRange = price > 0 && bear !== null && bull !== null && bull > bear;
 
-  const rangeSpan = Math.max(bull - bear, 1);
-  const pricePos = Math.min(
-    100,
-    Math.max(0, ((price - bear) / rangeSpan) * 100)
-  );
-  const basePos = Math.min(
-    100,
-    Math.max(0, ((baseFv - bear) / rangeSpan) * 100)
-  );
+  const rangeSpan = hasRange ? Math.max(bull - bear, 1) : 1;
+  const pricePos = hasRange
+    ? Math.min(100, Math.max(0, ((price - bear) / rangeSpan) * 100))
+    : 0;
+  const basePos = hasRange
+    ? Math.min(100, Math.max(0, ((baseFv - bear) / rangeSpan) * 100))
+    : 0;
 
   return (
     <div
@@ -677,7 +679,7 @@ export const ScreenerCard = React.memo(function ScreenerCard({
           </div>
         </div>
 
-        {price > 0 && bull > bear && (
+        {hasRange && (
           <div className="mt-3 space-y-1">
             <div className="relative h-1.5 w-full rounded-full bg-surface-3">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/30 via-slate-500/20 to-emerald-500/30" />
@@ -693,12 +695,12 @@ export const ScreenerCard = React.memo(function ScreenerCard({
               />
             </div>
             <div className="flex items-center justify-between font-mono text-[11px] tabular-nums text-slate-400">
-              <span>${Math.round(bear)}</span>
+              <span>${Math.round(bear!)}</span>
               <span className="flex items-center gap-1 text-slate-400">
                 <span className="size-1.5 rounded-full bg-sky-400" />$
                 {Math.round(baseFv)}
               </span>
-              <span>${Math.round(bull)}</span>
+              <span>${Math.round(bull!)}</span>
             </div>
           </div>
         )}

@@ -573,8 +573,10 @@ export const Cockpit: React.FC<CockpitProps> = ({
           valuationBands.base.deltaFromCurrentPct;
 
         const targetBear =
-          bearScenario?.fairValue ?? round2(currentPrice * 0.7);
-        const deltaBear = bearScenario?.upsideFromCurrent ?? -30;
+          bearScenario?.fairValue ?? valuationBands.panic.targetPrice;
+        const deltaBear =
+          bearScenario?.upsideFromCurrent ??
+          valuationBands.panic.deltaFromCurrentPct;
 
         const panicTarget = valuationBands.panic.targetPrice;
         const panicDelta = valuationBands.panic.deltaFromCurrentPct;
