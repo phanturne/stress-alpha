@@ -772,6 +772,7 @@ export interface Translations {
     statsWideMoatSub: (count: number, total: number) => string;
     noResults: string;
     resetFilters: string;
+    resetFiltersTooltip: string;
     resultsCount: (shown: number, total: number) => string;
     loadAll: (total: number) => string;
     filterWatchlist: string;
@@ -2202,7 +2203,8 @@ export const translations: Record<Locale, Translations> = {
       statsWideMoatSub: (count: number, total: number) =>
         `${count} of ${total} wide moats`,
       noResults: "No companies match your filters.",
-      resetFilters: "Reset Filters",
+      resetFilters: "Reset",
+      resetFiltersTooltip: "Reset all active filters",
       resultsCount: (shown: number, total: number) => `${shown} / ${total}`,
       resultsCountTooltip: (shown: number, total: number) =>
         `Showing ${shown} of ${total} covered tickers`,
@@ -3735,7 +3737,8 @@ export const translations: Record<Locale, Translations> = {
       statsWideMoatSub: (count: number, total: number) =>
         `${total} 家中含 ${count} 家宽护城河`,
       noResults: "未找到符合当前筛选条件的公司。",
-      resetFilters: "重置筛选条件",
+      resetFilters: "重置",
+      resetFiltersTooltip: "重置所有生效筛选",
       resultsCount: (shown: number, total: number) => `${shown} / ${total}`,
       resultsCountTooltip: (shown: number, total: number) =>
         `显示 ${shown} / 共 ${total} 家覆盖标的`,

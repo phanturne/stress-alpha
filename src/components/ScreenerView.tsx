@@ -2152,7 +2152,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                       type="button"
                       onClick={handleResetFilters}
                       className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-1 font-mono text-xs font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
-                      title={ts.resetFilters}
+                      title={ts.resetFiltersTooltip}
+                      aria-label={ts.resetFiltersTooltip}
                     >
                       <RotateCcw className="size-3" />
                       <span>{ts.resetFilters}</span>
