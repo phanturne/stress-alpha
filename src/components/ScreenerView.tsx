@@ -23,6 +23,21 @@ import {
   Star,
   LayoutGrid,
   Table,
+  Cpu,
+  Globe,
+  ShoppingBag,
+  Landmark,
+  Activity,
+  Boxes,
+  Apple,
+  Flame,
+  Zap,
+  Building2,
+  Layers,
+  X,
+  SlidersHorizontal,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
@@ -43,8 +58,219 @@ export {
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
+import {
+  GICS_SECTORS,
+  getTickerSectorId,
+  getSectorName,
+  getSectorShortName,
+  getSectorDefinition,
+} from "@/lib/sectors";
 
 export const SCREENER_PAGE_SIZE = 50;
+
+export function formatMarketCap(cap?: number): string {
+  if (!cap || isNaN(cap) || cap <= 0) return "—";
+  if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
+  if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+  if (cap >= 1e6) return `$${(cap / 1e6).toFixed(0)}M`;
+  return `$${cap.toLocaleString()}`;
+}
+
+export function renderSectorIcon(iconName: string, className = "size-3.5") {
+  switch (iconName) {
+    case "Cpu":
+      return <Cpu className={className} />;
+    case "Globe":
+      return <Globe className={className} />;
+    case "ShoppingBag":
+      return <ShoppingBag className={className} />;
+    case "Landmark":
+      return <Landmark className={className} />;
+    case "Activity":
+      return <Activity className={className} />;
+    case "Boxes":
+      return <Boxes className={className} />;
+    case "Apple":
+      return <Apple className={className} />;
+    case "Flame":
+      return <Flame className={className} />;
+    case "Zap":
+      return <Zap className={className} />;
+    case "Building2":
+      return <Building2 className={className} />;
+    case "Layers":
+    default:
+      return <Layers className={className} />;
+  }
+}
+
+interface FilterDropdownOption<T extends string> {
+  id: T;
+  label: string;
+  shortLabel?: string;
+  count?: number;
+  icon?: React.ReactNode;
+  title?: string;
+}
+
+interface FilterDropdownProps<T extends string> {
+  label: string;
+  value: T;
+  defaultValue: T;
+  options: FilterDropdownOption<T>[];
+  onChange: (value: T) => void;
+  icon?: React.ReactNode;
+  activeColorClass?: string;
+  align?: "left" | "right";
+}
+
+function FilterDropdown<T extends string>({
+  label,
+  value,
+  defaultValue,
+  options,
+  onChange,
+  icon,
+  activeColorClass = "border-accent/50 bg-accent/15 text-accent ring-1 ring-accent/30",
+  align = "left",
+}: FilterDropdownProps<T>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  const isActive = value !== defaultValue;
+  const activeOption = options.find((opt) => opt.id === value) || options[0];
+
+  return (
+    <div className="relative inline-block text-left" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`shadow-xs inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all ${
+          isActive
+            ? `${activeColorClass} font-semibold`
+            : "border-border bg-surface-1/80 text-slate-300 hover:border-slate-500 hover:bg-surface-2 hover:text-foreground"
+        }`}
+        title={`${label}: ${activeOption?.label || value}`}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+      >
+        {icon && <span className="shrink-0">{icon}</span>}
+        {isActive ? (
+          <span className="flex items-center gap-1">
+            <span className="font-semibold text-slate-400">{label}:</span>
+            <span className="max-w-[100px] truncate text-foreground sm:max-w-[120px]">
+              {activeOption?.shortLabel || activeOption?.label || value}
+            </span>
+          </span>
+        ) : (
+          <span>{label}</span>
+        )}
+        {activeOption?.count !== undefined && isActive && (
+          <span className="py-0.2 rounded-full bg-accent/20 px-1.5 font-mono text-[10px] text-accent">
+            {activeOption.count}
+          </span>
+        )}
+        {isActive ? (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(defaultValue);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.stopPropagation();
+                onChange(defaultValue);
+              }
+            }}
+            className="ml-0.5 rounded p-0.5 text-slate-400 hover:bg-surface-3 hover:text-foreground"
+            title="Reset"
+            aria-label="Reset"
+          >
+            <X className="size-3" />
+          </span>
+        ) : (
+          <ChevronDown
+            className={`size-3 shrink-0 text-slate-400 transition-transform duration-150 ${
+              isOpen ? "rotate-180 text-foreground" : ""
+            }`}
+          />
+        )}
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div
+            className={`glass-panel absolute z-50 mt-1.5 min-w-[190px] max-w-[260px] rounded-xl border border-border bg-surface-1/95 p-1 shadow-lg backdrop-blur-xl duration-150 animate-in fade-in zoom-in-95 ${
+              align === "right" ? "right-0" : "left-0"
+            }`}
+          >
+            <div className="no-scrollbar max-h-60 space-y-0.5 overflow-y-auto py-0.5">
+              {options.map((opt) => {
+                const isSelected = opt.id === value;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.id);
+                      setIsOpen(false);
+                    }}
+                    title={opt.title}
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors ${
+                      isSelected
+                        ? "bg-accent/15 font-semibold text-accent"
+                        : "text-slate-300 hover:bg-surface-2 hover:text-foreground"
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-center gap-2 truncate">
+                      {opt.icon && (
+                        <span className="shrink-0 text-slate-400">
+                          {opt.icon}
+                        </span>
+                      )}
+                      <span className="truncate">{opt.label}</span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      {opt.count !== undefined && (
+                        <span
+                          className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                            isSelected
+                              ? "bg-accent/30 font-bold text-accent"
+                              : "bg-surface-3 text-slate-400"
+                          }`}
+                        >
+                          {opt.count}
+                        </span>
+                      )}
+                      {isSelected && (
+                        <Check className="size-3.5 shrink-0 text-accent" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface ScreenerViewProps {
   reports: ReportSummary[];
@@ -53,26 +279,32 @@ interface ScreenerViewProps {
   isLoading?: boolean;
   initialWatchlistOnly?: boolean;
   onWatchlistFilterChange?: (watchlistOnly: boolean) => void;
+  initialSector?: string;
 }
 
-type MoatFilter = "all" | "wide" | "narrow";
-type UpsideFilter = "all" | "undervalued" | "high-upside";
-type SortField =
+export type MoatFilter = "all" | "wide" | "narrow" | "none";
+export type UpsideFilter =
+  "all" | "undervalued" | "high-upside" | "deep-value" | "overvalued";
+export type SnowflakeFilter = "all" | "exceptional" | "investment-grade";
+export type SortField =
   | "upside"
   | "baseUpside"
   | "analystTarget"
   | "price"
+  | "marketCap"
   | "opMargin"
   | "revGrowth"
   | "ticker"
   | "snowflake"
-  | "moat";
-type SortDirection = "asc" | "desc";
+  | "moat"
+  | "sector";
+export type SortDirection = "asc" | "desc";
 
 const SKELETON_ROWS = [
   {
     tickerW: "w-14",
     nameW: "w-32",
+    sectorW: "w-14",
     moatW: "w-16",
     snowflakeW: "w-12",
     targetW: "w-14",
@@ -84,6 +316,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-12",
     nameW: "w-40",
+    sectorW: "w-16",
     moatW: "w-14",
     snowflakeW: "w-12",
     targetW: "w-16",
@@ -95,6 +328,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-16",
     nameW: "w-28",
+    sectorW: "w-14",
     moatW: "w-16",
     snowflakeW: "w-12",
     targetW: "w-12",
@@ -106,6 +340,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-14",
     nameW: "w-36",
+    sectorW: "w-16",
     moatW: "w-14",
     snowflakeW: "w-12",
     targetW: "w-14",
@@ -117,6 +352,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-12",
     nameW: "w-24",
+    sectorW: "w-14",
     moatW: "w-16",
     snowflakeW: "w-12",
     targetW: "w-16",
@@ -128,6 +364,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-16",
     nameW: "w-32",
+    sectorW: "w-16",
     moatW: "w-16",
     snowflakeW: "w-12",
     targetW: "w-14",
@@ -139,6 +376,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-14",
     nameW: "w-36",
+    sectorW: "w-14",
     moatW: "w-14",
     snowflakeW: "w-12",
     targetW: "w-12",
@@ -150,6 +388,7 @@ const SKELETON_ROWS = [
   {
     tickerW: "w-12",
     nameW: "w-28",
+    sectorW: "w-16",
     moatW: "w-16",
     snowflakeW: "w-12",
     targetW: "w-16",
@@ -168,6 +407,7 @@ export interface ScreenerItemProps {
   onPrefetch: (slug: string) => void;
   ts: ReturnType<typeof getTranslations>["screener"];
   tHeader: ReturnType<typeof getTranslations>["header"];
+  locale?: Locale;
 }
 
 export const ScreenerTableRow = React.memo(function ScreenerTableRow({
@@ -178,6 +418,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
   onPrefetch,
   ts,
   tHeader,
+  locale = "en",
 }: ScreenerItemProps) {
   const upside = report.upsidePct ?? 0;
   const isPositive = upside >= 0;
@@ -188,6 +429,10 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
   const bear = report.bearFairValue ?? null;
   const bull = report.bullFairValue ?? null;
   const hasRange = price > 0 && bear !== null && bull !== null && bull > bear;
+
+  const sectorId = getTickerSectorId(report.ticker, report.sector);
+  const sectorDef = getSectorDefinition(sectorId);
+  const sectorShortName = getSectorShortName(sectorId, locale);
 
   const rangeSpan = hasRange ? Math.max(bull - bear, 1) : 1;
   const pricePos = hasRange
@@ -253,6 +498,20 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
             </p>
           </div>
         </div>
+      </td>
+
+      {/* Sector */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2/80 px-2 py-0.5 text-[11px] font-medium text-slate-300"
+          title={getSectorName(sectorId, locale)}
+        >
+          {renderSectorIcon(
+            sectorDef?.iconName || "Layers",
+            "size-3 text-slate-400"
+          )}
+          <span>{sectorShortName}</span>
+        </span>
       </td>
 
       {/* Economic Moat */}
@@ -339,9 +598,19 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
         )}
       </td>
 
-      {/* Current Stock Price */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs font-semibold tabular-nums text-foreground sm:text-sm">
-        {price > 0 ? formatCurrency(price) : "—"}
+      {/* Current Stock Price & Market Cap */}
+      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums sm:text-sm">
+        <div className="font-semibold text-foreground">
+          {price > 0 ? formatCurrency(price) : "—"}
+        </div>
+        {report.marketCap && report.marketCap > 0 ? (
+          <div
+            className="text-[10px] font-normal text-slate-400"
+            title={`${ts.colMarketCap}: ${formatMarketCap(report.marketCap)}`}
+          >
+            {formatMarketCap(report.marketCap)}
+          </div>
+        ) : null}
       </td>
 
       {/* Analyst Consensus Target */}
@@ -514,6 +783,7 @@ export const ScreenerCard = React.memo(function ScreenerCard({
   onPrefetch,
   ts,
   tHeader,
+  locale = "en",
 }: ScreenerItemProps) {
   const upside = report.upsidePct ?? 0;
   const isPositive = upside >= 0;
@@ -524,6 +794,10 @@ export const ScreenerCard = React.memo(function ScreenerCard({
   const bear = report.bearFairValue ?? null;
   const bull = report.bullFairValue ?? null;
   const hasRange = price > 0 && bear !== null && bull !== null && bull > bear;
+
+  const sectorId = getTickerSectorId(report.ticker, report.sector);
+  const sectorDef = getSectorDefinition(sectorId);
+  const sectorShortName = getSectorShortName(sectorId, locale);
 
   const rangeSpan = hasRange ? Math.max(bull - bear, 1) : 1;
   const pricePos = hasRange
@@ -583,6 +857,16 @@ export const ScreenerCard = React.memo(function ScreenerCard({
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-0/80 px-2 py-0.5 text-[11px] font-medium text-slate-300"
+              title={getSectorName(sectorId, locale)}
+            >
+              {renderSectorIcon(
+                sectorDef?.iconName || "Layers",
+                "size-2.5 text-slate-400"
+              )}
+              <span>{sectorShortName}</span>
+            </span>
             {report.moatRating && (
               <span
                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
@@ -708,6 +992,14 @@ export const ScreenerCard = React.memo(function ScreenerCard({
 
       <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5 text-[11px]">
         <div className="flex items-center gap-2.5 font-mono text-[11px] text-slate-400">
+          {report.marketCap && report.marketCap > 0 && (
+            <span>
+              Cap:{" "}
+              <strong className="font-bold text-slate-200">
+                {formatMarketCap(report.marketCap)}
+              </strong>
+            </span>
+          )}
           {report.operatingMarginPct !== undefined && (
             <span>
               OpM:{" "}
@@ -761,6 +1053,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     isLoading = false,
     initialWatchlistOnly = false,
     onWatchlistFilterChange,
+    initialSector,
   }: ScreenerViewProps) {
     const t = useMemo(() => getTranslations(locale), [locale]);
     const ts = useMemo(() => t.screener, [t]);
@@ -791,8 +1084,22 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       setWatchlistOnly(val);
       onWatchlistFilterChange?.(val);
     };
+
+    const [selectedSector, setSelectedSector] = useState<string>(() => {
+      if (initialSector) return initialSector;
+      if (typeof window !== "undefined") {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const s = params.get("sector");
+          if (s) return s;
+        } catch {}
+      }
+      return "all";
+    });
     const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
     const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
+    const [snowflakeFilter, setSnowflakeFilter] =
+      useState<SnowflakeFilter>("all");
     const [sortField, setSortField] = useState<SortField>("upside");
     const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
     const [viewMode, setViewMode] = useState<"cards" | "table">("table");
@@ -820,15 +1127,19 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
 
     const hasActiveFilters = Boolean(
       searchQuery ||
+      selectedSector !== "all" ||
       moatFilter !== "all" ||
       upsideFilter !== "all" ||
+      snowflakeFilter !== "all" ||
       watchlistOnly
     );
 
     const handleResetFilters = () => {
       setSearchQuery("");
+      setSelectedSector("all");
       setMoatFilter("all");
       setUpsideFilter("all");
+      setSnowflakeFilter("all");
       handleToggleWatchlistOnly(false);
     };
 
@@ -837,6 +1148,20 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       () => deduplicateReportsToLatest(reports),
       [reports]
     );
+
+    // Dynamic sector counts scoped to watchlist (if active)
+    const sectorCounts = useMemo(() => {
+      const baseList = watchlistOnly
+        ? uniqueReports.filter((r) => isFavorite(r.ticker || r.slug))
+        : uniqueReports;
+
+      const counts: Record<string, number> = { all: baseList.length };
+      for (const r of baseList) {
+        const secId = getTickerSectorId(r.ticker, r.sector);
+        counts[secId] = (counts[secId] || 0) + 1;
+      }
+      return counts;
+    }, [uniqueReports, watchlistOnly, isFavorite]);
 
     // Summary statistics (dynamically scoped to watchlist when watchlistOnly is active)
     const stats = useMemo(() => {
@@ -895,13 +1220,30 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
             if (!isFavorite(symbol)) return false;
           }
 
-          // Text search
+          // Sector filter
+          if (selectedSector !== "all") {
+            const secId = getTickerSectorId(r.ticker, r.sector);
+            if (secId !== selectedSector) return false;
+          }
+
+          // Text search: matches ticker, company, slug, or sector name
           if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase().trim();
             const matchTicker = r.ticker?.toLowerCase().includes(q);
             const matchCompany = r.company?.toLowerCase().includes(q);
             const matchSlug = r.slug?.toLowerCase().includes(q);
-            if (!matchTicker && !matchCompany && !matchSlug) return false;
+            const secId = getTickerSectorId(r.ticker, r.sector);
+            const secDef = getSectorDefinition(secId);
+            const matchSector =
+              secDef &&
+              (secDef.nameEn.toLowerCase().includes(q) ||
+                secDef.nameZh.toLowerCase().includes(q) ||
+                (secDef.shortNameEn &&
+                  secDef.shortNameEn.toLowerCase().includes(q)) ||
+                (secDef.shortNameZh &&
+                  secDef.shortNameZh.toLowerCase().includes(q)));
+            if (!matchTicker && !matchCompany && !matchSlug && !matchSector)
+              return false;
           }
 
           // Moat filter
@@ -909,6 +1251,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
             const moat = r.moatRating?.toLowerCase() ?? "";
             if (moatFilter === "wide" && moat !== "wide") return false;
             if (moatFilter === "narrow" && moat !== "narrow") return false;
+            if (moatFilter === "none" && moat !== "none" && moat !== "")
+              return false;
           }
 
           // Upside filter
@@ -916,6 +1260,17 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
             if ((r.upsidePct ?? 0) <= 0) return false;
           } else if (upsideFilter === "high-upside") {
             if ((r.upsidePct ?? 0) < 20) return false;
+          } else if (upsideFilter === "deep-value") {
+            if ((r.upsidePct ?? 0) < 30) return false;
+          } else if (upsideFilter === "overvalued") {
+            if ((r.upsidePct ?? 0) >= 0) return false;
+          }
+
+          // Snowflake Quality filter
+          if (snowflakeFilter === "exceptional") {
+            if ((r.snowflakeScore ?? 0) < 24) return false;
+          } else if (snowflakeFilter === "investment-grade") {
+            if ((r.snowflakeScore ?? 0) < 18) return false;
           }
 
           return true;
@@ -937,6 +1292,23 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
               valA = a.currentPrice ?? 0;
               valB = b.currentPrice ?? 0;
               break;
+            case "marketCap":
+              valA = a.marketCap ?? 0;
+              valB = b.marketCap ?? 0;
+              break;
+            case "sector": {
+              const secA = getSectorShortName(
+                getTickerSectorId(a.ticker, a.sector),
+                locale
+              );
+              const secB = getSectorShortName(
+                getTickerSectorId(b.ticker, b.sector),
+                locale
+              );
+              valA = secA;
+              valB = secB;
+              break;
+            }
             case "analystTarget":
               valA =
                 a.analystUpsidePct ??
@@ -993,10 +1365,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       searchQuery,
       watchlistOnly,
       isFavorite,
+      selectedSector,
       moatFilter,
       upsideFilter,
+      snowflakeFilter,
       sortField,
       sortDirection,
+      locale,
     ]);
 
     const handleSort = (field: SortField) => {
@@ -1004,7 +1379,9 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
         setSortDirection(sortDirection === "asc" ? "desc" : "asc");
       } else {
         setSortField(field);
-        setSortDirection(field === "ticker" ? "asc" : "desc");
+        setSortDirection(
+          field === "ticker" || field === "sector" ? "asc" : "desc"
+        );
       }
     };
 
@@ -1044,16 +1421,19 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     );
 
     // Reset visible count and table scroll when filters or sorting change
-    const filterKey = `${searchQuery}|${moatFilter}|${upsideFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
+    const filterKey = `${searchQuery}|${selectedSector}|${moatFilter}|${upsideFilter}|${snowflakeFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
     const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
     if (prevFilterKey !== filterKey) {
       setPrevFilterKey(filterKey);
       setVisibleCount(SCREENER_PAGE_SIZE);
       setTableScrollTop(0);
+    }
+
+    useEffect(() => {
       if (tableContainerRef.current) {
         tableContainerRef.current.scrollTop = 0;
       }
-    }
+    }, [filterKey]);
 
     const displayedReports = useMemo(() => {
       return filteredReports.slice(0, visibleCount);
@@ -1200,6 +1580,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                 onPrefetch={prefetchReport}
                 ts={ts}
                 tHeader={tHeader}
+                locale={locale}
               />
             ))}
           </div>
@@ -1402,199 +1783,263 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
           </div>
         )}
 
-        {/* Filter and Search Controls */}
+        {/* Screener Controls Cockpit Panel */}
         {!isWatchlistEmpty && (
-          <div className="glass-panel flex flex-col gap-3 rounded-xl p-2.5 sm:p-3 lg:flex-row lg:items-center xl:p-3.5">
-            {/* Search input */}
-            <div className="relative w-full shrink-0 sm:w-52 md:w-60 lg:w-64">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={ts.searchPlaceholder}
-                className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-foreground"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Filter Pills */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Watchlist Filter Pill */}
-              {(watchlistCount > 0 || watchlistOnly) && (
-                <button
-                  type="button"
-                  onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
-                  className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
-                    watchlistOnly
-                      ? "shadow-xs border-amber-500/50 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
-                      : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-foreground"
-                  }`}
-                  title={ts.filterWatchlist}
-                >
-                  <Star
-                    className={`size-3.5 ${
-                      watchlistOnly
-                        ? "fill-amber-400 text-amber-400"
-                        : "text-slate-400"
-                    }`}
+          <div className="glass-panel rounded-xl border border-border p-2 sm:p-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-2.5">
+              {/* Left: Search Bar + Watchlist Filter */}
+              <div className="flex min-w-[200px] max-w-xs flex-1 items-center gap-1.5 sm:max-w-sm sm:gap-2">
+                <div className="relative w-full">
+                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={ts.searchPlaceholder}
+                    className="w-full rounded-lg border border-border bg-surface-0/80 py-1.5 pl-9 pr-8 text-xs text-foreground placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                   />
-                  <span>{ts.filterWatchlist}</span>
-                  {watchlistCount > 0 && (
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 font-mono text-[11px] ${
-                        watchlistOnly
-                          ? "bg-amber-400 font-bold text-slate-950"
-                          : "bg-surface-3 text-slate-400"
-                      }`}
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-foreground"
                     >
-                      {watchlistCount}
-                    </span>
+                      ✕
+                    </button>
                   )}
-                </button>
-              )}
+                </div>
 
-              {/* Moat Filter */}
-              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setMoatFilter("all")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    moatFilter === "all"
-                      ? "bg-accent/20 font-semibold text-accent"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.allMoatsTooltip}
-                >
-                  {ts.allMoats}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoatFilter("wide")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    moatFilter === "wide"
-                      ? "bg-purple-500/20 font-semibold text-purple-300 ring-1 ring-purple-500/40"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.wideMoatTooltip}
-                >
-                  {ts.wideMoat}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMoatFilter("narrow")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    moatFilter === "narrow"
-                      ? "bg-sky-500/20 font-semibold text-sky-300 ring-1 ring-sky-500/40"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.narrowMoatTooltip}
-                >
-                  {ts.narrowMoat}
-                </button>
-              </div>
-
-              {/* Upside Filter */}
-              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setUpsideFilter("all")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    upsideFilter === "all"
-                      ? "bg-accent/20 font-semibold text-accent"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.filterAllTooltip}
-                >
-                  {ts.filterAll}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUpsideFilter("undervalued")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    upsideFilter === "undervalued"
-                      ? "bg-green-500/20 font-semibold text-green-300 ring-1 ring-green-500/40"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.filterUndervaluedTooltip}
-                >
-                  {ts.filterUndervalued}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUpsideFilter("high-upside")}
-                  className={`rounded px-2.5 py-1 transition-colors ${
-                    upsideFilter === "high-upside"
-                      ? "bg-amber-500/20 font-semibold text-amber-300 ring-1 ring-amber-500/40"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.filterHighUpsideTooltip}
-                >
-                  {ts.filterHighUpside}
-                </button>
-              </div>
-            </div>
-
-            {/* View Mode Toggle & Result Counter & Reset */}
-            <div className="flex shrink-0 items-center gap-2.5 sm:gap-3 lg:ml-auto">
-              {/* View Mode Toggle: Cards vs Table */}
-              <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode("cards")}
-                  className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                    viewMode === "cards"
-                      ? "bg-accent/20 font-bold text-accent"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.viewCards}
-                >
-                  <LayoutGrid className="size-3.5" />
-                  <span>{ts.viewCards}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode("table")}
-                  className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-semibold transition-colors ${
-                    viewMode === "table"
-                      ? "bg-accent/20 font-bold text-accent"
-                      : "text-slate-400 hover:text-foreground"
-                  }`}
-                  title={ts.viewTable}
-                >
-                  <Table className="size-3.5" />
-                  <span>{ts.viewTable}</span>
-                </button>
-              </div>
-
-              <div className="hidden h-4 w-px bg-white/10 sm:block" />
-
-              {/* Results count & Reset */}
-              <div className="flex items-center gap-2">
-                <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-400">
-                  {ts.resultsCount(
-                    filteredReports.length,
-                    uniqueReports.length
-                  )}
-                </span>
-                {hasActiveFilters && (
+                {/* Watchlist Filter Pill */}
+                {(watchlistCount > 0 || watchlistOnly) && (
                   <button
                     type="button"
-                    onClick={handleResetFilters}
-                    className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
-                    title={ts.resetFilters}
+                    onClick={() => handleToggleWatchlistOnly(!watchlistOnly)}
+                    className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-all ${
+                      watchlistOnly
+                        ? "shadow-xs border-amber-500/50 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
+                        : "border-border bg-surface-0/60 text-slate-400 hover:border-slate-500 hover:text-foreground"
+                    }`}
+                    title={ts.filterWatchlist}
                   >
-                    <RotateCcw className="size-2.5" />
-                    <span>{ts.resetFilters}</span>
+                    <Star
+                      className={`size-3.5 ${
+                        watchlistOnly
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-400"
+                      }`}
+                    />
+                    <span className="hidden md:inline">
+                      {ts.filterWatchlist}
+                    </span>
+                    {watchlistCount > 0 && (
+                      <span
+                        className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                          watchlistOnly
+                            ? "bg-amber-400 font-bold text-slate-950"
+                            : "bg-surface-3 text-slate-400"
+                        }`}
+                      >
+                        {watchlistCount}
+                      </span>
+                    )}
                   </button>
                 )}
+              </div>
+
+              {/* Center: The 4 Orthogonal Filter Dropdowns (Sector + Moat + Upside + Quality) */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {/* Sector Dropdown */}
+                <FilterDropdown
+                  label={ts.sector}
+                  value={selectedSector}
+                  defaultValue="all"
+                  icon={<Layers className="size-3.5 text-accent" />}
+                  options={[
+                    {
+                      id: "all",
+                      label: ts.allSectors,
+                      count: sectorCounts.all ?? 0,
+                      icon: <Layers className="size-3.5" />,
+                    },
+                    ...GICS_SECTORS.map((def) => ({
+                      id: def.id,
+                      label: getSectorShortName(def.id, locale),
+                      count: sectorCounts[def.id] || 0,
+                      icon: renderSectorIcon(def.iconName, "size-3.5"),
+                      title: ts.filterSectorTooltip(
+                        getSectorName(def.id, locale)
+                      ),
+                    })),
+                  ]}
+                  onChange={setSelectedSector}
+                  align="left"
+                />
+
+                {/* Moat Dropdown */}
+                <FilterDropdown
+                  label={ts.colMoat}
+                  value={moatFilter}
+                  defaultValue="all"
+                  icon={<Shield className="size-3.5 text-purple-400" />}
+                  activeColorClass="border-purple-500/50 bg-purple-500/15 text-purple-300 ring-1 ring-purple-500/30"
+                  options={[
+                    {
+                      id: "all",
+                      label: ts.allMoats,
+                      title: ts.allMoatsTooltip,
+                    },
+                    {
+                      id: "wide",
+                      label: ts.wideMoat,
+                      icon: <Shield className="size-3 text-purple-400" />,
+                      title: ts.wideMoatTooltip,
+                    },
+                    {
+                      id: "narrow",
+                      label: ts.narrowMoat,
+                      icon: <Shield className="size-3 text-sky-400" />,
+                      title: ts.narrowMoatTooltip,
+                    },
+                    {
+                      id: "none",
+                      label: ts.moatNone,
+                      title: ts.moatNoneTooltip,
+                    },
+                  ]}
+                  onChange={setMoatFilter}
+                  align="left"
+                />
+
+                {/* Valuation Dropdown */}
+                <FilterDropdown
+                  label={ts.filterUpside}
+                  value={upsideFilter}
+                  defaultValue="all"
+                  icon={<TrendingUp className="size-3.5 text-emerald-400" />}
+                  activeColorClass="border-emerald-500/50 bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
+                  options={[
+                    {
+                      id: "all",
+                      label: ts.filterAll,
+                      title: ts.filterAllTooltip,
+                    },
+                    {
+                      id: "undervalued",
+                      label: ts.filterUndervalued,
+                      shortLabel: ">0%",
+                      icon: <TrendingUp className="size-3 text-green-400" />,
+                      title: ts.filterUndervaluedTooltip,
+                    },
+                    {
+                      id: "high-upside",
+                      label: ts.filterHighUpside,
+                      shortLabel: ">20%",
+                      icon: <TrendingUp className="size-3 text-emerald-400" />,
+                      title: ts.filterHighUpsideTooltip,
+                    },
+                    {
+                      id: "deep-value",
+                      label: ts.filterDeepValue,
+                      shortLabel: ">30%",
+                      icon: <Sparkles className="size-3 text-amber-400" />,
+                      title: ts.filterDeepValueTooltip,
+                    },
+                    {
+                      id: "overvalued",
+                      label: ts.filterOvervalued,
+                      shortLabel: "<0%",
+                      icon: (
+                        <TrendingUp className="size-3 rotate-180 text-rose-400" />
+                      ),
+                      title: ts.filterOvervaluedTooltip,
+                    },
+                  ]}
+                  onChange={setUpsideFilter}
+                  align="right"
+                />
+
+                {/* Quality / Snowflake Dropdown */}
+                <FilterDropdown
+                  label={ts.filterQuality}
+                  value={snowflakeFilter}
+                  defaultValue="all"
+                  icon={<CheckCircle2 className="size-3.5 text-cyan-400" />}
+                  activeColorClass="border-cyan-500/50 bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-500/30"
+                  options={[
+                    { id: "all", label: ts.allQuality },
+                    {
+                      id: "exceptional",
+                      label: ts.snowflakeExceptional,
+                      shortLabel: "24+",
+                      icon: <Sparkles className="size-3 text-cyan-400" />,
+                      title: ts.snowflakeExceptionalTooltip,
+                    },
+                    {
+                      id: "investment-grade",
+                      label: ts.snowflakeInvestGrade,
+                      shortLabel: "18+",
+                      icon: <CheckCircle2 className="size-3 text-sky-400" />,
+                      title: ts.snowflakeInvestGradeTooltip,
+                    },
+                  ]}
+                  onChange={setSnowflakeFilter}
+                  align="right"
+                />
+              </div>
+
+              {/* Right: View Mode Toggle + Results Count + Reset */}
+              <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-2.5">
+                {/* View Mode Toggle: Cards vs Table */}
+                <div className="flex items-center rounded-lg border border-border bg-surface-0/60 p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleSetViewMode("cards")}
+                    className={`flex items-center gap-1.5 rounded px-2 py-1 font-semibold transition-colors ${
+                      viewMode === "cards"
+                        ? "bg-accent/20 font-bold text-accent"
+                        : "text-slate-400 hover:text-foreground"
+                    }`}
+                    title={ts.viewCards}
+                  >
+                    <LayoutGrid className="size-3.5" />
+                    <span className="hidden lg:inline">{ts.viewCards}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSetViewMode("table")}
+                    className={`flex items-center gap-1.5 rounded px-2 py-1 font-semibold transition-colors ${
+                      viewMode === "table"
+                        ? "bg-accent/20 font-bold text-accent"
+                        : "text-slate-400 hover:text-foreground"
+                    }`}
+                    title={ts.viewTable}
+                  >
+                    <Table className="size-3.5" />
+                    <span className="hidden lg:inline">{ts.viewTable}</span>
+                  </button>
+                </div>
+
+                <div className="hidden h-4 w-px bg-border/60 sm:block" />
+
+                {/* Results count & Reset */}
+                <div className="flex items-center gap-2">
+                  <span className="whitespace-nowrap font-mono text-xs tabular-nums text-slate-400">
+                    {ts.resultsCount(
+                      filteredReports.length,
+                      uniqueReports.length
+                    )}
+                  </span>
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
+                      className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/15 px-2 py-1 font-mono text-xs font-semibold text-accent transition-all hover:border-accent/50 hover:bg-accent/25"
+                      title={ts.resetFilters}
+                    >
+                      <RotateCcw className="size-3" />
+                      <span>{ts.resetFilters}</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1674,6 +2119,26 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                         </div>
                         <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
                           {ts.colTickerTooltip}
+                        </p>
+                      </div>
+                    </th>
+
+                    {/* Sector */}
+                    <th
+                      onClick={() => handleSort("sector")}
+                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      title={ts.colSectorTooltip}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>{ts.colSector}</span>
+                        {renderSortIcon("sector")}
+                      </div>
+                      <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden w-56 whitespace-normal rounded-lg border border-border bg-surface-1/95 p-2.5 text-left font-sans text-xs font-normal normal-case tracking-normal text-slate-200 shadow-md backdrop-blur-md group-hover/th:block">
+                        <div className="font-semibold text-foreground">
+                          {ts.colSector}
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-300">
+                          {ts.colSectorTooltip}
                         </p>
                       </div>
                     </th>
@@ -1882,6 +2347,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                             </div>
                           </td>
 
+                          {/* Sector Skeleton */}
+                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                            <Skeleton
+                              className={`h-5 ${row.sectorW || "w-14"} rounded-full`}
+                            />
+                          </td>
+
                           {/* Moat */}
                           <td className="whitespace-nowrap border-b border-border/40 p-2.5">
                             <Skeleton
@@ -1955,7 +2427,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                   ) : filteredReports.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={11}
+                        colSpan={12}
                         className="border-b border-border/40 bg-surface-1 px-4 py-16 text-center text-slate-400"
                       >
                         {watchlistOnly ? (
@@ -1981,12 +2453,8 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                               {ts.noResults}
                             </p>
                             <button
-                              onClick={() => {
-                                setSearchQuery("");
-                                setMoatFilter("all");
-                                setUpsideFilter("all");
-                                handleToggleWatchlistOnly(false);
-                              }}
+                              type="button"
+                              onClick={handleResetFilters}
                               className="mt-3 rounded-lg border border-border bg-surface-1 px-3 py-1.5 text-xs text-accent hover:bg-surface-2"
                             >
                               {ts.resetFilters}
@@ -2002,7 +2470,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           style={{ height: topTableSpacerHeight }}
                           aria-hidden="true"
                         >
-                          <td colSpan={11} className="border-0 p-0" />
+                          <td colSpan={12} className="border-0 p-0" />
                         </tr>
                       )}
                       {virtualTableRows.map((report) => (
@@ -2015,6 +2483,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           onPrefetch={prefetchReport}
                           ts={ts}
                           tHeader={tHeader}
+                          locale={locale}
                         />
                       ))}
                       {bottomTableSpacerHeight > 0 && (
@@ -2022,12 +2491,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           style={{ height: bottomTableSpacerHeight }}
                           aria-hidden="true"
                         >
-                          <td colSpan={11} className="border-0 p-0" />
+                          <td colSpan={12} className="border-0 p-0" />
                         </tr>
                       )}
                       <tr>
                         <td
-                          colSpan={11}
+                          colSpan={12}
                           className="border-b border-border/40 bg-surface-1/90 py-3 text-center text-xs text-slate-400"
                         >
                           <span className="font-mono text-xs tabular-nums text-slate-400">

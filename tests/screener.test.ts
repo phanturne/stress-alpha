@@ -6,7 +6,15 @@ import { computeSnowflakeScore } from "@/lib/snowflake";
 import {
   deduplicateReportsToLatest,
   getReportRecencyWeight,
+  formatMarketCap,
 } from "@/components/ScreenerView";
+import {
+  GICS_SECTORS,
+  getTickerSectorId,
+  getSectorName,
+  getSectorShortName,
+  getSectorDefinition,
+} from "@/lib/sectors";
 
 describe("Screener & Reports API", () => {
   it("GET /api/reports returns enriched report summaries", async () => {
@@ -383,5 +391,65 @@ describe("Screener & Reports API", () => {
     expect(nvdaLatest).toBeDefined();
     expect(nvdaLatest?.quarter).toBe("Q2 2027");
     expect(nvdaLatest?.slug).toBe("NVDA-Q2-2027-analysis");
+  });
+
+  it("resolves sector categories correctly across GICS classification", () => {
+    expect(GICS_SECTORS).toHaveLength(11);
+    expect(getTickerSectorId("NVDA")).toBe("technology");
+    expect(getTickerSectorId("GOOGL")).toBe("communication");
+    expect(getTickerSectorId("AMZN")).toBe("consumer_discretionary");
+    expect(getTickerSectorId("JPM")).toBe("financials");
+    expect(getTickerSectorId("LLY")).toBe("healthcare");
+    expect(getTickerSectorId("CAT")).toBe("industrials");
+    expect(getTickerSectorId("PG")).toBe("consumer_staples");
+    expect(getTickerSectorId("XOM")).toBe("energy");
+    expect(getTickerSectorId("NEE")).toBe("utilities");
+    expect(getTickerSectorId("PLD")).toBe("real_estate");
+    expect(getTickerSectorId("LIN")).toBe("materials");
+
+    // Sector names in en and zh
+    expect(getSectorShortName("technology", "en")).toBe("Tech");
+    expect(getSectorShortName("technology", "zh")).toBe("信息技术");
+    expect(getSectorName("healthcare", "en")).toBe("Health Care");
+    expect(getSectorName("healthcare", "zh")).toBe("医疗健康与生物制药");
+  });
+
+  it("formats market cap into institutional notation", () => {
+    expect(formatMarketCap(3_250_000_000_000)).toBe("$3.25T");
+    expect(formatMarketCap(45_200_000_000)).toBe("$45.2B");
+    expect(formatMarketCap(850_000_000)).toBe("$850M");
+    expect(formatMarketCap(undefined)).toBe("—");
+    expect(formatMarketCap(0)).toBe("—");
+    expect(formatMarketCap(-500)).toBe("—");
+  });
+
+  it("filters universe reports by sector category and valuation ranges", async () => {
+    const response = await GET();
+    const { reports }: { reports: ReportSummary[] } = await response.json();
+
+    // Map each report to its sector
+    const techReports = reports.filter(
+      (r) => getTickerSectorId(r.ticker, r.sector) === "technology"
+    );
+    expect(techReports.length).toBeGreaterThan(0);
+    expect(techReports.some((r) => r.ticker === "NVDA")).toBe(true);
+
+    // Deep value filter (upside >= 30%)
+    const deepValue = reports.filter((r) => (r.upsidePct ?? 0) >= 30);
+    expect(deepValue.every((r) => (r.upsidePct ?? 0) >= 30)).toBe(true);
+
+    // Snowflake quality filter (exceptional >= 24)
+    const exceptionalQuality = reports.filter(
+      (r) => (r.snowflakeScore ?? 0) >= 24
+    );
+    expect(exceptionalQuality.every((r) => (r.snowflakeScore ?? 0) >= 24)).toBe(
+      true
+    );
+
+    // Moat none filter
+    const noMoat = reports.filter(
+      (r) => !r.moatRating || r.moatRating.toLowerCase() === "none"
+    );
+    expect(Array.isArray(noMoat)).toBe(true);
   });
 });

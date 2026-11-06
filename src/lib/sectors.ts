@@ -6,6 +6,8 @@ export interface SectorDefinition {
   etf: string;
   nameEn: string;
   nameZh: string;
+  shortNameEn?: string;
+  shortNameZh?: string;
   descriptionEn: string;
   descriptionZh: string;
   iconName: string;
@@ -18,6 +20,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLK",
     nameEn: "Information Technology",
     nameZh: "信息技术与软件",
+    shortNameEn: "Tech",
+    shortNameZh: "信息技术",
     descriptionEn:
       "Semiconductors, cloud infrastructure, AI hardware & enterprise software",
     descriptionZh: "半导体、云计算、人工智能硬件与企业级软件",
@@ -29,6 +33,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLC",
     nameEn: "Communication Services",
     nameZh: "通信与互动媒体",
+    shortNameEn: "Comm",
+    shortNameZh: "通信媒体",
     descriptionEn:
       "Social platforms, streaming entertainment, search & telecom networks",
     descriptionZh: "社交平台、流媒体娱乐、搜索引擎与电信网络",
@@ -40,6 +46,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLY",
     nameEn: "Consumer Discretionary",
     nameZh: "非必需消费品",
+    shortNameEn: "Discretionary",
+    shortNameZh: "可选消费",
     descriptionEn:
       "E-commerce, electric vehicles, retail & discretionary consumer goods",
     descriptionZh: "电商平台、新能源汽车、非必需零售消费",
@@ -51,6 +59,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLF",
     nameEn: "Financials",
     nameZh: "金融与金融科技",
+    shortNameEn: "Financials",
+    shortNameZh: "金融科技",
     descriptionEn:
       "Investment banking, retail brokerages, payment networks & asset managers",
     descriptionZh: "投资银行、券商经纪、支付网络与财富资产管理",
@@ -62,6 +72,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLV",
     nameEn: "Health Care",
     nameZh: "医疗健康与生物制药",
+    shortNameEn: "Healthcare",
+    shortNameZh: "医疗健康",
     descriptionEn:
       "Pharmaceuticals, biotech, medical devices & health insurance",
     descriptionZh: "制药创新、生物科技、医疗设备与商业健康保险",
@@ -73,6 +85,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLI",
     nameEn: "Industrials & Defense",
     nameZh: "工业制造与商业航天",
+    shortNameEn: "Industrials",
+    shortNameZh: "工业军工",
     descriptionEn:
       "Aerospace & defense, commercial transport, robotics & heavy machinery",
     descriptionZh: "商业航天、国防军工、现代交通运输与智能自动化装备",
@@ -84,6 +98,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLP",
     nameEn: "Consumer Staples",
     nameZh: "主要日常消费品",
+    shortNameEn: "Staples",
+    shortNameZh: "日常消费",
     descriptionEn:
       "Food, beverage, household goods & discount wholesale retail",
     descriptionZh: "食品饮料、家庭必需品与大型折扣量贩连锁",
@@ -95,6 +111,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLE",
     nameEn: "Energy",
     nameZh: "传统与清洁能源",
+    shortNameEn: "Energy",
+    shortNameZh: "传统能源",
     descriptionEn:
       "Oil & gas exploration, refining, LNG distribution & energy services",
     descriptionZh: "石油与天然气勘探、炼化提炼、液化天然气与能源服务",
@@ -106,6 +124,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLU",
     nameEn: "Utilities",
     nameZh: "公用事业与清洁电力",
+    shortNameEn: "Utilities",
+    shortNameZh: "公用事业",
     descriptionEn:
       "Regulated electric utilities, nuclear energy & renewable grid operators",
     descriptionZh: "核电与电网运营、清洁绿电与城市公用管网基础设施",
@@ -117,6 +137,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLRE",
     nameEn: "Real Estate",
     nameZh: "房地产与数据中心REITs",
+    shortNameEn: "Real Estate",
+    shortNameZh: "房地产",
     descriptionEn:
       "AI data center REITs, logistics warehouses & commercial properties",
     descriptionZh: "人工智能算力数据中心REITs、现代物流仓储与商业物业",
@@ -128,6 +150,8 @@ export const GICS_SECTORS: SectorDefinition[] = [
     etf: "XLB",
     nameEn: "Materials",
     nameZh: "基础材料与特种化学",
+    shortNameEn: "Materials",
+    shortNameZh: "基础材料",
     descriptionEn:
       "Industrial gases, specialty chemicals, copper & semiconductor metals",
     descriptionZh: "工业特种气体、化学新材料、铜与半导体高纯金属",
@@ -281,11 +305,11 @@ export const TICKER_SECTOR_MAP: Record<string, string> = {
  * Resolves a ticker's sector ID.
  */
 export function getTickerSectorId(
-  ticker: string,
+  ticker?: string,
   fallbackSector?: string
 ): string {
-  const symbol = ticker.toUpperCase().replace(/[^A-Z0-9-]/g, "");
-  if (TICKER_SECTOR_MAP[symbol]) {
+  const symbol = (ticker || "").toUpperCase().replace(/[^A-Z0-9-]/g, "");
+  if (symbol && TICKER_SECTOR_MAP[symbol]) {
     return TICKER_SECTOR_MAP[symbol];
   }
 
@@ -373,6 +397,22 @@ export function getSectorName(sectorId: string, locale: Locale): string {
   const def = GICS_SECTORS.find((s) => s.id === sectorId);
   if (!def) return sectorId;
   return locale === "zh" ? def.nameZh : def.nameEn;
+}
+
+export function getSectorShortName(
+  sectorId: string,
+  locale: Locale = "en"
+): string {
+  const def = GICS_SECTORS.find((s) => s.id === sectorId);
+  if (!def) return sectorId;
+  if (locale === "zh") return def.shortNameZh || def.nameZh;
+  return def.shortNameEn || def.nameEn;
+}
+
+export function getSectorDefinition(
+  sectorId: string
+): SectorDefinition | undefined {
+  return GICS_SECTORS.find((s) => s.id === sectorId);
 }
 
 export interface SectorAggregatedStats {

@@ -6,6 +6,7 @@ export interface ScenarioUrlState {
   tab?: string;
   mode?: "home" | "cockpit" | "memo" | "screener" | "watchlist";
   lang?: Locale;
+  sector?: string;
   stressParams?: StressTestParams;
 }
 
@@ -42,6 +43,11 @@ export function parseScenarioUrlState(
   const lang = params.get("lang");
   if (lang === "en" || lang === "zh") {
     state.lang = lang;
+  }
+
+  const sector = params.get("sector");
+  if (sector) {
+    state.sector = sector;
   }
 
   const stressParams: StressTestParams = {
@@ -92,6 +98,7 @@ export function serializeScenarioUrlState(state: ScenarioUrlState): string {
   if (state.tab && state.tab !== "technicals") params.set("tab", state.tab);
   if (state.mode && state.mode !== "cockpit") params.set("mode", state.mode);
   if (state.lang) params.set("lang", state.lang);
+  if (state.sector) params.set("sector", state.sector);
 
   if (state.stressParams) {
     if (state.stressParams.grossMarginBpsDelta) {

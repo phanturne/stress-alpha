@@ -676,27 +676,64 @@ export interface Translations {
     title: string;
     subtitle: string;
     searchPlaceholder: string;
+    allSectors: string;
+    sector: string;
+    filterSectorTooltip: (sector: string) => string;
     filterAll: string;
     filterAllTooltip: string;
     filterUndervalued: string;
     filterUndervaluedTooltip: string;
     filterHighUpside: string;
     filterHighUpsideTooltip: string;
+    filterDeepValue: string;
+    filterDeepValueTooltip: string;
+    filterOvervalued: string;
+    filterOvervaluedTooltip: string;
     allMoats: string;
     allMoatsTooltip: string;
     wideMoat: string;
     wideMoatTooltip: string;
     narrowMoat: string;
     narrowMoatTooltip: string;
+    moatNone: string;
+    moatNoneTooltip: string;
+    allQuality: string;
+    snowflakeExceptional: string;
+    snowflakeExceptionalTooltip: string;
+    snowflakeInvestGrade: string;
+    snowflakeInvestGradeTooltip: string;
+    presetLabel: string;
+    filterPresets: string;
+    filterUpside: string;
+    filterQuality: string;
+    presetHighAlphaShort: string;
+    presetCompoundersShort: string;
+    presetDeepValueShort: string;
+    presetQualityLeadersShort: string;
+    presetAll: string;
+    presetCompounders: string;
+    presetCompoundersTooltip: string;
+    presetHighAlpha: string;
+    presetHighAlphaTooltip: string;
+    presetDeepValue: string;
+    presetDeepValueTooltip: string;
+    presetQualityLeaders: string;
+    presetQualityLeadersTooltip: string;
+    filterActive: string;
+    clearAllFilters: string;
     colTicker: string;
     colTickerTooltip: string;
     colCompany: string;
+    colSector: string;
+    colSectorTooltip: string;
     colSnowflake: string;
     colSnowflakeTooltip: string;
     colMoat: string;
     colMoatTooltip: string;
     colPrice: string;
     colPriceTooltip: string;
+    colMarketCap: string;
+    colMarketCapTooltip: string;
     colAnalystTarget: string;
     colAnalystTargetTooltip: string;
     colConsensusSpread: string;
@@ -2038,7 +2075,10 @@ export const translations: Record<Locale, Translations> = {
       title: "Stock Screener & Valuation",
       subtitle:
         "Compare fundamentals, valuation upside, and moat ratings across covered stocks",
-      searchPlaceholder: "Search ticker or company name...",
+      searchPlaceholder: "Search ticker or company...",
+      allSectors: "All Sectors",
+      sector: "Sector",
+      filterSectorTooltip: (sector: string) => `Filter by ${sector}`,
       filterAll: "All",
       filterAllTooltip: "Show all covered stocks without valuation filter",
       filterUndervalued: "Undervalued",
@@ -2047,6 +2087,12 @@ export const translations: Record<Locale, Translations> = {
       filterHighUpside: ">20% Upside",
       filterHighUpsideTooltip:
         "Filter for high-conviction alpha opportunities with upside > 20%",
+      filterDeepValue: ">30% Deep Value",
+      filterDeepValueTooltip:
+        "Filter for deep value opportunities with upside > 30%",
+      filterOvervalued: "Overvalued",
+      filterOvervaluedTooltip:
+        "Filter for overvalued stocks with negative upside (<0%)",
       allMoats: "All Moats",
       allMoatsTooltip: "Show all economic moat ratings",
       wideMoat: "Wide Moat",
@@ -2054,10 +2100,44 @@ export const translations: Record<Locale, Translations> = {
         "Filter for Wide Economic Moat companies (durable competitive advantages)",
       narrowMoat: "Narrow",
       narrowMoatTooltip: "Filter for Narrow Economic Moat companies",
+      moatNone: "No Moat",
+      moatNoneTooltip: "Filter for companies with no economic moat barrier",
+      allQuality: "All Quality",
+      snowflakeExceptional: "Exceptional (24+)",
+      snowflakeExceptionalTooltip:
+        "Snowflake Radar score >= 24 (Exceptional alpha conviction)",
+      snowflakeInvestGrade: "Invest. Grade (18+)",
+      snowflakeInvestGradeTooltip:
+        "Snowflake Radar score >= 18 (High-quality investment grade)",
+      presetLabel: "Strategy Presets",
+      filterPresets: "Presets",
+      filterUpside: "Upside",
+      filterQuality: "Quality",
+      presetHighAlphaShort: "High Alpha",
+      presetCompoundersShort: "Wide Moat",
+      presetDeepValueShort: "Deep Value",
+      presetQualityLeadersShort: "Quality",
+      presetAll: "All",
+      presetCompounders: "Wide Moat",
+      presetCompoundersTooltip:
+        "Wide Moat companies with positive operating margins",
+      presetHighAlpha: "High-Conviction Alpha",
+      presetHighAlphaTooltip:
+        "High upside (>= 20%) paired with investment grade Snowflake (>= 18)",
+      presetDeepValue: "Deep Value",
+      presetDeepValueTooltip:
+        "Stressed upside >= 30% indicating significant margin of safety",
+      presetQualityLeaders: "Quality Leaders",
+      presetQualityLeadersTooltip:
+        "Snowflake score >= 22 with durable competitive moat",
+      filterActive: "Active Filters",
+      clearAllFilters: "Clear all",
       colTicker: "Ticker",
       colTickerTooltip:
         "Company ticker symbol and legal entity name. Click to sort.",
       colCompany: "Company",
+      colSector: "Sector",
+      colSectorTooltip: "GICS Sector classification. Click to sort.",
       colSnowflake: "Snowflake",
       colSnowflakeTooltip:
         "30-point Snowflake Fundamental Health Score (0-30) across Valuation, Growth, Quality, Moat, and Resilience. Click to sort.",
@@ -2066,6 +2146,8 @@ export const translations: Record<Locale, Translations> = {
         "Economic Moat rating (Wide, Narrow, None) and dynamic trend (↗ Widening, → Stable, ↘ Narrowing) indicating competitive trajectory. Click to sort.",
       colPrice: "Price",
       colPriceTooltip: "Latest traded market stock price. Click to sort.",
+      colMarketCap: "Market Cap",
+      colMarketCapTooltip: "Total equity market capitalization. Click to sort.",
       colAnalystTarget: "Analyst Target",
       colAnalystTargetTooltip:
         "Wall Street sell-side consensus 12-month target price and implied upside. Click to sort.",
@@ -3526,22 +3608,59 @@ export const translations: Record<Locale, Translations> = {
     screener: {
       title: "股票筛选与估值比对",
       subtitle: "横向对比覆盖股票的基本面指标、估值空间与护城河竞争壁垒",
-      searchPlaceholder: "搜索股票代码或公司全称...",
+      searchPlaceholder: "搜索代码或公司...",
+      allSectors: "全部板块",
+      sector: "板块",
+      filterSectorTooltip: (sector: string) => `筛选 ${sector} 板块`,
       filterAll: "全部",
       filterAllTooltip: "显示所有覆盖标的（不限估值空间）",
       filterUndervalued: "估值折价",
       filterUndervaluedTooltip: "筛选加权估值空间大于 0% 的折价标的",
       filterHighUpside: ">20% 空间",
       filterHighUpsideTooltip: "筛选加权估值空间大于 20% 的高弹性机会",
+      filterDeepValue: ">30% 深度折价",
+      filterDeepValueTooltip: "筛选加权估值空间大于 30% 的深度安全边际机会",
+      filterOvervalued: "估值溢价",
+      filterOvervaluedTooltip: "筛选现价高于公允价值（折价空间为负）的溢价标的",
       allMoats: "全部护城河",
       allMoatsTooltip: "显示所有护城河评级标的",
       wideMoat: "宽护城河",
       wideMoatTooltip: "筛选具备宽护城河（长期持久定价权）的优质标的",
       narrowMoat: "窄护城河",
       narrowMoatTooltip: "筛选具备窄护城河的标的",
+      moatNone: "无护城河",
+      moatNoneTooltip: "筛选无明显竞争护城河壁垒的标的",
+      allQuality: "全部评级",
+      snowflakeExceptional: "卓越评级 (24+)",
+      snowflakeExceptionalTooltip:
+        "雪花图基本面健康评分 >= 24 分（卓越 Alpha 级）",
+      snowflakeInvestGrade: "投资级 (18+)",
+      snowflakeInvestGradeTooltip:
+        "雪花图基本面健康评分 >= 18 分（高确定性投资级）",
+      presetLabel: "策略快筛",
+      filterPresets: "预设策略",
+      filterUpside: "估值空间",
+      filterQuality: "雪花评级",
+      presetHighAlphaShort: "高弹性",
+      presetCompoundersShort: "宽护城河",
+      presetDeepValueShort: "深度折价",
+      presetQualityLeadersShort: "顶级品质",
+      presetAll: "全部",
+      presetCompounders: "宽护城河白马",
+      presetCompoundersTooltip: "具备宽护城河壁垒且营业利润率健康的核心标的",
+      presetHighAlpha: "高弹性 Alpha",
+      presetHighAlphaTooltip: "估值折价空间 >= 20% 且雪花基本面分 >= 18",
+      presetDeepValue: "深度折价",
+      presetDeepValueTooltip: "加权公允价值折价空间 >= 30% 的深度超跌安全机会",
+      presetQualityLeaders: "顶级基本面",
+      presetQualityLeadersTooltip: "雪花健康评分 >= 22 且具备护城河竞争壁垒",
+      filterActive: "生效筛选",
+      clearAllFilters: "清除全部",
       colTicker: "代码",
       colTickerTooltip: "公司股票代码与全称。点击进行排序。",
       colCompany: "公司",
+      colSector: "板块",
+      colSectorTooltip: "全球行业分类标准 (GICS) 归属板块。点击进行排序。",
       colSnowflake: "雪花评分",
       colSnowflakeTooltip:
         "雪花图 30 项基本面健康审计总分（0-30分），涵盖估值、成长、盈利质量、护城河与抗风险韧性。点击排序。",
@@ -3550,6 +3669,8 @@ export const translations: Record<Locale, Translations> = {
         "经济护城河评级（宽、窄、无）与动态演变趋势（↗ 持续扩宽、→ 保持稳定、↘ 逐渐收窄）。点击排序。",
       colPrice: "现价",
       colPriceTooltip: "股票最新市场交易价格。点击排序。",
+      colMarketCap: "总市值",
+      colMarketCapTooltip: "公司最新总市值规模。点击进行排序。",
       colAnalystTarget: "分析师目标价",
       colAnalystTargetTooltip:
         "华尔街卖方 12 个月一致预期目标价及较现价空间。点击排序。",
