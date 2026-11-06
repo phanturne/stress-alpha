@@ -56,12 +56,14 @@ export async function fetchCompletePipelineBundle(
   const profile = await fetchFundamentalProfile(ticker, {
     apiKey: options?.apiKey,
     massiveApiKey: options?.massiveApiKey,
+    skipYahooFallback: options?.skipYahooFallback,
   });
 
   // 2. Fetch Analyst Consensus & Estimates
   const { estimatesEn, estimatesZh } = await fetchAnalystEstimates(ticker, {
     benchmarkPrice: options?.benchmarkPrice || profile.currentPrice,
     apiKey: options?.apiKey,
+    skipYahooFallback: options?.skipYahooFallback,
   });
 
   // 3. Fetch SEC Filings & Extract Targeted Excerpts

@@ -294,7 +294,14 @@ export async function fetchPolygonAggregates(
   fromDate: string,
   toDate: string,
   apiKey?: string
-): Promise<Array<{ date: string; close: number; open: number }> | null> {
+): Promise<Array<{
+  date: string;
+  close: number;
+  open: number;
+  high?: number;
+  low?: number;
+  volume?: number;
+}> | null> {
   const resolvedKey = getMassiveApiKey(apiKey);
   if (!resolvedKey) return null;
 
@@ -308,11 +315,23 @@ export async function fetchPolygonAggregates(
 
     const data = await res.json();
     if (data.status === "OK" && Array.isArray(data.results)) {
-      return data.results.map((r: { t: number; c: number; o: number }) => ({
-        date: new Date(r.t).toISOString().split("T")[0],
-        close: r.c,
-        open: r.o,
-      }));
+      return data.results.map(
+        (r: {
+          t: number;
+          c: number;
+          o: number;
+          h?: number;
+          l?: number;
+          v?: number;
+        }) => ({
+          date: new Date(r.t).toISOString().split("T")[0],
+          close: r.c,
+          open: r.o,
+          high: r.h,
+          low: r.l,
+          volume: r.v,
+        })
+      );
     }
   } catch (err) {
     console.warn("⚠️ Warning fetching Polygon aggregates:", err);
@@ -327,66 +346,97 @@ export async function fetchFundamentalProfile(
   options?: {
     apiKey?: string;
     massiveApiKey?: string;
+    skipYahooFallback?: boolean;
+    enableYahooFallback?: boolean;
   }
 ): Promise<FinancialProfile> {
   const ticker = tickerSymbol.toUpperCase();
 
-  // 1. Fetch Yahoo Finance quote, summary & 1-year daily chart for technical levels
+  // 1. Fetch official providers first (Finnhub for quotes/profile, Massive/Polygon for SEC statements)
+  const [fhProfile, massiveData] = await Promise.all([
+    fetchFinnhubProfile(ticker, options?.apiKey),
+    fetchMassiveFinancials(ticker, options?.massiveApiKey),
+  ]);
+
+  const hasOfficialPrice =
+    typeof fhProfile?.currentPrice === "number" && fhProfile.currentPrice > 0;
+  const hasOfficialStatements =
+    Array.isArray(massiveData?.statements) && massiveData.statements.length > 0;
+
+  // Single-ownership guard: only query Yahoo Finance if official providers are missing data
+  // or if fallback is explicitly requested.
+  const needYahoo =
+    options?.enableYahooFallback ||
+    (!options?.skipYahooFallback && (!hasOfficialPrice || !hasOfficialStatements));
+
   let yfQuote: any = {};
   let yfSummary: any = {};
   let historicalBars: DailyBar[] = [];
 
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const fromDate = oneYearAgo.toISOString().split("T")[0];
+  const toDate = new Date().toISOString().split("T")[0];
 
-  try {
-    const [quote, summary, chartRes] = await Promise.all([
-      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
-      yf
-        .quoteSummary(ticker, {
-          modules: [
-            "financialData",
-            "defaultKeyStatistics",
-            "summaryDetail",
-            "price",
-            "earnings",
-          ],
-        })
-        .catch((err: any) => err?.result ?? {}),
-      yf
-        .chart(ticker, { period1: oneYearAgo, interval: "1d" })
-        .catch((err: any) => {
-          console.warn(
-            `⚠️ Warning fetching 1y chart for ${ticker}:`,
-            err?.message || err
-          );
-          return null;
-        }),
-    ]);
-    yfQuote = quote || {};
-    yfSummary = summary || {};
-    if (chartRes && Array.isArray(chartRes.quotes)) {
-      historicalBars = chartRes.quotes.map((q: any) => ({
-        date: q.date,
-        open: q.open,
-        high: q.high,
-        low: q.low,
-        close: q.close,
-        volume: q.volume,
+  if (needYahoo) {
+    try {
+      const [quote, summary, chartRes] = await Promise.all([
+        yf.quote(ticker).catch((err: any) => err?.result ?? {}),
+        yf
+          .quoteSummary(ticker, {
+            modules: [
+              "financialData",
+              "defaultKeyStatistics",
+              "summaryDetail",
+              "price",
+              "earnings",
+            ],
+          })
+          .catch((err: any) => err?.result ?? {}),
+        yf
+          .chart(ticker, { period1: oneYearAgo, interval: "1d" })
+          .catch((err: any) => {
+            console.warn(
+              `⚠️ Warning fetching 1y chart for ${ticker}:`,
+              err?.message || err
+            );
+            return null;
+          }),
+      ]);
+      yfQuote = quote || {};
+      yfSummary = summary || {};
+      if (chartRes && Array.isArray(chartRes.quotes)) {
+        historicalBars = chartRes.quotes.map((q: any) => ({
+          date: q.date,
+          open: q.open,
+          high: q.high,
+          low: q.low,
+          close: q.close,
+          volume: q.volume,
+        }));
+      }
+    } catch (err) {
+      console.warn("⚠️ Warning fetching Yahoo Finance profile:", err);
+    }
+  } else {
+    // Single-ownership path: fetch Polygon aggregates for historical technical bars
+    const polygonBars = await fetchPolygonAggregates(
+      ticker,
+      fromDate,
+      toDate,
+      options?.massiveApiKey
+    );
+    if (polygonBars && polygonBars.length > 0) {
+      historicalBars = polygonBars.map((b) => ({
+        date: b.date,
+        open: b.open,
+        high: b.high ?? b.close,
+        low: b.low ?? b.open,
+        close: b.close,
+        volume: b.volume ?? 0,
       }));
     }
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Yahoo Finance profile:", err);
   }
-
-  // 2. Fetch Finnhub profile & quote
-  const fhProfile = await fetchFinnhubProfile(ticker, options?.apiKey);
-
-  // 3. Fetch Massive statements
-  const massiveData = await fetchMassiveFinancials(
-    ticker,
-    options?.massiveApiKey
-  );
 
   // Merge price & market cap
   const currentPrice =
@@ -411,11 +461,38 @@ export async function fetchFundamentalProfile(
     yfQuote.shortName ??
     `${ticker} Corporation`;
 
-  const trailingPE = yfQuote.trailingPE ?? yfSummary.summaryDetail?.trailingPE;
+  // Derived trailing EPS fallback from quarterly statements when Yahoo was skipped
+  let derivedTrailingEps: number | undefined;
+  if (massiveData?.statements && massiveData.statements.length > 0) {
+    const validStatements = massiveData.statements.slice(0, 4);
+    const sumEps = validStatements.reduce(
+      (acc, s) => acc + (typeof s.dilutedEps === "number" ? s.dilutedEps : 0),
+      0
+    );
+    if (sumEps > 0) {
+      derivedTrailingEps = round2(sumEps);
+    } else if (sharesOutstanding > 0) {
+      const sumNet = validStatements.reduce(
+        (acc, s) => acc + (s.netIncomeBillions || 0),
+        0
+      );
+      if (sumNet > 0) {
+        derivedTrailingEps = round2(sumNet / sharesOutstanding);
+      }
+    }
+  }
+
+  const trailingPE =
+    yfQuote.trailingPE ??
+    yfSummary.summaryDetail?.trailingPE ??
+    (derivedTrailingEps && derivedTrailingEps > 0 && currentPrice > 0
+      ? round2(currentPrice / derivedTrailingEps)
+      : undefined);
   const forwardPE = yfQuote.forwardPE ?? yfSummary.summaryDetail?.forwardPE;
   const trailingEps =
     yfQuote.epsTrailingTwelveMonths ??
-    yfSummary.defaultKeyStatistics?.trailingEps;
+    yfSummary.defaultKeyStatistics?.trailingEps ??
+    derivedTrailingEps;
   const forwardEps =
     yfQuote.epsForward ?? yfSummary.defaultKeyStatistics?.forwardEps;
 
@@ -530,33 +607,70 @@ export async function fetchFundamentalProfile(
 
 export async function fetchAnalystEstimates(
   tickerSymbol: string,
-  options?: { limit?: number; benchmarkPrice?: number; apiKey?: string }
+  options?: {
+    limit?: number;
+    benchmarkPrice?: number;
+    apiKey?: string;
+    skipYahooFallback?: boolean;
+    enableYahooFallback?: boolean;
+  }
 ): Promise<{ estimatesEn: AnalystEstimates; estimatesZh: AnalystEstimates }> {
   const ticker = tickerSymbol.toUpperCase();
   const limit = options?.limit ?? 30;
 
-  // 1. Fetch from Yahoo Finance
+  // 1. Fetch Consensus Breakdown (Finnhub official recommendation endpoint)
+  let bullishCount = 0;
+  let neutralCount = 0;
+  let bearishCount = 0;
+  let usedFinnhub = false;
+
+  const fhRec = await fetchFinnhubRecommendations(ticker, options?.apiKey);
+  if (fhRec) {
+    bullishCount = fhRec.strongBuy + fhRec.buy;
+    neutralCount = fhRec.hold;
+    bearishCount = fhRec.sell + fhRec.strongSell;
+    usedFinnhub = true;
+  }
+
+  // 2. Fetch from Yahoo Finance only if Finnhub failed, benchmark price is missing, or fallback is explicitly requested
   let yfSummary: any = {};
   let yfQuote: any = {};
 
-  try {
-    const [summary, quote] = await Promise.all([
-      yf
-        .quoteSummary(ticker, {
-          modules: [
-            "financialData",
-            "recommendationTrend",
-            "upgradeDowngradeHistory",
-            "summaryDetail",
-          ],
-        })
-        .catch((err: any) => err?.result ?? {}),
-      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
-    ]);
-    yfSummary = summary || {};
-    yfQuote = quote || {};
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Yahoo Finance estimates:", err);
+  const needYahoo =
+    options?.enableYahooFallback ||
+    (!options?.skipYahooFallback && (!usedFinnhub || !options?.benchmarkPrice));
+
+  if (needYahoo) {
+    try {
+      const [summary, quote] = await Promise.all([
+        yf
+          .quoteSummary(ticker, {
+            modules: [
+              "financialData",
+              "recommendationTrend",
+              "upgradeDowngradeHistory",
+              "summaryDetail",
+            ],
+          })
+          .catch((err: any) => err?.result ?? {}),
+        yf.quote(ticker).catch((err: any) => err?.result ?? {}),
+      ]);
+      yfSummary = summary || {};
+      yfQuote = quote || {};
+    } catch (err) {
+      console.warn("⚠️ Warning fetching Yahoo Finance estimates:", err);
+    }
+  }
+
+  // Fallback to Yahoo recommendation trend only if Finnhub was unavailable
+  if (!usedFinnhub) {
+    const recTrend = yfSummary.recommendationTrend?.trend;
+    if (Array.isArray(recTrend) && recTrend.length > 0) {
+      const top = recTrend[0];
+      bullishCount = safeNum(top.strongBuy) + safeNum(top.buy);
+      neutralCount = safeNum(top.hold);
+      bearishCount = safeNum(top.sell) + safeNum(top.strongSell);
+    }
   }
 
   const finData = yfSummary.financialData || {};
@@ -578,28 +692,6 @@ export async function fetchAnalystEstimates(
     : avg;
   const high = finData.targetHighPrice ? round2(finData.targetHighPrice) : avg;
   const currency = finData.financialCurrency || yfQuote.currency || "USD";
-
-  // 2. Fetch Consensus Breakdown (Try Finnhub first, fallback to Yahoo)
-  let bullishCount = 0;
-  let neutralCount = 0;
-  let bearishCount = 0;
-  let usedFinnhub = false;
-
-  const fhRec = await fetchFinnhubRecommendations(ticker, options?.apiKey);
-  if (fhRec) {
-    bullishCount = fhRec.strongBuy + fhRec.buy;
-    neutralCount = fhRec.hold;
-    bearishCount = fhRec.sell + fhRec.strongSell;
-    usedFinnhub = true;
-  } else {
-    const recTrend = yfSummary.recommendationTrend?.trend;
-    if (Array.isArray(recTrend) && recTrend.length > 0) {
-      const top = recTrend[0];
-      bullishCount = safeNum(top.strongBuy) + safeNum(top.buy);
-      neutralCount = safeNum(top.hold);
-      bearishCount = safeNum(top.sell) + safeNum(top.strongSell);
-    }
-  }
 
   const totalAnalysts = bullishCount + neutralCount + bearishCount;
   const bullishPct =
