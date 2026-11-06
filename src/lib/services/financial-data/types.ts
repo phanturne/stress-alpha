@@ -162,4 +162,6 @@ export interface PipelineBundleOptions {
   calendarActuals?: CalendarActualsOverride;
   enrichWithAi?: boolean;
   translateZh?: boolean;
+  skipYahooFallback?: boolean;
+  preferOfficialApis?: boolean;
 }
