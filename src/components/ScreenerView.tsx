@@ -176,11 +176,6 @@ function FilterDropdown<T extends string>({
         ) : (
           <span>{label}</span>
         )}
-        {activeOption?.count !== undefined && isActive && (
-          <span className="py-0.2 rounded-full bg-accent/20 px-1.5 font-mono text-[10px] text-accent">
-            {activeOption.count}
-          </span>
-        )}
         {isActive ? (
           <span
             role="button"
