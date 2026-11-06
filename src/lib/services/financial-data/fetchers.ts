@@ -367,7 +367,8 @@ export async function fetchFundamentalProfile(
   // or if fallback is explicitly requested.
   const needYahoo =
     options?.enableYahooFallback ||
-    (!options?.skipYahooFallback && (!hasOfficialPrice || !hasOfficialStatements));
+    (!options?.skipYahooFallback &&
+      (!hasOfficialPrice || !hasOfficialStatements));
 
   let yfQuote: any = {};
   let yfSummary: any = {};
