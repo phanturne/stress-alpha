@@ -70,10 +70,12 @@ export const SCREENER_PAGE_SIZE = 50;
 
 export function formatMarketCap(cap?: number): string {
   if (!cap || isNaN(cap) || cap <= 0) return "—";
-  if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
-  if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
-  if (cap >= 1e6) return `$${(cap / 1e6).toFixed(0)}M`;
-  return `$${cap.toLocaleString()}`;
+  // Support both raw dollar amounts (>= 1e6) and database billions notation (< 1e6)
+  const capB = cap >= 1e6 ? cap / 1e9 : cap;
+  if (capB >= 1000) return `$${(capB / 1000).toFixed(2)}T`;
+  if (capB >= 1) return `$${capB.toFixed(1)}B`;
+  if (capB >= 0.001) return `$${(capB * 1000).toFixed(0)}M`;
+  return `$${capB.toFixed(2)}B`;
 }
 
 export function renderSectorIcon(iconName: string, className = "size-3.5") {
@@ -280,8 +282,10 @@ interface ScreenerViewProps {
   initialWatchlistOnly?: boolean;
   onWatchlistFilterChange?: (watchlistOnly: boolean) => void;
   initialSector?: string;
+  initialCap?: string;
 }
 
+export type MarketCapFilter = "all" | "mega" | "large" | "mid" | "small";
 export type MoatFilter = "all" | "wide" | "narrow" | "none";
 export type UpsideFilter =
   "all" | "undervalued" | "high-upside" | "deep-value" | "overvalued";
@@ -1054,6 +1058,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     initialWatchlistOnly = false,
     onWatchlistFilterChange,
     initialSector,
+    initialCap,
   }: ScreenerViewProps) {
     const t = useMemo(() => getTranslations(locale), [locale]);
     const ts = useMemo(() => t.screener, [t]);
@@ -1096,6 +1101,26 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       }
       return "all";
     });
+    const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilter>(
+      () => {
+        if (
+          initialCap &&
+          ["mega", "large", "mid", "small"].includes(initialCap)
+        ) {
+          return initialCap as MarketCapFilter;
+        }
+        if (typeof window !== "undefined") {
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const c = params.get("cap");
+            if (c && ["mega", "large", "mid", "small"].includes(c)) {
+              return c as MarketCapFilter;
+            }
+          } catch {}
+        }
+        return "all";
+      }
+    );
     const [moatFilter, setMoatFilter] = useState<MoatFilter>("all");
     const [upsideFilter, setUpsideFilter] = useState<UpsideFilter>("all");
     const [snowflakeFilter, setSnowflakeFilter] =
@@ -1128,6 +1153,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     const hasActiveFilters = Boolean(
       searchQuery ||
       selectedSector !== "all" ||
+      marketCapFilter !== "all" ||
       moatFilter !== "all" ||
       upsideFilter !== "all" ||
       snowflakeFilter !== "all" ||
@@ -1137,6 +1163,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     const handleResetFilters = () => {
       setSearchQuery("");
       setSelectedSector("all");
+      setMarketCapFilter("all");
       setMoatFilter("all");
       setUpsideFilter("all");
       setSnowflakeFilter("all");
@@ -1159,6 +1186,31 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       for (const r of baseList) {
         const secId = getTickerSectorId(r.ticker, r.sector);
         counts[secId] = (counts[secId] || 0) + 1;
+      }
+      return counts;
+    }, [uniqueReports, watchlistOnly, isFavorite]);
+
+    // Dynamic market cap tier counts scoped to watchlist (if active)
+    const marketCapCounts = useMemo(() => {
+      const baseList = watchlistOnly
+        ? uniqueReports.filter((r) => isFavorite(r.ticker || r.slug))
+        : uniqueReports;
+
+      const counts = {
+        all: baseList.length,
+        mega: 0,
+        large: 0,
+        mid: 0,
+        small: 0,
+      };
+      for (const r of baseList) {
+        const cap = r.marketCap;
+        if (!cap || isNaN(cap) || cap <= 0) continue;
+        const capB = cap >= 1e6 ? cap / 1e9 : cap;
+        if (capB >= 200) counts.mega++;
+        else if (capB >= 10) counts.large++;
+        else if (capB >= 2) counts.mid++;
+        else counts.small++;
       }
       return counts;
     }, [uniqueReports, watchlistOnly, isFavorite]);
@@ -1224,6 +1276,20 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
           if (selectedSector !== "all") {
             const secId = getTickerSectorId(r.ticker, r.sector);
             if (secId !== selectedSector) return false;
+          }
+
+          // Market Cap filter
+          if (marketCapFilter !== "all") {
+            const cap = r.marketCap ?? 0;
+            if (cap <= 0) return false;
+            const capB = cap >= 1e6 ? cap / 1e9 : cap;
+            if (marketCapFilter === "mega" && capB < 200) return false;
+            if (marketCapFilter === "large" && (capB < 10 || capB >= 200))
+              return false;
+            if (marketCapFilter === "mid" && (capB < 2 || capB >= 10))
+              return false;
+            if (marketCapFilter === "small" && (capB <= 0 || capB >= 2))
+              return false;
           }
 
           // Text search: matches ticker, company, slug, or sector name
@@ -1366,6 +1432,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       watchlistOnly,
       isFavorite,
       selectedSector,
+      marketCapFilter,
       moatFilter,
       upsideFilter,
       snowflakeFilter,
@@ -1421,7 +1488,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     );
 
     // Reset visible count and table scroll when filters or sorting change
-    const filterKey = `${searchQuery}|${selectedSector}|${moatFilter}|${upsideFilter}|${snowflakeFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
+    const filterKey = `${searchQuery}|${selectedSector}|${marketCapFilter}|${moatFilter}|${upsideFilter}|${snowflakeFilter}|${sortField}|${sortDirection}|${watchlistOnly}`;
     const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
     if (prevFilterKey !== filterKey) {
       setPrevFilterKey(filterKey);
@@ -1874,6 +1941,52 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                   align="left"
                 />
 
+                {/* Market Cap Dropdown */}
+                <FilterDropdown
+                  label={ts.filterMarketCap}
+                  value={marketCapFilter}
+                  defaultValue="all"
+                  icon={<BarChart3 className="size-3.5 text-sky-400" />}
+                  activeColorClass="border-sky-500/50 bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/30"
+                  options={[
+                    {
+                      id: "all",
+                      label: ts.allMarketCaps,
+                      count: marketCapCounts.all,
+                    },
+                    {
+                      id: "mega",
+                      label: ts.marketCapMega,
+                      shortLabel: "Mega",
+                      count: marketCapCounts.mega,
+                      title: ts.marketCapMegaTooltip,
+                    },
+                    {
+                      id: "large",
+                      label: ts.marketCapLarge,
+                      shortLabel: "Large",
+                      count: marketCapCounts.large,
+                      title: ts.marketCapLargeTooltip,
+                    },
+                    {
+                      id: "mid",
+                      label: ts.marketCapMid,
+                      shortLabel: "Mid",
+                      count: marketCapCounts.mid,
+                      title: ts.marketCapMidTooltip,
+                    },
+                    {
+                      id: "small",
+                      label: ts.marketCapSmall,
+                      shortLabel: "Small",
+                      count: marketCapCounts.small,
+                      title: ts.marketCapSmallTooltip,
+                    },
+                  ]}
+                  onChange={setMarketCapFilter}
+                  align="left"
+                />
+
                 {/* Moat Dropdown */}
                 <FilterDropdown
                   label={ts.colMoat}
@@ -2022,7 +2135,13 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
 
                 {/* Results count & Reset */}
                 <div className="flex items-center gap-2">
-                  <span className="whitespace-nowrap font-mono text-xs tabular-nums text-slate-400">
+                  <span
+                    className="cursor-help whitespace-nowrap font-mono text-xs tabular-nums text-slate-400 hover:text-slate-200"
+                    title={ts.resultsCountTooltip(
+                      filteredReports.length,
+                      uniqueReports.length
+                    )}
+                  >
                     {ts.resultsCount(
                       filteredReports.length,
                       uniqueReports.length

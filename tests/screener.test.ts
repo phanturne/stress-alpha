@@ -451,5 +451,21 @@ describe("Screener & Reports API", () => {
       (r) => !r.moatRating || r.moatRating.toLowerCase() === "none"
     );
     expect(Array.isArray(noMoat)).toBe(true);
+
+    // Market cap tiers: Mega (>=200B), Large (10B-200B), Mid (2B-10B), Small (<2B)
+    const megaCaps = reports.filter((r) => {
+      const cap = r.marketCap ?? 0;
+      const capB = cap >= 1e6 ? cap / 1e9 : cap;
+      return capB >= 200;
+    });
+    expect(megaCaps.length).toBeGreaterThan(0);
+    expect(megaCaps.some((r) => r.ticker === "NVDA")).toBe(true);
+
+    const largeCaps = reports.filter((r) => {
+      const cap = r.marketCap ?? 0;
+      const capB = cap >= 1e6 ? cap / 1e9 : cap;
+      return capB >= 10 && capB < 200;
+    });
+    expect(Array.isArray(largeCaps)).toBe(true);
   });
 });

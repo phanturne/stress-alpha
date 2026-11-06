@@ -721,6 +721,17 @@ export interface Translations {
     presetQualityLeadersTooltip: string;
     filterActive: string;
     clearAllFilters: string;
+    filterMarketCap: string;
+    allMarketCaps: string;
+    marketCapMega: string;
+    marketCapMegaTooltip: string;
+    marketCapLarge: string;
+    marketCapLargeTooltip: string;
+    marketCapMid: string;
+    marketCapMidTooltip: string;
+    marketCapSmall: string;
+    marketCapSmallTooltip: string;
+    resultsCountTooltip: (shown: number, total: number) => string;
     colTicker: string;
     colTickerTooltip: string;
     colCompany: string;
@@ -2132,6 +2143,17 @@ export const translations: Record<Locale, Translations> = {
         "Snowflake score >= 22 with durable competitive moat",
       filterActive: "Active Filters",
       clearAllFilters: "Clear all",
+      filterMarketCap: "Cap",
+      allMarketCaps: "All Caps",
+      marketCapMega: "Mega (≥$200B)",
+      marketCapMegaTooltip:
+        "Mega-cap equities with market capitalization ≥ $200B",
+      marketCapLarge: "Large ($10B–$200B)",
+      marketCapLargeTooltip: "Large-cap equities between $10B and $200B",
+      marketCapMid: "Mid ($2B–$10B)",
+      marketCapMidTooltip: "Mid-cap equities between $2B and $10B",
+      marketCapSmall: "Small (<$2B)",
+      marketCapSmallTooltip: "Small-cap equities under $2B",
       colTicker: "Ticker",
       colTickerTooltip:
         "Company ticker symbol and legal entity name. Click to sort.",
@@ -2181,8 +2203,9 @@ export const translations: Record<Locale, Translations> = {
         `${count} of ${total} wide moats`,
       noResults: "No companies match your filters.",
       resetFilters: "Reset Filters",
-      resultsCount: (shown: number, total: number) =>
-        `Showing ${shown} of ${total} tickers`,
+      resultsCount: (shown: number, total: number) => `${shown} / ${total}`,
+      resultsCountTooltip: (shown: number, total: number) =>
+        `Showing ${shown} of ${total} covered tickers`,
       loadAll: (total: number) => `Load all (${total})`,
       filterWatchlist: "Watchlist",
       colFavorite: "Watch",
@@ -3656,6 +3679,16 @@ export const translations: Record<Locale, Translations> = {
       presetQualityLeadersTooltip: "雪花健康评分 >= 22 且具备护城河竞争壁垒",
       filterActive: "生效筛选",
       clearAllFilters: "清除全部",
+      filterMarketCap: "市值",
+      allMarketCaps: "全部市值",
+      marketCapMega: "超大盘 (≥$200B)",
+      marketCapMegaTooltip: "总市值 ≥ 2000 亿美元的超大盘核心标的",
+      marketCapLarge: "大盘 ($10B–$200B)",
+      marketCapLargeTooltip: "总市值在 100 亿至 2000 亿美元之间的大盘标的",
+      marketCapMid: "中盘 ($2B–$10B)",
+      marketCapMidTooltip: "总市值在 20 亿至 100 亿美元之间的中盘标的",
+      marketCapSmall: "小盘 (<$2B)",
+      marketCapSmallTooltip: "总市值低于 20 亿美元的小盘标的",
       colTicker: "代码",
       colTickerTooltip: "公司股票代码与全称。点击进行排序。",
       colCompany: "公司",
@@ -3703,8 +3736,9 @@ export const translations: Record<Locale, Translations> = {
         `${total} 家中含 ${count} 家宽护城河`,
       noResults: "未找到符合当前筛选条件的公司。",
       resetFilters: "重置筛选条件",
-      resultsCount: (shown: number, total: number) =>
-        `显示 ${shown} / 共 ${total} 家标的`,
+      resultsCount: (shown: number, total: number) => `${shown} / ${total}`,
+      resultsCountTooltip: (shown: number, total: number) =>
+        `显示 ${shown} / 共 ${total} 家覆盖标的`,
       loadAll: (total: number) => `加载全部 (${total})`,
       filterWatchlist: "自选关注",
       colFavorite: "关注",

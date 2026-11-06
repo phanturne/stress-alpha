@@ -39,6 +39,7 @@ function HomePageContent() {
     (!initialSlug ? "home" : "cockpit");
   const initialTab = searchParams.get("tab") || "technicals";
   const initialSector = searchParams.get("sector") || undefined;
+  const initialCap = searchParams.get("cap") || undefined;
 
   const [currentSlug, setCurrentSlug] = useState<string | null>(initialSlug);
   const [locale, setLocale] = useState<Locale>("en");
@@ -310,6 +311,7 @@ function HomePageContent() {
             locale={locale}
             isLoading={isReportsLoading}
             initialSector={initialSector}
+            initialCap={initialCap}
           />
         </div>
 
