@@ -70,14 +70,20 @@ describe("URL State Parser & Serializer", () => {
     const state: ScenarioUrlState = {
       mode: "screener",
       lang: "zh",
+      sector: "technology",
+      cap: "mega",
     };
     const serialized = serializeScenarioUrlState(state);
     expect(serialized).toContain("mode=screener");
     expect(serialized).toContain("lang=zh");
+    expect(serialized).toContain("sector=technology");
+    expect(serialized).toContain("cap=mega");
 
     const parsed = parseScenarioUrlState(serialized);
     expect(parsed.mode).toBe("screener");
     expect(parsed.lang).toBe("zh");
+    expect(parsed.sector).toBe("technology");
+    expect(parsed.cap).toBe("mega");
   });
 
   it("handles watchlist mode parsing and serialization", () => {
