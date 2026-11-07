@@ -24,6 +24,7 @@ interface MemoViewProps {
   isHistorical?: boolean;
   onSelectReport?: (slug: string) => void;
   onBackToCockpit: () => void;
+  sourceViewMode?: "home" | "cockpit" | "screener" | "watchlist";
   onOpenSocialCard?: () => void;
   onOpenSnowflake?: () => void;
   locale?: Locale;
@@ -38,6 +39,7 @@ export const MemoView: React.FC<MemoViewProps> = ({
   isHistorical = false,
   onSelectReport,
   onBackToCockpit,
+  sourceViewMode,
   onOpenSocialCard,
   onOpenSnowflake,
   locale = "zh",
@@ -89,6 +91,15 @@ export const MemoView: React.FC<MemoViewProps> = ({
     );
   }, [reportData, facts, catalysts, scenarios, moat, stressResult, memoLang]);
 
+  const backLabel =
+    sourceViewMode === "watchlist"
+      ? t.backToWatchlist
+      : sourceViewMode === "screener"
+        ? t.backToScreener
+        : sourceViewMode === "home"
+          ? t.backToMarket
+          : t.backToCockpit;
+
   return (
     <div className="memo-view-container mx-auto w-full max-w-4xl px-4 py-6">
       {/* Control Bar */}
@@ -97,9 +108,10 @@ export const MemoView: React.FC<MemoViewProps> = ({
           type="button"
           onClick={onBackToCockpit}
           className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-300 shadow-sm transition-all hover:border-slate-500 hover:text-foreground"
+          title={`${backLabel} (Esc)`}
         >
           <ArrowLeft className="size-4" />
-          {t.backToCockpit}
+          {backLabel}
         </button>
 
         <div className="flex items-center gap-3">

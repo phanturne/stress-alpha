@@ -19,7 +19,10 @@ import { MarketHomeView } from "@/components/home/MarketHomeView";
 import { NoReportSelected } from "@/components/NoReportSelected";
 import { CockpitDualPane } from "@/components/CockpitDualPane";
 import { CockpitModals } from "@/components/CockpitModals";
-import { getWorkspaceTabs } from "@/lib/workspace-tabs";
+import {
+  getWorkspaceTabs,
+  normalizeWorkspaceTabId,
+} from "@/lib/workspace-tabs";
 import { getLocalizedArtifacts } from "@/lib/localized-report";
 import { computeSnowflakeScore } from "@/lib/snowflake";
 import { getTranslations, type Locale } from "@/lib/i18n";
@@ -37,7 +40,7 @@ function HomePageContent() {
     (searchParams.get("mode") as
       "home" | "cockpit" | "memo" | "screener" | "watchlist" | null) ||
     (!initialSlug ? "home" : "cockpit");
-  const initialTab = searchParams.get("tab") || "technicals";
+  const initialTab = normalizeWorkspaceTabId(searchParams.get("tab"));
   const initialSector = searchParams.get("sector") || undefined;
   const initialCap = searchParams.get("cap") || undefined;
 
@@ -142,6 +145,7 @@ function HomePageContent() {
   const {
     viewMode,
     setViewMode,
+    sourceViewMode,
     activeTab,
     mobileSection,
     setMobileSection,
@@ -201,7 +205,8 @@ function HomePageContent() {
   );
 
   const currentTabIndex = useMemo(() => {
-    const idx = tabItems.findIndex((tab) => tab.id === activeTab);
+    const safeTab = normalizeWorkspaceTabId(activeTab);
+    const idx = tabItems.findIndex((tab) => tab.id === safeTab);
     return idx >= 0 ? idx : 0;
   }, [tabItems, activeTab]);
 
@@ -219,7 +224,9 @@ function HomePageContent() {
     onResetDefaults: handleResetDefaults,
     onToggleMemo: () => {
       if (!currentSlug) return;
-      setViewMode((prev) => (prev === "cockpit" ? "memo" : "cockpit"));
+      setViewMode((prev) =>
+        prev === "memo" ? sourceViewMode || "cockpit" : "memo"
+      );
     },
     onOpenScreener: () => handleViewModeChange("screener"),
     onToggleLocale: () => handleToggleLocale(locale === "zh" ? "en" : "zh"),
@@ -387,27 +394,38 @@ function HomePageContent() {
         </div>
 
         {/* Research Memo View */}
-        {viewMode === "memo" && reportData && stressResult && (
-          <MemoView
-            reportData={{
-              ...reportData,
-              facts: artifacts.facts!,
-              catalysts: artifacts.catalysts,
-              scenarios: artifacts.scenarios!,
-              filing: artifacts.filing,
-              valuation: dynamicValuation ?? reportData.valuation,
-            }}
-            stressResult={stressResult}
-            latestSlug={latestReport?.slug}
-            latestQuarter={latestReport?.quarter}
-            isHistorical={isViewingHistorical}
-            onSelectReport={handleSelectReport}
-            onBackToCockpit={() => handleViewModeChange("cockpit")}
-            onOpenSnowflake={() => setIsSnowflakeOpen(true)}
-            locale={locale}
-            onLocaleChange={handleToggleLocale}
-          />
-        )}
+        {viewMode === "memo" &&
+          (isReportLoading ? (
+            <CockpitSkeleton />
+          ) : !currentSlug || !reportData || !stressResult ? (
+            <NoReportSelected
+              onOpenScreener={() => handleViewModeChange("screener")}
+              locale={locale}
+            />
+          ) : (
+            <MemoView
+              reportData={{
+                ...reportData,
+                facts: artifacts.facts!,
+                catalysts: artifacts.catalysts,
+                scenarios: artifacts.scenarios!,
+                filing: artifacts.filing,
+                valuation: dynamicValuation ?? reportData.valuation,
+              }}
+              stressResult={stressResult}
+              latestSlug={latestReport?.slug}
+              latestQuarter={latestReport?.quarter}
+              isHistorical={isViewingHistorical}
+              onSelectReport={handleSelectReport}
+              onBackToCockpit={() =>
+                handleViewModeChange(sourceViewMode || "cockpit")
+              }
+              sourceViewMode={sourceViewMode}
+              onOpenSnowflake={() => setIsSnowflakeOpen(true)}
+              locale={locale}
+              onLocaleChange={handleToggleLocale}
+            />
+          ))}
       </main>
 
       <CockpitModals

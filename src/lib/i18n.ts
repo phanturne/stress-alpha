@@ -314,6 +314,8 @@ export interface Translations {
     shortAudit: string;
     shortNews: string;
     shortReport: string;
+    notes: string;
+    shortNotes: string;
     nextTab: string;
     prevTab: string;
     allTabs: string;
@@ -596,6 +598,9 @@ export interface Translations {
   };
   memo: {
     backToCockpit: string;
+    backToWatchlist: string;
+    backToScreener: string;
+    backToMarket: string;
     enMemoBtn: string;
     zhMemoBtn: string;
     printPdf: string;
@@ -1347,6 +1352,46 @@ export interface Translations {
       tag?: string;
     }>;
   };
+  stockNotes: {
+    tabTitle: string;
+    tabSubtitle: string;
+    shortNotes: string;
+    placeholder: string;
+    editMode: string;
+    previewMode: string;
+    saved: string;
+    saving: string;
+    savedLocally: string;
+    cloudSynced: string;
+    signInToSync: string;
+    copyNote: string;
+    copied: string;
+    clearNote: string;
+    clearConfirm: string;
+    cancel: string;
+    confirmClear: string;
+    charCount: (chars: number, words: number) => string;
+    lastSaved: (time: string) => string;
+    quickTemplatesTitle: string;
+    templates: {
+      thesis: string;
+      risks: string;
+      levels: string;
+    };
+    templateSnippets: {
+      thesis: string;
+      risks: string;
+      levels: string;
+    };
+    emptyPreview: string;
+    buttonTooltip: string;
+    hasNoteBadge: string;
+    viewNote: string;
+    addNote: string;
+    hoverSnippetTitle: string;
+    clickToEdit: string;
+    noNoteYet: string;
+  };
 }
 
 export const translations: Record<Locale, Translations> = {
@@ -1697,6 +1742,8 @@ export const translations: Record<Locale, Translations> = {
       shortAudit: "Audit",
       shortNews: "News",
       shortReport: "Memo",
+      notes: "Analyst Notes",
+      shortNotes: "Notes",
       nextTab: "Next Workspace",
       prevTab: "Prev Workspace",
       allTabs: "All Workspaces",
@@ -2002,6 +2049,9 @@ export const translations: Record<Locale, Translations> = {
     },
     memo: {
       backToCockpit: "Back to Model",
+      backToWatchlist: "Back to Watchlist",
+      backToScreener: "Back to Screener",
+      backToMarket: "Back to Market",
       enMemoBtn: "English Memo",
       zhMemoBtn: "🇨🇳 中文备忘录",
       printPdf: "Print / Export PDF Memo",
@@ -2916,6 +2966,53 @@ export const translations: Record<Locale, Translations> = {
         },
       ],
     },
+    stockNotes: {
+      tabTitle: "Stock Notes & Thesis",
+      tabSubtitle:
+        "Private analyst scratchpad, thesis tracking, and key execution reminders.",
+      shortNotes: "Notes",
+      placeholder:
+        "Write your investment thesis, key execution targets, valuation triggers, or risk alerts... (Markdown supported)",
+      editMode: "Write",
+      previewMode: "Preview",
+      saved: "Saved",
+      saving: "Saving...",
+      savedLocally: "Saved locally (Sign in to sync)",
+      cloudSynced: "Cloud synced",
+      signInToSync: "Sign in to sync your notes across devices",
+      copyNote: "Copy Note",
+      copied: "Copied!",
+      clearNote: "Clear Note",
+      clearConfirm: "Are you sure you want to clear your notes for this stock?",
+      cancel: "Cancel",
+      confirmClear: "Clear",
+      charCount: (chars: number, words: number) =>
+        `${words} words · ${chars} chars`,
+      lastSaved: (time: string) => `Last saved ${time}`,
+      quickTemplatesTitle: "Insert template:",
+      templates: {
+        thesis: "Bull Thesis & Catalysts",
+        risks: "Key Risks & Stress Watch",
+        levels: "Target Entry / Exit Levels",
+      },
+      templateSnippets: {
+        thesis:
+          "### 🎯 Core Thesis & Growth Drivers\n- **Primary Thesis:** \n- **Key Growth Driver:** \n- **Variant Perception vs Consensus:** \n",
+        risks:
+          "### ⚠️ Key Downside Risks & Red Flags\n- **Operating Margin Risk:** \n- **Customer / Upstream Dependency:** \n- **Panic Floor Trigger:** \n",
+        levels:
+          "### 📊 Target Entry & Exit Levels\n- **Target Accumulation Zone:** \n- **Base Case Fair Value:** \n- **Stop Loss / Invalidation Point:** \n",
+      },
+      emptyPreview:
+        "Nothing to preview yet. Switch to Write mode to begin your notes.",
+      buttonTooltip: "Stock Notes",
+      hasNoteBadge: "Has Note",
+      viewNote: "View Note",
+      addNote: "Add Note",
+      hoverSnippetTitle: "Analyst Note Snippet",
+      clickToEdit: "Click to open & edit full note",
+      noNoteYet: "No note yet — click to write note",
+    },
   },
   zh: {
     header: {
@@ -3256,6 +3353,8 @@ export const translations: Record<Locale, Translations> = {
       shortAudit: "审计",
       shortNews: "动态",
       shortReport: "研报",
+      notes: "个股投资备忘",
+      shortNotes: "笔记",
       nextTab: "下一工作台",
       prevTab: "上一工作台",
       allTabs: "全部工作台",
@@ -3549,6 +3648,9 @@ export const translations: Record<Locale, Translations> = {
     },
     memo: {
       backToCockpit: "返回模型",
+      backToWatchlist: "返回自选列表",
+      backToScreener: "返回选股器",
+      backToMarket: "返回全景市场",
       enMemoBtn: "English Memo",
       zhMemoBtn: "🇨🇳 中文备忘录",
       printPdf: "打印 / 导出 PDF",
@@ -4430,6 +4532,50 @@ export const translations: Record<Locale, Translations> = {
           tickers: ["XLE", "XLP", "COST"],
         },
       ],
+    },
+    stockNotes: {
+      tabTitle: "个股投资备忘与核心观点",
+      tabSubtitle: "专属研究草稿纸、投资逻辑跟踪与关键财报执行备忘。",
+      shortNotes: "笔记",
+      placeholder:
+        "记录您的核心逻辑、关键业绩催化、估值预期或风险预警... (支持 Markdown 语法)",
+      editMode: "编辑",
+      previewMode: "预览",
+      saved: "已保存",
+      saving: "保存中...",
+      savedLocally: "已本地保存 (登录后云端同步)",
+      cloudSynced: "已云端同步",
+      signInToSync: "登录账号后可跨设备无缝同步备忘笔记",
+      copyNote: "复制笔记",
+      copied: "已复制!",
+      clearNote: "清空笔记",
+      clearConfirm: "确定要清空该股票的备忘笔记吗？",
+      cancel: "取消",
+      confirmClear: "确认清空",
+      charCount: (chars: number, words: number) => `${words} 词 · ${chars} 字`,
+      lastSaved: (time: string) => `上次保存于 ${time}`,
+      quickTemplatesTitle: "快捷插入模板:",
+      templates: {
+        thesis: "多头逻辑与核心催化",
+        risks: "下行风险与排雷跟踪",
+        levels: "目标仓位与进出场位",
+      },
+      templateSnippets: {
+        thesis:
+          "### 🎯 核心多头逻辑与驱动引擎\n- **投资逻辑:** \n- **核心业务催化:** \n- **相对市场共识的预期差:** \n",
+        risks:
+          "### ⚠️ 关键下行风险与排雷要点\n- **营业利润率与经营杠杆风险:** \n- **供应链/客户集中度风险:** \n- **极端底线与止损触发条件:** \n",
+        levels:
+          "### 📊 目标价位与进出场计划\n- **目标建仓区间:** \n- **基准目标价:** \n- **防守止损位:** \n",
+      },
+      emptyPreview: "暂无可预览内容。请切换至编辑模式书写笔记。",
+      buttonTooltip: "个股备忘笔记",
+      hasNoteBadge: "有笔记",
+      viewNote: "查看笔记",
+      addNote: "添加笔记",
+      hoverSnippetTitle: "个股备忘摘要",
+      clickToEdit: "点击查看与编辑完整笔记",
+      noNoteYet: "暂无笔记 — 点击添加备忘",
     },
   },
 };

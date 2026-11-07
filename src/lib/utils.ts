@@ -34,8 +34,8 @@ export function formatBillions(value: number, decimals: number = 1): string {
  * E.g. "NVDA-Q2-2027-analysis" -> "NVDA", "nvda" -> "NVDA"
  * Rejects malformed strings outside /^[A-Z0-9.-]{1,10}$/.
  */
-export function normalizeTicker(tickerOrSlug?: string | null): string {
-  if (!tickerOrSlug) return "";
+export function normalizeTicker(tickerOrSlug?: unknown): string {
+  if (typeof tickerOrSlug !== "string" || !tickerOrSlug) return "";
   const cleaned = tickerOrSlug.trim();
   const candidate = cleaned.includes("-")
     ? cleaned.split("-")[0].toUpperCase().trim()

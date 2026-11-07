@@ -22,6 +22,35 @@ export const WORKSPACE_TAB_IDS = [
 
 export type WorkspaceTabId = (typeof WORKSPACE_TAB_IDS)[number];
 
+/**
+ * Normalizes any tab identifier into a canonical WorkspaceTabId.
+ * Obsolete or unknown tab strings (such as "notes") safely fall back to "technicals".
+ */
+export function normalizeWorkspaceTabId(
+  tab: string | undefined | null
+): WorkspaceTabId {
+  if (!tab) return "technicals";
+  if (WORKSPACE_TAB_IDS.includes(tab as WorkspaceTabId)) {
+    return tab as WorkspaceTabId;
+  }
+  // Support legacy sub-tab routes
+  if (
+    tab === "scenarios" ||
+    tab === "sensitivity" ||
+    tab === "segments" ||
+    tab === "catalysts"
+  ) {
+    return "valuation";
+  }
+  if (tab === "moat") {
+    return "estimates";
+  }
+  if (tab === "audit" || tab === "tone" || tab === "filing") {
+    return "news";
+  }
+  return "technicals";
+}
+
 export interface WorkspaceTabDescriptor {
   id: WorkspaceTabId;
   shortcut: string;

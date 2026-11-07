@@ -105,8 +105,8 @@ export function requestAuthLogin(): void {
  * Normalizes a ticker or report slug into an uppercase ticker symbol.
  * E.g. "NVDA-Q2-2027-analysis" -> "NVDA", "nvda" -> "NVDA"
  */
-export function normalizeTicker(tickerOrSlug?: string | null): string {
-  if (!tickerOrSlug) return "";
+export function normalizeTicker(tickerOrSlug?: unknown): string {
+  if (typeof tickerOrSlug !== "string" || !tickerOrSlug) return "";
   const cleaned = tickerOrSlug.trim();
   if (cleaned.includes("-")) {
     const candidate = cleaned.split("-")[0].toUpperCase().trim();

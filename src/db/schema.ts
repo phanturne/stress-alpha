@@ -271,6 +271,34 @@ export const userWatchlistsTable = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// 4.1 User Stock Notes Table (Cloud synchronization for per-stock analyst notes)
+// ---------------------------------------------------------------------------
+export const userNotesTable = pgTable(
+  "user_notes",
+  {
+    id: text("id").primaryKey(), // `${userId}_${ticker}`
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    ticker: text("ticker").notNull(),
+    content: text("content").default("").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("idx_user_notes_user").on(table.userId),
+    uniqueIndex("idx_user_notes_user_ticker").on(table.userId, table.ticker),
+  ]
+);
+
+export type UserNoteSelect = typeof userNotesTable.$inferSelect;
+export type UserNoteInsert = typeof userNotesTable.$inferInsert;
+
+// ---------------------------------------------------------------------------
 // 5. Market Events & News Intelligence Table
 // ---------------------------------------------------------------------------
 export const marketEventsTable = pgTable(

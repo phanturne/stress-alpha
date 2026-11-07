@@ -28,7 +28,9 @@ export function parseScenarioUrlState(
   if (report) state.report = report;
 
   const tab = params.get("tab");
-  if (tab) state.tab = tab;
+  if (tab) {
+    state.tab = tab === "notes" ? "technicals" : tab;
+  }
 
   const mode = params.get("mode");
   if (

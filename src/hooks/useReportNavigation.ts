@@ -8,6 +8,7 @@ import {
   parseScenarioUrlState,
   serializeScenarioUrlState,
 } from "@/lib/url-state";
+import { normalizeWorkspaceTabId } from "@/lib/workspace-tabs";
 
 export interface UseReportNavigationOptions {
   currentSlug: string | null;
@@ -27,6 +28,10 @@ export interface UseReportNavigationReturn {
   viewMode: "home" | "cockpit" | "memo" | "screener" | "watchlist";
   setViewMode: React.Dispatch<
     React.SetStateAction<"home" | "cockpit" | "memo" | "screener" | "watchlist">
+  >;
+  sourceViewMode: "home" | "cockpit" | "screener" | "watchlist";
+  setSourceViewMode: React.Dispatch<
+    React.SetStateAction<"home" | "cockpit" | "screener" | "watchlist">
   >;
   activeTab: string;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
@@ -68,8 +73,11 @@ export function useReportNavigation({
   const [viewMode, setViewMode] = useState<
     "home" | "cockpit" | "memo" | "screener" | "watchlist"
   >(initialMode || "home");
+  const [sourceViewMode, setSourceViewMode] = useState<
+    "home" | "cockpit" | "screener" | "watchlist"
+  >(initialMode && initialMode !== "memo" ? initialMode : "cockpit");
   const [activeTab, setActiveTab] = useState<string>(
-    initialTab || "technicals"
+    normalizeWorkspaceTabId(initialTab)
   );
   const [mobileSection, setMobileSection] = useState<"cockpit" | "workspaces">(
     "cockpit"
@@ -82,6 +90,8 @@ export function useReportNavigation({
 
   const currentSlugRef = useRef(currentSlug);
   const activeTabRef = useRef(activeTab);
+  const viewModeRef = useRef(viewMode);
+  const sourceViewModeRef = useRef(sourceViewMode);
   const localeRef = useRef(locale);
   const stressParamsRef = useRef(stressParams);
   const hasParsedInitialUrlRef = useRef(false);
@@ -89,6 +99,8 @@ export function useReportNavigation({
   useEffect(() => {
     currentSlugRef.current = currentSlug;
     activeTabRef.current = activeTab;
+    viewModeRef.current = viewMode;
+    sourceViewModeRef.current = sourceViewMode;
     localeRef.current = locale;
     stressParamsRef.current = stressParams;
   });
@@ -104,7 +116,8 @@ export function useReportNavigation({
 
     Promise.resolve().then(() => {
       if (urlState.tab) {
-        setActiveTab((prev) => (prev !== urlState.tab ? urlState.tab! : prev));
+        const safeTab = normalizeWorkspaceTabId(urlState.tab);
+        setActiveTab((prev) => (prev !== safeTab ? safeTab : prev));
       }
       if (urlState.mode) {
         setViewMode((prev) => (prev !== urlState.mode ? urlState.mode! : prev));
@@ -159,8 +172,15 @@ export function useReportNavigation({
       const urlState = parseScenarioUrlState(
         window.location.search || window.location.hash
       );
-      if (urlState.tab) setActiveTab(urlState.tab);
-      if (urlState.mode) setViewMode(urlState.mode);
+      if (urlState.tab) {
+        setActiveTab(normalizeWorkspaceTabId(urlState.tab));
+      }
+      if (urlState.mode) {
+        if (urlState.mode !== "memo") {
+          setSourceViewMode(urlState.mode);
+        }
+        setViewMode(urlState.mode);
+      }
       if (urlState.lang) {
         setLocale(urlState.lang);
         if (onSetReportDocLang) {
@@ -202,9 +222,10 @@ export function useReportNavigation({
       return;
     }
 
+    const safeTab = normalizeWorkspaceTabId(activeTab);
     const queryString = serializeScenarioUrlState({
       report: currentSlug ?? undefined,
-      tab: activeTab,
+      tab: safeTab,
       mode: viewMode,
       lang: locale,
       stressParams,
@@ -228,11 +249,18 @@ export function useReportNavigation({
         router.push("/settings");
         return;
       }
+      if (mode === "memo" && viewModeRef.current !== "memo") {
+        setSourceViewMode(viewModeRef.current);
+      }
       setViewMode(mode);
+      const safeTab = normalizeWorkspaceTabId(activeTabRef.current);
+      if (safeTab !== activeTabRef.current) {
+        setActiveTab(safeTab);
+      }
       if (typeof window !== "undefined") {
         const queryString = serializeScenarioUrlState({
           report: currentSlugRef.current ?? undefined,
-          tab: activeTabRef.current,
+          tab: safeTab,
           mode,
           lang: localeRef.current,
           stressParams: stressParamsRef.current,
@@ -251,13 +279,20 @@ export function useReportNavigation({
   const handleSelectReport = useCallback(
     (slug: string, mode?: "cockpit" | "memo") => {
       const nextMode = mode ?? "cockpit";
+      if (viewModeRef.current !== "memo") {
+        setSourceViewMode(viewModeRef.current);
+      }
+      const safeTab = normalizeWorkspaceTabId(activeTabRef.current);
       currentSlugRef.current = slug;
       setViewMode(nextMode);
       setCurrentSlug(slug);
+      if (safeTab !== activeTabRef.current) {
+        setActiveTab(safeTab);
+      }
       if (typeof window !== "undefined") {
         const queryString = serializeScenarioUrlState({
           report: slug,
-          tab: activeTabRef.current,
+          tab: safeTab,
           mode: nextMode,
           lang: localeRef.current,
           stressParams: stressParamsRef.current,
@@ -274,7 +309,8 @@ export function useReportNavigation({
 
   // Smooth workspace switcher with auto-scroll to top
   const switchWorkspace = useCallback((tabId: string, smoothScroll = true) => {
-    setActiveTab(tabId);
+    const safeTab = normalizeWorkspaceTabId(tabId);
+    setActiveTab(safeTab);
     setMobileSection("workspaces");
     if (smoothScroll) {
       if (workspaceScrollRef.current && window.innerWidth >= 1024) {
@@ -352,6 +388,8 @@ export function useReportNavigation({
   return {
     viewMode,
     setViewMode,
+    sourceViewMode,
+    setSourceViewMode,
     activeTab,
     setActiveTab,
     mobileSection,
