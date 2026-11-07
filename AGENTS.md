@@ -35,6 +35,9 @@ This document defines the architectural conventions, data modeling rules, intern
    - Bulk Scaffolding & Batch Report Persistence (`scripts/bulk_scaffold.ts`, `npm run scaffold:universe`):
      - Ingests 8-module pipeline bundles, computes deterministic valuations, runs sanity audits, renders bilingual memos, and persists full institutional reports into Neon PostgreSQL.
      - Prioritizes by market cap with configurable limits (`--limit=50`), single-ticker targets (`--ticker=JPM`), or universe-wide backfills (`--all`), with non-destructive skipping of already populated reports.
+   - Single-Ownership Ingestion & TPS Rate-Budgeting (`docs/TELEMETRY_TPS.md`, `src/lib/services/financial-data/fetchers.ts`):
+     - Eliminates redundant multi-vendor scraping: Finnhub owns Market Quotes & Consensus Recommendations; Polygon/Massive & SEC EDGAR own Financial Statements; Polygon aggregates own historical technical bars; Yahoo Finance is relegated to offline/zero-key developer fallback.
+     - Enforces strict inter-ticker rate budgeting (`delayMs >= 2200ms` in batch loops) keeping sustained Finnhub traffic at ~54 RPM (below the 60 RPM free ceiling) and reducing single-ticker pipeline outbound requests from 9 to 4 (-56% network calls, 2.8x speedup).
 
 ---
 

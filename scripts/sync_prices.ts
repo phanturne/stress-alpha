@@ -255,6 +255,8 @@ async function syncPrices() {
       } of chunk) {
         try {
           const single = await fetchQuoteFromYahoo(ticker);
+          // Gentle 200ms throttle between individual fallbacks to prevent burst spamming
+          await new Promise((r) => setTimeout(r, 200));
           const newPrice = Number(single.regularMarketPrice?.toFixed(2));
           const prevClose =
             typeof single.regularMarketPreviousClose === "number"

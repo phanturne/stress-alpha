@@ -63,7 +63,8 @@ export async function bulkScaffold(
 
   const db = getDb();
   const repo = getReportRepository();
-  const delayMs = options.delayMs ?? 1000;
+  // 2,200ms delay ensures Finnhub calls stay at ~54 requests/min, strictly below the 60 req/min free limit
+  const delayMs = options.delayMs ?? 2200;
 
   console.log("\n⚡ [StressAlpha Bulk Scaffolding Engine] Initializing...");
 
@@ -252,6 +253,7 @@ export async function bulkScaffold(
       // 1. Fetch Complete 8-Module Pipeline Bundle (with AI Gateway enrichment if configured)
       const bundle = await fetchCompletePipelineBundle(ticker, {
         enrichWithAi,
+        skipYahooFallback: true,
       });
 
       const quarterStr = bundle.factsDraft.quarter || "Q2 2026";
@@ -404,7 +406,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const ticker = tickerArg ? tickerArg.split("=")[1] : undefined;
 
   const delayArg = args.find((a) => a.startsWith("--delay="));
-  const delayMs = delayArg ? parseInt(delayArg.split("=")[1], 10) : 1000;
+  const delayMs = delayArg ? parseInt(delayArg.split("=")[1], 10) : 2200;
 
   bulkScaffold({
     dryRun,

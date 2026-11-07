@@ -49,6 +49,32 @@ describe("Financial Data Ingestion Service", () => {
     expect(first.revenueBillions).toBeGreaterThan(0);
   });
 
+  it("fetches profile and estimates in single-ownership mode without Yahoo fallback", async () => {
+    const hasFinnhubKey = Boolean(process.env.FINNHUB_API_KEY);
+    const profile = await fetchFundamentalProfile("MSFT", {
+      skipYahooFallback: true,
+    });
+    expect(profile.ticker).toBe("MSFT");
+    expect(typeof profile.currentPrice).toBe("number");
+    if (hasFinnhubKey) {
+      expect(profile.currentPrice).toBeGreaterThan(0);
+      expect(profile.marketCapBillions).toBeGreaterThan(0);
+      expect(profile.sharesOutstandingBillions).toBeGreaterThan(0);
+    }
+
+    const benchmarkPrice =
+      profile.currentPrice > 0 ? profile.currentPrice : 400;
+    const { estimatesEn } = await fetchAnalystEstimates("MSFT", {
+      benchmarkPrice,
+      skipYahooFallback: true,
+    });
+    expect(estimatesEn.ticker).toBe("MSFT");
+    expect(estimatesEn.priceTargets.average).toBeGreaterThan(0);
+    if (hasFinnhubKey) {
+      expect(estimatesEn.consensus.totalAnalysts).toBeGreaterThan(0);
+    }
+  });
+
   it("fetches analyst consensus and price targets conforming to AnalystEstimatesSchema", async () => {
     const { estimatesEn, estimatesZh } = await fetchAnalystEstimates("MSFT", {
       limit: 10,
