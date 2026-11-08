@@ -461,7 +461,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
     >
       {/* Watchlist Star Toggle */}
       <td
-        className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center group-hover:bg-surface-2/90"
+        className="sticky left-0 z-10 w-10 min-w-10 max-w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center group-hover:bg-surface-2/90"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -487,23 +487,23 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Ticker & Company */}
-      <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
+      <td className="sticky left-10 z-10 w-[210px] min-w-[210px] border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] group-hover:bg-surface-2/90">
         <div className="flex items-center gap-2">
           <span className="shadow-xs hidden size-6 shrink-0 items-center justify-center rounded border border-border bg-surface-1 font-mono text-[11px] font-black tracking-tight text-foreground group-hover:border-accent/50 group-hover:text-accent sm:flex">
             {report.ticker || report.slug.split("-")[0]}
           </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 whitespace-nowrap">
               <span className="font-bold text-foreground group-hover:text-accent">
                 {report.ticker || report.slug}
               </span>
               {report.quarter && (
-                <span className="rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
+                <span className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-400">
                   {report.quarter}
                 </span>
               )}
             </div>
-            <p className="max-w-[100px] truncate text-[11px] text-slate-400 sm:max-w-[125px] xl:max-w-[150px]">
+            <p className="max-w-[140px] truncate text-[11px] text-slate-400 sm:max-w-[155px]">
               {report.company || report.slug}
             </p>
           </div>
@@ -511,7 +511,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Sector */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+      <td className="w-[120px] min-w-[120px] whitespace-nowrap border-b border-border/40 p-2.5">
         <span
           className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2/80 px-2 py-0.5 text-[11px] font-medium text-slate-300"
           title={getSectorName(sectorId, locale)}
@@ -525,7 +525,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Economic Moat */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+      <td className="w-[115px] min-w-[115px] whitespace-nowrap border-b border-border/40 p-2.5">
         {report.moatRating ? (
           <div className="flex items-center gap-1.5">
             <span
@@ -563,7 +563,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Snowflake Fundamental Radar & Score */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+      <td className="w-[135px] min-w-[135px] whitespace-nowrap border-b border-border/40 p-2.5">
         {report.snowflakeScore !== undefined ? (
           <div
             className="flex items-center gap-2"
@@ -609,7 +609,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Current Stock Price & Market Cap */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums sm:text-sm">
+      <td className="w-[90px] min-w-[90px] whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums sm:text-sm">
         <div className="font-semibold text-foreground">
           {price > 0 ? formatCurrency(price) : "—"}
         </div>
@@ -624,7 +624,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Analyst Consensus Target */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
+      <td className="w-[140px] min-w-[140px] whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
         {report.analystTarget && report.analystTarget > 0 ? (
           <div
             title={
@@ -664,7 +664,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Base Fair Value & Upside */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
+      <td className="w-[120px] min-w-[120px] whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono">
         {baseFv > 0 ? (
           <div>
             <div className="font-mono text-xs font-medium tabular-nums text-slate-200 sm:text-sm">
@@ -685,7 +685,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Weighted Fair Value & Upside */}
-      <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right font-mono">
+      <td className="w-[130px] min-w-[130px] whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right font-mono">
         {wfv > 0 ? (
           <div>
             <div className="font-mono text-xs font-bold tabular-nums text-foreground sm:text-sm">
@@ -714,7 +714,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
 
       {/* Stress Range Bar */}
       <td
-        className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5"
+        className="w-[150px] min-w-[150px] border-b border-border/40 px-2.5 py-2.5"
         title={
           hasRange
             ? `${report.ticker || report.company} ${ts.colValuationRange}:\n• ${ts.bearLabel}: ${formatCurrency(bear!)}\n• ${ts.currentPriceLabel}: ${formatCurrency(price)}\n• ${ts.baseLabel}: ${formatCurrency(baseFv)}\n• ${ts.bullLabel}: ${formatCurrency(bull!)}`
@@ -758,7 +758,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Operating Margin */}
-      <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
+      <td className="w-[105px] min-w-[105px] whitespace-nowrap border-b border-border/40 p-2.5 text-right font-mono text-xs tabular-nums text-slate-300 sm:text-sm">
         {report.operatingMarginPct !== undefined ? (
           <span>{report.operatingMarginPct.toFixed(1)}%</span>
         ) : (
@@ -767,7 +767,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
       </td>
 
       {/* Revenue Growth */}
-      <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right font-mono text-xs tabular-nums sm:text-sm">
+      <td className="w-[110px] min-w-[110px] whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right font-mono text-xs tabular-nums sm:text-sm">
         {report.revenueGrowthPct !== undefined ? (
           <span
             className={
@@ -784,7 +784,7 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
 
       {/* Actions (Notes + Memo + Cockpit) */}
       <td
-        className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right"
+        className="w-[195px] min-w-[195px] whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-end gap-1.5">
@@ -2344,12 +2344,27 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
               aria-label="Stock Screener Table"
               className="custom-scrollbar max-h-[calc(100vh-14.5rem)] min-h-[460px] overflow-auto outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
             >
-              <table className="w-full min-w-[1100px] border-separate border-spacing-0 text-left text-xs sm:text-sm">
+              <table className="w-full min-w-[1560px] table-fixed border-separate border-spacing-0 text-left text-xs sm:text-sm">
+                <colgroup>
+                  <col className="w-10" />
+                  <col className="w-[210px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[115px]" />
+                  <col className="w-[135px]" />
+                  <col className="w-[90px]" />
+                  <col className="w-[140px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[130px]" />
+                  <col className="w-[150px]" />
+                  <col className="w-[105px]" />
+                  <col className="w-[110px]" />
+                  <col className="w-[195px]" />
+                </colgroup>
                 <thead className="shadow-xs sticky top-0 z-20">
                   <tr className="border-b border-border bg-surface-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     {/* Watchlist Star */}
                     <th
-                      className="sticky left-0 top-0 z-30 w-10 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-3 pr-1 text-center"
+                      className="sticky left-0 top-0 z-30 w-10 min-w-10 max-w-10 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-3 pr-1 text-center"
                       title={ts.colFavorite}
                     >
                       <Star className="mx-auto size-3.5 text-slate-400" />
@@ -2358,7 +2373,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Ticker & Company */}
                     <th
                       onClick={() => handleSort("ticker")}
-                      className="group/th sticky left-10 top-0 z-30 cursor-pointer whitespace-nowrap border-b border-r border-border/40 bg-surface-2 py-3 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] transition-colors hover:text-foreground"
+                      className="group/th sticky left-10 top-0 z-30 w-[210px] min-w-[210px] cursor-pointer whitespace-nowrap border-b border-r border-border/40 bg-surface-2 py-3 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)] transition-colors hover:text-foreground"
                       title={ts.colTickerTooltip}
                     >
                       <div className="flex items-center gap-1.5">
@@ -2378,7 +2393,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Sector */}
                     <th
                       onClick={() => handleSort("sector")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[120px] min-w-[120px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
                       title={ts.colSectorTooltip}
                     >
                       <div className="flex items-center gap-1.5">
@@ -2398,7 +2413,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Moat */}
                     <th
                       onClick={() => handleSort("moat")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[115px] min-w-[115px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
                       title={ts.colMoatTooltip}
                     >
                       <div className="flex items-center gap-1.5">
@@ -2418,7 +2433,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Snowflake 30-Point Audit Radar */}
                     <th
                       onClick={() => handleSort("snowflake")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[135px] min-w-[135px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 transition-colors hover:text-foreground"
                       title={ts.colSnowflakeTooltip}
                     >
                       <div className="flex items-center gap-1.5">
@@ -2438,7 +2453,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Price */}
                     <th
                       onClick={() => handleSort("price")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[90px] min-w-[90px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                       title={ts.colPriceTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2458,7 +2473,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Analyst Consensus Target */}
                     <th
                       onClick={() => handleSort("analystTarget")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[140px] min-w-[140px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                       title={ts.colAnalystTargetTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2478,7 +2493,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Base Fair Value */}
                     <th
                       onClick={() => handleSort("baseUpside")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[120px] min-w-[120px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                       title={ts.colBaseFairValueTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2498,7 +2513,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Weighted Fair Value & Upside */}
                     <th
                       onClick={() => handleSort("upside")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 p-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[130px] min-w-[130px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 p-3 text-right transition-colors hover:text-foreground"
                       title={ts.colWeightedFairValueTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2517,7 +2532,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
 
                     {/* Valuation Spectrum / Stress Range */}
                     <th
-                      className="group/th sticky top-0 z-20 min-w-[125px] max-w-[160px] whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3"
+                      className="group/th sticky top-0 z-20 w-[150px] min-w-[150px] whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3"
                       title={ts.rangeTooltip}
                     >
                       <div className="flex items-center gap-1.5">
@@ -2539,7 +2554,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Operating Margin */}
                     <th
                       onClick={() => handleSort("opMargin")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[105px] min-w-[105px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 px-2.5 py-3 text-right transition-colors hover:text-foreground"
                       title={ts.colOperatingMarginTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2559,7 +2574,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     {/* Revenue Growth */}
                     <th
                       onClick={() => handleSort("revGrowth")}
-                      className="group/th sticky top-0 z-20 cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-3 text-right transition-colors hover:text-foreground"
+                      className="group/th sticky top-0 z-20 w-[110px] min-w-[110px] cursor-pointer whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-3 text-right transition-colors hover:text-foreground"
                       title={ts.colRevenueGrowthTooltip}
                     >
                       <div className="flex items-center justify-end gap-1.5">
@@ -2577,7 +2592,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                     </th>
 
                     {/* Actions */}
-                    <th className="sticky top-0 z-20 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-4 text-right">
+                    <th className="sticky top-0 z-20 w-[195px] min-w-[195px] whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-4 text-right">
                       <span>{ts.colAction}</span>
                     </th>
                   </tr>
@@ -2589,12 +2604,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                       {SKELETON_ROWS.map((row, idx) => (
                         <tr key={`skeleton-${idx}`} className="group">
                           {/* Watchlist Star Skeleton */}
-                          <td className="sticky left-0 z-10 w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center">
+                          <td className="sticky left-0 z-10 w-10 min-w-10 max-w-10 border-b border-border/40 bg-surface-1 py-2.5 pl-3 pr-1 text-center">
                             <Skeleton className="mx-auto size-4 rounded" />
                           </td>
 
                           {/* Ticker & Company */}
-                          <td className="sticky left-10 z-10 border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]">
+                          <td className="sticky left-10 z-10 w-[210px] min-w-[210px] border-b border-r border-border/40 bg-surface-1 py-2.5 pl-2 pr-3 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.25)]">
                             <div className="flex items-center gap-2.5">
                               <Skeleton className="size-7 shrink-0 rounded-lg" />
                               <div className="space-y-1.5">
@@ -2605,21 +2620,21 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           </td>
 
                           {/* Sector Skeleton */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                          <td className="w-[120px] min-w-[120px] whitespace-nowrap border-b border-border/40 p-2.5">
                             <Skeleton
                               className={`h-5 ${row.sectorW || "w-14"} rounded-full`}
                             />
                           </td>
 
                           {/* Moat */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                          <td className="w-[115px] min-w-[115px] whitespace-nowrap border-b border-border/40 p-2.5">
                             <Skeleton
                               className={`h-5 ${row.moatW} rounded-full`}
                             />
                           </td>
 
                           {/* Snowflake */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5">
+                          <td className="w-[135px] min-w-[135px] whitespace-nowrap border-b border-border/40 p-2.5">
                             <div className="flex items-center gap-2">
                               <Skeleton className="size-7 shrink-0 rounded-full" />
                               <div className="space-y-1">
@@ -2630,24 +2645,24 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           </td>
 
                           {/* Price */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                          <td className="w-[90px] min-w-[90px] whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                             <Skeleton className="ml-auto h-4 w-14" />
                           </td>
 
                           {/* Analyst Target */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                          <td className="w-[140px] min-w-[140px] whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                             <Skeleton
                               className={`ml-auto h-4 ${row.targetW}`}
                             />
                           </td>
 
                           {/* Base Fair Value */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                          <td className="w-[120px] min-w-[120px] whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                             <Skeleton className={`ml-auto h-4 ${row.baseW}`} />
                           </td>
 
                           {/* Weighted Fair Value & Upside */}
-                          <td className="whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right">
+                          <td className="w-[130px] min-w-[130px] whitespace-nowrap border-b border-border/40 px-3 py-2.5 text-right">
                             <div className="ml-auto space-y-1">
                               <Skeleton className={`ml-auto h-4 ${row.wfvW}`} />
                               <Skeleton className="ml-auto h-3 w-12 rounded-full" />
@@ -2655,7 +2670,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           </td>
 
                           {/* Valuation Spectrum / Stress Range */}
-                          <td className="min-w-[125px] max-w-[160px] border-b border-border/40 px-2.5 py-2.5">
+                          <td className="w-[150px] min-w-[150px] border-b border-border/40 px-2.5 py-2.5">
                             <div className="space-y-1.5">
                               <div className="flex justify-between">
                                 <Skeleton className="h-2 w-8" />
@@ -2666,21 +2681,21 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           </td>
 
                           {/* Operating Margin */}
-                          <td className="whitespace-nowrap border-b border-border/40 p-2.5 text-right">
+                          <td className="w-[105px] min-w-[105px] whitespace-nowrap border-b border-border/40 p-2.5 text-right">
                             <Skeleton
                               className={`ml-auto h-4 ${row.marginW}`}
                             />
                           </td>
 
                           {/* Revenue Growth */}
-                          <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right">
+                          <td className="w-[110px] min-w-[110px] whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-3 text-right">
                             <Skeleton
                               className={`ml-auto h-4 ${row.growthW}`}
                             />
                           </td>
 
                           {/* Actions Skeleton */}
-                          <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right">
+                          <td className="w-[195px] min-w-[195px] whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right">
                             <Skeleton className="ml-auto h-5 w-24 rounded" />
                           </td>
                         </tr>
