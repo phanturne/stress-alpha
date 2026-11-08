@@ -46,12 +46,14 @@ import type { ReportSummary } from "@/app/api/reports/route";
 import {
   formatCurrency,
   formatPercent,
+  formatMarketCap,
   getReportRecencyWeight,
   compareReportsByRecency,
   deduplicateReportsToLatest,
 } from "@/lib/utils";
 
 export {
+  formatMarketCap,
   getReportRecencyWeight,
   compareReportsByRecency,
   deduplicateReportsToLatest,
@@ -70,16 +72,6 @@ import {
 } from "@/lib/sectors";
 
 export const SCREENER_PAGE_SIZE = 50;
-
-export function formatMarketCap(cap?: number): string {
-  if (!cap || isNaN(cap) || cap <= 0) return "—";
-  // Support both raw dollar amounts (>= 1e6) and database billions notation (< 1e6)
-  const capB = cap >= 1e6 ? cap / 1e9 : cap;
-  if (capB >= 1000) return `$${(capB / 1000).toFixed(2)}T`;
-  if (capB >= 1) return `$${capB.toFixed(1)}B`;
-  if (capB >= 0.001) return `$${(capB * 1000).toFixed(0)}M`;
-  return `$${capB.toFixed(2)}B`;
-}
 
 export function renderSectorIcon(iconName: string, className = "size-3.5") {
   switch (iconName) {
