@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 import {
   TrendingUp,
   ArrowUpRight,
@@ -36,7 +41,11 @@ import {
   aggregateSectors,
   getTickerSectorId,
 } from "@/lib/sectors";
-import { formatCurrency, deduplicateReportsToLatest } from "@/lib/utils";
+import {
+  formatCurrency,
+  formatMarketCap,
+  deduplicateReportsToLatest,
+} from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
@@ -58,6 +67,32 @@ interface MarketHomeViewProps {
 type EarningsTimeframe =
   "all" | "today" | "tomorrow" | "this_week" | "next_week";
 type MoverTab = "gainers" | "losers" | "active" | "watchlist";
+
+const EARNINGS_WATCHLIST_STORAGE_KEY = "stress_alpha_earnings_watchlist_only";
+const EARNINGS_WATCHLIST_EVENT = "stress_alpha_earnings_watchlist_changed";
+
+function subscribeEarningsWatchlist(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", callback);
+  window.addEventListener(EARNINGS_WATCHLIST_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(EARNINGS_WATCHLIST_EVENT, callback);
+  };
+}
+
+function getEarningsWatchlistSnapshot(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(EARNINGS_WATCHLIST_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function getEarningsWatchlistServerSnapshot(): boolean {
+  return false;
+}
 
 function renderSectorIcon(iconName: string, className = "size-4") {
   switch (iconName) {
@@ -188,6 +223,19 @@ export function MarketHomeView({
     useState<EarningsTimeframe>("all");
   const [expandedStoryId, setExpandedStoryId] = useState<string>("story-1");
   const [moverTab, setMoverTab] = useState<MoverTab>("gainers");
+  const earningsWatchlistOnly = useSyncExternalStore(
+    subscribeEarningsWatchlist,
+    getEarningsWatchlistSnapshot,
+    getEarningsWatchlistServerSnapshot
+  );
+
+  const handleToggleEarningsWatchlistOnly = () => {
+    try {
+      const next = !getEarningsWatchlistSnapshot();
+      localStorage.setItem(EARNINGS_WATCHLIST_STORAGE_KEY, String(next));
+      window.dispatchEvent(new Event(EARNINGS_WATCHLIST_EVENT));
+    } catch {}
+  };
 
   // Market Summary Data & Upcoming Earnings Data
   const [marketSummary, setMarketSummary] =
@@ -338,7 +386,19 @@ export function MarketHomeView({
     return scored.slice(0, 5).map((item) => item.report);
   }, [latestReports]);
 
-  // Filtered upcoming earnings by timeframe and selected sector (anchored to US Market date)
+  // Fast market cap lookup map by uppercase ticker
+  const marketCapByTicker = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const r of reports) {
+      if (r.ticker && typeof r.marketCap === "number" && r.marketCap > 0) {
+        map.set(r.ticker.toUpperCase(), r.marketCap);
+      }
+    }
+    return map;
+  }, [reports]);
+
+  // Filtered upcoming earnings by timeframe, sector, and watchlist (anchored to US Market date)
+  // Sorted chronologically by Date ASC, Session (BMO before AMC), and Market Cap DESC
   const [currentTimestamp] = useState(() => Date.now());
   const filteredEarnings = useMemo(() => {
     const getMarketDate = (offsetDays = 0) => {
@@ -350,26 +410,53 @@ export function MarketHomeView({
     const tomorrowDate = getMarketDate(1);
     const nextWeekDate = getMarketDate(7);
 
-    return upcomingEarnings.filter((item) => {
-      if (
-        selectedSectorFilter &&
-        item.sectorId &&
-        item.sectorId !== selectedSectorFilter
-      ) {
-        return false;
-      }
-      if (earningsFilter === "today") return item.date === today;
-      if (earningsFilter === "tomorrow") return item.date === tomorrowDate;
-      if (earningsFilter === "this_week")
-        return item.date >= today && item.date <= nextWeekDate;
-      if (earningsFilter === "next_week") return item.date > nextWeekDate;
-      return true;
-    });
+    return upcomingEarnings
+      .filter((item) => {
+        if (
+          selectedSectorFilter &&
+          item.sectorId &&
+          item.sectorId !== selectedSectorFilter
+        ) {
+          return false;
+        }
+        if (earningsWatchlistOnly && !isFavorite(item.symbol)) {
+          return false;
+        }
+        if (earningsFilter === "today") return item.date === today;
+        if (earningsFilter === "tomorrow") return item.date === tomorrowDate;
+        if (earningsFilter === "this_week")
+          return item.date >= today && item.date <= nextWeekDate;
+        if (earningsFilter === "next_week") return item.date > nextWeekDate;
+        return true;
+      })
+      .sort((a, b) => {
+        // 1. Chronological order by date
+        if (a.date !== b.date) {
+          return a.date.localeCompare(b.date);
+        }
+        // 2. Session: Before Market Open (BMO) before After Market Close (AMC)
+        if (a.hour !== b.hour) {
+          return a.hour === "bmo" ? -1 : 1;
+        }
+        // 3. Within same date & session: Sort by Market Cap DESC (largest bellwethers first)
+        const capA =
+          a.marketCap ?? marketCapByTicker.get(a.symbol.toUpperCase()) ?? 0;
+        const capB =
+          b.marketCap ?? marketCapByTicker.get(b.symbol.toUpperCase()) ?? 0;
+        if (capA !== capB) {
+          return capB - capA;
+        }
+        // 4. Alphabetical tie-breaker
+        return a.symbol.localeCompare(b.symbol);
+      });
   }, [
     upcomingEarnings,
     earningsFilter,
+    earningsWatchlistOnly,
     selectedSectorFilter,
     currentTimestamp,
+    isFavorite,
+    marketCapByTicker,
   ]);
 
   // Modular segmented tab configurations (eliminates border highlight flicker)
@@ -1181,9 +1268,31 @@ export function MarketHomeView({
                   {tHome.upcomingEarningsTitle}
                 </h3>
               </div>
-              <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
-                {filteredEarnings.length}
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleToggleEarningsWatchlistOnly}
+                  className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium transition-all ${
+                    earningsWatchlistOnly
+                      ? "shadow-xs border border-amber-500/40 bg-amber-500/15 text-amber-300 shadow-amber-500/10"
+                      : "border border-border/70 bg-surface-2/60 text-slate-400 hover:border-amber-500/30 hover:text-amber-300"
+                  }`}
+                  title={tHome.filterWatchlistOnly}
+                  aria-pressed={earningsWatchlistOnly}
+                >
+                  <Star
+                    className={`size-3 transition-transform ${
+                      earningsWatchlistOnly
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-slate-400"
+                    }`}
+                  />
+                  <span>{tHome.filterWatchlistOnly}</span>
+                </button>
+                <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+                  {filteredEarnings.length}
+                </span>
+              </div>
             </div>
 
             {/* Timeframe Filter Pills */}
@@ -1199,7 +1308,9 @@ export function MarketHomeView({
             <div className="custom-scrollbar mt-3 max-h-[360px] divide-y divide-border/40 overflow-y-auto pr-3">
               {filteredEarnings.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
-                  {tHome.noUpcomingFound}
+                  {earningsWatchlistOnly
+                    ? tHome.noWatchlistUpcomingFound
+                    : tHome.noUpcomingFound}
                 </div>
               ) : (
                 filteredEarnings.map((item) => {
@@ -1209,6 +1320,9 @@ export function MarketHomeView({
                     latestSlugByTicker.get(item.symbol.toUpperCase()) ||
                     item.reportSlug;
                   const hasModel = Boolean(resolvedSlug);
+                  const itemMarketCap =
+                    item.marketCap ??
+                    marketCapByTicker.get(item.symbol.toUpperCase());
 
                   return (
                     <div
@@ -1253,6 +1367,11 @@ export function MarketHomeView({
                             >
                               {isBmo ? "BMO" : "AMC"}
                             </span>
+                            {itemMarketCap && (
+                              <span className="font-mono text-[9px] text-slate-400">
+                                {formatMarketCap(itemMarketCap)}
+                              </span>
+                            )}
                             {hasModel && (
                               <span
                                 className="size-1.5 rounded-full bg-emerald-400"

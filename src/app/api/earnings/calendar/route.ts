@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { upcomingEarningsTable } from "@/db/schema";
-import { sql, asc } from "drizzle-orm";
+import { upcomingEarningsTable, tickersTable } from "@/db/schema";
+import { sql, asc, desc, eq } from "drizzle-orm";
 
 export interface UpcomingEarningsItem {
   symbol: string;
@@ -15,6 +15,7 @@ export interface UpcomingEarningsItem {
   hasModel: boolean;
   reportSlug?: string | null;
   sectorId?: string;
+  marketCap?: number | null;
 }
 
 // High-profile constituent names for clean UI display
@@ -70,6 +71,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "aapl-2026q4",
       sectorId: "technology",
+      marketCap: 3500000000000,
     },
     {
       symbol: "PLTR",
@@ -83,6 +85,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "pltr-2026q3",
       sectorId: "technology",
+      marketCap: 110000000000,
     },
     {
       symbol: "O",
@@ -96,6 +99,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "o-2026q3",
       sectorId: "real_estate",
+      marketCap: 48000000000,
     },
     // Tomorrow (+1d)
     {
@@ -110,6 +114,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "amd-2026q3",
       sectorId: "technology",
+      marketCap: 220000000000,
     },
     {
       symbol: "PFE",
@@ -122,6 +127,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       revenueEstimate: 16500000000,
       hasModel: false,
       sectorId: "healthcare",
+      marketCap: 155000000000,
     },
     // Day +2
     {
@@ -136,6 +142,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "NVDA-Q2-2027-analysis",
       sectorId: "technology",
+      marketCap: 3400000000000,
     },
     {
       symbol: "LITE",
@@ -148,6 +155,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       revenueEstimate: 1275000000,
       hasModel: false,
       sectorId: "technology",
+      marketCap: 6000000000,
     },
     // Day +3
     {
@@ -161,6 +169,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       revenueEstimate: 22800000000,
       hasModel: false,
       sectorId: "communication",
+      marketCap: 210000000000,
     },
     {
       symbol: "HOOD",
@@ -174,6 +183,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "HOOD-Q2-2026-analysis",
       sectorId: "financials",
+      marketCap: 28000000000,
     },
     // Day +4
     {
@@ -188,6 +198,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "CSCO-Q4-2026-analysis",
       sectorId: "technology",
+      marketCap: 230000000000,
     },
     {
       symbol: "RKLB",
@@ -201,6 +212,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "RKLB-Q2-2026-analysis",
       sectorId: "industrials",
+      marketCap: 12000000000,
     },
     // Next Week
     {
@@ -215,6 +227,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "MRVL-Q2-2027-analysis",
       sectorId: "technology",
+      marketCap: 75000000000,
     },
     {
       symbol: "TSLA",
@@ -228,6 +241,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       hasModel: true,
       reportSlug: "TSLA-Q2-2026-analysis",
       sectorId: "consumer_discretionary",
+      marketCap: 850000000000,
     },
     {
       symbol: "HD",
@@ -240,6 +254,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       revenueEstimate: 39100000000,
       hasModel: false,
       sectorId: "consumer_discretionary",
+      marketCap: 390000000000,
     },
     {
       symbol: "BABA",
@@ -252,6 +267,7 @@ function getCuratedEarnings(todayNy: string): UpcomingEarningsItem[] {
       revenueEstimate: 34500000000,
       hasModel: false,
       sectorId: "consumer_discretionary",
+      marketCap: 200000000000,
     },
   ];
 }
@@ -292,11 +308,29 @@ export async function GET(request: Request) {
     if (process.env.DATABASE_URL) {
       const db = getDb();
       const rows = await db
-        .select()
+        .select({
+          symbol: upcomingEarningsTable.symbol,
+          company: upcomingEarningsTable.company,
+          date: upcomingEarningsTable.date,
+          hour: upcomingEarningsTable.hour,
+          quarter: upcomingEarningsTable.quarter,
+          year: upcomingEarningsTable.year,
+          epsEstimate: upcomingEarningsTable.epsEstimate,
+          revenueEstimate: upcomingEarningsTable.revenueEstimate,
+          hasModel: upcomingEarningsTable.hasModel,
+          reportSlug: upcomingEarningsTable.reportSlug,
+          sectorId: upcomingEarningsTable.sectorId,
+          marketCap: tickersTable.marketCap,
+        })
         .from(upcomingEarningsTable)
-        .where(sql`date >= ${todayNy}`)
+        .leftJoin(
+          tickersTable,
+          eq(upcomingEarningsTable.symbol, tickersTable.ticker)
+        )
+        .where(sql`${upcomingEarningsTable.date} >= ${todayNy}`)
         .orderBy(
           asc(upcomingEarningsTable.date),
+          sql`${tickersTable.marketCap} DESC NULLS LAST`,
           asc(upcomingEarningsTable.symbol)
         );
 
@@ -317,6 +351,7 @@ export async function GET(request: Request) {
           hasModel: r.hasModel,
           reportSlug: r.reportSlug ?? undefined,
           sectorId: r.sectorId ?? undefined,
+          marketCap: r.marketCap != null ? parseFloat(r.marketCap) : undefined,
         }));
       }
     }

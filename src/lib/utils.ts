@@ -29,6 +29,16 @@ export function formatBillions(value: number, decimals: number = 1): string {
   })}B`;
 }
 
+export function formatMarketCap(cap?: number): string {
+  if (!cap || isNaN(cap) || cap <= 0) return "—";
+  // Support both raw dollar amounts (>= 1e6) and database billions notation (< 1e6)
+  const capB = cap >= 1e6 ? cap / 1e9 : cap;
+  if (capB >= 1000) return `$${(capB / 1000).toFixed(2)}T`;
+  if (capB >= 1) return `$${capB.toFixed(1)}B`;
+  if (capB >= 0.001) return `$${(capB * 1000).toFixed(0)}M`;
+  return `$${capB.toFixed(2)}B`;
+}
+
 /**
  * Normalizes a ticker or report slug into an uppercase ticker symbol.
  * E.g. "NVDA-Q2-2027-analysis" -> "NVDA", "nvda" -> "NVDA"

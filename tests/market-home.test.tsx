@@ -1,7 +1,13 @@
 // @vitest-environment happy-dom
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MarketHomeView } from "@/components/home/MarketHomeView";
 import {
@@ -9,6 +15,7 @@ import {
   getTickerSectorId,
   aggregateSectors,
 } from "@/lib/sectors";
+import { saveStoredWatchlist } from "@/lib/watchlist";
 import type { ReportSummary } from "@/app/api/reports/route";
 
 vi.mock("next/navigation", () => ({
@@ -227,6 +234,30 @@ describe("MarketHomeView Component & Invariants", () => {
                     hasModel: true,
                     reportSlug: "NVDA-Q2-2027-analysis",
                     sectorId: "technology",
+                    marketCap: 3400000000000,
+                  },
+                  {
+                    symbol: "PLTR",
+                    company: "Palantir Technologies",
+                    date: "2026-11-04",
+                    hour: "amc",
+                    epsEstimate: 0.12,
+                    revenueEstimate: 815000000,
+                    hasModel: true,
+                    reportSlug: "pltr-2026q3",
+                    sectorId: "technology",
+                    marketCap: 110000000000,
+                  },
+                  {
+                    symbol: "PFE",
+                    company: "Pfizer Inc.",
+                    date: "2026-11-04",
+                    hour: "bmo",
+                    epsEstimate: 0.62,
+                    revenueEstimate: 16500000000,
+                    hasModel: false,
+                    sectorId: "healthcare",
+                    marketCap: 155000000000,
                   },
                 ],
               }),
@@ -402,6 +433,75 @@ describe("MarketHomeView Component & Invariants", () => {
     ).toBeDefined();
   });
 
+  it("renders upcoming earnings watchlist filter button, toggles filtering, and persists in browser storage", async () => {
+    localStorage.clear();
+    saveStoredWatchlist(["NVDA"]);
+
+    renderMarketHome("en");
+
+    expect(screen.getByText("Watchlist Only")).toBeDefined();
+
+    const upcomingSection = document.getElementById(
+      "upcoming-earnings-section"
+    )!;
+    expect(upcomingSection).toBeDefined();
+
+    // Initially, all mock earnings should be present in upcoming section
+    await waitFor(() => {
+      expect(within(upcomingSection).getByText("NVDA")).toBeDefined();
+      expect(within(upcomingSection).getByText("PLTR")).toBeDefined();
+      expect(within(upcomingSection).getByText("PFE")).toBeDefined();
+    });
+
+    const watchlistFilterBtn = screen.getByText("Watchlist Only");
+    fireEvent.click(watchlistFilterBtn);
+
+    // After toggling Watchlist Only, PLTR and PFE should be filtered out
+    await waitFor(() => {
+      expect(within(upcomingSection).getByText("NVDA")).toBeDefined();
+      expect(within(upcomingSection).queryByText("PLTR")).toBeNull();
+      expect(within(upcomingSection).queryByText("PFE")).toBeNull();
+    });
+
+    // Verify persisted in browser localStorage
+    expect(localStorage.getItem("stress_alpha_earnings_watchlist_only")).toBe(
+      "true"
+    );
+
+    // Toggle back off
+    fireEvent.click(watchlistFilterBtn);
+    await waitFor(() => {
+      expect(within(upcomingSection).getByText("PLTR")).toBeDefined();
+      expect(within(upcomingSection).getByText("PFE")).toBeDefined();
+    });
+    expect(localStorage.getItem("stress_alpha_earnings_watchlist_only")).toBe(
+      "false"
+    );
+  });
+
+  it("sorts earnings by chronological date, session (BMO before AMC), and market cap descending", async () => {
+    saveStoredWatchlist([]);
+    renderMarketHome("en");
+
+    const upcomingContainer = document.getElementById(
+      "upcoming-earnings-section"
+    )!;
+    expect(upcomingContainer).toBeDefined();
+
+    await waitFor(() => {
+      expect(within(upcomingContainer).getByText("PFE")).toBeDefined();
+    });
+
+    // PFE is BMO ($155B), NVDA is AMC ($3.4T), PLTR is AMC ($110B)
+    // Hierarchy: BMO comes before AMC, and within AMC $3.4T comes before $110B
+    const tickerElements = Array.from(
+      upcomingContainer.querySelectorAll(".font-mono.text-xs.font-bold")
+    ).map((el) => el.textContent?.trim());
+
+    // PFE (BMO) should appear before NVDA (AMC), and NVDA ($3.4T) before PLTR ($110B)
+    expect(tickerElements).toEqual(["PFE", "NVDA", "PLTR"]);
+  });
+
   it("renders completely in Chinese when locale='zh' with zero inline language leaks", () => {
     renderMarketHome("zh");
 
@@ -410,6 +510,7 @@ describe("MarketHomeView Component & Invariants", () => {
     expect(screen.getByText("标普 500 全景热力图")).toBeDefined();
     expect(screen.getByText("焦点异动标的")).toBeDefined();
     expect(screen.getByText("前瞻财报披露日程")).toBeDefined();
+    expect(screen.getByText("仅看自选")).toBeDefined();
     expect(screen.getAllByText("异动催化与核心驱动").length).toBeGreaterThan(0);
     expect(screen.getAllByText("四维动态估值谱系").length).toBeGreaterThan(0);
     expect(screen.getAllByText(/非对称盈亏比:/i).length).toBeGreaterThan(0);

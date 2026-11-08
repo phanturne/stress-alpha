@@ -1282,6 +1282,8 @@ export interface Translations {
     viewSectorReports: (sector: string) => string;
     upcomingEarningsTitle: string;
     upcomingEarningsSubtitle: string;
+    filterWatchlistOnly: string;
+    noWatchlistUpcomingFound: string;
     filterAll: string;
     filterToday: string;
     filterTomorrow: string;
@@ -2831,6 +2833,9 @@ export const translations: Record<Locale, Translations> = {
       upcomingEarningsTitle: "Upcoming Earnings Calendar",
       upcomingEarningsSubtitle:
         "Institutional reporting schedule, consensus estimates & interactive valuation models",
+      filterWatchlistOnly: "Watchlist Only",
+      noWatchlistUpcomingFound:
+        "No watchlist stocks scheduled to report in this period.",
       filterAll: "All Upcoming",
       filterToday: "Today",
       filterTomorrow: "Tomorrow",
@@ -4403,6 +4408,8 @@ export const translations: Record<Locale, Translations> = {
       upcomingEarningsTitle: "前瞻财报披露日程",
       upcomingEarningsSubtitle:
         "机构级排期、一致性彭博预期与一键直达压力估值交互座舱",
+      filterWatchlistOnly: "仅看自选",
+      noWatchlistUpcomingFound: "所选周期内自选池中暂无待披露财报。",
       filterAll: "全部前瞻",
       filterToday: "今日披露",
       filterTomorrow: "明日披露",
