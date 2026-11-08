@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
-import { getDb } from "@/db";
-import { marketEventsTable } from "@/db/schema";
-import { sql } from "drizzle-orm";
 
 export interface MarketIndexItem {
   symbol: string;
@@ -23,9 +20,22 @@ export interface MarketSectorItem {
   changePct: number;
 }
 
+export interface MarketSummaryStory {
+  id: string;
+  headline: string;
+  summary: string;
+  publisher?: string;
+  url?: string;
+  publishedAt?: string;
+  sources: number;
+  tickers: string[];
+  tag?: string;
+}
+
 export interface MarketSummaryResponse {
   indices: MarketIndexItem[];
   sectors: Record<string, number>; // { XLK: -1.2, XLC: 0.5, ... }
+  stories?: MarketSummaryStory[];
   updatedAt: string;
   pipelineUpdatedAt?: string;
 }
@@ -73,29 +83,16 @@ export async function GET() {
     });
   }
 
-  let pipelineUpdatedAt: string | undefined;
-  if (process.env.DATABASE_URL) {
-    try {
-      const db = getDb();
-      const res = await db
-        .select({ maxCreated: sql`max(created_at)` })
-        .from(marketEventsTable);
-      if (res[0]?.maxCreated) {
-        pipelineUpdatedAt = new Date(res[0].maxCreated as any).toISOString();
-      }
-    } catch (dbErr) {
-      console.warn(
-        "⚠️ [Market Summary API] Could not read pipeline max created_at:",
-        dbErr
-      );
-    }
-  }
-
   const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
   const allSymbols = [...INDEX_CONFIG.map((i) => i.symbol), ...SECTOR_ETFS];
 
   try {
-    const rawQuotes = await yf.quote(allSymbols);
+    const [rawQuotes, searchRes] = await Promise.all([
+      yf.quote(allSymbols),
+      yf
+        .search("^GSPC", { quotesCount: 0, newsCount: 8 })
+        .catch(() => ({ news: [] })),
+    ]);
     const quotesList = Array.isArray(rawQuotes) ? rawQuotes : [rawQuotes];
     const quoteMap = new Map<string, any>();
     for (const q of quotesList) {
@@ -103,6 +100,39 @@ export async function GET() {
         quoteMap.set(q.symbol.toUpperCase(), q);
       }
     }
+
+    const rawNews = Array.isArray(searchRes?.news) ? searchRes.news : [];
+    const stories: MarketSummaryStory[] = rawNews
+      .filter((n: any) => n && n.title)
+      .slice(0, 6)
+      .map((n: any, idx: number) => {
+        const cleanTickers: string[] = Array.from(
+          new Set<string>(
+            (Array.isArray(n.relatedTickers) ? n.relatedTickers : [])
+              .map((t: any) => String(t).toUpperCase().trim())
+              .filter(
+                (t: string) =>
+                  t.length > 0 && !t.startsWith("^") && !t.includes("=")
+              )
+          )
+        ).slice(0, 6);
+        const pubTime = n.providerPublishTime
+          ? new Date(n.providerPublishTime).toISOString()
+          : undefined;
+        return {
+          id: n.uuid || `story-${idx + 1}`,
+          headline: String(n.title),
+          summary: n.publisher
+            ? `${n.publisher} — ${n.title}`
+            : String(n.title),
+          publisher: n.publisher ? String(n.publisher) : "Yahoo Finance",
+          url: n.link ? String(n.link) : undefined,
+          publishedAt: pubTime,
+          sources: 1,
+          tickers: cleanTickers,
+          tag: n.publisher ? String(n.publisher) : "Market Wire",
+        };
+      });
 
     const indices: MarketIndexItem[] = INDEX_CONFIG.map((cfg) => {
       const q = quoteMap.get(cfg.symbol.toUpperCase());
@@ -176,8 +206,8 @@ export async function GET() {
     const payload: MarketSummaryResponse = {
       indices,
       sectors,
+      stories: stories.length > 0 ? stories : undefined,
       updatedAt: new Date().toISOString(),
-      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };
@@ -218,7 +248,6 @@ export async function GET() {
       indices: fallbackIndices,
       sectors: DEFAULT_SECTOR_CHANGES,
       updatedAt: new Date().toISOString(),
-      pipelineUpdatedAt,
     };
 
     cache = { data: payload, timestamp: now };

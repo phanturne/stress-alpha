@@ -72,6 +72,8 @@ export const FactsSchema = z.object({
     .describe("Next FY consensus EPS")
     .optional()
     .default(0),
+  trailingPe: z.number().optional(),
+  forwardPe: z.number().optional(),
 
   // Metadata
   sources: z.array(SourceSchema).optional().default([]),

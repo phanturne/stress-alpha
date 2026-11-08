@@ -30,7 +30,6 @@ import { EstimatesTab } from "@/components/tabs/EstimatesTab";
 import { MoatTab } from "@/components/tabs/MoatTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
-import { NewsTab } from "@/components/tabs/NewsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
 import { ReactionsTab } from "@/components/tabs/ReactionsTab";
 export type { WorkspaceTabDescriptor };
@@ -311,12 +310,19 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   displayFacts?.forwardEpsConsensus ??
                   reportData?.facts?.forwardEpsConsensus ??
                   0;
+                const reportedPe =
+                  displayFacts?.trailingPe ??
+                  reportData?.facts?.trailingPe ??
+                  displayFacts?.forwardPe ??
+                  reportData?.facts?.forwardPe;
                 const currentPe =
-                  activePrice > 0 && trailingEps > 0
-                    ? Number((activePrice / trailingEps).toFixed(1))
-                    : activePrice > 0 && forwardEps > 0
-                      ? Number((activePrice / forwardEps).toFixed(1))
-                      : undefined;
+                  reportedPe && reportedPe > 0
+                    ? Number(reportedPe.toFixed(1))
+                    : activePrice > 0 && trailingEps > 0
+                      ? Number((activePrice / trailingEps).toFixed(1))
+                      : activePrice > 0 && forwardEps > 0
+                        ? Number((activePrice / forwardEps).toFixed(1))
+                        : undefined;
                 const operatingEps =
                   trailingEps > 0
                     ? trailingEps
@@ -395,7 +401,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
             </div>
           )}
 
-          {/* WORKSPACE 3: CONSENSUS & PEERS (estimates, moat) */}
+          {/* WORKSPACE 3: CONSENSUS, MOAT & FILINGS (estimates, moat, audit, tone, filing) */}
           {effectiveTab === "estimates" && (
             <div className="flex flex-col gap-6">
               <EstimatesTab
@@ -409,23 +415,6 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   <MoatTab moatData={displayMoat} locale={locale} />
                 </div>
               )}
-            </div>
-          )}
-
-          {/* WORKSPACE 4: NEWS & FILINGS (news, audit, tone, filing) */}
-          {effectiveTab === "news" && (
-            <div className="flex flex-col gap-6">
-              <NewsTab
-                ticker={displayFacts?.ticker}
-                events={marketEvents}
-                upstreamDependencies={upstreamDependencies}
-                currentPrice={displayFacts?.currentPrice}
-                locale={locale}
-                onSimulateShock={onSimulateShock}
-                onSimulateGrossMarginDelta={onSimulateGrossMarginDelta}
-                onSimulateCatalystProb={onSimulateCatalystProb}
-                onNavigateToModel={onNavigateToModel}
-              />
 
               {(displaySentiment || displayFiling) && (
                 <div className="border-t border-border/60 pt-2">

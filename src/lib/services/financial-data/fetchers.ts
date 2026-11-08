@@ -24,13 +24,7 @@ import {
   type SecFilingItem,
 } from "./types";
 import { computeTechnicalLevels, type DailyBar } from "@/lib/technical";
-import {
-  safeNum,
-  round2,
-  round3,
-  getMassiveApiKey,
-  getFinnhubApiKey,
-} from "./utils";
+import { safeNum, round2, round3 } from "./utils";
 
 const yf = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
@@ -39,311 +33,120 @@ const yf = new YahooFinance({
 
 // --- External API Clients ---
 
-/**
- * Fetch SEC Financials from Massive.com (Polygon.io)
- */
-export async function fetchMassiveFinancials(
-  ticker: string,
-  apiKey?: string
-): Promise<{
-  statements: QuarterlyFinancialStatement[];
-  balanceSheet: BalanceSheetSummary | null;
-  cashFlow: CashFlowSummary | null;
-} | null> {
-  const resolvedKey = getMassiveApiKey(apiKey);
-  if (!resolvedKey) return null;
+const SEC_EDGAR_HEADERS = {
+  "User-Agent": "StressAlphaResearch/1.0 (contact@stressalpha.app)",
+  Accept: "application/json",
+};
 
-  try {
-    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(
-      ticker
-    )}&timeframe=quarterly&limit=8&apiKey=${resolvedKey}`;
+let secCikMapCache: Map<string, string> | null = null;
 
-    const res = await resilientFetch(url, {
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return null;
-
-    const text = await res.text();
-    if (!text) return null;
-    let data: any;
+async function resolveSecCik(ticker: string): Promise<string | null> {
+  const norm = ticker.toUpperCase().trim();
+  if (!secCikMapCache) {
     try {
-      data = JSON.parse(text);
-    } catch {
-      return null;
+      const res = await resilientFetch(
+        "https://www.sec.gov/files/company_tickers.json",
+        { headers: SEC_EDGAR_HEADERS },
+        { timeoutMs: 15_000 }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const map = new Map<string, string>();
+        for (const key of Object.keys(data || {})) {
+          const entry = data[key];
+          if (entry?.ticker && entry?.cik_str != null) {
+            const sym = String(entry.ticker).toUpperCase().trim();
+            const cik = String(entry.cik_str).padStart(10, "0");
+            map.set(sym, cik);
+            map.set(sym.replace(/-/g, "."), cik);
+            map.set(sym.replace(/\./g, "-"), cik);
+          }
+        }
+        secCikMapCache = map;
+      }
+    } catch (err) {
+      console.warn("⚠️ Warning loading SEC CIK directory:", err);
     }
-    const results = data.results;
-    if (!Array.isArray(results) || results.length === 0) return null;
-
-    const statements: QuarterlyFinancialStatement[] = [];
-
-    for (const r of results) {
-      const inc = r.financials?.income_statement || {};
-      const revVal = inc.revenues?.value ?? 0;
-      const grossVal = inc.gross_profit?.value ?? 0;
-      const opIncVal = inc.operating_income_loss?.value ?? 0;
-      const netIncVal = inc.net_income_loss?.value ?? 0;
-      const dilutedEps = inc.diluted_earnings_per_share?.value;
-      const basicEps = inc.basic_earnings_per_share?.value;
-      const sharesVal = inc.diluted_average_shares?.value;
-
-      statements.push({
-        date: r.end_date || "",
-        fiscalPeriod: r.fiscal_period,
-        fiscalYear: r.fiscal_year,
-        revenueBillions: round2(revVal / 1e9),
-        grossProfitBillions: round2(grossVal / 1e9),
-        operatingIncomeBillions: round2(opIncVal / 1e9),
-        netIncomeBillions: round2(netIncVal / 1e9),
-        dilutedEps: dilutedEps != null ? round2(dilutedEps) : undefined,
-        basicEps: basicEps != null ? round2(basicEps) : undefined,
-        dilutedAverageSharesBillions:
-          sharesVal != null ? round3(sharesVal / 1e9) : undefined,
-      });
-    }
-
-    const latest = results[0];
-    const bs = latest.financials?.balance_sheet || {};
-    const cf = latest.financials?.cash_flow_statement || {};
-
-    const cashVal =
-      bs.cash_and_cash_equivalents?.value ??
-      bs.other_current_assets?.value ??
-      0;
-    const stInvVal = bs.short_term_investments?.value ?? 0;
-    const stDebtVal =
-      bs.current_debt?.value ?? bs.other_current_liabilities?.value ?? 0;
-    const ltDebtVal =
-      bs.long_term_debt?.value ?? bs.noncurrent_liabilities?.value ?? 0;
-    const assetsVal = bs.assets?.value ?? 0;
-    const liabVal = bs.liabilities?.value ?? 0;
-    const eqVal =
-      bs.equity?.value ?? bs.equity_attributable_to_parent?.value ?? 0;
-
-    const balanceSheet: BalanceSheetSummary = {
-      date: latest.end_date,
-      cashAndCashEquivalentsBillions: round2(cashVal / 1e9),
-      shortTermInvestmentsBillions: round2(stInvVal / 1e9),
-      totalCashBillions: round2((cashVal + stInvVal) / 1e9),
-      shortTermDebtBillions: round2(stDebtVal / 1e9),
-      longTermDebtBillions: round2(ltDebtVal / 1e9),
-      totalDebtBillions: round2((stDebtVal + ltDebtVal) / 1e9),
-      totalAssetsBillions: round2(assetsVal / 1e9),
-      totalLiabilitiesBillions: round2(liabVal / 1e9),
-      totalEquityBillions: round2(eqVal / 1e9),
-    };
-
-    const ocfVal =
-      cf.net_cash_flow_from_operating_activities?.value ??
-      cf.net_cash_flow_from_operating_activities_continuing?.value ??
-      0;
-    const capexVal =
-      cf.net_cash_flow_from_investing_activities?.value ??
-      cf.net_cash_flow_from_investing_activities_continuing?.value ??
-      0;
-
-    const cashFlow: CashFlowSummary = {
-      date: latest.end_date,
-      operatingCashFlowBillions: round2(ocfVal / 1e9),
-      capitalExpenditureBillions: round2(capexVal / 1e9),
-      freeCashFlowBillions: round2(
-        (ocfVal - (capexVal < 0 ? Math.abs(capexVal) : capexVal)) / 1e9
-      ),
-    };
-
-    return { statements, balanceSheet, cashFlow };
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Massive financials:", err);
-    return null;
   }
+  return secCikMapCache?.get(norm) ?? null;
 }
 
 /**
- * Fetch Institutional Recommendations from Finnhub API
+ * Fetch SEC filings (10-Q, 10-K, 8-K, 20-F, 6-K) directly from Official SEC EDGAR Submissions API
  */
-export async function fetchFinnhubRecommendations(
-  ticker: string,
-  apiKey?: string
-): Promise<{
-  strongBuy: number;
-  buy: number;
-  hold: number;
-  sell: number;
-  strongSell: number;
-} | null> {
-  const resolvedKey = getFinnhubApiKey(apiKey);
-  if (!resolvedKey) return null;
-
-  try {
-    const url = `https://finnhub.io/api/v1/stock/recommendation?symbol=${encodeURIComponent(
-      ticker
-    )}&token=${resolvedKey}`;
-
-    const res = await resilientFetch(url);
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      const top = data[0];
-      return {
-        strongBuy: safeNum(top.strongBuy),
-        buy: safeNum(top.buy),
-        hold: safeNum(top.hold),
-        sell: safeNum(top.sell),
-        strongSell: safeNum(top.strongSell),
-      };
-    }
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Finnhub recommendations:", err);
-  }
-  return null;
-}
-
-/**
- * Fetch SEC filings (10-Q, 10-K, 8-K) from Finnhub API
- */
-export async function fetchFinnhubFilings(
-  ticker: string,
-  apiKey?: string
+export async function fetchSecEdgarFilings(
+  ticker: string
 ): Promise<SecFilingItem[]> {
-  const resolvedKey = getFinnhubApiKey(apiKey);
-  if (!resolvedKey) return [];
-
   try {
-    const url = `https://finnhub.io/api/v1/stock/filings?symbol=${encodeURIComponent(
-      ticker
-    )}&token=${resolvedKey}`;
+    const cik = await resolveSecCik(ticker);
+    if (!cik) return [];
 
-    const res = await resilientFetch(url);
+    const url = `https://data.sec.gov/submissions/CIK${cik}.json`;
+    const res = await resilientFetch(
+      url,
+      { headers: SEC_EDGAR_HEADERS },
+      { timeoutMs: 15_000 }
+    );
     if (!res.ok) return [];
 
     const data = await res.json();
-    if (Array.isArray(data)) {
-      return data
-        .filter((f) => ["10-Q", "10-K", "8-K", "20-F", "6-K"].includes(f.form))
-        .slice(0, 10)
-        .map((f) => ({
-          form: f.form,
-          filedDate: String(f.filedDate || "").split(" ")[0],
-          acceptedDate: f.acceptedDate,
-          reportUrl: f.reportUrl || f.filingUrl || "",
-          filingUrl: f.filingUrl,
-          accessNumber: f.accessNumber,
-        }));
+    const recent = data?.filings?.recent;
+    if (!recent || !Array.isArray(recent.form)) return [];
+
+    const items: SecFilingItem[] = [];
+    const cikNumeric = String(Number(cik));
+    const allowedForms = new Set(["10-Q", "10-K", "8-K", "20-F", "6-K"]);
+
+    for (let i = 0; i < recent.form.length && items.length < 10; i++) {
+      const form = String(recent.form[i] || "");
+      if (!allowedForms.has(form)) continue;
+
+      const accessNumber = String(recent.accessionNumber?.[i] || "");
+      const accNoHyphens = accessNumber.replace(/-/g, "");
+      const primaryDoc = String(recent.primaryDocument?.[i] || "");
+      const filedDate = String(recent.filingDate?.[i] || "");
+      const acceptedDate = recent.acceptanceDateTime?.[i]
+        ? String(recent.acceptanceDateTime[i])
+        : undefined;
+
+      const baseArchiveUrl = `https://www.sec.gov/Archives/edgar/data/${cikNumeric}/${accNoHyphens}`;
+      const reportUrl = primaryDoc ? `${baseArchiveUrl}/${primaryDoc}` : "";
+      const filingUrl = accessNumber
+        ? `${baseArchiveUrl}/${accessNumber}-index.htm`
+        : reportUrl;
+
+      items.push({
+        form,
+        filedDate,
+        acceptedDate,
+        reportUrl,
+        filingUrl,
+        accessNumber,
+      });
     }
+
+    return items;
   } catch (err) {
-    console.warn("⚠️ Warning fetching Finnhub filings:", err);
-  }
-  return [];
-}
-
-/**
- * Fetch Company Profile & Quote from Finnhub API
- */
-export async function fetchFinnhubProfile(
-  ticker: string,
-  apiKey?: string
-): Promise<{
-  name?: string;
-  marketCapBillions?: number;
-  sharesOutstandingBillions?: number;
-  currentPrice?: number;
-  previousClose?: number;
-} | null> {
-  const resolvedKey = getFinnhubApiKey(apiKey);
-  if (!resolvedKey) return null;
-
-  try {
-    const [profRes, quoteRes] = await Promise.all([
-      resilientFetch(
-        `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(
-          ticker
-        )}&token=${resolvedKey}`
-      ),
-      resilientFetch(
-        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(
-          ticker
-        )}&token=${resolvedKey}`
-      ),
-    ]);
-
-    const profileData = profRes.ok ? await profRes.json() : {};
-    const quoteData = quoteRes.ok ? await quoteRes.json() : {};
-
-    return {
-      name: profileData.name,
-      marketCapBillions: profileData.marketCapitalization
-        ? round2(safeNum(profileData.marketCapitalization) / 1000)
-        : undefined,
-      sharesOutstandingBillions: profileData.shareOutstanding
-        ? round3(safeNum(profileData.shareOutstanding) / 1000)
-        : undefined,
-      currentPrice: quoteData.c ? round2(safeNum(quoteData.c)) : undefined,
-      previousClose: quoteData.pc ? round2(safeNum(quoteData.pc)) : undefined,
-    };
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Finnhub profile/quote:", err);
-    return null;
+    console.warn("⚠️ Warning fetching SEC EDGAR filings:", err);
+    return [];
   }
 }
 
 /**
- * Fetch historical daily aggregates from Massive.com (Polygon.io)
+ * Fetch SEC filings (10-Q, 10-K, 8-K) — delegates directly to Official SEC EDGAR API
  */
-export async function fetchPolygonAggregates(
+export async function fetchFinnhubFilings(
   ticker: string,
-  fromDate: string,
-  toDate: string,
-  apiKey?: string
-): Promise<Array<{
-  date: string;
-  close: number;
-  open: number;
-  high?: number;
-  low?: number;
-  volume?: number;
-}> | null> {
-  const resolvedKey = getMassiveApiKey(apiKey);
-  if (!resolvedKey) return null;
-
-  try {
-    const url = `https://api.polygon.io/v2/aggs/ticker/${encodeURIComponent(
-      ticker
-    )}/range/1/day/${fromDate}/${toDate}?apiKey=${resolvedKey}`;
-
-    const res = await resilientFetch(url);
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    if (data.status === "OK" && Array.isArray(data.results)) {
-      return data.results.map(
-        (r: {
-          t: number;
-          c: number;
-          o: number;
-          h?: number;
-          l?: number;
-          v?: number;
-        }) => ({
-          date: new Date(r.t).toISOString().split("T")[0],
-          close: r.c,
-          open: r.o,
-          high: r.h,
-          low: r.l,
-          volume: r.v,
-        })
-      );
-    }
-  } catch (err) {
-    console.warn("⚠️ Warning fetching Polygon aggregates:", err);
-  }
-  return null;
+  _apiKey?: string
+): Promise<SecFilingItem[]> {
+  return fetchSecEdgarFilings(ticker);
 }
 
-// --- Fundamental Profile Ingestion ---
+// --- Fundamental Profile Ingestion (Yahoo Finance) ---
 
 export async function fetchFundamentalProfile(
   tickerSymbol: string,
-  options?: {
+  _options?: {
     apiKey?: string;
     massiveApiKey?: string;
     skipYahooFallback?: boolean;
@@ -352,208 +155,268 @@ export async function fetchFundamentalProfile(
 ): Promise<FinancialProfile> {
   const ticker = tickerSymbol.toUpperCase();
 
-  // 1. Fetch official providers first (Finnhub for quotes/profile, Massive/Polygon for SEC statements)
-  const [fhProfile, massiveData] = await Promise.all([
-    fetchFinnhubProfile(ticker, options?.apiKey),
-    fetchMassiveFinancials(ticker, options?.massiveApiKey),
-  ]);
-
-  const hasOfficialPrice =
-    typeof fhProfile?.currentPrice === "number" && fhProfile.currentPrice > 0;
-  const hasOfficialStatements =
-    Array.isArray(massiveData?.statements) && massiveData.statements.length > 0;
-
-  // Single-ownership guard: only query Yahoo Finance if official providers are missing data
-  // or if fallback is explicitly requested.
-  const needYahoo =
-    options?.enableYahooFallback ||
-    (!options?.skipYahooFallback &&
-      (!hasOfficialPrice || !hasOfficialStatements));
-
   let yfQuote: any = {};
   let yfSummary: any = {};
+  let yfTimeSeries: any[] = [];
   let historicalBars: DailyBar[] = [];
 
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  const fromDate = oneYearAgo.toISOString().split("T")[0];
-  const toDate = new Date().toISOString().split("T")[0];
+  const twoYearsAgo = new Date();
+  twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
-  if (needYahoo) {
-    try {
-      const [quote, summary, chartRes] = await Promise.all([
-        yf.quote(ticker).catch((err: any) => err?.result ?? {}),
-        yf
-          .quoteSummary(ticker, {
-            modules: [
-              "financialData",
-              "defaultKeyStatistics",
-              "summaryDetail",
-              "price",
-              "earnings",
-            ],
-          })
-          .catch((err: any) => err?.result ?? {}),
-        yf
-          .chart(ticker, { period1: oneYearAgo, interval: "1d" })
-          .catch((err: any) => {
-            console.warn(
-              `⚠️ Warning fetching 1y chart for ${ticker}:`,
-              err?.message || err
-            );
-            return null;
-          }),
-      ]);
-      yfQuote = quote || {};
-      yfSummary = summary || {};
-      if (chartRes && Array.isArray(chartRes.quotes)) {
-        historicalBars = chartRes.quotes.map((q: any) => ({
-          date: q.date,
-          open: q.open,
-          high: q.high,
-          low: q.low,
-          close: q.close,
-          volume: q.volume,
-        }));
-      }
-    } catch (err) {
-      console.warn("⚠️ Warning fetching Yahoo Finance profile:", err);
-    }
-  } else {
-    // Single-ownership path: fetch Polygon aggregates for historical technical bars
-    const polygonBars = await fetchPolygonAggregates(
-      ticker,
-      fromDate,
-      toDate,
-      options?.massiveApiKey
-    );
-    if (polygonBars && polygonBars.length > 0) {
-      historicalBars = polygonBars.map((b) => ({
-        date: b.date,
-        open: b.open,
-        high: b.high ?? b.close,
-        low: b.low ?? b.open,
-        close: b.close,
-        volume: b.volume ?? 0,
+  try {
+    const [quote, summary, chartRes, ftsRes] = await Promise.all([
+      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
+      yf
+        .quoteSummary(ticker, {
+          modules: [
+            "financialData",
+            "defaultKeyStatistics",
+            "summaryDetail",
+            "price",
+            "earnings",
+          ],
+        })
+        .catch((err: any) => err?.result ?? {}),
+      yf
+        .chart(ticker, { period1: oneYearAgo, interval: "1d" })
+        .catch((err: any) => {
+          console.warn(
+            `⚠️ Warning fetching 1y chart for ${ticker}:`,
+            err?.message || err
+          );
+          return null;
+        }),
+      yf
+        .fundamentalsTimeSeries(ticker, {
+          period1: twoYearsAgo,
+          type: "quarterly",
+          module: "all",
+        })
+        .catch((err: any) => err?.result ?? []),
+    ]);
+    yfQuote = quote || {};
+    yfSummary = summary || {};
+    yfTimeSeries = Array.isArray(ftsRes) ? ftsRes : [];
+    if (chartRes && Array.isArray(chartRes.quotes)) {
+      historicalBars = chartRes.quotes.map((q: any) => ({
+        date:
+          q.date instanceof Date
+            ? q.date.toISOString().split("T")[0]
+            : String(q.date || ""),
+        open: q.open,
+        high: q.high,
+        low: q.low,
+        close: q.close,
+        volume: q.volume,
       }));
     }
+  } catch (err) {
+    console.warn("⚠️ Warning fetching Yahoo Finance profile:", err);
   }
 
-  // Merge price & market cap
   const currentPrice =
-    fhProfile?.currentPrice ??
     yfQuote.regularMarketPrice ??
     yfSummary.financialData?.currentPrice ??
+    yfSummary.price?.regularMarketPrice ??
     0;
   const previousClose =
-    fhProfile?.previousClose ??
     yfQuote.regularMarketPreviousClose ??
     yfSummary.summaryDetail?.previousClose;
-  const marketCap =
-    fhProfile?.marketCapBillions ??
-    (yfQuote.marketCap ? round2(yfQuote.marketCap / 1e9) : 0);
-  const sharesOutstanding =
-    fhProfile?.sharesOutstandingBillions ??
-    (yfQuote.sharesOutstanding ? round3(yfQuote.sharesOutstanding / 1e9) : 0);
+  const marketCap = yfQuote.marketCap
+    ? round2(yfQuote.marketCap / 1e9)
+    : yfSummary.price?.marketCap
+      ? round2(yfSummary.price.marketCap / 1e9)
+      : 0;
+  const sharesOutstanding = yfQuote.sharesOutstanding
+    ? round3(yfQuote.sharesOutstanding / 1e9)
+    : yfSummary.defaultKeyStatistics?.sharesOutstanding
+      ? round3(yfSummary.defaultKeyStatistics.sharesOutstanding / 1e9)
+      : 0;
 
   const companyName =
-    fhProfile?.name ??
     yfQuote.longName ??
     yfQuote.shortName ??
+    yfSummary.price?.longName ??
     `${ticker} Corporation`;
 
-  // Derived trailing EPS fallback from quarterly statements when Yahoo was skipped
-  let derivedTrailingEps: number | undefined;
-  if (massiveData?.statements && massiveData.statements.length > 0) {
-    const validStatements = massiveData.statements.slice(0, 4);
-    const sumEps = validStatements.reduce(
-      (acc, s) => acc + (typeof s.dilutedEps === "number" ? s.dilutedEps : 0),
-      0
-    );
-    if (sumEps > 0) {
-      derivedTrailingEps = round2(sumEps);
-    } else if (sharesOutstanding > 0) {
-      const sumNet = validStatements.reduce(
-        (acc, s) => acc + (s.netIncomeBillions || 0),
-        0
-      );
-      if (sumNet > 0) {
-        derivedTrailingEps = round2(sumNet / sharesOutstanding);
-      }
-    }
-  }
-
   const trailingPE =
-    yfQuote.trailingPE ??
-    yfSummary.summaryDetail?.trailingPE ??
-    (derivedTrailingEps && derivedTrailingEps > 0 && currentPrice > 0
-      ? round2(currentPrice / derivedTrailingEps)
-      : undefined);
-  const forwardPE = yfQuote.forwardPE ?? yfSummary.summaryDetail?.forwardPE;
+    yfQuote.trailingPE ?? yfSummary.summaryDetail?.trailingPE ?? undefined;
+  const forwardPE =
+    yfQuote.forwardPE ?? yfSummary.summaryDetail?.forwardPE ?? undefined;
   const trailingEps =
     yfQuote.epsTrailingTwelveMonths ??
-    yfSummary.defaultKeyStatistics?.trailingEps ??
-    derivedTrailingEps;
+    yfSummary.defaultKeyStatistics?.trailingEps;
   const forwardEps =
     yfQuote.epsForward ?? yfSummary.defaultKeyStatistics?.forwardEps;
 
-  // Balance sheet fallback to Yahoo financialData if Massive is empty
   const yfFin = yfSummary.financialData || {};
   const totalCashFallback = round2(safeNum(yfFin.totalCash) / 1e9);
   const totalDebtFallback = round2(safeNum(yfFin.totalDebt) / 1e9);
   const ocfFallback = round2(safeNum(yfFin.operatingCashflow) / 1e9);
   const fcfFallback = round2(safeNum(yfFin.freeCashflow) / 1e9);
 
-  const balanceSheet: BalanceSheetSummary = massiveData?.balanceSheet || {
-    cashAndCashEquivalentsBillions: totalCashFallback,
-    shortTermInvestmentsBillions: 0,
-    totalCashBillions: totalCashFallback,
-    shortTermDebtBillions: 0,
-    longTermDebtBillions: totalDebtFallback,
-    totalDebtBillions: totalDebtFallback,
-    totalAssetsBillions: totalCashFallback,
-    totalLiabilitiesBillions: totalDebtFallback,
-    totalEquityBillions: round2(
-      Math.max(totalCashFallback - totalDebtFallback, 0)
-    ),
+  // Sort fundamentalsTimeSeries newest first
+  const sortedFts = [...yfTimeSeries]
+    .filter((r) => r && (r.totalRevenue != null || r.operatingRevenue != null))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const latestFts = sortedFts[0];
+
+  const cashVal =
+    latestFts?.cashAndCashEquivalents != null
+      ? round2(safeNum(latestFts.cashAndCashEquivalents) / 1e9)
+      : totalCashFallback;
+  const stInvVal =
+    latestFts?.otherShortTermInvestments != null
+      ? round2(safeNum(latestFts.otherShortTermInvestments) / 1e9)
+      : 0;
+  const totalCashVal =
+    latestFts?.cashCashEquivalentsAndShortTermInvestments != null
+      ? round2(
+          safeNum(latestFts.cashCashEquivalentsAndShortTermInvestments) / 1e9
+        )
+      : round2(cashVal + stInvVal) || totalCashFallback;
+  const stDebtVal =
+    latestFts?.currentDebt != null
+      ? round2(safeNum(latestFts.currentDebt) / 1e9)
+      : 0;
+  const ltDebtVal =
+    latestFts?.longTermDebt != null
+      ? round2(safeNum(latestFts.longTermDebt) / 1e9)
+      : totalDebtFallback;
+  const totalDebtVal =
+    latestFts?.totalDebt != null
+      ? round2(safeNum(latestFts.totalDebt) / 1e9)
+      : round2(stDebtVal + ltDebtVal) || totalDebtFallback;
+  const totalAssetsVal =
+    latestFts?.totalAssets != null
+      ? round2(safeNum(latestFts.totalAssets) / 1e9)
+      : totalCashVal;
+  const totalLiabVal =
+    latestFts?.totalLiabilitiesNetMinorityInterest != null
+      ? round2(safeNum(latestFts.totalLiabilitiesNetMinorityInterest) / 1e9)
+      : totalDebtVal;
+  const totalEquityVal =
+    latestFts?.stockholdersEquity != null ||
+    latestFts?.commonStockEquity != null
+      ? round2(
+          safeNum(latestFts.stockholdersEquity ?? latestFts.commonStockEquity) /
+            1e9
+        )
+      : round2(Math.max(totalAssetsVal - totalLiabVal, 0));
+
+  const balanceSheet: BalanceSheetSummary = {
+    date: latestFts?.date
+      ? new Date(latestFts.date).toISOString().split("T")[0]
+      : undefined,
+    cashAndCashEquivalentsBillions: cashVal,
+    shortTermInvestmentsBillions: stInvVal,
+    totalCashBillions: totalCashVal,
+    shortTermDebtBillions: stDebtVal,
+    longTermDebtBillions: ltDebtVal,
+    totalDebtBillions: totalDebtVal,
+    totalAssetsBillions: totalAssetsVal,
+    totalLiabilitiesBillions: totalLiabVal,
+    totalEquityBillions: totalEquityVal,
   };
 
-  const cashFlow: CashFlowSummary = massiveData?.cashFlow || {
-    operatingCashFlowBillions: ocfFallback,
-    capitalExpenditureBillions: round2(ocfFallback - fcfFallback),
-    freeCashFlowBillions: fcfFallback,
+  const ocfVal =
+    latestFts?.operatingCashFlow != null
+      ? round2(safeNum(latestFts.operatingCashFlow) / 1e9)
+      : ocfFallback;
+  const capexVal =
+    latestFts?.capitalExpenditure != null
+      ? round2(Math.abs(safeNum(latestFts.capitalExpenditure)) / 1e9)
+      : round2(ocfFallback - fcfFallback);
+  const fcfVal =
+    latestFts?.freeCashFlow != null
+      ? round2(safeNum(latestFts.freeCashFlow) / 1e9)
+      : fcfFallback;
+
+  const cashFlow: CashFlowSummary = {
+    date: balanceSheet.date,
+    operatingCashFlowBillions: ocfVal,
+    capitalExpenditureBillions: capexVal,
+    freeCashFlowBillions: fcfVal,
   };
 
-  let statements: QuarterlyFinancialStatement[] = massiveData?.statements || [];
-  if (statements.length === 0) {
-    const rawChart = yfSummary.earnings?.financialsChart?.quarterly;
-    if (Array.isArray(rawChart) && rawChart.length > 0) {
-      const reversed = [...rawChart].reverse();
-      statements = reversed.map((q: any) => {
-        const rev = round2(safeNum(q.revenue) / 1e9);
-        const net = round2(safeNum(q.earnings) / 1e9);
-        const rawPeriod = String(q.fiscalQuarter || q.date || "");
-        let fiscalPeriod: string | undefined = rawPeriod;
-        let fiscalYear: string | undefined = undefined;
-        const qMatch =
-          rawPeriod.match(/([1-4])Q\s*(\d{4})/i) ||
-          rawPeriod.match(/Q([1-4])\s*(\d{4})/i);
-        if (qMatch) {
-          fiscalPeriod = `Q${qMatch[1]}`;
-          fiscalYear = qMatch[2];
-        }
-        return {
-          date: q.date || "",
-          fiscalPeriod,
-          fiscalYear,
-          revenueBillions: rev,
-          grossProfitBillions: undefined,
-          operatingIncomeBillions: 0,
-          netIncomeBillions: net,
-          dilutedEps: undefined,
-        };
+  const earningsChartQ = yfSummary.earnings?.earningsChart?.quarterly || [];
+  const reportedDateByPeriodEnd = new Map<
+    string,
+    { reportedDate?: string; fiscalQuarter?: string }
+  >();
+  for (const eq of earningsChartQ) {
+    if (eq?.periodEndDate) {
+      const peStr = new Date(eq.periodEndDate).toISOString().split("T")[0];
+      const repStr = eq.reportedDate
+        ? new Date(eq.reportedDate).toISOString().split("T")[0]
+        : peStr;
+      reportedDateByPeriodEnd.set(peStr.slice(0, 7), {
+        reportedDate: repStr,
+        fiscalQuarter: eq.fiscalQuarter || eq.date,
       });
     }
+  }
+
+  let statements: QuarterlyFinancialStatement[] = [];
+  if (sortedFts.length > 0) {
+    statements = sortedFts.map((r: any) => {
+      const periodEndStr = r.date
+        ? new Date(r.date).toISOString().split("T")[0]
+        : "";
+      const matchedMeta = reportedDateByPeriodEnd.get(periodEndStr.slice(0, 7));
+      const rawPeriod = String(matchedMeta?.fiscalQuarter || "");
+      let fiscalPeriod: string | undefined;
+      let fiscalYear: string | undefined;
+      const qMatch =
+        rawPeriod.match(/([1-4])Q\s*(\d{4})/i) ||
+        rawPeriod.match(/Q([1-4])\s*(\d{4})/i);
+      if (qMatch) {
+        fiscalPeriod = `Q${qMatch[1]}`;
+        fiscalYear = qMatch[2];
+      } else if (periodEndStr) {
+        const d = new Date(periodEndStr);
+        const m = d.getUTCMonth() + 1;
+        fiscalPeriod = `Q${Math.ceil(m / 3)}`;
+        fiscalYear = String(d.getUTCFullYear());
+      }
+
+      const rev = round2(safeNum(r.totalRevenue ?? r.operatingRevenue) / 1e9);
+      const gross =
+        r.grossProfit != null
+          ? round2(safeNum(r.grossProfit) / 1e9)
+          : undefined;
+      const opInc = round2(
+        safeNum(r.operatingIncome ?? r.totalOperatingIncomeAsReported) / 1e9
+      );
+      const net = round2(safeNum(r.netIncome) / 1e9);
+      const dilutedShares =
+        r.dilutedAverageShares != null
+          ? round3(safeNum(r.dilutedAverageShares) / 1e9)
+          : undefined;
+      const dilutedEps =
+        r.dilutedEPS != null
+          ? round2(safeNum(r.dilutedEPS))
+          : dilutedShares && dilutedShares > 0
+            ? round2(net / dilutedShares)
+            : undefined;
+      const basicEps =
+        r.basicEPS != null ? round2(safeNum(r.basicEPS)) : undefined;
+
+      return {
+        date: matchedMeta?.reportedDate || periodEndStr,
+        fiscalPeriod,
+        fiscalYear,
+        revenueBillions: rev,
+        grossProfitBillions: gross,
+        operatingIncomeBillions: opInc,
+        netIncomeBillions: net,
+        dilutedEps,
+        basicEps,
+        dilutedAverageSharesBillions: dilutedShares,
+      };
+    });
   }
 
   let technicalLevels = undefined;
@@ -597,14 +460,11 @@ export async function fetchFundamentalProfile(
     balanceSheet,
     cashFlow,
     technicalLevels,
-    dataSource:
-      massiveData && massiveData.statements.length > 0
-        ? "Massive.com (Polygon.io) SEC Financials API vX"
-        : "Yahoo Finance & Finnhub Telemetry",
+    dataSource: "Yahoo Finance & SEC EDGAR",
   };
 }
 
-// --- Analyst Estimates Ingestion ---
+// --- Analyst Estimates Ingestion (Yahoo Finance) ---
 
 export async function fetchAnalystEstimates(
   tickerSymbol: string,
@@ -619,59 +479,39 @@ export async function fetchAnalystEstimates(
   const ticker = tickerSymbol.toUpperCase();
   const limit = options?.limit ?? 30;
 
-  // 1. Fetch Consensus Breakdown (Finnhub official recommendation endpoint)
   let bullishCount = 0;
   let neutralCount = 0;
   let bearishCount = 0;
-  let usedFinnhub = false;
 
-  const fhRec = await fetchFinnhubRecommendations(ticker, options?.apiKey);
-  if (fhRec) {
-    bullishCount = fhRec.strongBuy + fhRec.buy;
-    neutralCount = fhRec.hold;
-    bearishCount = fhRec.sell + fhRec.strongSell;
-    usedFinnhub = true;
-  }
-
-  // 2. Fetch from Yahoo Finance only if Finnhub failed, benchmark price is missing, or fallback is explicitly requested
   let yfSummary: any = {};
   let yfQuote: any = {};
 
-  const needYahoo =
-    options?.enableYahooFallback ||
-    (!options?.skipYahooFallback && (!usedFinnhub || !options?.benchmarkPrice));
-
-  if (needYahoo) {
-    try {
-      const [summary, quote] = await Promise.all([
-        yf
-          .quoteSummary(ticker, {
-            modules: [
-              "financialData",
-              "recommendationTrend",
-              "upgradeDowngradeHistory",
-              "summaryDetail",
-            ],
-          })
-          .catch((err: any) => err?.result ?? {}),
-        yf.quote(ticker).catch((err: any) => err?.result ?? {}),
-      ]);
-      yfSummary = summary || {};
-      yfQuote = quote || {};
-    } catch (err) {
-      console.warn("⚠️ Warning fetching Yahoo Finance estimates:", err);
-    }
+  try {
+    const [summary, quote] = await Promise.all([
+      yf
+        .quoteSummary(ticker, {
+          modules: [
+            "financialData",
+            "recommendationTrend",
+            "upgradeDowngradeHistory",
+            "summaryDetail",
+          ],
+        })
+        .catch((err: any) => err?.result ?? {}),
+      yf.quote(ticker).catch((err: any) => err?.result ?? {}),
+    ]);
+    yfSummary = summary || {};
+    yfQuote = quote || {};
+  } catch (err) {
+    console.warn("⚠️ Warning fetching Yahoo Finance estimates:", err);
   }
 
-  // Fallback to Yahoo recommendation trend only if Finnhub was unavailable
-  if (!usedFinnhub) {
-    const recTrend = yfSummary.recommendationTrend?.trend;
-    if (Array.isArray(recTrend) && recTrend.length > 0) {
-      const top = recTrend[0];
-      bullishCount = safeNum(top.strongBuy) + safeNum(top.buy);
-      neutralCount = safeNum(top.hold);
-      bearishCount = safeNum(top.sell) + safeNum(top.strongSell);
-    }
+  const recTrend = yfSummary.recommendationTrend?.trend;
+  if (Array.isArray(recTrend) && recTrend.length > 0) {
+    const top = recTrend[0];
+    bullishCount = safeNum(top.strongBuy) + safeNum(top.buy);
+    neutralCount = safeNum(top.hold);
+    bearishCount = safeNum(top.sell) + safeNum(top.strongSell);
   }
 
   const finData = yfSummary.financialData || {};
@@ -849,15 +689,6 @@ export async function fetchAnalystEstimates(
     },
   ];
 
-  if (usedFinnhub) {
-    sources.unshift({
-      title: `Analyst Recommendation Trends (${ticker})`,
-      publisher: "Finnhub Consensus",
-      url: `https://www.marketwatch.com/investing/stock/${ticker.toLowerCase()}/analystestimates`,
-      date: new Date().toISOString().split("T")[0],
-    });
-  }
-
   const priceTargets = {
     currentPrice,
     low,
@@ -892,7 +723,7 @@ export async function fetchAnalystEstimates(
   return { estimatesEn: bundleEn, estimatesZh: bundleZh };
 }
 
-// --- Historical Reactions Ingestion ---
+// --- Historical Reactions Ingestion (Yahoo Finance) ---
 
 export async function fetchHistoricalReactions(
   ticker: string,
@@ -900,7 +731,7 @@ export async function fetchHistoricalReactions(
 ): Promise<Reactions> {
   const events: ReactionEvent[] = [];
 
-  // Try fetching reactions for prior quarterly statement dates
+  // Try fetching reactions for prior quarterly statement dates via Yahoo Finance daily bars
   const candidates = statements.slice(0, 4);
 
   for (const stmt of candidates) {
@@ -908,16 +739,22 @@ export async function fetchHistoricalReactions(
     try {
       const stmtDate = new Date(stmt.date);
       if (Number.isNaN(stmtDate.getTime())) continue;
-      const fromDate = new Date(stmtDate.getTime() - 5 * 86400000)
-        .toISOString()
-        .split("T")[0];
-      const toDate = new Date(stmtDate.getTime() + 5 * 86400000)
-        .toISOString()
-        .split("T")[0];
+      const fromDate = new Date(stmtDate.getTime() - 5 * 86400000);
+      const toDate = new Date(stmtDate.getTime() + 5 * 86400000);
 
-      const bars = await fetchPolygonAggregates(ticker, fromDate, toDate);
-      if (bars && bars.length >= 2) {
-        // Find bar on or after stmtDate
+      const chartRes = await yf
+        .chart(ticker, { period1: fromDate, period2: toDate, interval: "1d" })
+        .catch(() => null);
+      const bars = Array.isArray(chartRes?.quotes)
+        ? chartRes.quotes
+            .filter((q: any) => q.date && typeof q.close === "number")
+            .map((q: any) => ({
+              date: new Date(q.date).toISOString().split("T")[0],
+              close: q.close as number,
+            }))
+        : [];
+
+      if (bars.length >= 2) {
         const targetIdx = bars.findIndex((b) => b.date >= stmt.date);
         if (targetIdx > 0) {
           const postBar = bars[targetIdx];

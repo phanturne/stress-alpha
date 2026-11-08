@@ -33,7 +33,10 @@ import {
   ExternalLink,
 } from "lucide-react";
 import type { ReportSummary } from "@/app/api/reports/route";
-import type { MarketSummaryResponse } from "@/app/api/market/summary/route";
+import type {
+  MarketSummaryResponse,
+  MarketSummaryStory,
+} from "@/app/api/market/summary/route";
 import type { UpcomingEarningsItem } from "@/app/api/earnings/calendar/route";
 import {
   GICS_SECTORS,
@@ -335,8 +338,11 @@ export function MarketHomeView({
     };
   }, []);
 
-  // Market Summary Stories: Synchronous, fully-localized macro docket (zero layout shift/flicker)
-  const displayStories = tHome.summaryStories;
+  // Market Summary Stories: Live Yahoo Finance headlines from /api/market/summary, with synchronous fallback
+  const displayStories: MarketSummaryStory[] =
+    marketSummary?.stories && marketSummary.stories.length > 0
+      ? marketSummary.stories
+      : tHome.summaryStories;
 
   // Deduplicate reports by latest quarter per ticker using recency scoring
   const latestReports = useMemo(() => {
@@ -720,16 +726,17 @@ export function MarketHomeView({
 
             <div className="mt-3 divide-y divide-border/40">
               {displayStories.map((story) => {
-                const isExpanded = expandedStoryId === story.id;
+                const isExpanded =
+                  expandedStoryId === story.id ||
+                  (expandedStoryId === "story-1" &&
+                    displayStories[0]?.id === story.id);
 
                 return (
                   <div key={story.id} className="py-2.5">
                     <button
                       type="button"
                       onClick={() =>
-                        setExpandedStoryId((prev) =>
-                          prev === story.id ? "" : story.id
-                        )
+                        setExpandedStoryId(isExpanded ? "" : story.id)
                       }
                       className="group flex w-full items-start justify-between gap-3 text-left"
                     >
@@ -756,9 +763,24 @@ export function MarketHomeView({
                       <div className="mt-2.5 flex flex-col gap-2.5 text-xs leading-relaxed text-slate-300 duration-150 animate-in fade-in">
                         <p>{story.summary}</p>
                         <div className="flex flex-wrap items-center gap-2 pt-1">
-                          <span className="inline-flex items-center rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-400">
-                            <span>{tHome.sourcesCount(story.sources)}</span>
-                          </span>
+                          {"url" in story && story.url ? (
+                            <a
+                              href={story.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-0.5 font-mono text-[11px] text-accent transition-colors hover:border-accent/50 hover:bg-accent/10"
+                            >
+                              <span>
+                                {("publisher" in story && story.publisher) ||
+                                  "Yahoo Finance"}
+                              </span>
+                              <ExternalLink className="size-3" />
+                            </a>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-400">
+                              <span>{tHome.sourcesCount(story.sources)}</span>
+                            </span>
+                          )}
                           {story.tickers.map((sym) => {
                             const rep = latestReports.find(
                               (r) => r.ticker === sym

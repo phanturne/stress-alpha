@@ -4,7 +4,7 @@ import type { PipelineDataBundle, PipelineBundleOptions } from "./types";
 import {
   fetchFundamentalProfile,
   fetchAnalystEstimates,
-  fetchFinnhubFilings,
+  fetchSecEdgarFilings,
   fetchHistoricalReactions,
 } from "./fetchers";
 import { extractSecFilingExcerpts } from "./sec-extractor";
@@ -55,7 +55,6 @@ export async function fetchCompletePipelineBundle(
   // 1. Fetch Profile & Statements
   const profile = await fetchFundamentalProfile(ticker, {
     apiKey: options?.apiKey,
-    massiveApiKey: options?.massiveApiKey,
     skipYahooFallback: options?.skipYahooFallback,
   });
 
@@ -67,7 +66,7 @@ export async function fetchCompletePipelineBundle(
   });
 
   // 3. Fetch SEC Filings & Extract Targeted Excerpts
-  const filings = await fetchFinnhubFilings(ticker, options?.apiKey);
+  const filings = await fetchSecEdgarFilings(ticker);
   const secExcerpts = await extractSecFilingExcerpts(filings);
 
   // 4. Fetch Historical Reactions

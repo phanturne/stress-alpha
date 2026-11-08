@@ -189,6 +189,8 @@ export function generateFactsDraft(
     marketCapBillions: profile.marketCapBillions,
     trailingEps: resolvedTrailingEps,
     forwardEpsConsensus: rawForwardEps,
+    trailingPe: profile.trailingPE,
+    forwardPe: profile.forwardPE,
     valuationArchetype,
     grossMarginPct,
     cashAndEquivalentsBillions,
@@ -221,9 +223,7 @@ export function generateFactsZh(factsEn: Facts): Facts {
     sources: factsEn.sources.map((s) => ({
       ...s,
       title: `${factsEn.ticker} SEC 财务报告数据源`,
-      publisher: s.publisher?.includes("Massive")
-        ? "Massive.com (Polygon.io) SEC 财务报表 API"
-        : s.publisher,
+      publisher: "Yahoo Finance & SEC EDGAR 官方财报数据",
     })),
   };
   return FactsSchema.parse(zhDraft);

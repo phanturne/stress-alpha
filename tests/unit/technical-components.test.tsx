@@ -525,7 +525,7 @@ describe("Technical Levels UI Components", () => {
         facts: { ticker: "NVDA", segments: [] },
       } as unknown as ReportData;
 
-      const tabs = getWorkspaceTabs(t, mockReportData, 3, false);
+      const tabs = getWorkspaceTabs(t, mockReportData);
       expect(tabs[0].id).toBe("technicals");
       expect(tabs[0].shortcut).toBe("1");
       expect(tabs[0].label).toBe("Chart & Levels");
@@ -533,7 +533,7 @@ describe("Technical Levels UI Components", () => {
 
       expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");
-      expect(tabs).toHaveLength(4);
+      expect(tabs).toHaveLength(3);
     });
   });
 });
