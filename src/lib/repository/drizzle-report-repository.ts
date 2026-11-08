@@ -395,7 +395,7 @@ export class DrizzleReportRepository implements IReportRepository {
       }
     }
 
-    // Decorate facts with live market EPS / market cap telemetry if available
+    // Decorate facts with live market EPS / P/E / market cap telemetry if available
     if (tickerInfo?.trailingEps != null && Number(tickerInfo.trailingEps) > 0) {
       const liveTrailingEps = Number(tickerInfo.trailingEps);
       facts.trailingEps = liveTrailingEps;
@@ -408,6 +408,20 @@ export class DrizzleReportRepository implements IReportRepository {
       facts.forwardEpsConsensus = liveForwardEps;
       if (factsZh) {
         factsZh.forwardEpsConsensus = liveForwardEps;
+      }
+    }
+    if (tickerInfo?.trailingPe != null && Number(tickerInfo.trailingPe) > 0) {
+      const liveTrailingPe = Number(tickerInfo.trailingPe);
+      facts.trailingPe = liveTrailingPe;
+      if (factsZh) {
+        factsZh.trailingPe = liveTrailingPe;
+      }
+    }
+    if (tickerInfo?.forwardPe != null && Number(tickerInfo.forwardPe) > 0) {
+      const liveForwardPe = Number(tickerInfo.forwardPe);
+      facts.forwardPe = liveForwardPe;
+      if (factsZh) {
+        factsZh.forwardPe = liveForwardPe;
       }
     }
     if (tickerInfo?.marketCap != null && Number(tickerInfo.marketCap) > 0) {
@@ -512,44 +526,83 @@ export class DrizzleReportRepository implements IReportRepository {
     }
 
     // Ensure ticker exists in tickersTable
+    const tickerMetricsSet = {
+      currentPrice: String(currentPrice),
+      ...(report.facts.marketCapBillions && report.facts.marketCapBillions > 0
+        ? { marketCap: String(report.facts.marketCapBillions) }
+        : {}),
+      ...(report.facts.trailingPe && report.facts.trailingPe > 0
+        ? { trailingPe: String(report.facts.trailingPe) }
+        : {}),
+      ...(report.facts.forwardPe && report.facts.forwardPe > 0
+        ? { forwardPe: String(report.facts.forwardPe) }
+        : {}),
+      ...(report.facts.trailingEps && report.facts.trailingEps > 0
+        ? { trailingEps: String(report.facts.trailingEps) }
+        : {}),
+      ...(report.facts.forwardEpsConsensus &&
+      report.facts.forwardEpsConsensus > 0
+        ? { forwardEps: String(report.facts.forwardEpsConsensus) }
+        : {}),
+      ...(report.technicalLevels
+        ? { technicalLevels: report.technicalLevels }
+        : {}),
+      priceUpdatedAt: new Date(),
+    };
+
     await db
       .insert(tickersTable)
       .values({
         ticker,
         company: report.facts.company || `${ticker} Corporation`,
-        currentPrice: String(currentPrice),
-        technicalLevels: report.technicalLevels,
-        priceUpdatedAt: new Date(),
+        ...tickerMetricsSet,
       })
       .onConflictDoUpdate({
         target: tickersTable.ticker,
-        set: {
-          currentPrice: String(currentPrice),
-          ...(report.technicalLevels
-            ? { technicalLevels: report.technicalLevels }
-            : {}),
-          priceUpdatedAt: new Date(),
-        },
+        set: tickerMetricsSet,
       });
 
-    // Resolve slug: if a row with matching (ticker, quarter, year) already exists under another slug format,
-    // target that slug so onConflictDoUpdate updates it without violating idx_reports_ticker_quarter.
+    // Resolve slug and look up prior WFV for SEC-filing revision tracking
     let targetSlug = slug;
-    try {
-      const existing = await db
-        .select({ slug: reportsTable.slug })
-        .from(reportsTable)
-        .where(
-          and(
-            eq(reportsTable.ticker, ticker),
-            eq(reportsTable.quarter, quarter),
-            eq(reportsTable.year, year)
-          )
-        )
-        .limit(1);
+    let priorWfvNum = weightedFairValue;
+    let priorBullVal = bullFairValue || weightedFairValue;
+    let priorBaseVal = baseFairValue || weightedFairValue;
+    let priorPanicVal = panicFairValue || bearFairValue || weightedFairValue;
 
-      if (existing[0]?.slug) {
-        targetSlug = existing[0].slug;
+    try {
+      const existingRows = await db
+        .select({
+          slug: reportsTable.slug,
+          quarter: reportsTable.quarter,
+          year: reportsTable.year,
+          weightedFairValue: reportsTable.weightedFairValue,
+          bullFairValue: reportsTable.bullFairValue,
+          baseFairValue: reportsTable.baseFairValue,
+          bearFairValue: reportsTable.bearFairValue,
+          panicFairValue: reportsTable.panicFairValue,
+        })
+        .from(reportsTable)
+        .where(eq(reportsTable.ticker, ticker))
+        .orderBy(desc(reportsTable.year), desc(reportsTable.quarter))
+        .limit(4);
+
+      const exactMatch = existingRows.find(
+        (r) => r.quarter === quarter && r.year === year
+      );
+      if (exactMatch?.slug) {
+        targetSlug = exactMatch.slug;
+      }
+
+      const priorRow =
+        existingRows.find((r) => !(r.quarter === quarter && r.year === year)) ||
+        exactMatch;
+      if (priorRow && Number(priorRow.weightedFairValue) > 0) {
+        priorWfvNum = Number(priorRow.weightedFairValue);
+        priorBullVal = Number(priorRow.bullFairValue) || priorWfvNum;
+        priorBaseVal = Number(priorRow.baseFairValue) || priorWfvNum;
+        priorPanicVal =
+          Number(priorRow.panicFairValue ?? priorRow.bearFairValue) ||
+          priorWfvNum;
       }
     } catch {
       // Fallback to original slug
@@ -652,6 +705,47 @@ export class DrizzleReportRepository implements IReportRepository {
           updatedAt: new Date(),
         },
       });
+
+    // Record SEC-filing valuation revision automatically
+    if (weightedFairValue > 0) {
+      const wfvDelta = Number((weightedFairValue - priorWfvNum).toFixed(2));
+      const wfvDeltaPctNum =
+        priorWfvNum > 0
+          ? Number(((wfvDelta / priorWfvNum) * 100).toFixed(2))
+          : 0;
+      const periodLabel = `Q${quarter} ${year}`.trim();
+      const parsedDate = report.facts.reportDate
+        ? new Date(report.facts.reportDate)
+        : new Date();
+      const revisionDate = Number.isNaN(parsedDate.getTime())
+        ? new Date()
+        : parsedDate;
+      await this.saveValuationRevision({
+        id: `rev-sec-${ticker.toLowerCase()}-q${quarter}${year}`,
+        ticker,
+        revisionDate,
+        triggerType: "quarterly_filing",
+        headline: `${ticker} ${periodLabel} Earnings & SEC Filing Model`,
+        rationale: `${periodLabel} SEC 10-Q/10-K model valuation (${
+          wfvDeltaPctNum >= 0 ? "+" : ""
+        }${wfvDeltaPctNum.toFixed(1)}% vs prior WFV)`,
+        priorWfv: String(priorWfvNum),
+        newWfv: String(weightedFairValue),
+        wfvDeltaPct: wfvDeltaPctNum.toFixed(2),
+        fullStateDiff: {
+          priorRegimes: {
+            bull: priorBullVal,
+            base: priorBaseVal,
+            panic: priorPanicVal,
+          },
+          newRegimes: {
+            bull: bullFairValue || weightedFairValue,
+            base: baseFairValue || weightedFairValue,
+            panic: panicFairValue || bearFairValue || weightedFairValue,
+          },
+        },
+      }).catch(() => {});
+    }
 
     // Invalidate caches
     this.cachedSummaries = null;

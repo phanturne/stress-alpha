@@ -17,14 +17,13 @@ export const WORKSPACE_TAB_IDS = [
   "technicals",
   "valuation",
   "estimates",
-  "news",
 ] as const;
 
 export type WorkspaceTabId = (typeof WORKSPACE_TAB_IDS)[number];
 
 /**
  * Normalizes any tab identifier into a canonical WorkspaceTabId.
- * Obsolete or unknown tab strings (such as "notes") safely fall back to "technicals".
+ * Obsolete or unknown tab strings (such as "notes" or "news") safely fall back to "technicals".
  */
 export function normalizeWorkspaceTabId(
   tab: string | undefined | null
@@ -42,11 +41,8 @@ export function normalizeWorkspaceTabId(
   ) {
     return "valuation";
   }
-  if (tab === "moat") {
+  if (tab === "moat" || tab === "audit" || tab === "tone" || tab === "filing") {
     return "estimates";
-  }
-  if (tab === "audit" || tab === "tone" || tab === "filing") {
-    return "news";
   }
   return "technicals";
 }
@@ -61,9 +57,9 @@ export interface WorkspaceTabDescriptor {
 
 export function getWorkspaceTabs(
   t: Translations,
-  _reportData: ReportData | null,
-  _marketEventsCount: number,
-  _isZh: boolean
+  _reportData: ReportData | null = null,
+  _marketEventsCount = 0,
+  _isZh = false
 ): WorkspaceTabDescriptor[] {
   return [
     {
@@ -86,13 +82,6 @@ export function getWorkspaceTabs(
       label: t.tabs.estimates,
       shortLabel: t.tabs.shortEstimates,
       icon: Target,
-    },
-    {
-      id: "news",
-      shortcut: "4",
-      label: t.tabs.news,
-      shortLabel: t.tabs.shortNews,
-      icon: Radio,
     },
   ];
 }

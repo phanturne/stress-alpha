@@ -1,4 +1,4 @@
-name: Nightly Market & News Sync
+name: Nightly Market Price Sync
 
 on:
   schedule:
@@ -8,13 +8,12 @@ on:
   push:
     paths:
       - ".github/workflows/nightly-price-sync.yml"
-      - "scripts/sync_news.ts"
       - "scripts/sync_prices.ts"
       - "src/lib/services/**"
 
 jobs:
-  sync-market-and-news:
-    name: Sync Closing Prices & News Intelligence
+  sync-market-prices:
+    name: Sync Closing Prices via Yahoo Finance
     runs-on: ubuntu-latest
     environment: Production
 
@@ -35,30 +34,5 @@ jobs:
         run: npx tsx scripts/sync_prices.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
-          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          MASSIVE_KEY: ${{ secrets.MASSIVE_KEY }}
-          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
-          POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
-          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
-          APP_URL: ${{ secrets.APP_URL || 'https://stressalpha.vercel.app' }}
-          REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET || secrets.CRON_SECRET }}
-
-      - name: Run Global News Firehose Sync Script
-        run: npx tsx scripts/sync_news.ts --firehose
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
-          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          MASSIVE_KEY: ${{ secrets.MASSIVE_KEY }}
-          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          MASSIVE_TOKEN: ${{ secrets.MASSIVE_TOKEN }}
-          POLYGON_TOKEN: ${{ secrets.POLYGON_TOKEN }}
-          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
           APP_URL: ${{ secrets.APP_URL || 'https://stressalpha.vercel.app' }}
           REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET || secrets.CRON_SECRET }}

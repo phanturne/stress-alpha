@@ -1,5 +1,6 @@
 import path from "node:path";
 import * as dotenv from "dotenv";
+import YahooFinance from "yahoo-finance2";
 import { sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { tickersTable, reportsTable, upcomingEarningsTable } from "@/db/schema";
@@ -16,6 +17,77 @@ import { resilientFetch } from "./http-client";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+const yf = new YahooFinance({
+  suppressNotices: ["yahooSurvey"],
+  validation: { logErrors: false },
+});
+
+/**
+ * Fetch upcoming/recent earnings calendar entries for a list of universe symbols via Yahoo Finance batch quotes.
+ */
+export async function fetchYahooEarningsCalendar(
+  symbols: string[],
+  fromDate: string,
+  toDate: string
+): Promise<EarningsCalendarEntry[]> {
+  if (symbols.length === 0) return [];
+  const entries: EarningsCalendarEntry[] = [];
+
+  try {
+    const quotesRaw = await yf
+      .quote(symbols)
+      .catch((err: any) => err?.result ?? []);
+    const quotes = Array.isArray(quotesRaw) ? quotesRaw : [quotesRaw];
+
+    for (const q of quotes) {
+      if (!q || !q.symbol) continue;
+      const rawTs = q.earningsTimestamp || q.earningsTimestampStart;
+      if (!rawTs) continue;
+
+      const d =
+        rawTs instanceof Date
+          ? rawTs
+          : new Date(
+              typeof rawTs === "number" && rawTs < 1e11 ? rawTs * 1000 : rawTs
+            );
+      if (Number.isNaN(d.getTime())) continue;
+
+      const dateStr = d.toISOString().split("T")[0];
+      if (dateStr < fromDate || dateStr > toDate) continue;
+
+      const month = d.getUTCMonth() + 1;
+      const quarter = month <= 2 ? 4 : Math.max(1, Math.ceil(month / 3) - 1);
+      const year = month <= 2 ? d.getUTCFullYear() - 1 : d.getUTCFullYear();
+      const utcHour = d.getUTCHours();
+      const hour = utcHour > 0 && utcHour < 16 ? "bmo" : "amc";
+
+      entries.push({
+        symbol: String(q.symbol).toUpperCase(),
+        date: dateStr,
+        hour,
+        year,
+        quarter,
+        epsActual:
+          typeof q.epsTrailingTwelveMonths === "number"
+            ? Number((q.epsTrailingTwelveMonths / 4).toFixed(2))
+            : null,
+        epsEstimate:
+          typeof q.epsCurrentYear === "number"
+            ? Number((q.epsCurrentYear / 4).toFixed(2))
+            : typeof q.epsForward === "number"
+              ? Number((q.epsForward / 4).toFixed(2))
+              : null,
+        revenueActual: null,
+        revenueEstimate: null,
+      });
+    }
+  } catch (err) {
+    console.warn("⚠️ [Yahoo Calendar] Batch quote error:", err);
+  }
+
+  return entries;
+}
 
 export interface EarningsCalendarEntry {
   symbol: string;
@@ -172,22 +244,7 @@ export async function syncEarningsCalendar(
   const repo = options?.repository || getReportRepository();
   const targetDate = options?.date || new Date().toISOString().split("T")[0];
 
-  // 1. Fetch Calendar Entries from Finnhub
-  const allEntries = await fetchFinnhubEarningsCalendar({
-    date: targetDate,
-    apiKey: options?.apiKey,
-  });
-
-  const totalOnCalendar = allEntries.length;
-
-  // 2. Filter by Session (bmo vs amc) if requested
-  const sessionFiltered = options?.session
-    ? allEntries.filter(
-        (e) => e.hour.toLowerCase() === options.session!.toLowerCase()
-      )
-    : allEntries;
-
-  // 3. Determine Active Universe
+  // 1. Determine Active Universe
   let universeSet: Set<string>;
   const reportSummaries = await repo.listReports();
 
@@ -217,6 +274,33 @@ export async function syncEarningsCalendar(
       // In-memory or database offline
     }
   }
+
+  // 2. Fetch Calendar Entries (Finnhub if configured, otherwise Yahoo Finance batch quotes)
+  const hasFinnhubKey = Boolean(
+    options?.apiKey ||
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN
+  );
+  const allEntries = hasFinnhubKey
+    ? await fetchFinnhubEarningsCalendar({
+        date: targetDate,
+        apiKey: options?.apiKey,
+      })
+    : await fetchYahooEarningsCalendar(
+        Array.from(universeSet),
+        targetDate,
+        targetDate
+      );
+
+  const totalOnCalendar = allEntries.length;
+
+  // 3. Filter by Session (bmo vs amc) if requested
+  const sessionFiltered = options?.session
+    ? allEntries.filter(
+        (e) => e.hour.toLowerCase() === options.session!.toLowerCase()
+      )
+    : allEntries;
 
   // 4. Filter Candidates matching Universe
   let candidates = sessionFiltered.filter((e) =>
@@ -339,7 +423,6 @@ export async function syncEarningsCalendar(
       const bundle = await fetchCompletePipelineBundle(symbol, resolvedSlug, {
         quarterStr,
         apiKey: options?.apiKey,
-        massiveApiKey: options?.massiveApiKey,
         enrichWithAi: options?.enrichWithAi ?? isAiGatewayConfigured(),
         calendarActuals: {
           epsActual: entry.epsActual,
@@ -514,11 +597,12 @@ export async function syncEarningsCalendar(
 
         try {
           await repo.saveValuationRevision({
+            id: `rev-sec-${symbol.toLowerCase()}-q${quarter}${year}`,
             ticker: symbol,
             revisionDate: new Date(),
             triggerType: "quarterly_filing",
-            headline: `${symbol} Q${quarter} ${year} Earnings Scaffolding`,
-            rationale: `Automated scaffolding from Finnhub & SEC filings for ${symbol} Q${quarter} ${year}.`,
+            headline: `${symbol} Q${quarter} ${year} Earnings & SEC Filing Model`,
+            rationale: `Automated scaffolding from Yahoo Finance & SEC EDGAR filings for ${symbol} Q${quarter} ${year}.`,
             priorWfv: String(priorWfvNum),
             newWfv: String(valuation.weightedFairValue),
             wfvDeltaPct,
@@ -684,25 +768,41 @@ export async function syncUpcomingEarningsDocket(options?: {
     reportMap.set(sym, r.slug);
   }
 
-  // 4. Query Finnhub calendar in 4 chunked windows over the next 14 days
-  // to avoid Finnhub's 1500-record truncation ceiling
+  // 4. Query earnings calendar over the next 14 days
   const now = Date.now();
-  const ranges: [number, number][] = [
-    [0, 2],
-    [3, 6],
-    [7, 10],
-    [11, 14],
-  ];
+  const hasFinnhubKey = Boolean(
+    options?.apiKey ||
+    process.env.FINNHUB_API_KEY ||
+    process.env.FINNHUB_KEY ||
+    process.env.FINNHUB_TOKEN
+  );
 
   const allEntries: EarningsCalendarEntry[] = [];
-  for (const [s, e] of ranges) {
-    const from = new Date(now + s * 86400000).toISOString().split("T")[0];
-    const to = new Date(now + e * 86400000).toISOString().split("T")[0];
-    const items = await fetchFinnhubEarningsCalendar({
+  if (hasFinnhubKey) {
+    const ranges: [number, number][] = [
+      [0, 2],
+      [3, 6],
+      [7, 10],
+      [11, 14],
+    ];
+    for (const [s, e] of ranges) {
+      const from = new Date(now + s * 86400000).toISOString().split("T")[0];
+      const to = new Date(now + e * 86400000).toISOString().split("T")[0];
+      const items = await fetchFinnhubEarningsCalendar({
+        from,
+        to,
+        apiKey: options?.apiKey,
+      });
+      allEntries.push(...items);
+    }
+  } else {
+    const from = new Date(now).toISOString().split("T")[0];
+    const to = new Date(now + 14 * 86400000).toISOString().split("T")[0];
+    const items = await fetchYahooEarningsCalendar(
+      Array.from(tickerMap.keys()),
       from,
-      to,
-      apiKey: options?.apiKey,
-    });
+      to
+    );
     allEntries.push(...items);
   }
 

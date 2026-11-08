@@ -2614,9 +2614,9 @@ export const translations: Record<Locale, Translations> = {
         feedsDesc:
           "Deterministic quantitative data ingestion pipeline with zero LLM math hallucinations.",
         feedsMassive:
-          "Massive.com — Point-in-time financial statements, segment breakdowns, and historical ratios.",
+          "Yahoo Finance — Standardized 3M financial statements, market multiples (TTM/NTM P/E), and sell-side consensus.",
         feedsFinnhub:
-          "Finnhub.io — Audio earnings transcripts, SEC EDGAR filing links, and sell-side price targets.",
+          "SEC EDGAR (data.sec.gov) — Direct 10-Q, 10-K, and 8-K filings, off-balance-sheet commitments, and MD&A disclosures.",
       },
       privacy: {
         title: "Privacy & Storage Management",
@@ -4196,9 +4196,9 @@ export const translations: Record<Locale, Translations> = {
         feedsDesc:
           "纯确定性 TypeScript 数据提取引擎，完全杜绝 LLM 数学计算幻觉。",
         feedsMassive:
-          "Massive.com — 点对点权威财务报表、业务细分营收与历史财务比率。",
+          "Yahoo Finance — 标准化单季财务报表、市场市盈率倍数 (TTM/NTM P/E) 与卖方一致预期。",
         feedsFinnhub:
-          "Finnhub.io — 业绩说明会音频转录、SEC EDGAR 原始披露链接与卖方目标价预期。",
+          "SEC EDGAR (data.sec.gov) — 官方 10-Q、10-K 与 8-K 原始披露、表外承诺与 MD&A 审计。",
       },
       privacy: {
         title: "隐私与数据管理",

@@ -19,7 +19,7 @@ import { getDb } from "../src/db";
 import { reportsTable, tickersTable } from "../src/db/schema";
 import { AI_GATEWAY_MODELS } from "../src/lib/services/ai-gateway";
 import {
-  fetchFinnhubFilings,
+  fetchSecEdgarFilings,
   extractSecFilingExcerpts,
 } from "../src/lib/services/financial-data";
 import {
@@ -73,8 +73,8 @@ async function processSingleReport(
     return { success: false, ticker, note: "Missing facts object" };
   }
 
-  // 1. Resolve SEC Filings
-  const filings = await fetchFinnhubFilings(ticker);
+  // 1. Resolve SEC Filings via Official SEC EDGAR API
+  const filings = await fetchSecEdgarFilings(ticker);
   if (!filings || filings.length === 0) {
     if (!dryRun) {
       const db = getDb();
@@ -103,7 +103,11 @@ async function processSingleReport(
         })
         .where(eq(reportsTable.slug, r.slug));
     }
-    return { success: false, ticker, note: "No SEC filings found via Finnhub" };
+    return {
+      success: false,
+      ticker,
+      note: "No SEC filings found via SEC EDGAR",
+    };
   }
 
   // 2. Extract Targeted SEC EDGAR Disclosures

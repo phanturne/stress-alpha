@@ -136,14 +136,14 @@ export function useReportData({
     reportQuery.data?.facts?.ticker ||
     (currentSlug ? currentSlug.split("-")[0]?.toUpperCase() : undefined);
 
-  // Query 3: Market news & upstream dependencies for active ticker
+  // Query 3: Market news & upstream dependencies for active ticker (disabled while News tab is off)
   const newsQuery = useQuery({
     queryKey: ["news", activeTicker],
     queryFn: () =>
       activeTicker
         ? fetchNews(activeTicker)
         : Promise.resolve({ events: [], upstreamDependencies: [] }),
-    enabled: Boolean(activeTicker),
+    enabled: false,
     staleTime: 1000 * 60 * 5,
   });
 

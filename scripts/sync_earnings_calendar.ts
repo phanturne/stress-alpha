@@ -72,20 +72,6 @@ async function main() {
     process.exit(1);
   }
 
-  const finnhubKey =
-    process.env.FINNHUB_API_KEY ||
-    process.env.FINNHUB_KEY ||
-    process.env.FINNHUB_TOKEN;
-  if (!finnhubKey) {
-    console.log(
-      "::error title=Missing Finnhub API Key::Neither FINNHUB_API_KEY nor FINNHUB_KEY is configured in GitHub Secrets (Repository Secrets)."
-    );
-    console.error(
-      "❌ FINNHUB_API_KEY is not configured in environment. Cannot query earnings calendar."
-    );
-    process.exit(1);
-  }
-
   console.log("\n" + "=".repeat(66));
   console.log(
     "⚡ [StressAlpha Inverted Earnings Calendar & Scaffolding Engine]"

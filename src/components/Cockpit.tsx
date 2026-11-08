@@ -152,15 +152,19 @@ export const Cockpit: React.FC<CockpitProps> = ({
       : 0);
 
   const trailingPe =
-    currentPrice > 0 && facts.trailingEps && facts.trailingEps > 0
-      ? round2(currentPrice / facts.trailingEps)
-      : undefined;
+    facts.trailingPe && facts.trailingPe > 0
+      ? round2(facts.trailingPe)
+      : currentPrice > 0 && facts.trailingEps && facts.trailingEps > 0
+        ? round2(currentPrice / facts.trailingEps)
+        : undefined;
   const forwardPe =
-    currentPrice > 0 &&
-    facts.forwardEpsConsensus &&
-    facts.forwardEpsConsensus > 0
-      ? round2(currentPrice / facts.forwardEpsConsensus)
-      : undefined;
+    facts.forwardPe && facts.forwardPe > 0
+      ? round2(facts.forwardPe)
+      : currentPrice > 0 &&
+          facts.forwardEpsConsensus &&
+          facts.forwardEpsConsensus > 0
+        ? round2(currentPrice / facts.forwardEpsConsensus)
+        : undefined;
   const hasNegativeEps =
     (facts.trailingEps !== undefined && facts.trailingEps < 0) ||
     (facts.forwardEpsConsensus !== undefined &&
