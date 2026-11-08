@@ -133,4 +133,61 @@ describe("useReportNavigation Hook Invariants", () => {
     expect(result.current.viewMode).toBe("cockpit");
     expect(setCurrentSlug).toHaveBeenCalledWith("GOOGL-Q4-2025-analysis");
   });
+
+  it("safely normalizes obsolete 'notes' tab to 'technicals' when opening memo or cockpit from watchlist", async () => {
+    window.history.pushState(null, "", "/?tab=notes&mode=watchlist");
+
+    let currentSlug: string | null = null;
+    const setCurrentSlug = vi.fn((slug: string | null) => {
+      currentSlug = slug;
+    });
+    const setLocale = vi.fn();
+
+    const { result } = renderHook(() =>
+      useReportNavigation({
+        currentSlug,
+        setCurrentSlug,
+        initialMode: "watchlist",
+        initialTab: "notes",
+        locale: "en",
+        setLocale,
+        stressParams: defaultStressParams,
+        isLoading: false,
+      })
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Active tab must never be the obsolete "notes" string
+    expect(result.current.activeTab).toBe("technicals");
+    expect(result.current.viewMode).toBe("watchlist");
+
+    // Click "Research Memo" from Watchlist
+    await act(async () => {
+      result.current.handleSelectReport("NVDA-Q2-2027-analysis", "memo");
+    });
+
+    expect(result.current.viewMode).toBe("memo");
+    expect(result.current.sourceViewMode).toBe("watchlist");
+    expect(result.current.activeTab).toBe("technicals");
+    expect(window.location.search).toContain("mode=memo");
+    expect(window.location.search).not.toContain("tab=notes");
+
+    // Returning from Memo returns to the source page (Watchlist), NOT the ticker page!
+    await act(async () => {
+      result.current.handleViewModeChange(result.current.sourceViewMode);
+    });
+    expect(result.current.viewMode).toBe("watchlist");
+
+    // Click "Stress Model" from Watchlist
+    await act(async () => {
+      result.current.handleSelectReport("NVDA-Q2-2027-analysis", "cockpit");
+    });
+
+    expect(result.current.viewMode).toBe("cockpit");
+    expect(result.current.activeTab).toBe("technicals");
+    expect(window.location.search).not.toContain("tab=notes");
+  });
 });

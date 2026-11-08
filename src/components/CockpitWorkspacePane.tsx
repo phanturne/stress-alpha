@@ -4,7 +4,10 @@ import React from "react";
 import { ChevronLeft, ChevronRight, FileText, Sliders } from "lucide-react";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { getTranslations, type Locale } from "@/lib/i18n";
-import type { WorkspaceTabDescriptor } from "@/lib/workspace-tabs";
+import {
+  normalizeWorkspaceTabId,
+  type WorkspaceTabDescriptor,
+} from "@/lib/workspace-tabs";
 import type {
   Facts,
   ReportData,
@@ -114,6 +117,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
   showToast,
 }: CockpitWorkspacePaneProps) {
   const t = getTranslations(locale);
+  const effectiveTab = normalizeWorkspaceTabId(activeTab);
 
   return (
     <div
@@ -204,7 +208,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
           >
             {tabItems.map((tab) => {
               const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+              const isActive = effectiveTab === tab.id;
               return (
                 <button
                   key={tab.id}
@@ -279,7 +283,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
       >
         <div className="flex w-full flex-col gap-6">
           {/* WORKSPACE 1: CHART & LEVELS (technicals) */}
-          {activeTab === "technicals" && (
+          {effectiveTab === "technicals" && (
             <div className="flex flex-col gap-6">
               {(() => {
                 const val = dynamicValuation ?? reportData?.valuation;
@@ -353,11 +357,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
           )}
 
           {/* WORKSPACE 2: VALUATION & DRIVERS (valuation, scenarios, sensitivity, segments, catalysts) */}
-          {(activeTab === "valuation" ||
-            activeTab === "scenarios" ||
-            activeTab === "sensitivity" ||
-            activeTab === "segments" ||
-            activeTab === "catalysts") && (
+          {effectiveTab === "valuation" && (
             <div className="flex flex-col gap-6">
               <ScenariosTab
                 scenariosData={displayScenarios!}
@@ -396,7 +396,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
           )}
 
           {/* WORKSPACE 3: CONSENSUS & PEERS (estimates, moat) */}
-          {(activeTab === "estimates" || activeTab === "moat") && (
+          {effectiveTab === "estimates" && (
             <div className="flex flex-col gap-6">
               <EstimatesTab
                 estimatesData={displayEstimates}
@@ -413,10 +413,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
           )}
 
           {/* WORKSPACE 4: NEWS & FILINGS (news, audit, tone, filing) */}
-          {(activeTab === "news" ||
-            activeTab === "audit" ||
-            activeTab === "tone" ||
-            activeTab === "filing") && (
+          {effectiveTab === "news" && (
             <div className="flex flex-col gap-6">
               <NewsTab
                 ticker={displayFacts?.ticker}

@@ -77,11 +77,16 @@ export function useReportData({
     staleTime: 1000 * 60 * 5,
   });
 
-  // Query 2: Active report by slug
+  // Query 2: Active report by slug (strictly guarded against non-string arguments)
+  const safeSlug =
+    typeof currentSlug === "string" && currentSlug.trim()
+      ? currentSlug.trim()
+      : null;
+
   const reportQuery = useQuery({
-    queryKey: ["report", currentSlug],
-    queryFn: () => (currentSlug ? fetchReportData(currentSlug) : null),
-    enabled: Boolean(currentSlug),
+    queryKey: ["report", safeSlug],
+    queryFn: () => (safeSlug ? fetchReportData(safeSlug) : null),
+    enabled: Boolean(safeSlug),
     staleTime: 1000 * 60 * 5,
   });
 

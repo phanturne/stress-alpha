@@ -28,6 +28,7 @@ import {
 } from "@/components/ReportSelector";
 import { Header } from "@/components/Header";
 import { Cockpit } from "@/components/Cockpit";
+import { MemoView } from "@/components/MemoView";
 import { computeStressedValuation } from "@/lib/valuation";
 import { ThemeProvider } from "@/context/ThemeContext";
 import {
@@ -722,6 +723,103 @@ describe("Frontend Render & Efficiency Invariants", () => {
           `${shockedResult.asymmetry.marketPricedInMultiple.toFixed(1)}x Stressed P/E`
         )
       ).toBeDefined();
+    });
+  });
+
+  describe("MemoView Dynamic Back Navigation Invariants", () => {
+    const mockFacts = {
+      ticker: "NVDA",
+      company: "NVIDIA Corporation",
+      quarter: "Q2 2027",
+      reportDate: "2026-08-26",
+      revenueBillions: 30.0,
+      revenueGrowthPct: 122.0,
+      operatingIncomeBillions: 18.6,
+      operatingMarginPct: 62.0,
+      epsReported: 0.68,
+      epsConsensus: 0.65,
+      epsOperating: 0.68,
+      segments: [],
+      oneTimeItems: [],
+      currentPrice: 120.0,
+      marketCapBillions: 2900,
+      trailingEps: 2.2,
+      forwardEpsConsensus: 3.5,
+      sources: [],
+    };
+
+    const mockBaseline = {
+      baseRevenueBillions: 120,
+      baseGrossMarginPct: 75,
+      fixedOpexBillions: 15,
+      taxRatePct: 15,
+      dilutedSharesBillions: 24.5,
+      multipleRegimes: { bull: 40, base: 32, panic: 20 },
+      upstreamDrivers: [],
+    };
+
+    const mockStressResult = computeStressedValuation(mockBaseline, 120.0, {});
+
+    const mockReportData = {
+      folderSlug: "NVDA-Q2-2027",
+      facts: mockFacts,
+      scenarios: {
+        scenarios: [
+          { name: "Base", probability: 0.6, fairValue: 130, assumptions: [] },
+        ],
+        confidenceScore: 85,
+        sources: [],
+      },
+      baseline: mockBaseline,
+      catalysts: { catalysts: [], sources: [] },
+      moat: { moatRating: "Wide", sources: [] },
+      reportMarkdown: "# NVDA Memo",
+    } as any;
+
+    it("renders 'Back to Watchlist' when sourceViewMode is 'watchlist'", () => {
+      const handleBack = vi.fn();
+      render(
+        <MemoView
+          reportData={mockReportData}
+          stressResult={mockStressResult}
+          onBackToCockpit={handleBack}
+          sourceViewMode="watchlist"
+          locale="en"
+        />
+      );
+
+      const backBtn = screen.getByText("Back to Watchlist");
+      expect(backBtn).toBeDefined();
+      fireEvent.click(backBtn);
+      expect(handleBack).toHaveBeenCalledTimes(1);
+    });
+
+    it("renders 'Back to Screener' when sourceViewMode is 'screener'", () => {
+      render(
+        <MemoView
+          reportData={mockReportData}
+          stressResult={mockStressResult}
+          onBackToCockpit={vi.fn()}
+          sourceViewMode="screener"
+          locale="en"
+        />
+      );
+
+      expect(screen.getByText("Back to Screener")).toBeDefined();
+    });
+
+    it("renders 'Back to Model' when sourceViewMode is 'cockpit' or default", () => {
+      render(
+        <MemoView
+          reportData={mockReportData}
+          stressResult={mockStressResult}
+          onBackToCockpit={vi.fn()}
+          sourceViewMode="cockpit"
+          locale="en"
+        />
+      );
+
+      expect(screen.getByText("Back to Model")).toBeDefined();
     });
   });
 });

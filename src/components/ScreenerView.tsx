@@ -38,6 +38,7 @@ import {
   SlidersHorizontal,
   ChevronDown,
   Check,
+  NotebookPen,
 } from "lucide-react";
 import { Skeleton } from "./ui/Skeleton";
 import { MiniSnowflakeRadar } from "./snowflake/MiniSnowflakeRadar";
@@ -57,7 +58,9 @@ export {
 };
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { useWatchlist } from "@/lib/watchlist";
+import { useStockNotes } from "@/lib/notes";
 import { useReportPrefetch } from "@/hooks/useReportPrefetch";
+import { StockNotesModal } from "./StockNotesModal";
 import {
   GICS_SECTORS,
   getTickerSectorId,
@@ -106,7 +109,7 @@ export function renderSectorIcon(iconName: string, className = "size-3.5") {
   }
 }
 
-interface FilterDropdownOption<T extends string> {
+export interface FilterDropdownOption<T extends string> {
   id: T;
   label: string;
   shortLabel?: string;
@@ -115,7 +118,7 @@ interface FilterDropdownOption<T extends string> {
   title?: string;
 }
 
-interface FilterDropdownProps<T extends string> {
+export interface FilterDropdownProps<T extends string> {
   label: string;
   value: T;
   defaultValue: T;
@@ -126,7 +129,7 @@ interface FilterDropdownProps<T extends string> {
   align?: "left" | "right";
 }
 
-function FilterDropdown<T extends string>({
+export function FilterDropdown<T extends string>({
   label,
   value,
   defaultValue,
@@ -406,6 +409,10 @@ export interface ScreenerItemProps {
   onPrefetch: (slug: string) => void;
   ts: ReturnType<typeof getTranslations>["screener"];
   tHeader: ReturnType<typeof getTranslations>["header"];
+  tNotes?: ReturnType<typeof getTranslations>["stockNotes"];
+  onOpenNotes?: (ticker: string, company?: string) => void;
+  hasNote?: boolean;
+  noteSnippet?: string;
   locale?: Locale;
 }
 
@@ -417,6 +424,10 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
   onPrefetch,
   ts,
   tHeader,
+  tNotes,
+  onOpenNotes,
+  hasNote,
+  noteSnippet,
   locale = "en",
 }: ScreenerItemProps) {
   const upside = report.upsidePct ?? 0;
@@ -770,6 +781,73 @@ export const ScreenerTableRow = React.memo(function ScreenerTableRow({
           <span className="text-slate-600">—</span>
         )}
       </td>
+
+      {/* Actions (Notes + Memo + Cockpit) */}
+      <td
+        className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-end gap-1.5">
+          {onOpenNotes && (
+            <div className="group/tablenotebtn relative">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenNotes(report.ticker || report.slug, report.company);
+                }}
+                className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-semibold transition-colors ${
+                  hasNote
+                    ? "bg-accent/15 text-accent ring-1 ring-accent/30 hover:bg-accent/25"
+                    : "text-slate-400 hover:bg-surface-3 hover:text-foreground"
+                }`}
+                title={hasNote ? tNotes?.clickToEdit : tNotes?.addNote}
+              >
+                <NotebookPen className="size-3" />
+                <span>{tNotes?.shortNotes || "Notes"}</span>
+              </button>
+
+              {/* Hover snippet popover */}
+              <div className="pointer-events-none absolute bottom-full right-0 z-30 mb-2 hidden w-64 flex-col rounded-lg border border-border/80 bg-surface-1 p-2.5 text-left shadow-xl backdrop-blur-md group-hover/tablenotebtn:flex">
+                <div className="flex items-center justify-between border-b border-border/40 pb-1 text-[10px] font-semibold text-slate-400">
+                  <span>
+                    {report.ticker || report.slug}{" "}
+                    {tNotes?.shortNotes || "Notes"}
+                  </span>
+                  <span className="font-normal text-accent">
+                    {tNotes?.clickToEdit}
+                  </span>
+                </div>
+                <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-slate-300">
+                  {noteSnippet
+                    ? noteSnippet.replace(/^#+\s*/gm, "")
+                    : tNotes?.noNoteYet}
+                </p>
+              </div>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectReport(report.slug, "memo");
+            }}
+            className="rounded px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-surface-3 hover:text-white"
+          >
+            {ts.openMemo}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectReport(report.slug, "cockpit");
+            }}
+            className="rounded border border-accent/30 bg-accent/15 px-2 py-1 text-[11px] font-bold text-accent transition-colors hover:bg-accent/25"
+          >
+            {ts.openCockpit}
+          </button>
+        </div>
+      </td>
     </tr>
   );
 });
@@ -782,6 +860,10 @@ export const ScreenerCard = React.memo(function ScreenerCard({
   onPrefetch,
   ts,
   tHeader,
+  tNotes,
+  onOpenNotes,
+  hasNote,
+  noteSnippet,
   locale = "en",
 }: ScreenerItemProps) {
   const upside = report.upsidePct ?? 0;
@@ -1018,6 +1100,49 @@ export const ScreenerCard = React.memo(function ScreenerCard({
         </div>
 
         <div className="flex items-center gap-1.5">
+          {onOpenNotes && (
+            <div className="group/notebtn relative">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenNotes(report.ticker || report.slug, report.company);
+                }}
+                className={`flex items-center gap-1 rounded border px-2 py-1 text-[11px] font-semibold transition-all ${
+                  hasNote
+                    ? "border-accent/40 bg-accent/10 text-accent hover:bg-accent/20"
+                    : "border-border bg-surface-2/60 text-slate-300 hover:bg-surface-3 hover:text-white"
+                }`}
+                title={hasNote ? tNotes?.clickToEdit : tNotes?.addNote}
+              >
+                <NotebookPen
+                  className={`size-3 ${
+                    hasNote ? "text-accent" : "text-slate-400"
+                  }`}
+                />
+                <span>{tNotes?.shortNotes || "Notes"}</span>
+              </button>
+
+              {/* Hover snippet popover */}
+              <div className="pointer-events-none absolute bottom-full right-0 z-30 mb-2 hidden w-64 flex-col rounded-lg border border-border/80 bg-surface-1 p-2.5 shadow-xl backdrop-blur-md group-hover/notebtn:flex">
+                <div className="flex items-center justify-between border-b border-border/40 pb-1 text-[10px] font-semibold text-slate-400">
+                  <span>
+                    {report.ticker || report.slug}{" "}
+                    {tNotes?.shortNotes || "Notes"}
+                  </span>
+                  <span className="font-normal text-accent">
+                    {tNotes?.clickToEdit}
+                  </span>
+                </div>
+                <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-slate-300">
+                  {noteSnippet
+                    ? noteSnippet.replace(/^#+\s*/gm, "")
+                    : tNotes?.noNoteYet}
+                </p>
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={(e) => {
@@ -1058,6 +1183,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
     const t = useMemo(() => getTranslations(locale), [locale]);
     const ts = useMemo(() => t.screener, [t]);
     const tHeader = useMemo(() => t.header, [t]);
+    const tNotes = useMemo(() => t.stockNotes, [t]);
     const { prefetchReport } = useReportPrefetch();
 
     const {
@@ -1065,6 +1191,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
       toggleFavorite,
       count: watchlistCount,
     } = useWatchlist();
+    const { hasNote, getNote } = useStockNotes();
+    const [activeNoteStock, setActiveNoteStock] = useState<{
+      ticker: string;
+      company?: string;
+    } | null>(null);
     const handleToggleFav = useCallback(
       (tickerOrSlug: string) => toggleFavorite(tickerOrSlug),
       [toggleFavorite]
@@ -1640,8 +1771,14 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                 onToggleFav={handleToggleFav}
                 onSelectReport={onSelectReport}
                 onPrefetch={prefetchReport}
+                onOpenNotes={(ticker, company) =>
+                  setActiveNoteStock({ ticker, company })
+                }
+                hasNote={hasNote(report.ticker || report.slug)}
+                noteSnippet={getNote(report.ticker || report.slug)?.content}
                 ts={ts}
                 tHeader={tHeader}
+                tNotes={tNotes}
                 locale={locale}
               />
             ))}
@@ -2438,6 +2575,11 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                         </p>
                       </div>
                     </th>
+
+                    {/* Actions */}
+                    <th className="sticky top-0 z-20 whitespace-nowrap border-b border-border bg-surface-2 py-3 pl-2 pr-4 text-right">
+                      <span>{ts.colAction}</span>
+                    </th>
                   </tr>
                 </thead>
 
@@ -2536,13 +2678,18 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                               className={`ml-auto h-4 ${row.growthW}`}
                             />
                           </td>
+
+                          {/* Actions Skeleton */}
+                          <td className="whitespace-nowrap border-b border-border/40 py-2.5 pl-2 pr-4 text-right">
+                            <Skeleton className="ml-auto h-5 w-24 rounded" />
+                          </td>
                         </tr>
                       ))}
                     </>
                   ) : filteredReports.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={12}
+                        colSpan={13}
                         className="border-b border-border/40 bg-surface-1 px-4 py-16 text-center text-slate-400"
                       >
                         {watchlistOnly ? (
@@ -2585,7 +2732,7 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           style={{ height: topTableSpacerHeight }}
                           aria-hidden="true"
                         >
-                          <td colSpan={12} className="border-0 p-0" />
+                          <td colSpan={13} className="border-0 p-0" />
                         </tr>
                       )}
                       {virtualTableRows.map((report) => (
@@ -2596,8 +2743,16 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           onToggleFav={handleToggleFav}
                           onSelectReport={onSelectReport}
                           onPrefetch={prefetchReport}
+                          onOpenNotes={(ticker, company) =>
+                            setActiveNoteStock({ ticker, company })
+                          }
+                          hasNote={hasNote(report.ticker || report.slug)}
+                          noteSnippet={
+                            getNote(report.ticker || report.slug)?.content
+                          }
                           ts={ts}
                           tHeader={tHeader}
+                          tNotes={tNotes}
                           locale={locale}
                         />
                       ))}
@@ -2606,12 +2761,12 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
                           style={{ height: bottomTableSpacerHeight }}
                           aria-hidden="true"
                         >
-                          <td colSpan={12} className="border-0 p-0" />
+                          <td colSpan={13} className="border-0 p-0" />
                         </tr>
                       )}
                       <tr>
                         <td
-                          colSpan={12}
+                          colSpan={13}
                           className="border-b border-border/40 bg-surface-1/90 py-3 text-center text-xs text-slate-400"
                         >
                           <span className="font-mono text-xs tabular-nums text-slate-400">
@@ -2629,6 +2784,15 @@ export const ScreenerView: React.FC<ScreenerViewProps> = React.memo(
             </div>
           </div>
         )}
+
+        {/* Stock Notes Dedicated Modal */}
+        <StockNotesModal
+          isOpen={Boolean(activeNoteStock)}
+          onClose={() => setActiveNoteStock(null)}
+          ticker={activeNoteStock?.ticker || ""}
+          company={activeNoteStock?.company}
+          locale={locale}
+        />
       </div>
     );
   }
