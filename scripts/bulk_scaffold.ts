@@ -379,6 +379,40 @@ export async function bulkScaffold(
   console.log(` • Errors Encountered:  ${result.errors}`);
   console.log("=".repeat(62) + "\n");
 
+  if (!options.dryRun && result.scaffolded > 0) {
+    const targets = Array.from(
+      new Set(
+        [
+          process.env.NEXT_PUBLIC_APP_URL,
+          process.env.BETTER_AUTH_URL,
+          `http://localhost:${process.env.PORT || 3000}`,
+          "https://stressalpha.vercel.app",
+        ].filter(Boolean) as string[]
+      )
+    );
+    const secret = process.env.REVALIDATION_SECRET || process.env.CRON_SECRET;
+    const lastSlug =
+      result.details.length === 1 && result.details[0]?.slug
+        ? `&slug=${encodeURIComponent(result.details[0].slug)}`
+        : "";
+    const headers: Record<string, string> = {};
+    if (secret) headers["Authorization"] = `Bearer ${secret}`;
+
+    await Promise.allSettled(
+      targets.map(async (baseUrl) => {
+        const res = await fetch(
+          `${baseUrl}/api/revalidate?tag=reports${lastSlug}`,
+          { method: "POST", headers }
+        );
+        if (res.ok) {
+          console.log(
+            `🔄 [Cache Revalidated] Purged Next.js & repository cache at ${baseUrl}`
+          );
+        }
+      })
+    );
+  }
+
   return result;
 }
 
