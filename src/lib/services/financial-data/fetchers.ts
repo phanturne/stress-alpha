@@ -21,6 +21,7 @@ import {
   type BalanceSheetSummary,
   type CashFlowSummary,
   type FinancialProfile,
+  type PeerBenchmarkMetrics,
   type SecFilingItem,
 } from "./types";
 import { computeTechnicalLevels, type DailyBar } from "@/lib/technical";
@@ -96,10 +97,23 @@ export async function fetchSecEdgarFilings(
     const items: SecFilingItem[] = [];
     const cikNumeric = String(Number(cik));
     const allowedForms = new Set(["10-Q", "10-K", "8-K", "20-F", "6-K"]);
+    let hasTenQ = false;
+    let hasTenK = false;
 
-    for (let i = 0; i < recent.form.length && items.length < 10; i++) {
+    for (let i = 0; i < recent.form.length; i++) {
       const form = String(recent.form[i] || "");
       if (!allowedForms.has(form)) continue;
+
+      const isTenQ = form === "10-Q";
+      const isTenK = form === "10-K" || form === "20-F";
+      if (items.length >= 12) {
+        if ((isTenQ && !hasTenQ) || (isTenK && !hasTenK)) {
+          // Always ensure at least the latest 10-Q and latest 10-K are included
+        } else {
+          if (hasTenQ && hasTenK) break;
+          continue;
+        }
+      }
 
       const accessNumber = String(recent.accessionNumber?.[i] || "");
       const accNoHyphens = accessNumber.replace(/-/g, "");
@@ -108,12 +122,21 @@ export async function fetchSecEdgarFilings(
       const acceptedDate = recent.acceptanceDateTime?.[i]
         ? String(recent.acceptanceDateTime[i])
         : undefined;
+      const rawItems = recent.items?.[i];
+      const filingItems = Array.isArray(rawItems)
+        ? rawItems.map(String)
+        : typeof rawItems === "string" && rawItems.trim()
+          ? rawItems.split(",").map((s) => s.trim())
+          : undefined;
 
       const baseArchiveUrl = `https://www.sec.gov/Archives/edgar/data/${cikNumeric}/${accNoHyphens}`;
       const reportUrl = primaryDoc ? `${baseArchiveUrl}/${primaryDoc}` : "";
       const filingUrl = accessNumber
         ? `${baseArchiveUrl}/${accessNumber}-index.htm`
         : reportUrl;
+
+      if (isTenQ) hasTenQ = true;
+      if (isTenK) hasTenK = true;
 
       items.push({
         form,
@@ -122,6 +145,7 @@ export async function fetchSecEdgarFilings(
         reportUrl,
         filingUrl,
         accessNumber,
+        items: filingItems,
       });
     }
 
@@ -159,6 +183,7 @@ export async function fetchFundamentalProfile(
   let yfSummary: any = {};
   let yfTimeSeries: any[] = [];
   let historicalBars: DailyBar[] = [];
+  let recommendedPeerTickers: string[] = [];
 
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -166,7 +191,7 @@ export async function fetchFundamentalProfile(
   twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
   try {
-    const [quote, summary, chartRes, ftsRes] = await Promise.all([
+    const [quote, summary, chartRes, ftsRes, recRes] = await Promise.all([
       yf.quote(ticker).catch((err: any) => err?.result ?? {}),
       yf
         .quoteSummary(ticker, {
@@ -176,6 +201,7 @@ export async function fetchFundamentalProfile(
             "summaryDetail",
             "price",
             "earnings",
+            "assetProfile",
           ],
         })
         .catch((err: any) => err?.result ?? {}),
@@ -195,10 +221,24 @@ export async function fetchFundamentalProfile(
           module: "all",
         })
         .catch((err: any) => err?.result ?? []),
+      yf
+        .recommendationsBySymbol(ticker)
+        .catch((err: any) => err?.result ?? null),
     ]);
     yfQuote = quote || {};
     yfSummary = summary || {};
     yfTimeSeries = Array.isArray(ftsRes) ? ftsRes : [];
+    const recList = Array.isArray(recRes) ? recRes[0] : recRes;
+    if (Array.isArray(recList?.recommendedSymbols)) {
+      recommendedPeerTickers = recList.recommendedSymbols
+        .map((r: any) =>
+          String(r?.symbol || "")
+            .toUpperCase()
+            .trim()
+        )
+        .filter((s: string) => Boolean(s && s !== ticker && !s.includes(".")))
+        .slice(0, 5);
+    }
     if (chartRes && Array.isArray(chartRes.quotes)) {
       historicalBars = chartRes.quotes.map((q: any) => ({
         date:
@@ -444,9 +484,16 @@ export async function fetchFundamentalProfile(
     }
   }
 
+  const assetProfile = yfSummary.assetProfile || {};
+
   return {
     ticker,
     companyName,
+    sector: assetProfile.sector || undefined,
+    industry: assetProfile.industry || undefined,
+    businessSummary: assetProfile.longBusinessSummary
+      ? String(assetProfile.longBusinessSummary).slice(0, 1200)
+      : undefined,
     currentPrice: round2(currentPrice),
     previousClose: previousClose != null ? round2(previousClose) : undefined,
     marketCapBillions: round2(marketCap),
@@ -460,8 +507,100 @@ export async function fetchFundamentalProfile(
     balanceSheet,
     cashFlow,
     technicalLevels,
+    recommendedPeerTickers,
     dataSource: "Yahoo Finance & SEC EDGAR",
   };
+}
+
+/**
+ * Deterministically fetches live financial metrics (marketCap, TTM revenue, YoY growth,
+ * gross/operating margins, forward P/E) for peer tickers via Yahoo Finance so peer
+ * benchmarking never relies on LLM-hallucinated financial numbers.
+ */
+export async function fetchPeerBenchmarks(
+  peerTickers: string[],
+  excludeTicker?: string
+): Promise<PeerBenchmarkMetrics[]> {
+  const targetNorm = excludeTicker?.toUpperCase().trim();
+  const uniquePeers = Array.from(
+    new Set(
+      peerTickers
+        .map((t) =>
+          String(t || "")
+            .toUpperCase()
+            .trim()
+        )
+        .filter((t) =>
+          Boolean(t && t !== targetNorm && /^[A-Z\-]{1,6}$/.test(t))
+        )
+    )
+  ).slice(0, 5);
+
+  if (uniquePeers.length === 0) return [];
+
+  const results = await Promise.all(
+    uniquePeers.map(async (sym): Promise<PeerBenchmarkMetrics | null> => {
+      try {
+        const [quote, summary] = await Promise.all([
+          yf.quote(sym).catch((err: any) => err?.result ?? {}),
+          yf
+            .quoteSummary(sym, {
+              modules: ["financialData", "summaryDetail", "price"],
+            })
+            .catch((err: any) => err?.result ?? {}),
+        ]);
+
+        const fin = summary?.financialData || {};
+        const priceMod = summary?.price || {};
+        const sumDet = summary?.summaryDetail || {};
+
+        const mktCapRaw = quote?.marketCap ?? priceMod?.marketCap ?? 0;
+        const revRaw = fin?.totalRevenue ?? 0;
+        if (!mktCapRaw && !revRaw) return null;
+
+        const name =
+          quote?.longName ||
+          quote?.shortName ||
+          priceMod?.longName ||
+          priceMod?.shortName ||
+          sym;
+        const marketCapBillions = round2(safeNum(mktCapRaw) / 1e9);
+        const revenueBillions = round2(safeNum(revRaw) / 1e9);
+        const revenueGrowthPct =
+          fin?.revenueGrowth != null
+            ? round2(safeNum(fin.revenueGrowth) * 100)
+            : undefined;
+        const grossMarginPct =
+          fin?.grossMargins != null
+            ? round2(safeNum(fin.grossMargins) * 100)
+            : 0;
+        const operatingMarginPct =
+          fin?.operatingMargins != null
+            ? round2(safeNum(fin.operatingMargins) * 100)
+            : 0;
+        const fwdPeRaw = quote?.forwardPE ?? sumDet?.forwardPE;
+        const forwardPe =
+          fwdPeRaw != null && safeNum(fwdPeRaw) > 0 && safeNum(fwdPeRaw) < 250
+            ? round2(safeNum(fwdPeRaw))
+            : undefined;
+
+        return {
+          ticker: sym,
+          name,
+          marketCapBillions,
+          revenueBillions,
+          revenueGrowthPct,
+          grossMarginPct,
+          operatingMarginPct,
+          forwardPe,
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  return results.filter((r): r is PeerBenchmarkMetrics => r !== null);
 }
 
 // --- Analyst Estimates Ingestion (Yahoo Finance) ---
@@ -576,16 +715,18 @@ export async function fetchAnalystEstimates(
     consensus: consensusZhLabel,
   };
 
-  // 3. Extract Individual Upgrades/Downgrades
+  // 3. Extract Individual Upgrades/Downgrades (filter out stale >24m entries when recent notes exist)
   const rawHistory = yfSummary.upgradeDowngradeHistory?.history || [];
   const estimatesEn: AnalystEstimates["estimates"] = [];
   const estimatesZh: AnalystEstimates["estimates"] = [];
   const seenFirms = new Set<string>();
+  const twoYearsAgoIso = new Date(Date.now() - 730 * 86400000)
+    .toISOString()
+    .split("T")[0];
 
   for (const row of rawHistory) {
     const firm = row.firm;
     if (!firm || seenFirms.has(firm.toLowerCase())) continue;
-    seenFirms.add(firm.toLowerCase());
 
     const rawEpoch = row.epochGradeDate;
     const gradeDate = rawEpoch
@@ -597,6 +738,18 @@ export async function fetchAnalystEstimates(
           .toISOString()
           .split("T")[0]
       : new Date().toISOString().split("T")[0];
+
+    const explicitTarget =
+      safeNum(row.currentPriceTarget) || safeNum(row.targetPrice);
+    // Skip stale entries (>2 years old or lacking explicit price target once we already have >=5 fresh notes)
+    if (
+      estimatesEn.length >= 5 &&
+      (gradeDate < twoYearsAgoIso || explicitTarget <= 0)
+    ) {
+      continue;
+    }
+
+    seenFirms.add(firm.toLowerCase());
 
     const toGrade = row.toGrade || "Buy";
     const fromGrade = row.fromGrade;
@@ -613,9 +766,7 @@ export async function fetchAnalystEstimates(
     else if (actionRaw.toLowerCase().includes("lower")) actionClean = "Lowered";
 
     const targetPrice = round2(
-      safeNum(row.currentPriceTarget) ||
-        safeNum(row.targetPrice) ||
-        (actionClean === "Downgraded" ? low : avg)
+      explicitTarget || (actionClean === "Downgraded" ? low : avg)
     );
     const priorTarget = row.priorPriceTarget
       ? round2(safeNum(row.priorPriceTarget))

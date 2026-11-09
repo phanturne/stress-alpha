@@ -253,6 +253,7 @@ export async function bulkScaffold(
       // 1. Fetch Complete 8-Module Pipeline Bundle (with AI Gateway enrichment if configured)
       const bundle = await fetchCompletePipelineBundle(ticker, {
         enrichWithAi,
+        translateZh: Boolean(options.ticker),
       });
 
       const quarterStr = bundle.factsDraft.quarter || "Q2 2026";

@@ -94,9 +94,24 @@ export interface CashFlowSummary {
   freeCashFlowBillions: number;
 }
 
+export interface PeerBenchmarkMetrics {
+  ticker: string;
+  name: string;
+  marketCapBillions: number;
+  revenueBillions: number;
+  revenueGrowthPct?: number;
+  grossMarginPct: number;
+  operatingMarginPct: number;
+  forwardPe?: number;
+  marketSharePct?: number;
+}
+
 export interface FinancialProfile {
   ticker: string;
   companyName: string;
+  sector?: string;
+  industry?: string;
+  businessSummary?: string;
   currentPrice: number;
   previousClose?: number;
   marketCapBillions: number;
@@ -111,6 +126,8 @@ export interface FinancialProfile {
   cashFlow: CashFlowSummary;
   dataSource: string;
   technicalLevels?: TechnicalLevelsPayload;
+  recommendedPeerTickers?: string[];
+  peerBenchmarks?: PeerBenchmarkMetrics[];
 }
 
 export interface SecFilingItem {
@@ -120,6 +137,7 @@ export interface SecFilingItem {
   reportUrl: string;
   filingUrl?: string;
   accessNumber?: string;
+  items?: string[];
 }
 
 export interface PipelineDataBundle {

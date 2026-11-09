@@ -6,9 +6,11 @@ import {
   fetchCompletePipelineBundle,
   fetchFundamentalProfile,
   fetchAnalystEstimates,
+  fetchPeerBenchmarks,
   generateFactsDraft,
   generateBaselineDraft,
   generateScenariosDraft,
+  generateMoatCompetitorsDraft,
   writePipelineArtifacts,
   extractSecFilingExcerpts,
   RATING_ZH_MAP,
@@ -353,9 +355,76 @@ describe("Financial Data Ingestion Service", () => {
       // Process filings with mock URLs
       const mockResult = await extractSecFilingExcerpts([
         { form: "10-Q", filedDate: "2026-08-26", reportUrl: "" },
-        { form: "8-K", filedDate: "2026-08-26", reportUrl: "" },
+        { form: "10-K", filedDate: "2026-06-27", reportUrl: "" },
+        {
+          form: "8-K",
+          filedDate: "2026-08-26",
+          reportUrl: "",
+          items: ["2.02", "9.01"],
+        },
       ]);
       expect(typeof mockResult).toBe("object");
+    });
+
+    it("hydrates peer benchmarks and populates deterministic moat competitors", async () => {
+      const peers = await fetchPeerBenchmarks(["COHR", "CIEN"], "LITE");
+      expect(Array.isArray(peers)).toBe(true);
+      if (peers.length > 0) {
+        expect(peers[0].ticker).toBe("COHR");
+        expect(peers[0].marketCapBillions).toBeGreaterThan(0);
+        expect(peers[0].revenueBillions).toBeGreaterThan(0);
+      }
+
+      const mockProfile: any = {
+        ticker: "LITE",
+        companyName: "Lumentum Holdings Inc.",
+        sector: "Technology",
+        industry: "Communication Equipment",
+        currentPrice: 538.59,
+        marketCapBillions: 48.84,
+        sharesOutstandingBillions: 0.091,
+        quarterlyStatements: [
+          {
+            date: "2026-11-02",
+            revenueBillions: 1.26,
+            operatingIncomeBillions: 0.35,
+          },
+        ],
+        balanceSheet: { totalCashBillions: 1.98, shortTermDebtBillions: 1.36 },
+        cashFlow: { operatingCashFlowBillions: 0.27 },
+        peerBenchmarks: [
+          {
+            ticker: "COHR",
+            name: "Coherent Corp.",
+            marketCapBillions: 38.0,
+            revenueBillions: 7.9,
+            revenueGrowthPct: 49.9,
+            grossMarginPct: 38.2,
+            operatingMarginPct: 16.3,
+            forwardPe: 12.4,
+          },
+        ],
+      };
+      const mockFacts: any = {
+        ticker: "LITE",
+        revenueBillions: 1.26,
+        revenueGrowthPct: 136.5,
+        grossMarginPct: 51.0,
+        operatingMarginPct: 28.5,
+        sources: [],
+      };
+
+      const { moatEn, moatZh } = generateMoatCompetitorsDraft(
+        mockProfile,
+        mockFacts
+      );
+      expect(moatEn.overallMoatRating).toBe("Wide");
+      expect(moatEn.moatTrend).toBe("Widening");
+      expect(moatEn.competitors.length).toBe(1);
+      expect(moatEn.competitors[0].ticker).toBe("COHR");
+      expect(moatEn.competitors[0].marketCapBillions).toBe(38.0);
+      expect(moatEn.competitors[0].pricingPower).toBe("Inferior");
+      expect(moatZh.competitors.length).toBe(1);
     });
   });
 });
