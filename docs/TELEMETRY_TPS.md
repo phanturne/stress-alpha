@@ -1,121 +1,72 @@
 # Data Ingestion Telemetry & Rate-Limit (TPS) Architecture
 
-> **Document Version:** 1.0.0  
+> **Document Version:** 2.0.0  
 > **Status:** Active / Production Standard  
-> **Target Services:** Finnhub.io, Polygon.io (Massive), SEC EDGAR, Neon PostgreSQL  
+> **Target Services:** Yahoo Finance (`yahoo-finance2`), Official SEC EDGAR (`data.sec.gov`), Neon PostgreSQL  
 > **Last Updated:** November 2026  
 
 ---
 
 ## 1. Executive Summary & Objective
 
-In high-throughput financial pipelines, **redundant multi-vendor querying** degrades performance, exhausts API rate quotas, and introduces data drift between mismatched denominators (e.g. real-time market price paired with stale share count). 
+In high-throughput financial pipelines, **redundant multi-vendor querying** degrades performance, exhausts paid/free API rate quotas, and introduces data drift between mismatched denominators (e.g. real-time market price paired with stale share count).
 
-This document defines the **Single-Ownership Data Model** and benchmarks the **Transactions Per Second (TPS)** and **Requests Per Minute (RPM)** of StressAlpha's ingestion engines before and after eliminating duplicate scraping.
+StressAlpha consolidates all market and fundamental ingestion into a **Zero-Key Single-Ownership Model** powered by **`yahoo-finance2`** and official **`SEC EDGAR`** (`data.sec.gov`) APIs.
 
 ---
 
 ## 2. External Provider Rate-Limit Ceilings
 
-| Provider | Authentication | Official Rate Limit | Burst Behavior | Strictness / Enforcement |
-| :--- | :--- | :--- | :--- | :--- |
-| **Finnhub.io** | API Key (`token=`) | **1.0 TPS** (60 req/min) | Returns `HTTP 429` on 61st call within 60s window | Hard ceiling; IP blacklisted if sustained |
-| **Polygon.io / Massive** | API Key (`apiKey=`) | **5 req/min** (Free) / **Unlimited** (Commercial/Paid) | Drops connections or returns `429` on free tier | Strictly throttled on free tiers |
-| **SEC EDGAR** | Declared `User-Agent` | **10.0 TPS** (10 req/sec) | Returns `HTTP 429` / resets connection for 10 min | Government firewall; strictly enforced |
-| **Yahoo Finance** | Unofficial / Scraped | **No official API** (~1–2 TPS max) | Akamai bot challenge; `401 Unauthorized` or crumb invalidation | Aggressive IP blocking against cloud IPs (AWS/Vercel) |
-
----
-
-## 3. Pipeline Throughput (TPS / RPM) Benchmark
-
-### A. Single-Ticker Pipeline (`POST /api/pipeline/data` / `fetchCompletePipelineBundle`)
-Invoked when an analyst scaffolds or refreshes a single stock report.
-
-| Metric | Legacy Architecture (Before) | Single-Ownership Architecture (After) | Net Improvement |
+| Provider | Authentication | Rate Limit Ceiling | Enforcement & Mitigation |
 | :--- | :--- | :--- | :--- |
-| **Calls to Yahoo Finance** | 4 calls (`quote`, `quoteSummary`, `chart`, fallback) | **0 calls** (Eliminated via single-ownership) | **-100%** |
-| **Calls to Finnhub** | 4 calls (`profile2`, `quote`, `recommendation`, `filings`) | **3 calls** (`profile2`/`quote`, `recommendation`, `filings`) | **-25%** |
-| **Calls to Polygon/Massive** | 1 call (Financials) + 1 call (Aggregates) | **1 call** (Financials; aggregates shared) | **-50%** |
-| **Total Outbound Requests** | **9 requests** | **4 requests** | **-56% total network calls** |
-| **Instantaneous Burst TPS** | **~15–18 TPS** (all fired in `<500ms`) | **~6–8 TPS** | **60% lower burst spike** |
-| **Pipeline Latency** | ~1,850ms (waits for slowest of 3 vendors) | **~650ms** | **~2.8x speedup** |
+| **SEC EDGAR (`data.sec.gov`)** | Declared `User-Agent` header | **10.0 TPS** (10 req/sec) | Government firewall; enforced via `resilientFetch` and cached CIK directory (`secCikMapCache`) |
+| **Yahoo Finance (`yahoo-finance2`)** | Zero-key client | **~2–5 TPS** sustained | Batch-chunked (50 tickers/call in `sync_prices.ts`) and paced (`2,200ms` delay in `bulk_scaffold.ts`) |
+| **Finnhub.io (Optional)** | `FINNHUB_API_KEY` | **1.0 TPS** (60 req/min) | Optional calendar discovery only; automatically falls back to `fetchYahooEarningsCalendar` when omitted |
 
 ---
 
-### B. Universe Batch Scaffolding (`scripts/bulk_scaffold.ts`)
-Invoked during universe backfills (e.g. S&P 500 / NASDAQ-100 constituents).
-
-| Metric | Legacy Architecture (Before) | Single-Ownership Architecture (After) | Status Under Free Quotas |
-| :--- | :--- | :--- | :--- |
-| **Pacing Between Tickers** | 1,000ms delay | **2,200ms delay** | Calibrated rate budget |
-| **Finnhub RPM** | **~185 RPM** (~3.1 TPS) | **~54 RPM** (~0.90 TPS) | 🟢 **Safe** (Stays under 60 RPM limit) |
-| **Yahoo Scraping RPM** | **~160 RPM** (~2.7 TPS) | **0 RPM** (0.00 TPS) | 🟢 **Zero scraping ban risk** |
-| **Polygon RPM** | **~46 RPM** (~0.8 TPS) | **~27 RPM** (~0.45 TPS) | 🟢 **Sustainable load** |
-| **Combined Network Load** | **~390 RPM** (~6.6 TPS) | **~81 RPM** (~1.35 TPS) | **80% reduction in total load** |
-| **Batch Reliability (50 stocks)**| **Failed at stock ~16** (HTTP 429) | **100% completion** (0 errors) | **Zero rate limit dropouts** |
-
----
-
-### C. Web Dashboard Page Loads (`GET /:ticker`)
-When end-users or clients browse reports on `https://stressalpha.vercel.app/`:
-
-- **External Provider TPS: 0.00 TPS**.
-- **Outbound Vendor Requests: 0**.
-- **Architecture**: 100% of telemetry, deterministic valuations, snowflake scores, and financial metrics are served from **Neon PostgreSQL** shielded by a 4-tier cache (Edge CDN + Next.js Data Cache + 15-minute in-memory LRU).
-- **Client Latency**: `<45ms` TTFB globally.
-
----
-
-## 4. Single-Ownership Domain Rules
-
-To prevent data drift and rate exhaustion, each fundamental domain is assigned a **strict single owner**:
+## 3. Single-Ownership Domain Matrix
 
 ```mermaid
 flowchart TD
-    subgraph SingleOwnership["Single-Ownership Provider Matrix"]
-        Finnhub["Finnhub.io\n(Official REST API)"]
-        Polygon["Polygon.io / Massive\n(Official REST API)"]
-        SEC["SEC EDGAR\n(data.sec.gov)"]
-        Yahoo["Yahoo Finance\n(Offline Fallback Only)"]
+    subgraph Providers["Consolidated Zero-Key Providers"]
+        Yahoo["Yahoo Finance (yahoo-finance2)"]
+        SEC["Official SEC EDGAR (data.sec.gov)"]
     end
 
-    subgraph DataDomains["Application Domains"]
-        Quotes["Market Quotes, 52W Range,\nShares & Market Cap"]
-        Consensus["Analyst Recommendations\n& Sentiment Counts"]
-        Financials["Standardized 10-K/Q Statements,\nBalance Sheet, Operating Margins"]
-        Filings["Official Regulatory Excerpts\n& Accounting Footnotes"]
+    subgraph Domains["Application Data Domains"]
+        Quotes["Market Quotes, TTM/NTM EPS, P/E & Market Cap"]
+        Statements["Quarterly Statements, Balance Sheet & Cash Flow"]
+        Technicals["1-Year OHLCV Bars, Volume POC & Anchored VWAP"]
+        Consensus["Sell-Side Price Targets & Upgrade/Downgrade History"]
+        Filings["Official 10-Q/10-K/8-K Links & XBRL Footnotes"]
     end
 
-    Finnhub -->|Primary Owner| Quotes
-    Finnhub -->|Primary Owner| Consensus
-    Polygon -->|Primary Owner| Financials
+    Yahoo -->|Primary Owner| Quotes
+    Yahoo -->|Primary Owner| Statements
+    Yahoo -->|Primary Owner| Technicals
+    Yahoo -->|Primary Owner| Consensus
     SEC -->|Primary Owner| Filings
-    Yahoo -.->|Emergency Offline Fallback Only| Quotes
 ```
 
-1. **Market Quotes & Capitalization**:
-   - **Primary Owner**: Finnhub (`/stock/profile2` and `/quote`).
-   - **Invariant**: Do not query Yahoo `quoteSummary` when Finnhub profile succeeds.
-2. **Financial Statements & Cash Flows**:
-   - **Primary Owner**: Polygon / Massive (`/vX/reference/financials`) & SEC EDGAR (`data.sec.gov`).
-   - **Invariant**: Statement line items (revenue, operating income, CapEx) are parsed once and normalized into `FinancialProfile.quarterlyStatements`.
-3. **Analyst Recommendations**:
-   - **Primary Owner**: Finnhub (`/stock/recommendation`).
-   - **Invariant**: Consensus percentages (`bullishPct`, `neutralPct`, `bearishPct`) are computed deterministically from Finnhub monthly trends.
-4. **Historical Price Aggregates & Technical Corridors**:
-   - **Primary Owner**: Polygon aggregates (`/v2/aggs/ticker/...`).
-5. **Fallback Policy**:
-   - Yahoo Finance scraping is strictly treated as an **offline / zero-key developer fallback**. It is **never** invoked when valid API keys (`FINNHUB_API_KEY` and `MASSIVE_API_KEY`) are present, or when `skipYahooFallback: true` is passed.
+1. **Market Quotes, Multiples & Capitalization**:
+   - **Owner**: `yahoo-finance2` (`quote` & `quoteSummary`), syncing `currentPrice`, `previousClose`, `trailingEps`, `forwardEps`, `trailingPe`, `forwardPe`, and `marketCap`.
+2. **Quarterly Financial Statements, Balance Sheet & Cash Flows**:
+   - **Owner**: `yahoo-finance2` (`fundamentalsTimeSeries` & `financialData`), normalized into `FinancialProfile.quarterlyStatements` and `financial_metrics`.
+3. **1-Year Technical Corridors & Post-Earnings Reactions**:
+   - **Owner**: `yahoo-finance2` (`chart` 1d bars), feeding `computeTechnicalLevels` (Volume Profile POC, Anchored VWAPs, Pivot Extensions).
+4. **Analyst Consensus & Broker Upgrades/Downgrades**:
+   - **Owner**: `yahoo-finance2` (`recommendationTrend`, `upgradeDowngradeHistory`, `financialData` targets).
+5. **Official Regulatory Filings & XBRL Footnotes**:
+   - **Owner**: Official SEC EDGAR (`https://data.sec.gov/submissions/CIK{cik}.json` & XBRL companyfacts).
 
 ---
 
-## 5. Rate-Budgeting & Safety Guidelines for Developers
+## 4. Pipeline Throughput & Rate-Budgeting Guidelines
 
-When adding new data ingestion features or batch scripts:
-
-1. **The 2.2-Second Rule**:
-   - Any script looping through a ticker list must enforce a minimum inter-ticker delay of `2,200ms` (`DEFAULT_PULL_DELAY_MS`) if making 2 Finnhub calls per ticker.
-2. **Exponential Backoff**:
-   - All network calls must pass through `resilientFetch` ([`src/lib/services/http-client.ts`](file:///Users/krding/Projects/stress-alpha/src/lib/services/http-client.ts)) to parse `Retry-After` headers and apply jittered backoff automatically upon encountering HTTP 429 or transient 5xx responses.
-3. **Zero Frontend Polling**:
-   - Client components must **never** call external financial data APIs directly. All reads terminate at Neon PostgreSQL.
+| Workflow | Execution Pattern | Outbound Calls | Pacing & Safety |
+| :--- | :--- | :--- | :--- |
+| **Single-Ticker Scaffold (`fetchCompletePipelineBundle`)** | Parallel `Promise.all` across Yahoo Finance + SEC EDGAR | ~5 requests | Completes in `~650ms` |
+| **Nightly Universe Price Sync (`scripts/sync_prices.ts`)** | Batch `yf.quote()` in 50-ticker chunks across 521 equities | ~11 batch requests | Completes in `<10s` |
+| **Bulk Universe Scaffolding (`scripts/bulk_scaffold.ts`)** | Sequential ticker loop with `DEFAULT_PULL_DELAY_MS` | ~4–5 req/ticker | `2,200ms` inter-ticker delay (~1.3 TPS) |
+| **Web Client Page Loads (`GET /:ticker`)** | Served 100% from Neon PostgreSQL + 4-Tier Cache | **0 external calls** | `<45ms` TTFB globally |
