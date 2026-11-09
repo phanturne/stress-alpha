@@ -307,11 +307,9 @@ function computeEarningsQualityCriteria(facts: Facts): SnowflakeCriterion[] {
       description:
         "Quarterly revenue outperformed Wall Street consensus expectations",
       descriptionZh: "单季度营收表现强于华尔街卖方普遍共识",
-      passed: revEst > 0 ? revActual >= revEst : true,
+      passed: revEst > 0 ? revActual >= revEst : false,
       valueDisplay:
-        revEst > 0
-          ? `$${round2(revActual)}B vs $${round2(revEst)}B`
-          : `$${round2(revActual)}B (Met)`,
+        revEst > 0 ? `$${round2(revActual)}B vs $${round2(revEst)}B` : "N/A",
       benchmarkDisplay: "≥ Consensus",
     },
     {
@@ -320,11 +318,11 @@ function computeEarningsQualityCriteria(facts: Facts): SnowflakeCriterion[] {
       nameZh: "单季度每股收益超预期",
       description: "Operating EPS beat consensus analyst projections",
       descriptionZh: "核心营业每股收益超越分析师一致预测",
-      passed: epsConsensus > 0 ? epsOperating >= epsConsensus : true,
+      passed: epsConsensus > 0 ? epsOperating >= epsConsensus : false,
       valueDisplay:
         epsConsensus > 0
           ? `$${round2(epsOperating)} vs $${round2(epsConsensus)}`
-          : `$${round2(epsOperating)} (Clean)`,
+          : "N/A",
       benchmarkDisplay: "≥ Consensus",
     },
     {

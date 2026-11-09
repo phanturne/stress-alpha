@@ -436,7 +436,8 @@ export async function syncEarningsCalendar(
       // Preserve prior quarter's non-placeholder competitors & segments if AI enrichment did not replace them
       const donor = handCraftedDonor || priorReport;
       const isBundlePlaceholderPeers =
-        bundle.moatEn.competitors?.[0]?.ticker === "PEER";
+        !bundle.moatEn.competitors?.length ||
+        bundle.moatEn.competitors[0]?.ticker === "PEER";
       const hasDonorRealPeers =
         donor?.moat?.competitors &&
         donor.moat.competitors.length > 0 &&
@@ -467,14 +468,38 @@ export async function syncEarningsCalendar(
         donor.facts.segments[0].name !== "Core Business & Solutions";
 
       if (isBundlePlaceholderSegments && hasDonorRealSegments && donor?.facts) {
+        const donorRevSum = donor.facts.segments.reduce(
+          (acc, s) => acc + (s.revenueBillions || 0),
+          0
+        );
+        const scaleRatio =
+          donorRevSum > 0 && bundle.factsDraft.revenueBillions > 0
+            ? bundle.factsDraft.revenueBillions / donorRevSum
+            : 1;
+        const scaledSegments = donor.facts.segments.map((seg) => ({
+          ...seg,
+          revenueBillions: Number(
+            (seg.revenueBillions * scaleRatio).toFixed(2)
+          ),
+          ...(seg.operatingIncomeBillions != null
+            ? {
+                operatingIncomeBillions: Number(
+                  (seg.operatingIncomeBillions * scaleRatio).toFixed(2)
+                ),
+              }
+            : {}),
+        }));
         bundle.factsDraft = {
           ...bundle.factsDraft,
-          segments: donor.facts.segments,
+          segments: scaledSegments,
         };
         if (donor.factsZh?.segments) {
           bundle.factsZh = {
             ...bundle.factsZh,
-            segments: donor.factsZh.segments,
+            segments: scaledSegments.map((enSeg, i) => ({
+              ...enSeg,
+              name: donor.factsZh?.segments?.[i]?.name || enSeg.name,
+            })),
           };
         }
       }
@@ -505,7 +530,15 @@ export async function syncEarningsCalendar(
       const valuation = computeStressedValuation(
         report.baseline,
         report.scenarios,
-        report.facts
+        report.facts,
+        {
+          moat: report.moat,
+          estimates: report.estimates,
+          filing: report.filing,
+          sentiment: report.sentiment,
+          reactions: report.reactions,
+          catalysts: report.catalysts,
+        }
       );
 
       // Deterministic sanity & variant perception audit

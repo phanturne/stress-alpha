@@ -52,8 +52,6 @@ export function calculateEventTransmissionImpact(params: {
     payload?.driverId &&
     baseline
   ) {
-    const shockPct = payload.deltaShockPct ?? 0;
-
     // Fuzzy match driver to company's actual baseline drivers if exact ID differs
     const drivers = baseline.upstreamDrivers || [];
     let matchedDriver = drivers.find((d) => d.id === payload.driverId);
@@ -79,6 +77,12 @@ export function calculateEventTransmissionImpact(params: {
     const effectiveDriverId = matchedDriver
       ? matchedDriver.id
       : payload.driverId;
+    const minShock = matchedDriver?.minShockPct ?? -50;
+    const maxShock = matchedDriver?.maxShockPct ?? 50;
+    const shockPct = Math.max(
+      minShock,
+      Math.min(maxShock, payload.deltaShockPct ?? 0)
+    );
 
     // Baseline unperturbed stress valuation
     const unperturbed = computeStressedValuation(baseline, currentPrice);
@@ -168,14 +172,21 @@ export function calculateEventTransmissionImpact(params: {
   }
 
   // 3. Wall Street Consensus & Revision Skew (QPCE Pillar 3)
-  if (event.transmissionType === "qpce_skew" && payload?.analystAction) {
+  if (
+    event.transmissionType === "qpce_skew" &&
+    payload?.analystAction &&
+    Number.isFinite(payload.analystAction.newTarget) &&
+    payload.analystAction.newTarget > 0 &&
+    currentPrice > 0
+  ) {
     const action = payload.analystAction;
-    const targetDeltaPct =
+    const rawTargetDeltaPct =
       action.priorTarget && action.priorTarget > 0
         ? round2(
             ((action.newTarget - action.priorTarget) / action.priorTarget) * 100
           )
         : round2(((action.newTarget - currentPrice) / currentPrice) * 100);
+    const targetDeltaPct = Math.max(-60, Math.min(100, rawTargetDeltaPct));
 
     // Brokerage upgrade/downgrade multiple pull
     const multipleSensitivity =

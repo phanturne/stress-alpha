@@ -358,18 +358,50 @@ export class DrizzleReportRepository implements IReportRepository {
       tickerInfo?.currentPrice ?? report.reportPrice
     );
 
-    // Decorate facts, scenarios and valuation in-memory with live price if different
+    // Decorate facts, scenarios, estimates and valuation in-memory with live price
     const facts = { ...report.facts };
     const factsZh = report.factsZh ? { ...report.factsZh } : undefined;
     const scenarios = report.scenarios ? { ...report.scenarios } : undefined;
     const scenariosZh = report.scenariosZh
-      ? { ...report.scenariosZh }
+      ? {
+          ...report.scenariosZh,
+          scenarios: report.scenariosZh.scenarios.map((s, i) => {
+            const enScen = report.scenarios?.scenarios?.[i];
+            return enScen
+              ? {
+                  ...s,
+                  probability: enScen.probability,
+                  calibratedProbability:
+                    enScen.calibratedProbability ?? s.calibratedProbability,
+                  rawProbability: enScen.rawProbability ?? s.rawProbability,
+                  forwardEps: enScen.forwardEps,
+                  multiple: enScen.multiple,
+                }
+              : s;
+          }),
+        }
+      : undefined;
+    const estimates = report.estimates
+      ? {
+          ...report.estimates,
+          priceTargets: report.estimates.priceTargets
+            ? { ...report.estimates.priceTargets }
+            : report.estimates.priceTargets,
+        }
+      : undefined;
+    const estimatesZh = report.estimatesZh
+      ? {
+          ...report.estimatesZh,
+          priceTargets: report.estimatesZh.priceTargets
+            ? { ...report.estimatesZh.priceTargets }
+            : report.estimatesZh.priceTargets,
+        }
       : undefined;
     let valuation: Valuation | undefined = report.valuation
       ? { ...report.valuation }
       : undefined;
 
-    if (effectivePrice > 0 && effectivePrice !== Number(report.reportPrice)) {
+    if (effectivePrice > 0) {
       facts.currentPrice = effectivePrice;
       if (factsZh) {
         factsZh.currentPrice = effectivePrice;
@@ -379,6 +411,12 @@ export class DrizzleReportRepository implements IReportRepository {
       }
       if (scenariosZh) {
         scenariosZh.currentPrice = effectivePrice;
+      }
+      if (estimates?.priceTargets) {
+        estimates.priceTargets.currentPrice = effectivePrice;
+      }
+      if (estimatesZh?.priceTargets) {
+        estimatesZh.priceTargets.currentPrice = effectivePrice;
       }
       if (valuation) {
         valuation = {
@@ -441,8 +479,8 @@ export class DrizzleReportRepository implements IReportRepository {
       baseline: report.baseline ?? undefined,
       moat: report.moat ?? undefined,
       moatZh: report.moatZh ?? undefined,
-      estimates: report.estimates ?? undefined,
-      estimatesZh: report.estimatesZh ?? undefined,
+      estimates,
+      estimatesZh,
       catalysts: report.catalysts ?? undefined,
       catalystsZh: report.catalystsZh ?? undefined,
       sentiment: report.sentiment ?? undefined,
@@ -609,6 +647,25 @@ export class DrizzleReportRepository implements IReportRepository {
     }
 
     // Save report in reportsTable
+    if (
+      report.scenarios?.scenarios?.length &&
+      report.scenariosZh?.scenarios?.length
+    ) {
+      report.scenariosZh = {
+        ...report.scenariosZh,
+        currentPrice: report.scenarios.currentPrice,
+        consensusTarget: report.scenarios.consensusTarget,
+        scenarios: report.scenarios.scenarios.map((enScen, i) => ({
+          ...(report.scenariosZh!.scenarios[i] || enScen),
+          forwardEps: enScen.forwardEps,
+          multiple: enScen.multiple,
+          probability: enScen.probability,
+          calibratedProbability: enScen.calibratedProbability,
+          rawProbability: enScen.rawProbability,
+        })),
+      };
+    }
+
     await db
       .insert(reportsTable)
       .values({

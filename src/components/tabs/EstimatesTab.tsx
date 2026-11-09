@@ -185,7 +185,9 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
 
   const { consensus, priceTargets, synthesisNarrative } = estimatesData;
   const effectiveCurrentPrice =
-    priceTargets?.currentPrice || propCurrentPrice || 0;
+    propCurrentPrice && propCurrentPrice > 0
+      ? propCurrentPrice
+      : priceTargets?.currentPrice || 0;
 
   // Track Calculations
   const low = priceTargets.low;
@@ -539,6 +541,16 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
               filteredEstimates.map((item, idx) => {
                 const ratingStyle = getRatingBadge(item.rating);
                 const actionStyle = getActionBadge(item.action);
+                const rowUpsidePct =
+                  effectiveCurrentPrice > 0 && item.priceTarget > 0
+                    ? Number(
+                        (
+                          ((item.priceTarget - effectiveCurrentPrice) /
+                            effectiveCurrentPrice) *
+                          100
+                        ).toFixed(2)
+                      )
+                    : item.upsidePct;
 
                 return (
                   <div key={`${item.firm}-${idx}`} className="space-y-2.5 p-4">
@@ -600,13 +612,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         </div>
                         <span
                           className={`inline-block rounded px-1.5 py-0.5 font-mono text-xs font-bold ${
-                            item.upsidePct >= 0
+                            rowUpsidePct >= 0
                               ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
                               : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
                           }`}
                         >
-                          {item.upsidePct >= 0 ? "+" : ""}
-                          {item.upsidePct.toFixed(1)}%
+                          {rowUpsidePct >= 0 ? "+" : ""}
+                          {rowUpsidePct.toFixed(1)}%
                         </span>
                       </div>
 
@@ -657,6 +669,16 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                   filteredEstimates.map((item, idx) => {
                     const ratingStyle = getRatingBadge(item.rating);
                     const actionStyle = getActionBadge(item.action);
+                    const rowUpsidePct =
+                      effectiveCurrentPrice > 0 && item.priceTarget > 0
+                        ? Number(
+                            (
+                              ((item.priceTarget - effectiveCurrentPrice) /
+                                effectiveCurrentPrice) *
+                              100
+                            ).toFixed(2)
+                          )
+                        : item.upsidePct;
 
                     return (
                       <tr
@@ -727,13 +749,13 @@ export const EstimatesTab: React.FC<EstimatesTabProps> = ({
                         <td className="whitespace-nowrap px-3 py-3.5 text-right">
                           <span
                             className={`inline-block rounded px-2 py-0.5 font-mono text-xs font-bold ${
-                              item.upsidePct >= 0
+                              rowUpsidePct >= 0
                                 ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
                                 : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
                             }`}
                           >
-                            {item.upsidePct >= 0 ? "+" : ""}
-                            {item.upsidePct.toFixed(1)}%
+                            {rowUpsidePct >= 0 ? "+" : ""}
+                            {rowUpsidePct.toFixed(1)}%
                           </span>
                         </td>
 

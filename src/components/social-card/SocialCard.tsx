@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { Facts, Valuation, StressResult, ReportData } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import { getLocalizedArtifacts } from "@/lib/localized-report";
 import { formatCurrency, formatPercent, formatBillions } from "@/lib/utils";
 import {
   type CardTemplate,
@@ -76,7 +77,6 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
     ref
   ) => {
     const effectiveShowWatermark = includeWatermark ?? showWatermark;
-    const isZh = locale === "zh";
     const t = getTranslations(locale).socialCard;
     const labels = t.labels;
     const dim = CARD_DIMENSIONS[aspectRatio];
@@ -104,13 +104,11 @@ export const SocialCard = forwardRef<HTMLDivElement, SocialCardProps>(
         Math.abs(effectiveGrossMarginDeltaBps) > 0.001 ||
         Math.abs(effectiveFixedOpexShiftPct) > 0.001);
 
-    // Moat data
-    const moatData =
-      isZh && reportData?.moatZh ? reportData.moatZh : reportData?.moat;
-    const catalystsData =
-      isZh && reportData?.catalystsZh
-        ? reportData.catalystsZh
-        : reportData?.catalysts;
+    // Moat & Catalysts data with canonical numbers and localized text overlay
+    const { moat: moatData, catalysts: catalystsData } = getLocalizedArtifacts(
+      reportData ?? null,
+      locale
+    );
 
     const snowflakeScore = React.useMemo(() => {
       const effectiveReportData: ReportData = reportData ?? {

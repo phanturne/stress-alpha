@@ -290,74 +290,121 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
 /**
  * Overwrites LLM-generated competitor financial metrics with live, deterministic
  * Yahoo Finance telemetry so peer comparisons never contain hallucinated numbers.
+ * Unverified tickers where Yahoo Finance lookup fails are dropped and replaced
+ * from verified peerBenchmarks so 100% of returned competitors have live telemetry.
  */
-async function hydrateCompetitorsWithLiveMetrics(
+export async function hydrateCompetitorsWithLiveMetrics(
   aiCompetitors: MoatCompetitors["competitors"],
-  profile: FinancialProfile,
+  profile: Pick<FinancialProfile, "ticker"> &
+    Partial<Pick<FinancialProfile, "peerBenchmarks" | "quarterlyStatements">>,
   facts: Facts
 ): Promise<MoatCompetitors["competitors"]> {
-  if (!aiCompetitors || aiCompetitors.length === 0) {
+  if (
+    (!aiCompetitors || aiCompetitors.length === 0) &&
+    (!profile.peerBenchmarks || profile.peerBenchmarks.length === 0)
+  ) {
     return [];
   }
 
+  const targetTicker = profile.ticker.toUpperCase();
   const knownMap = new Map<string, PeerBenchmarkMetrics>();
   for (const p of profile.peerBenchmarks || []) {
     knownMap.set(p.ticker.toUpperCase(), p);
   }
 
-  const missingTickers = aiCompetitors
+  const missingTickers = (aiCompetitors || [])
     .map((c) =>
       String(c.ticker || "")
         .toUpperCase()
         .trim()
     )
-    .filter((sym) => sym && !knownMap.has(sym) && sym !== profile.ticker);
+    .filter(
+      (sym) =>
+        sym &&
+        sym !== "PEER" &&
+        sym !== "COMP" &&
+        !knownMap.has(sym) &&
+        sym !== targetTicker
+    );
 
   if (missingTickers.length > 0) {
-    const fetched = await fetchPeerBenchmarks(missingTickers, profile.ticker);
+    const fetched = await fetchPeerBenchmarks(missingTickers, targetTicker);
     for (const p of fetched) {
       knownMap.set(p.ticker.toUpperCase(), p);
     }
   }
 
+  const computePricingPower = (
+    peerGrossMarginPct: number,
+    fallback?: string
+  ): "Superior" | "Parity" | "Inferior" => {
+    if (facts.grossMarginPct == null) {
+      return fallback === "Superior" || fallback === "Inferior"
+        ? fallback
+        : "Parity";
+    }
+    const diff = peerGrossMarginPct - facts.grossMarginPct;
+    return diff >= 6 ? "Superior" : diff <= -6 ? "Inferior" : "Parity";
+  };
+
+  const usedTickers = new Set<string>([targetTicker]);
+  const hydrated: MoatCompetitors["competitors"] = [];
+
+  for (const comp of aiCompetitors || []) {
+    const sym = String(comp.ticker || "")
+      .toUpperCase()
+      .trim();
+    const live = knownMap.get(sym);
+    if (!live || usedTickers.has(live.ticker.toUpperCase())) {
+      continue;
+    }
+    usedTickers.add(live.ticker.toUpperCase());
+
+    hydrated.push({
+      ...comp,
+      ticker: live.ticker,
+      name: live.name || comp.name,
+      marketCapBillions: live.marketCapBillions,
+      revenueBillions: live.revenueBillions,
+      revenueGrowthPct: live.revenueGrowthPct,
+      grossMarginPct: live.grossMarginPct,
+      operatingMarginPct: live.operatingMarginPct,
+      forwardPe: live.forwardPe,
+      pricingPower: computePricingPower(live.grossMarginPct, comp.pricingPower),
+    });
+  }
+
+  const desiredCount = Math.max(aiCompetitors?.length || 0, 3);
+  if (hydrated.length < desiredCount && profile.peerBenchmarks) {
+    for (const live of profile.peerBenchmarks) {
+      if (hydrated.length >= desiredCount) break;
+      const sym = live.ticker.toUpperCase();
+      if (usedTickers.has(sym)) continue;
+      usedTickers.add(sym);
+
+      hydrated.push({
+        ticker: live.ticker,
+        name: live.name,
+        marketCapBillions: live.marketCapBillions,
+        revenueBillions: live.revenueBillions,
+        revenueGrowthPct: live.revenueGrowthPct,
+        grossMarginPct: live.grossMarginPct,
+        operatingMarginPct: live.operatingMarginPct,
+        forwardPe: live.forwardPe,
+        pricingPower: computePricingPower(live.grossMarginPct, "Parity"),
+        productComparison: `Direct sector peer benchmark vs. ${facts.company} (${live.name}).`,
+        keyAdvantageOrVulnerability: `Operates at ${live.operatingMarginPct}% operating margin and ${live.grossMarginPct}% gross margin.`,
+      });
+    }
+  }
+
   const annualizedTargetRev = round2(
-    profile.quarterlyStatements.length >= 4
+    profile.quarterlyStatements && profile.quarterlyStatements.length >= 4
       ? profile.quarterlyStatements
           .slice(0, 4)
           .reduce((s, q) => s + q.revenueBillions, 0)
       : facts.revenueBillions * 4
   );
-
-  const hydrated = aiCompetitors.map((comp) => {
-    const sym = String(comp.ticker || "")
-      .toUpperCase()
-      .trim();
-    const live = knownMap.get(sym);
-    if (!live) return comp;
-
-    return {
-      ...comp,
-      ticker: live.ticker,
-      name: live.name || comp.name,
-      marketCapBillions:
-        live.marketCapBillions > 0
-          ? live.marketCapBillions
-          : comp.marketCapBillions,
-      revenueBillions:
-        live.revenueBillions > 0 ? live.revenueBillions : comp.revenueBillions,
-      revenueGrowthPct:
-        live.revenueGrowthPct !== undefined
-          ? live.revenueGrowthPct
-          : comp.revenueGrowthPct,
-      grossMarginPct:
-        live.grossMarginPct !== 0 ? live.grossMarginPct : comp.grossMarginPct,
-      operatingMarginPct:
-        live.operatingMarginPct !== 0
-          ? live.operatingMarginPct
-          : comp.operatingMarginPct,
-      forwardPe: live.forwardPe !== undefined ? live.forwardPe : comp.forwardPe,
-    };
-  });
 
   const totalPoolRev =
     annualizedTargetRev +
@@ -368,7 +415,7 @@ async function hydrateCompetitorsWithLiveMetrics(
     marketSharePct:
       totalPoolRev > 0 && c.revenueBillions > 0
         ? round2((c.revenueBillions / totalPoolRev) * 100)
-        : c.marketSharePct,
+        : undefined,
   }));
 }
 
@@ -530,15 +577,40 @@ Rules:
       quarter: factsDraft.quarter,
     });
 
+    const hasPressRelease = Boolean(
+      bundle.secExcerpts?.pressReleaseText?.trim()
+    );
+    const hasSegmentDisclosures = Boolean(
+      bundle.secExcerpts?.segmentFootnoteText?.trim() || hasPressRelease
+    );
+
+    const synthSegSum = synth.segments.reduce(
+      (s, seg) => s + (seg.revenueBillions || 0),
+      0
+    );
+    const segmentsValid =
+      hasSegmentDisclosures &&
+      synth.segments.length > 0 &&
+      synth.segments.every((seg) => seg.revenueBillions > 0) &&
+      (factsDraft.revenueBillions <= 0 ||
+        (synthSegSum >= factsDraft.revenueBillions * 0.8 &&
+          synthSegSum <= factsDraft.revenueBillions * 1.2));
+
+    const epsOperatingValid =
+      hasPressRelease &&
+      synth.epsOperating != null &&
+      synth.epsOperating > 0 &&
+      (factsDraft.epsReported <= 0 ||
+        (synth.epsOperating >= factsDraft.epsReported * 0.25 &&
+          synth.epsOperating <= factsDraft.epsReported * 4.0));
+
     enrichedFacts = FactsSchema.parse({
       ...factsDraft,
-      segments:
-        synth.segments.length > 0 ? synth.segments : factsDraft.segments,
+      segments: segmentsValid ? synth.segments : factsDraft.segments,
       oneTimeItems: synth.oneTimeItems,
-      epsOperating:
-        synth.epsOperating && synth.epsOperating > 0
-          ? synth.epsOperating
-          : factsDraft.epsOperating,
+      epsOperating: epsOperatingValid
+        ? synth.epsOperating
+        : factsDraft.epsOperating,
       guidanceRevenueLowBillions:
         synth.guidanceRevenueLowBillions > 0
           ? synth.guidanceRevenueLowBillions
@@ -548,23 +620,40 @@ Rules:
           ? synth.guidanceRevenueHighBillions
           : factsDraft.guidanceRevenueHighBillions,
       guidanceOperatingIncomeLowBillions:
-        synth.guidanceOperatingIncomeLowBillions,
+        synth.guidanceOperatingIncomeLowBillions > 0
+          ? synth.guidanceOperatingIncomeLowBillions
+          : factsDraft.guidanceOperatingIncomeLowBillions,
       guidanceOperatingIncomeHighBillions:
-        synth.guidanceOperatingIncomeHighBillions,
+        synth.guidanceOperatingIncomeHighBillions > 0
+          ? synth.guidanceOperatingIncomeHighBillions
+          : factsDraft.guidanceOperatingIncomeHighBillions,
       governanceRisk: synth.governanceRisk,
       accountingFlags: synth.accountingFlags,
       materialLitigationOrDoj: synth.materialLitigationOrDoj,
       valuationArchetype: synth.valuationArchetype,
       customerConcentrationPct:
-        synth.customerConcentrationPct ?? factsDraft.customerConcentrationPct,
+        synth.customerConcentrationPct && synth.customerConcentrationPct > 0
+          ? synth.customerConcentrationPct
+          : factsDraft.customerConcentrationPct,
       purchaseObligationsBillions:
-        synth.purchaseObligationsBillions ??
-        factsDraft.purchaseObligationsBillions,
+        synth.purchaseObligationsBillions &&
+        synth.purchaseObligationsBillions > 0
+          ? synth.purchaseObligationsBillions
+          : factsDraft.purchaseObligationsBillions,
       totalCommitmentsBillions:
-        synth.totalCommitmentsBillions ?? factsDraft.totalCommitmentsBillions,
+        synth.totalCommitmentsBillions && synth.totalCommitmentsBillions > 0
+          ? synth.totalCommitmentsBillions
+          : factsDraft.totalCommitmentsBillions,
       guaranteeExposureBillions:
-        synth.guaranteeExposureBillions ?? factsDraft.guaranteeExposureBillions,
-      revenueGrowthPct: synth.revenueGrowthPct ?? factsDraft.revenueGrowthPct,
+        synth.guaranteeExposureBillions && synth.guaranteeExposureBillions > 0
+          ? synth.guaranteeExposureBillions
+          : factsDraft.guaranteeExposureBillions,
+      revenueGrowthPct:
+        factsDraft.revenueGrowthPct === 0 &&
+        hasPressRelease &&
+        synth.revenueGrowthPct != null
+          ? synth.revenueGrowthPct
+          : factsDraft.revenueGrowthPct,
     });
 
     const hydratedCompetitors = await hydrateCompetitorsWithLiveMetrics(
@@ -585,75 +674,51 @@ Rules:
       ticker,
     });
 
-    if (synth.upstreamDrivers.length >= 2) {
+    if (synth.upstreamDrivers.length > 0) {
       enrichedBaseline = FinancialModelBaselineSchema.parse({
         ...baseline,
-        upstreamDrivers: synth.upstreamDrivers,
+        upstreamDrivers: baseline.upstreamDrivers.map((detDriver, idx) => {
+          const aiDriver =
+            synth.upstreamDrivers.find((d) => d.id === detDriver.id) ||
+            synth.upstreamDrivers[idx];
+          return {
+            ...detDriver,
+            name: aiDriver?.name || detDriver.name,
+          };
+        }),
       });
     }
 
-    // Normalize scenario probabilities & anchor
-    const rawScenarios = synth.scenariosEn.scenarios;
-    const probSum = rawScenarios.reduce((s, c) => s + c.probability, 0) || 1;
-    const normalizedScenarios = rawScenarios.map((s, idx) => {
-      const detScenario =
-        bundle.scenariosEn.scenarios.find(
-          (ds) => ds.name.toLowerCase() === s.name.toLowerCase()
-        ) || bundle.scenariosEn.scenarios[idx];
+    // Lock scenario forwardEps, multiple, and probability strictly to deterministic baseline scenarios
+    const lockedScenarios = bundle.scenariosEn.scenarios.map(
+      (detScenario, idx) => {
+        const aiScenario =
+          synth.scenariosEn.scenarios.find(
+            (s) => s.name.toLowerCase() === detScenario.name.toLowerCase()
+          ) || synth.scenariosEn.scenarios[idx];
 
-      const p = Number((s.probability / probSum).toFixed(2));
-      const detEps = detScenario?.forwardEps ?? s.forwardEps;
-      const detMult = detScenario?.multiple ?? s.multiple;
-      const boundedEps = Number(
-        Math.max(
-          detEps * 0.85,
-          Math.min(detEps * 1.15, s.forwardEps || detEps)
-        ).toFixed(2)
-      );
-      const boundedMult = Number(
-        Math.max(
-          detMult * 0.85,
-          Math.min(detMult * 1.15, s.multiple || detMult)
-        ).toFixed(2)
-      );
-
-      return {
-        ...s,
-        probability: p,
-        rawProbability: p,
-        forwardEps: Math.max(boundedEps, 0.1),
-        multiple: Math.max(boundedMult, 2.0),
-      };
-    });
-
-    const currentSum = normalizedScenarios.reduce(
-      (s, c) => s + c.probability,
-      0
+        return {
+          ...detScenario,
+          assumptions:
+            aiScenario?.assumptions && aiScenario.assumptions.length > 0
+              ? aiScenario.assumptions
+              : detScenario.assumptions,
+          keyDrivers:
+            aiScenario?.keyDrivers && aiScenario.keyDrivers.length > 0
+              ? aiScenario.keyDrivers
+              : detScenario.keyDrivers,
+        };
+      }
     );
-    if (normalizedScenarios.length > 0 && Math.abs(currentSum - 1) > 0.001) {
-      const idx =
-        normalizedScenarios.findIndex((s) =>
-          s.name.toLowerCase().includes("base")
-        ) >= 0
-          ? normalizedScenarios.findIndex((s) =>
-              s.name.toLowerCase().includes("base")
-            )
-          : 0;
-      normalizedScenarios[idx].probability = Number(
-        (normalizedScenarios[idx].probability + (1 - currentSum)).toFixed(2)
-      );
-      normalizedScenarios[idx].rawProbability =
-        normalizedScenarios[idx].probability;
-    }
 
     enrichedScenariosEn = ScenariosSchema.parse({
-      ...synth.scenariosEn,
+      ...bundle.scenariosEn,
       ticker,
       currentPrice: profile.currentPrice,
       consensusTarget:
         analystEstimatesEn.priceTargets.average ||
-        synth.scenariosEn.consensusTarget,
-      scenarios: normalizedScenarios,
+        bundle.scenariosEn.consensusTarget,
+      scenarios: lockedScenarios,
     });
   } catch (err) {
     console.warn(
@@ -711,6 +776,16 @@ Rules:
       });
 
       const rawZh = parseJsonObject(stage3Text);
+      if (Array.isArray(rawZh?.segmentsZh)) {
+        rawZh.segmentsZh = enrichedFacts.segments.map((enSeg, i) => ({
+          ...enSeg,
+          name: rawZh.segmentsZh[i]?.name || enSeg.name,
+          revenueBillions: enSeg.revenueBillions,
+          growthPct: enSeg.growthPct,
+          operatingIncomeBillions: enSeg.operatingIncomeBillions,
+          operatingMarginPct: enSeg.operatingMarginPct,
+        }));
+      }
       if (rawZh?.moatZh) {
         if (Array.isArray(rawZh.moatZh.moatSources)) {
           rawZh.moatZh.moatSources = rawZh.moatZh.moatSources.map(
@@ -725,16 +800,35 @@ Rules:
             })
           );
         }
-        if (Array.isArray(rawZh.moatZh.competitors)) {
-          rawZh.moatZh.competitors = rawZh.moatZh.competitors.map(
-            (c: any, i: number) => ({
-              ...c,
-              ticker: enrichedMoatEn.competitors[i]?.ticker || c.ticker,
-              pricingPower:
-                enrichedMoatEn.competitors[i]?.pricingPower || "Parity",
-            })
-          );
-        }
+        rawZh.moatZh.competitors = enrichedMoatEn.competitors.map(
+          (enComp, i) => {
+            const zhComp = Array.isArray(rawZh.moatZh.competitors)
+              ? rawZh.moatZh.competitors.find(
+                  (c: any) =>
+                    String(c?.ticker || "").toUpperCase() ===
+                    enComp.ticker.toUpperCase()
+                ) || rawZh.moatZh.competitors[i]
+              : undefined;
+            return {
+              ...enComp,
+              name: zhComp?.name || enComp.name,
+              productComparison:
+                zhComp?.productComparison || enComp.productComparison,
+              keyAdvantageOrVulnerability:
+                zhComp?.keyAdvantageOrVulnerability ||
+                enComp.keyAdvantageOrVulnerability,
+              ticker: enComp.ticker,
+              marketCapBillions: enComp.marketCapBillions,
+              revenueBillions: enComp.revenueBillions,
+              revenueGrowthPct: enComp.revenueGrowthPct,
+              grossMarginPct: enComp.grossMarginPct,
+              operatingMarginPct: enComp.operatingMarginPct,
+              forwardPe: enComp.forwardPe,
+              marketSharePct: enComp.marketSharePct,
+              pricingPower: enComp.pricingPower,
+            };
+          }
+        );
         rawZh.moatZh.overallMoatRating = enrichedMoatEn.overallMoatRating;
         rawZh.moatZh.moatTrend = enrichedMoatEn.moatTrend;
       }
@@ -747,6 +841,21 @@ Rules:
             horizon: enrichedCatalystsEn.catalysts[i]?.horizon || "medium-term",
             probability:
               enrichedCatalystsEn.catalysts[i]?.probability ?? cat.probability,
+          })
+        );
+      }
+      if (Array.isArray(rawZh?.scenariosZh?.scenarios)) {
+        rawZh.scenariosZh.scenarios = enrichedScenariosEn.scenarios.map(
+          (enScen, i) => ({
+            ...enScen,
+            assumptions:
+              rawZh.scenariosZh.scenarios[i]?.assumptions ?? enScen.assumptions,
+            keyDrivers:
+              rawZh.scenariosZh.scenarios[i]?.keyDrivers ?? enScen.keyDrivers,
+            forwardEps: enScen.forwardEps,
+            multiple: enScen.multiple,
+            probability: enScen.probability,
+            calibratedProbability: enScen.calibratedProbability,
           })
         );
       }
@@ -779,17 +888,12 @@ Rules:
       const stage3 = Stage3LocalizationSchema.parse(rawZh);
       factsZh = FactsSchema.parse({
         ...enrichedFacts,
-        segments:
-          stage3.segmentsZh.length === enrichedFacts.segments.length
-            ? stage3.segmentsZh
-            : enrichedFacts.segments,
+        segments: stage3.segmentsZh,
         sources: bundle.factsZh.sources,
       });
       moatZh = MoatCompetitorsSchema.parse({
         ...stage3.moatZh,
         ticker,
-        overallMoatRating: enrichedMoatEn.overallMoatRating,
-        moatTrend: enrichedMoatEn.moatTrend,
         sources: bundle.factsZh.sources,
       });
       catalystsZh = CatalystsSchema.parse({
@@ -798,13 +902,7 @@ Rules:
       });
       scenariosZh = ScenariosSchema.parse({
         ...enrichedScenariosEn,
-        scenarios: enrichedScenariosEn.scenarios.map((enScen, i) => ({
-          ...enScen,
-          assumptions:
-            stage3.scenariosZh.scenarios[i]?.assumptions ?? enScen.assumptions,
-          keyDrivers:
-            stage3.scenariosZh.scenarios[i]?.keyDrivers ?? enScen.keyDrivers,
-        })),
+        scenarios: stage3.scenariosZh.scenarios,
       });
       filingZh = FilingExtractsSchema.parse({
         ...stage3.filingZh,

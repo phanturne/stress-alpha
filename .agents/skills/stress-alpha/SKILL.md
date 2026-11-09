@@ -65,7 +65,10 @@ StressAlpha leverages two primary institutional financial data APIs for report i
 | `filing-extracts.json` | **SEC EDGAR Direct** (`extractSecFilingExcerpts`) & **Finnhub**: `/stock/filings` | 100% Free SEC Utility (10 req/s) / Finnhub Free | Free SEC EDGAR Note Extraction |
 | `reactions.json` | **Massive**: `/v2/aggs/ticker/{TICKER}/range/1/day/*` | Massive Stocks Starter ($29/mo) / Developer | Yahoo Finance historical quotes |
 
-#### Qualitative Review & Specialized Artifact Assembly
+#### Qualitative Review & Specialized Artifact Assembly (Zero Quantitative Guessing)
+> [!IMPORTANT]
+> **Deterministic Quantitative Hydration:** All quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`), analyst targets (`low`, `average`, `median`, `high`, `priceTarget`, `priorPriceTarget`, `upsidePct`), scenario EPS/multiples/probabilities, and historical reaction `priceMovePct` are deterministically fetched and hydrated by TypeScript (`npm run fetch:data`, `fetchPeerBenchmarks`, `analyze.ts`). **The LLM must NEVER guess, invent, or overwrite those numbers.**
+
 With all quantitative financials automatically staged, the agent audits and enriches qualitative context using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 
 1. `facts.json` (Required):
@@ -75,12 +78,12 @@ With all quantitative financials automatically staged, the agent audits and enri
    - **Forensic Governance & Accounting Audit (QPCE Anchor):** Audit for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, restatements, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
    - **Valuation Archetype & Capital Runway:** Classify archetype (`compounder` | `operating_scaler` | `venture_hypergrowth`), gross margin %, and Net Liquid Runway months.
 2. `scenarios.json` (Required):
-   - Formulate 3-4 scenarios (Bull, Base, Panic/Bear) with forward EPS, P/E multiples, and assumptions. Probabilities must sum to 1.0 (these act as initial raw priors `rawProbability` to be deterministically calibrated by QPCE into `calibratedProbability`).
-   - **Operational Realism in Base EPS:** Base forward EPS must anchor on realistic operational earnings power. If the consensus data feed is stale or unadjusted, re-normalize Base EPS using `epsOperating * 4 * (1 + guidanceGrowth)`. Panic regime MUST model the primary structural vulnerability of the business model (e.g. distribution/traffic decay for consumer web, customer churn for SaaS, cycle downturn for semiconductors).
+   - Scenario `forwardEps`, `multiple`, and `probability` (`calibratedProbability`) are deterministically scaffolded and calibrated by TypeScript (`npm run fetch:data` and `analyze.ts`). The LLM must never invent or guess scenario EPS, multiples, or probabilities, and must keep `scenarios_zh.json` numerically identical to `scenarios.json`.
+   - **Operational Realism in Base EPS:** Base forward EPS anchors on realistic operational earnings power (`epsOperating * 4 * (1 + guidanceGrowth)`). Panic regime `assumptions` and `keyDrivers` MUST model the primary structural vulnerability of the business model (e.g. distribution/traffic decay for consumer web, customer churn for SaaS, cycle downturn for semiconductors).
 3. `moat-competitors.json` (Recommended):
    - Morningstar 5-pillar economic moat evaluation (Intangible Assets, Switching Costs, Cost Advantage, Network Effects, Efficient Scale) and moat trend (Widening, Stable, Narrowing).
    - **Distribution Channel Vulnerability:** If a platform's discovery depends heavily on third-party gateways (e.g. search engine referrals, algorithmic feeds, prime contractors), audit whether channel disintermediation is eroding the network effect. If referral channels are deteriorating without offsetting direct channel growth or pricing power, critically audit whether `moatTrend` is `"Narrowing"` or `"Stable"`.
-   - Peer comparison matrix (Ticker, Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power, Product Comparison, Advantage/Vulnerability).
+   - **Deterministic Peer Benchmarking:** Quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`) are deterministically fetched and hydrated via `fetchPeerBenchmarks` (`npm run fetch:data` and `analyze.ts`). The LLM must only provide peer tickers and qualitative fields (`name`, `pricingPower`, `productComparison`, `keyAdvantageOrVulnerability`) and NEVER guess peer financial metrics.
 4. `stress-baseline.json` (Recommended):
    - Define base revenue, gross margin %, fixed OpEx, shares outstanding, and upstream drivers (with exposure shares and elasticities).
 5. `catalysts.json` (Optional):
@@ -90,7 +93,7 @@ With all quantitative financials automatically staged, the agent audits and enri
 7. `filing-extracts.json` & `filing-extracts_zh.json` (Optional):
    - 10-Q Item 1A risk disclosure diffs and novel findings in English and institutional Chinese.
 8. `reactions.json` (Optional):
-   - Historical post-earnings day-1 moves and conditional reaction framing.
+   - Historical post-earnings day-1 `priceMovePct` values are deterministically computed from OHLCV price bars by `npm run fetch:data`; the LLM only enriches qualitative event descriptions and `conditionalFraming`.
 
 ---
 

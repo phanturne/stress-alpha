@@ -34,6 +34,7 @@ import {
 } from "../src/lib/valuation.js";
 import { renderReport } from "../src/lib/report.js";
 import { formatSanityCliBanner } from "../src/lib/sanity.js";
+import { hydrateCompetitorsWithLiveMetrics } from "../src/lib/services/ai-gateway.js";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
@@ -228,6 +229,52 @@ async function main() {
     console.log("  ℹ️  Derived baseline from facts");
   }
 
+  if (moat && moat.competitors.length > 0) {
+    const hydratedCompetitors = await hydrateCompetitorsWithLiveMetrics(
+      moat.competitors,
+      { ticker: facts.ticker },
+      facts
+    );
+    if (hydratedCompetitors.length > 0) {
+      moat = { ...moat, competitors: hydratedCompetitors };
+      fs.writeFileSync(moatPath, JSON.stringify(moat, null, 2));
+      if (moatZh) {
+        const zhByTicker = new Map(
+          moatZh.competitors.map((c) => [c.ticker.toUpperCase(), c])
+        );
+        moatZh = {
+          ...moatZh,
+          overallMoatRating: moat.overallMoatRating,
+          moatTrend: moat.moatTrend,
+          competitors: hydratedCompetitors.map((enComp, idx) => {
+            const zhComp =
+              zhByTicker.get(enComp.ticker.toUpperCase()) ||
+              moatZh?.competitors[idx];
+            return {
+              ...enComp,
+              name: zhComp?.name || enComp.name,
+              productComparison:
+                zhComp?.productComparison || enComp.productComparison,
+              keyAdvantageOrVulnerability:
+                zhComp?.keyAdvantageOrVulnerability ||
+                enComp.keyAdvantageOrVulnerability,
+              ticker: enComp.ticker,
+              marketCapBillions: enComp.marketCapBillions,
+              revenueBillions: enComp.revenueBillions,
+              revenueGrowthPct: enComp.revenueGrowthPct,
+              grossMarginPct: enComp.grossMarginPct,
+              operatingMarginPct: enComp.operatingMarginPct,
+              forwardPe: enComp.forwardPe,
+              marketSharePct: enComp.marketSharePct,
+              pricingPower: enComp.pricingPower,
+            };
+          }),
+        };
+        fs.writeFileSync(moatZhPath, JSON.stringify(moatZh, null, 2));
+      }
+    }
+  }
+
   console.log("\n🧮 Running deterministic StressAlpha calculation...\n");
   const valuation = computeValuation({
     facts,
@@ -241,6 +288,34 @@ async function main() {
     catalysts,
   });
   const validatedValuation = ValuationSchema.parse(valuation);
+
+  if (validatedValuation.scenarioResults?.length) {
+    scenarios.scenarios = scenarios.scenarios.map((scen, i) => {
+      const res =
+        validatedValuation.scenarioResults.find(
+          (r) => r.name.toLowerCase() === scen.name.toLowerCase()
+        ) || validatedValuation.scenarioResults[i];
+      return {
+        ...scen,
+        probability: res?.probability ?? scen.probability,
+        calibratedProbability: res?.probability ?? scen.calibratedProbability,
+      };
+    });
+    fs.writeFileSync(
+      path.join(absRunDir, "scenarios.json"),
+      JSON.stringify(scenarios, null, 2)
+    );
+    if (scenariosZh && Array.isArray(scenariosZh.scenarios)) {
+      scenariosZh.scenarios = scenarios.scenarios.map((enScen, i) => ({
+        ...(scenariosZh.scenarios[i] || enScen),
+        forwardEps: enScen.forwardEps,
+        multiple: enScen.multiple,
+        probability: enScen.probability,
+        calibratedProbability: enScen.calibratedProbability,
+      }));
+      fs.writeFileSync(scenariosZhPath, JSON.stringify(scenariosZh, null, 2));
+    }
+  }
 
   // Institutional Data Integrity & Variant Perception Audit Banner
   if (validatedValuation.sanityAudit) {

@@ -235,8 +235,13 @@ export async function fetchFundamentalProfile(
           String(r?.symbol || "")
             .toUpperCase()
             .trim()
+            .replace(/\./g, "-")
         )
-        .filter((s: string) => Boolean(s && s !== ticker && !s.includes(".")))
+        .filter((s: string) =>
+          Boolean(
+            s && s !== ticker.replace(/\./g, "-") && /^[A-Z\-]{1,6}$/.test(s)
+          )
+        )
         .slice(0, 5);
     }
     if (chartRes && Array.isArray(chartRes.quotes)) {
@@ -521,7 +526,7 @@ export async function fetchPeerBenchmarks(
   peerTickers: string[],
   excludeTicker?: string
 ): Promise<PeerBenchmarkMetrics[]> {
-  const targetNorm = excludeTicker?.toUpperCase().trim();
+  const targetNorm = excludeTicker?.toUpperCase().trim().replace(/\./g, "-");
   const uniquePeers = Array.from(
     new Set(
       peerTickers
@@ -529,6 +534,7 @@ export async function fetchPeerBenchmarks(
           String(t || "")
             .toUpperCase()
             .trim()
+            .replace(/\./g, "-")
         )
         .filter((t) =>
           Boolean(t && t !== targetNorm && /^[A-Z\-]{1,6}$/.test(t))
@@ -658,15 +664,11 @@ export async function fetchAnalystEstimates(
     options?.benchmarkPrice ||
       finData.currentPrice ||
       yfQuote.regularMarketPrice ||
-      100
+      0
   );
 
-  const low = finData.targetLowPrice
-    ? round2(finData.targetLowPrice)
-    : currentPrice;
-  const avg = finData.targetMeanPrice
-    ? round2(finData.targetMeanPrice)
-    : currentPrice;
+  const avg = finData.targetMeanPrice ? round2(finData.targetMeanPrice) : 0;
+  const low = finData.targetLowPrice ? round2(finData.targetLowPrice) : avg;
   const median = finData.targetMedianPrice
     ? round2(finData.targetMedianPrice)
     : avg;
@@ -741,11 +743,11 @@ export async function fetchAnalystEstimates(
 
     const explicitTarget =
       safeNum(row.currentPriceTarget) || safeNum(row.targetPrice);
-    // Skip stale entries (>2 years old or lacking explicit price target once we already have >=5 fresh notes)
-    if (
-      estimatesEn.length >= 5 &&
-      (gradeDate < twoYearsAgoIso || explicitTarget <= 0)
-    ) {
+    if (explicitTarget <= 0) {
+      continue;
+    }
+    // Skip stale entries (>2 years old once we already have >=5 fresh notes)
+    if (estimatesEn.length >= 5 && gradeDate < twoYearsAgoIso) {
       continue;
     }
 
@@ -765,16 +767,15 @@ export async function fetchAnalystEstimates(
     else if (actionRaw.toLowerCase().includes("raise")) actionClean = "Raised";
     else if (actionRaw.toLowerCase().includes("lower")) actionClean = "Lowered";
 
-    const targetPrice = round2(
-      explicitTarget || (actionClean === "Downgraded" ? low : avg)
-    );
+    const targetPrice = round2(explicitTarget);
     const priorTarget = row.priorPriceTarget
       ? round2(safeNum(row.priorPriceTarget))
       : undefined;
 
-    const upsidePct = round2(
-      ((targetPrice - currentPrice) / currentPrice) * 100
-    );
+    const upsidePct =
+      currentPrice > 0
+        ? round2(((targetPrice - currentPrice) / currentPrice) * 100)
+        : 0;
 
     const noteEn = fromGrade
       ? `${actionClean} from ${fromGrade}`
@@ -812,7 +813,10 @@ export async function fetchAnalystEstimates(
   }
 
   // 4. Synthesize Narratives
-  const avgUpside = round2(((avg - currentPrice) / currentPrice) * 100);
+  const avgUpside =
+    currentPrice > 0 && avg > 0
+      ? round2(((avg - currentPrice) / currentPrice) * 100)
+      : 0;
   const synthesisEn = `According to Wall Street sell-side consensus, ${totalAnalysts} brokerages cover ${ticker} with an aggregate rating of ${consensusClean} (${bullishPct}% bullish). The 52-week price target spans from a conservative low of $${low.toFixed(
     2
   )} to a street-high of $${high.toFixed(

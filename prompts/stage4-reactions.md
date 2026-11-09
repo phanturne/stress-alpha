@@ -2,7 +2,11 @@
 
 ## Task
 
-Gather historical earnings-reaction data for **{TICKER}** to provide conditional framing. This stage is OPTIONAL — skip if insufficient data is found.
+Provide conditional qualitative framing around historical earnings-reaction data for **{TICKER}**. This stage is OPTIONAL — skip if insufficient data is found.
+
+> **CRITICAL GUARDRAIL — NEVER INVENT HISTORICAL PRICE MOVES:**
+> Historical post-earnings event dates and `priceMovePct` values in `reactions.json` are deterministically computed from daily OHLCV bars and earnings release timestamps by TypeScript (`npm run fetch:data` and `scripts/analyze.ts`).
+> The LLM must **NEVER** guess, invent, or alter `priceMovePct` numbers. Only enrich qualitative `event` descriptions, `context`, and `conditionalFraming`.
 
 ## Search & Retrieval Strategy
 

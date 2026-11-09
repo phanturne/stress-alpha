@@ -43,17 +43,20 @@ Audit each dimension and assign specific `durabilityYears` reflective of industr
    - *Distribution Gatekeeper Audit:* If top-of-funnel discovery or customer acquisition depends heavily on third-party gateways (e.g. search engine referrals, app store gatekeepers, prime contractors), audit whether platform disintermediation or algorithm changes are eroding the network effect. If referral traffic or channel access is deteriorating without offsetting growth in direct channels or pricing power, critically evaluate whether `moatTrend` is `"Narrowing"` or `"Stable"`.
 5. **Efficient Scale**: Markets of limited size effectively served by one or a few incumbents, where new entrants would depress market returns below WACC.
 
-## Peer Benchmarking Matrix
+## Peer Benchmarking Matrix (Deterministic Quantitative Hydration)
 
-Gather exact numbers for 3–5 direct peers:
-- Ticker & Company Name
-- Market Cap ($B)
-- Annual / TTM Revenue ($B) & YoY Growth %
-- Gross Margin % and Operating Margin %
-- Forward P/E Multiple
-- Relative Market Share % (within core segment)
-- Relative Pricing Power: `Superior` | `Parity` | `Inferior`
-- Key Structural Advantage or Vulnerability vs. **{TICKER}**
+> **CRITICAL GUARDRAIL — NEVER INVENT PEER NUMBERS:**
+> All quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`) are deterministically fetched and hydrated by TypeScript (`npm run fetch:data`, `fetchPeerBenchmarks`, and `scripts/analyze.ts`).
+> The LLM must **NEVER** guess, invent, or alter those numerical fields. Your responsibility is strictly selecting the 3–5 direct competitor `ticker` symbols and authoring the qualitative fields (`name`, `pricingPower`, `productComparison`, and `keyAdvantageOrVulnerability`), keeping all quantitative metrics identical to the deterministic pipeline output in both `moat-competitors.json` and `moat-competitors_zh.json`.
+
+For each of the 3–5 direct peers:
+- **Deterministic Quantitative Fields** (hydrated by `fetchPeerBenchmarks` / `analyze.ts` — do NOT guess):
+  - `marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`
+- **Qualitative Audit Fields** (authored by LLM):
+  - `ticker` & `name`
+  - `pricingPower`: `Superior` | `Parity` | `Inferior`
+  - `productComparison`: Concise head-to-head product/architecture comparison
+  - `keyAdvantageOrVulnerability`: Key structural advantage or vulnerability vs. **{TICKER}**
 
 ## Output Format
 

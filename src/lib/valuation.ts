@@ -63,12 +63,24 @@ export function computeStressedValuation(
 export function computeStressedValuation(
   baseline: FinancialModelBaseline | undefined,
   scenarios: Scenarios,
-  facts: Facts
+  facts: Facts,
+  extra?: Partial<
+    Pick<
+      ValuationInput,
+      "moat" | "estimates" | "filing" | "sentiment" | "reactions" | "catalysts"
+    >
+  >
 ): Valuation;
 export function computeStressedValuation(
   baseline: FinancialModelBaseline | undefined,
   priceOrScenarios: number | Scenarios,
-  paramsOrFacts?: StressTestParams | Facts
+  paramsOrFacts?: StressTestParams | Facts,
+  extra?: Partial<
+    Pick<
+      ValuationInput,
+      "moat" | "estimates" | "filing" | "sentiment" | "reactions" | "catalysts"
+    >
+  >
 ): StressResult | Valuation {
   if (typeof priceOrScenarios !== "number") {
     const scenarios = priceOrScenarios;
@@ -77,6 +89,7 @@ export function computeStressedValuation(
       facts,
       scenarios,
       baseline,
+      ...extra,
     });
   }
 
@@ -882,6 +895,13 @@ export function computeValuation(input: ValuationInput): Valuation {
     const unperturbed = computeStressedValuation(baseline, currentPrice, {});
     if (unperturbed.stressEps > 0 && stressTest.stressEps > 0) {
       shockMultiplier = stressTest.stressEps / unperturbed.stressEps;
+    }
+  }
+
+  // Preserve original input probability in rawProbability before calibration overwrites s.probability
+  for (const s of scenarios.scenarios) {
+    if (s.rawProbability === undefined) {
+      s.rawProbability = s.probability;
     }
   }
 

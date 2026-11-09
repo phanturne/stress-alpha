@@ -288,7 +288,15 @@ export async function bulkScaffold(
       const valuation = computeStressedValuation(
         report.baseline,
         report.scenarios,
-        report.facts
+        report.facts,
+        {
+          moat: report.moat,
+          estimates: report.estimates,
+          filing: report.filing,
+          sentiment: report.sentiment,
+          reactions: report.reactions,
+          catalysts: report.catalysts,
+        }
       );
 
       // 4. Compute Sanity & Variant Perception Audit

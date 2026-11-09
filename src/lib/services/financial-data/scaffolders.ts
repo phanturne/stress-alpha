@@ -37,10 +37,13 @@ export function generateFactsDraft(
   const calRevBillions = normalizeBillions(calendarActuals?.revenueActual);
   const calRevEstBillions = normalizeBillions(calendarActuals?.revenueEstimate);
 
-  const revenueBillions =
-    calRevBillions ?? (latestStmt?.revenueBillions || 10.0);
-  let revenueGrowthPct = 15.0;
-  if (priorYearStmt && priorYearStmt.revenueBillions > 0) {
+  const revenueBillions = calRevBillions ?? (latestStmt?.revenueBillions || 0);
+  let revenueGrowthPct = 0;
+  if (
+    priorYearStmt &&
+    priorYearStmt.revenueBillions > 0 &&
+    revenueBillions > 0
+  ) {
     revenueGrowthPct = round2(
       ((revenueBillions - priorYearStmt.revenueBillions) /
         priorYearStmt.revenueBillions) *
@@ -60,11 +63,11 @@ export function generateFactsDraft(
           (latestStmt.operatingIncomeBillions / latestStmt.revenueBillions) *
             100
         )
-      : 25.0;
+      : 0;
 
   const operatingIncomeBillions = calRevBillions
     ? round2(revenueBillions * (operatingMarginPct / 100))
-    : latestStmt?.operatingIncomeBillions || 2.5;
+    : latestStmt?.operatingIncomeBillions || 0;
 
   const grossMarginPct =
     latestStmt?.grossProfitBillions != null && latestStmt.revenueBillions > 0
@@ -83,11 +86,15 @@ export function generateFactsDraft(
           ? round2(profile.trailingEps / 4)
           : 0;
 
+  const forwardEpsVal =
+    (profile as any).forwardEps ?? profile.forwardEpsConsensus;
   const epsConsensus =
     calendarActuals?.epsEstimate != null &&
     Number.isFinite(calendarActuals.epsEstimate)
       ? round2(calendarActuals.epsEstimate)
-      : epsReported;
+      : forwardEpsVal && forwardEpsVal > 0
+        ? round2(forwardEpsVal / 4)
+        : 0;
 
   const epsOperating = epsReported; // Default clean operating EPS
 
@@ -167,7 +174,7 @@ export function generateFactsDraft(
               priorYearStmt.operatingIncomeBillions) *
               100
           )
-        : revenueGrowthPct,
+        : undefined,
     epsReported,
     epsConsensus,
     epsOperating,
@@ -929,14 +936,7 @@ export function generateEarningsSentimentDraft(
         },
       ],
     },
-    keyQuotes: [
-      {
-        speaker: "Management",
-        quote: `We continue to see robust fundamental demand across our core solutions and remain focused on disciplined operational execution.`,
-        context: `Opening remarks during the quarterly earnings presentation`,
-        sentiment: "bullish",
-      },
-    ],
+    keyQuotes: [],
   };
 
   return EarningsSentimentSchema.parse(sentiment);

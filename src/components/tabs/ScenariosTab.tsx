@@ -47,14 +47,23 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
   const t = getTranslations(locale).scenariosTab;
   const { scenarios, basisYear, consensusTarget } = scenariosData;
 
+  const getEffectiveProbability = (scenario: Scenario, idx: number) =>
+    valuation?.scenarioResults?.[idx]?.probability ??
+    scenario.calibratedProbability ??
+    scenario.probability;
+
   // Compute live fair values
-  const totalProbability = scenarios.reduce((acc, s) => acc + s.probability, 0);
+  const totalProbability = scenarios.reduce(
+    (acc, s, idx) => acc + getEffectiveProbability(s, idx),
+    0
+  );
   const isProbValid = Math.abs(totalProbability - 1.0) < 0.015;
 
   const weightedFairValue =
     valuation?.weightedFairValue ??
     scenarios.reduce(
-      (acc, s) => acc + s.probability * s.forwardEps * s.multiple,
+      (acc, s, idx) =>
+        acc + getEffectiveProbability(s, idx) * s.forwardEps * s.multiple,
       0
     );
 
@@ -198,6 +207,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
       <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3 xl:gap-5">
         {scenarios.map((scenario, idx) => {
           const res = valuation?.scenarioResults?.[idx];
+          const effectiveProbability = getEffectiveProbability(scenario, idx);
           const fairValue =
             res?.fairValue ?? scenario.forwardEps * scenario.multiple;
           const upside =
@@ -275,7 +285,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                         min="0"
                         max="100"
                         step="1"
-                        value={Math.round(scenario.probability * 100)}
+                        value={Math.round(effectiveProbability * 100)}
                         onChange={(e) =>
                           onScenarioChange(idx, {
                             probability:
@@ -292,7 +302,7 @@ export const ScenariosTab: React.FC<ScenariosTabProps> = ({
                     min="0"
                     max="100"
                     step="1"
-                    value={Math.round(scenario.probability * 100)}
+                    value={Math.round(effectiveProbability * 100)}
                     onChange={(e) =>
                       onScenarioChange(idx, {
                         probability:

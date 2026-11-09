@@ -204,6 +204,16 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
       message:
         "Normalized Operating EPS (epsOperating) is undefined or non-finite.",
     });
+  } else if (
+    facts.epsOperating <= 0 &&
+    facts.valuationArchetype !== "venture_hypergrowth"
+  ) {
+    issues.push({
+      severity: "warning",
+      code: "NON_POSITIVE_OPERATING_EPS",
+      field: "facts.epsOperating",
+      message: `Normalized Operating EPS ($${facts.epsOperating}) is non-positive outside venture_hypergrowth archetype.`,
+    });
   }
 
   // Diluted shares validity
@@ -234,12 +244,23 @@ export function auditReportData(input: SanityAuditInput): SanityAudit {
       (acc, s) => acc + s.probability,
       0
     );
+    const rawProbSum = scenarios.scenarios.reduce(
+      (acc, s) => acc + (s.rawProbability ?? s.probability),
+      0
+    );
     if (Math.abs(probSum - 1.0) > 0.05) {
       issues.push({
         severity: "critical",
         code: "PROBABILITY_SUM_INVALID",
         field: "scenarios.scenarios",
         message: `Scenario probabilities sum to ${round2(probSum)}, expected 1.00 ±0.05.`,
+      });
+    } else if (Math.abs(rawProbSum - 1.0) > 0.05) {
+      issues.push({
+        severity: "critical",
+        code: "PROBABILITY_SUM_INVALID",
+        field: "scenarios.scenarios",
+        message: `Raw scenario probabilities sum to ${round2(rawProbSum)}, expected 1.00 ±0.05.`,
       });
     }
   }
