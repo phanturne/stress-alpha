@@ -1,25 +1,25 @@
 # StressAlpha — System Architecture Documentation
 
-> **Document Version:** 1.4.0  
+> **Document Version:** 1.5.0  
 > **Status:** Active / Production Baseline  
 > **Target Framework:** Next.js 16 (App Router), React 19, TypeScript 5.5, Neon PostgreSQL, Drizzle ORM  
-> **Test Coverage:** 275 automated unit & integration tests across 27 test suites (100% passing)  
+> **Test Coverage:** 320 automated unit & integration tests across 32 test suites (100% passing)  
 > **Last Updated:** November 2026  
 
 ---
 
 ## 1. Executive Summary & Core Philosophy
 
-**StressAlpha** is an institutional equity earnings analysis and deterministic scenario stress-testing platform. It bridges the gap between raw corporate financial filings (SEC 10-Q/8-K, earnings call transcripts) and real-time investment committee decision-making.
+**StressAlpha** is an institutional equity earnings analysis and deterministic scenario stress-testing platform. It bridges the gap between raw corporate financial filings (SEC 10-Q/10-K/8-K, earnings call transcripts) and real-time investment committee decision-making.
 
 ### Architectural Tenets
 1. **Zero LLM Math Hallucinations**: Large Language Models are used exclusively for qualitative context extraction and forensic auditing (e.g. governance flags, accounting risk excerpts). All financial arithmetic, operating leverage flows, regime probability distributions (via QPCE), valuation bands, and risk asymmetry skews are computed by pure deterministic TypeScript engines (`src/lib/valuation.ts`, `src/lib/snowflake.ts`).
-2. **Audited SEC Data Extraction & Financial Feeds**: Extract facts directly from SEC 10-K / 10-Q filings, press releases, and earnings call transcripts via **Massive.com** (point-in-time statements and ratios) and **Finnhub.io** (audio transcripts, SEC filings, consensus targets, and earnings calendar).
-3. **Event-Driven Fundamental Transmission**: Real-time market news and corporate announcements are filtered for clickbait and legal solicitations, then converted into typed fundamental transmission vectors (driver shocks, segment growth, consensus skews) that flow deterministically into valuation models without AI price speculation.
-4. **Autonomous Earnings Calendar Scaffolding**: An inverted daily polling model queries Finnhub's earnings calendar twice daily (post-BMO and post-AMC), auto-scaffolding complete bilingual 8-module report models, computing valuations, and logging sanity audits into Neon PostgreSQL.
+2. **Zero Frontend Calculation Placeholders**: UI components never fabricate target prices, consensus spreads, or synthetic constituent returns. Unpopulated fields render `"—"` honestly, and Last Close P/E anchors directly to live market TTM/NTM EPS telemetry (`trailingEps`, `forwardEps`).
+3. **Consolidated SEC EDGAR & Yahoo Finance Ingestion**: Financial statements, balance sheets, cash flows, 1-year OHLCV technical bars, and sell-side consensus estimates are ingested via **`yahoo-finance2`**, paired directly with official **`SEC EDGAR`** (`data.sec.gov`) regulatory submissions and XBRL footnotes—requiring zero paid third-party market data keys.
+4. **Autonomous Earnings Calendar Scaffolding**: Scheduled twice daily (8:45 AM & 5:15 PM EST), the earnings sync engine queries upcoming/reporting companies across the S&P 500 and NASDAQ-100, auto-scaffolding complete bilingual 8-module report models, computing valuations, and logging sanity audits into Neon PostgreSQL (`upcoming_earnings`, `reports`, `valuation_revisions`).
 5. **Strict Zod Contract Validation**: Every piece of incoming data is validated against strongly-typed Zod schemas (`src/lib/schemas.ts`). Malformed inputs fail fast before reaching the valuation engine or presentation layer.
 6. **Sub-Millisecond Client-Side Simulation**: Once a report payload is loaded into the browser, all sensitivity sliders (upstream demand shocks, gross margin shifts, fixed OpEx elasticity) execute client-side at `<1ms` latency without round-trip network overhead.
-7. **Isolated Ephemeral Integration Testing**: Vitest integration tests run against copy-on-write database branches spun up from production Neon PostgreSQL in ~0.85s, providing 100% cloud parity without polluting production data.
+7. **Isolated Ephemeral Integration Testing**: Vitest integration tests run against copy-on-write database branches spun up from production Neon PostgreSQL in ~1.0s, providing 100% cloud parity without polluting production data.
 
 ---
 
@@ -28,30 +28,26 @@
 ```mermaid
 flowchart TB
     subgraph DataSources["External Data Feeds & Schedulers"]
-        FinnhubCal["Finnhub Earnings Calendar API\nGET /calendar/earnings"]
-        PolygonNews["Polygon / Massive Reference News API\nGET /v2/reference/news?limit=1000"]
-        MassiveSEC["Massive SEC Data Feeds\n10-Q / 10-K Point-in-Time Statements"]
-        FinnhubTranscripts["Finnhub Transcripts & Sell-Side Consensus"]
+        YahooAPI["Yahoo Finance (yahoo-finance2)\nQuotes, Statements, 1Y OHLCV, Consensus & Calendar"]
+        SecEdgar["Official SEC EDGAR API (data.sec.gov)\n10-Q / 10-K / 8-K Submissions & XBRL Footnotes"]
         CronEarnings["GitHub Actions (8:45 AM & 5:15 PM EST)\n.github/workflows/earnings_sync.yml"]
         CronNightly["GitHub Actions (22:00 UTC)\n.github/workflows/nightly-price-sync.yml"]
     end
 
-    subgraph AutonomousEngines["Autonomous Scaffolding & Transmission Engines"]
+    subgraph AutonomousEngines["Autonomous Scaffolding & Price Telemetry"]
         CronEarnings --> IngestCal["scripts/sync_earnings_calendar.ts\n(src/lib/services/earnings-calendar.ts)"]
-        FinnhubCal --> IngestCal
-        IngestCal --> Scaffolder["src/lib/services/financial-data.ts\nfetchCompletePipelineBundle()"]
-        MassiveSEC & FinnhubTranscripts --> Scaffolder
+        YahooAPI --> IngestCal
+        IngestCal --> Scaffolder["src/lib/services/financial-data/pipeline.ts\nfetchCompletePipelineBundle()"]
+        YahooAPI & SecEdgar --> Scaffolder
         Scaffolder --> EvalPipeline["Deterministic Valuation (computeStressedValuation)\n+ Sanity Audit (computeSanityAudit)"]
 
-        CronNightly --> IngestNews["scripts/sync_news.ts\n(src/lib/services/news-ingestion.ts)"]
-        PolygonNews --> IngestNews
-        IngestNews --> NewsFilter["src/lib/news-filter.ts\nClickbait & Lawyer Spam Filter"]
-        NewsFilter --> NewsTransmission["src/lib/news-transmission.ts\nDeterministic Transmission & DAG Propagation"]
+        CronNightly --> SyncPrices["scripts/sync_prices.ts\nBatch Quote, TTM/NTM EPS & Market Cap Sync"]
+        YahooAPI --> SyncPrices
     end
 
     subgraph StorageLayer["Data Access Layer (Neon PostgreSQL + Drizzle ORM)"]
-        EvalPipeline --> NeonDB[("Neon Serverless Postgres\n• tickers\n• reports\n• financial_metrics\n• market_events\n• upstream_dependencies\n• valuation_revisions")]
-        NewsTransmission --> NeonDB
+        EvalPipeline --> NeonDB[("Neon Serverless Postgres\n• tickers & upcoming_earnings\n• reports & financial_metrics\n• user_watchlists & user_notes\n• valuation_revisions")]
+        SyncPrices --> NeonDB
         
         NeonDB --> DAL["DrizzleReportRepository\n(src/lib/repository/drizzle-report-repository.ts)\n15m TTL In-Memory + Next.js Data Cache"]
         DAL -.->|"Implements"| IRepo["IReportRepository\n(src/lib/repository/types.ts)"]
@@ -60,15 +56,16 @@ flowchart TB
 
     subgraph APILayer["Next.js 16 App Router API Layer"]
         Factory --> APIReports["GET /api/reports & /api/reports/[slug]"]
-        Factory --> APINews["GET /api/news & /api/pipeline/news"]
+        Factory --> APIMarket["GET /api/market/summary & /api/earnings/calendar"]
         Factory --> APIRevisions["GET /api/revisions"]
-        Factory --> APIWatchlist["GET /api/watchlist & POST /api/watchlist"]
-        Factory --> APIPipeline["GET /api/pipeline/data & POST /api/pipeline/data"]
+        Factory --> APIWatchlist["/api/watchlist & /api/notes"]
+        Factory --> APIPipeline["GET & POST /api/pipeline/data"]
         NeonDB --> APIAuth["/api/auth/[...all] (Better Auth)"]
     end
 
     subgraph PresentationLayer["Presentation & Simulation Cockpit"]
-        APIReports & APINews & APIRevisions & APIWatchlist --> ClientPages["Client Application"]
+        APIReports & APIMarket & APIRevisions & APIWatchlist --> ClientPages["Client Application"]
+        ClientPages --> MarketHome["Market Home & S&P 500 Treemap (view=home)"]
         ClientPages --> Dashboard["Interactive Model Cockpit (/)"]
         ClientPages --> Screener["Universe Screener (/screener)"]
         ClientPages --> Watchlist["Dedicated Watchlist (/watchlist)"]
@@ -86,18 +83,18 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-    Header["Header.tsx\n• Global Brand Home • 3-Tab Segmented Bar ([⚡ NVDA · Model] [📊 Screener] [★ Watchlist])\n• Unified ReportSelector Capsule • Dual-Theme Switcher (Dark / Light) • Share & Export"]
+    Header["Header.tsx\n• Global Brand Home • 4-Item Segmented Bar ([⚡ NVDA] [🌐 Market] [📊 Screener] [★ Watchlist])\n• Unified ReportSelector Capsule • Dual-Theme Switcher (Dark / Light) • Share & Export"]
 
     subgraph DualPaneLayout["Desktop Dual-Pane Workspace Container (lg:h-[calc(100vh-3.5rem)] lg:overflow-hidden)"]
         subgraph LeftPane["Left Pane: Model Cockpit (lg:w-[480px] xl:w-[540px] lg:overflow-y-auto)"]
-            PriceMeter["PriceMeter.tsx (Dynamic Regime Gauge)"]
+            PriceMeter["PriceMeter.tsx (Dynamic Regime Gauge & Market TTM/NTM P/E Anchor)"]
             Sliders["Interactive Sensitivity Sliders (Demand Shocks, Margins, Fixed OpEx)"]
             Telemetry["Cash Flow Telemetry (FCF Conversion, FCF Yield, Asymmetry Skew)"]
         end
 
         subgraph RightPane["Right Pane: Intelligence Workspaces (flex-1 lg:overflow-y-auto)"]
-            NavRibbon["Sticky Workspace Navigation Ribbon (4 Condensed Workspaces + [📄 Research Memo [M]])"]
-            TabsContainer["Active Workspace Viewport\n(1. Chart & Levels | 2. Valuation & Drivers\n3. Consensus & Peers | 4. News & Filings)"]
+            NavRibbon["Sticky Workspace Navigation Ribbon (3 Workspaces + [📝 Notes] + [📄 Research Memo [M]])"]
+            TabsContainer["Active Workspace Viewport\n(1. Chart & Levels | 2. Valuation & Drivers | 3. Consensus & Peers)"]
             BackToTop["Floating Auto-Centering 'Back to Top' Action"]
         end
     end
@@ -160,14 +157,15 @@ flowchart TD
 
 | Table | Purpose & Key Schema Columns |
 | :--- | :--- |
-| `tickers` | Master equity universe. Ticker, company name, exchange, sector, live `currentPrice`, `marketCapBillions`, and `lastPriceSync`. |
-| `reports` | 8-module quarterly analysis bundles. Ticker, quarter slug (`nvda-2027q1`), `reportDate`, and JSONB columns for `facts`, `scenarios`, `valuation`, `baseline`, `moat`, `estimates`, `catalysts`, `sentiment`, `filings`, and `reactions`. |
+| `tickers` | Master equity universe. Ticker, company name, sector, live `currentPrice`, `previousClose`, `marketCap`, `trailingEps`, `forwardEps`, `trailingPe`, `forwardPe`, `technicalLevels`, and `priceUpdatedAt`. |
+| `reports` | 8-module quarterly analysis bundles. Ticker, quarter slug (`nvda-2027q1`), `reportDate`, denormalized Snowflake/fair-value metrics, and JSONB columns for `facts`, `scenarios`, `valuation`, `baseline`, `moat`, `estimates`, `catalysts`, `sentiment`, `filing`, and `reactions` (plus `*_zh` counterparts). |
 | `financial_metrics` | Normalized relational time-series statement metrics decomposed from quarterly filings. Composite indexed on `(ticker, fiscalYear, fiscalQuarter)`. Stores Revenue, Gross Profit, Operating Income, Net Income, OCF, FCF, CapEx, Diluted EPS, and Margins. |
-| `market_events` | Ingested and filtered market events. Ticker, headline, source URL, event category (`earnings_guidance`, `supply_chain`, `capex_driver`, `regulatory`), abnormal return, and mapped transmission vector. |
-| `upstream_dependencies` | Directed supply chain graph. `sourceTicker` (e.g. `TSM`), `targetTicker` (e.g. `NVDA`), dependency type, and elasticity weight. |
-| `valuation_revisions` | Immutable valuation audit trail. Ticker, trigger type (`quarterly_filing`, `market_event`, `manual_audit`), prior WFV, new WFV, delta percentage, and rationale. |
-| `users`, `sessions`, `accounts`, `verifications` | Better Auth authentication and session management. |
+| `upcoming_earnings` | 14-day forward S&P 500 & NASDAQ-100 earnings calendar docket (`symbol`, `date`, `hour` (`bmo`/`amc`), `epsEstimate`, `revenueEstimate`, `hasModel`, `reportSlug`, `sectorId`). |
 | `user_watchlists` | Cloud-synchronized ticker watchlists per authenticated user. Composite indexed on `(userId, ticker)` with deletion cascading. |
+| `user_notes` | Cloud-synchronized per-stock analyst notes (`id: ${userId}_${ticker}`, `content`, `updatedAt`), mirrored in `localStorage` for instant offline/guest editing and rendered inside research memos. |
+| `valuation_revisions` | Immutable valuation audit trail. Ticker, trigger type (`quarterly_filing`, `market_event`, `manual_audit`), prior WFV, new WFV, delta percentage, and rationale. |
+| `market_events` & `upstream_dependencies` | Event transmission ledger and directed supply-chain dependency graph (`sourceTicker` $\to$ `targetTicker`, exposure share, and elasticity weight). |
+| `user`, `session`, `account`, `verification` | Better Auth authentication and session management. |
 
 ### 4.2 The Income Quality Guardrail
 StressAlpha isolates non-operating accounting anomalies in `facts.json` to compute normalized **Operating EPS**:
@@ -302,26 +300,25 @@ flowchart LR
 
 ---
 
-## 7. Inverted Earnings Calendar & Autonomous Scaffolding
+## 7. Autonomous Earnings Calendar & Zero-Key Data Scaffolding
 
 ```mermaid
 flowchart TD
-    Trigger["Schedule Trigger<br/>(8:45 AM BMO / 5:15 PM AMC EST)"] --> FinnhubPoll["Single-Call Finnhub Inverted Calendar<br/>GET /calendar/earnings?from=DATE&to=DATE"]
-    FinnhubPoll --> SessionGate["Filter Coverage Universe & Active Session Gate"]
+    Trigger["Schedule Trigger<br/>(8:45 AM BMO / 5:15 PM AMC EST)"] --> CalPoll["Earnings Calendar Discovery<br/>Yahoo Finance Calendar (or optional Finnhub API)"]
+    CalPoll --> SessionGate["Filter Coverage Universe & Active Session Gate"]
     SessionGate --> Deduplication["Deduplicate: Skip if populated (revenueBillions > 0)"]
-    Deduplication --> Scaffolder["scaffoldQuarterlyReport()<br/>Ingests Facts, Scenarios, Moat, Catalysts, Estimates"]
+    Deduplication --> Scaffolder["fetchCompletePipelineBundle()<br/>Yahoo Finance (Statements/Quotes/Consensus) + SEC EDGAR (10-Q/10-K/8-K)"]
     Scaffolder --> Arithmetic["Deterministic Valuation & Sanity Audit Engine<br/>(computeStressedValuation & computeSanityAudit)"]
     Arithmetic --> DBWrite["Persist Bilingual Report Artifacts & Append to valuation_revisions"]
 ```
 
-1. **Inverted Calendar Polling**: Ingests reporting companies for target dates via Finnhub (`GET /calendar/earnings`) in a single query rather than polling individual tickers.
+1. **Zero-Key Primary Ingestion**: Queries `yahoo-finance2` (`quote`, `quoteSummary`, `chart`, `fundamentalsTimeSeries`) for quarterly financial statements, balance sheets, cash flows, 1-year OHLCV technical corridors, and sell-side upgrades/downgrades, paired with official `data.sec.gov` submissions for 10-Q/10-K/8-K links and XBRL footnotes.
 2. **Session Splitting & Timing**:
    - `bmo` (Before Market Open): Scaffolding triggered at **8:45 AM EST**.
    - `amc` (After Market Close): Scaffolding triggered at **5:15 PM EST**.
-   - Timing accounts for the 5–20 minute XBRL statement normalization delay by SEC aggregators.
 3. **Deduplication**: Verifies if the report already exists in Neon DB with populated statements (`revenueBillions > 0`). Skips populated reports to avoid redundant work unless forced with `--force`.
-4. **Deterministic Scaffolding**: Automatically fetches point-in-time statements, price targets, guidance, and filings, scaffolding all 8 quarterly modules in both English and Chinese, running `computeStressedValuation` and `computeSanityAudit`, and appending a baseline snapshot to `valuation_revisions`.
-5. **Vercel AI Gateway Single-Pass Enrichment**: Consolidates qualitative synthesis into a single high-throughput pass across filing/sentiment and moat/scenarios, with opt-in translation (`--translate`), eliminating token bloat and fallback pricing spikes.
+4. **Deterministic Scaffolding**: Automatically builds all 8 quarterly modules in both English and Chinese, runs `computeStressedValuation` and `computeSanityAudit`, updates `upcoming_earnings` docket status, and appends a baseline snapshot to `valuation_revisions`.
+5. **Vercel AI Gateway Single-Pass Enrichment**: Consolidates qualitative synthesis into a single high-throughput pass across filing/sentiment and moat/scenarios when `AI_GATEWAY_API_KEY` is configured.
 
 ---
 
@@ -348,14 +345,14 @@ Every commit is gated by a 5-stage verification pipeline in `.husky/pre-push` an
 flowchart LR
     Step1["1. Prettier<br/>(format:check)"] --> Step2["2. ESLint<br/>(eslint .)"]
     Step2 --> Step3["3. TypeScript<br/>(tsc --noEmit)"]
-    Step3 --> Step4["4. Vitest<br/>(275 tests with Neon Branching)"]
+    Step3 --> Step4["4. Vitest<br/>(320 tests with Neon Branching)"]
     Step4 --> Step5["5. Next.js Build<br/>(Turbopack Compile)"]
 ```
 
 1. **Prettier Formatting**: `npm run format:check`
 2. **ESLint Linting**: `npm run lint`
 3. **TypeScript Static Analysis**: `npx tsc --noEmit` (0 errors)
-4. **Vitest Unit Test Suite**: `npm test` (275 tests across 27 suites)
+4. **Vitest Unit Test Suite**: `npm test` (320 tests across 32 suites)
 5. **Next.js Production Build**: `npm run build` (Turbopack compilation)
 
 ---
@@ -396,13 +393,14 @@ flowchart TD
 | Command | Target Script | Operational Description |
 | :--- | :--- | :--- |
 | `npm run dev` | Next.js Server | Start development server at `http://localhost:3000` |
-| `npm test` | Vitest Runner | Run full 244-test suite with Neon ephemeral copy-on-write branching |
+| `npm test` | Vitest Runner | Run full 320-test suite across 32 suites with Neon ephemeral branching |
 | `npm run build` | Turbopack Build | Compile production Next.js bundle |
 | `npm run sync:earnings -- --dry-run` | `sync_earnings_calendar.ts` | Simulate earnings calendar ingestion for today |
 | `npm run sync:earnings -- --date=YYYY-MM-DD` | `sync_earnings_calendar.ts` | Ingest and scaffold earnings reports for a specific date |
-| `npm run sync:news -- --firehose` | `sync_news.ts` | Ingest and filter market-wide news via Polygon global firehose |
-| `npm run sync:prices` | `sync_prices.ts` | Update live market prices across coverage universe |
-| `npm run fetch:data -- <TICKER> --stage` | `fetch_data.ts` | Ingest SEC statements and scaffold starter draft modules |
+| `npm run sync:prices` | `sync_prices.ts` | Batch-sync closing prices, TTM/NTM EPS, P/E, and market caps via Yahoo Finance |
+| `npm run fetch:data -- <TICKER> --stage` | `fetch_data.ts` | Ingest Yahoo Finance & SEC EDGAR statements and scaffold starter draft modules |
+| `npm run backfill:sec` | `backfill_sec_footnotes.ts` | Backfill official SEC EDGAR filings and XBRL accounting footnotes |
+| `npm run backfill:technical` | `backfill_technical_universe.ts` | Recompute 1-year Volume POC, VWAP, and S/R corridors across the universe |
 | `npm run migrate:metrics` | `migrate_financial_metrics.ts` | Backfill relational quarterly time-series statements into `financial_metrics` |
 | `npm run capture:screenshots` | `capture_screenshots.sh` | Capture fresh headless screenshots of all core platform views |
 
@@ -414,44 +412,48 @@ flowchart TD
 stress-alpha/
 ├── .github/workflows/
 │   ├── ci.yml                          # Continuous integration (format, lint, tsc, test, build)
-│   ├── nightly-price-sync.yml          # Nightly price & news sync (22:00 UTC)
+│   ├── nightly-price-sync.yml          # Nightly Yahoo Finance price & EPS sync (22:00 UTC)
 │   └── earnings_sync.yml               # Twice-daily automated earnings scaffolding (8:45 AM & 5:15 PM EST)
 ├── docs/
 │   ├── architecture.md                 # Canonical system architecture documentation & diagrams
+│   ├── TELEMETRY_TPS.md                # Data ingestion ownership & rate-budgeting specification
 │   └── images/                         # Platform screenshots (cockpit, screener, watchlist, memo, methodology)
 ├── scripts/
-│   ├── sync_earnings_calendar.ts       # Finnhub earnings calendar ingestion & scaffolding
-│   ├── sync_news.ts                    # Polygon firehose news ingestion & transmission calculation
-│   ├── sync_prices.ts                  # Market price synchronization (batch-accelerated)
-│   ├── fetch_data.ts                   # SEC 10-Q & consensus pipeline data extractor
+│   ├── sync_earnings_calendar.ts       # Earnings calendar ingestion & 8-module scaffolding
+│   ├── sync_prices.ts                  # Batch Yahoo Finance price, EPS & market cap synchronization
+│   ├── fetch_data.ts                   # Yahoo Finance & SEC EDGAR pipeline data extractor
+│   ├── backfill_sec_footnotes.ts       # SEC EDGAR filing & XBRL footnote backfill script
+│   ├── backfill_technical_universe.ts  # Universe-wide technical corridor & Volume POC backfill
 │   ├── seed_universe.ts                # S&P 500 & NASDAQ-100 universe ingestion & quote seeder
 │   ├── bulk_scaffold.ts                # Batch valuation scaffolding & report persistence engine
-│   ├── seed_upstream_dependencies.ts   # Cross-company supply chain DAG seeder
 │   └── capture_screenshots.sh          # Headless browser screenshot capture script
 ├── src/
 │   ├── app/                            # Next.js 16 App Router pages & API routes
-│   │   ├── page.tsx                    # Main valuation model & workspace cockpit
+│   │   ├── page.tsx                    # Main router (Market Home, Model Cockpit, Screener, Watchlist)
 │   │   ├── screener/                   # Dedicated cross-ticker screener (/screener)
 │   │   ├── watchlist/                  # Dedicated coverage watchlist (/watchlist)
 │   │   ├── settings/                   # Dedicated settings & privacy hub (/settings)
 │   │   ├── methodology/                # Interactive mathematical methodology guide (/methodology)
-│   │   └── api/                        # REST API routes (reports, news, revisions, watchlist, pipeline)
+│   │   └── api/                        # REST API routes (reports, market/summary, earnings/calendar, notes, watchlist, pipeline)
 │   ├── components/                     # React 19 UI components
-│   │   ├── Header.tsx                  # Global 3-tab segmented navigation bar & theme toggle
+│   │   ├── Header.tsx                  # Global 4-item segmented navigation bar & theme toggle
 │   │   ├── Cockpit.tsx                 # Interactive flow-through model & sliders
 │   │   ├── CockpitDualPane.tsx         # Desktop dual-pane independent scroll container
-│   │   ├── ScreenerView.tsx            # Multi-ticker radar table & adaptive cards
-│   │   ├── WatchlistView.tsx           # Dedicated watchlist telemetry strip & metrics
+│   │   ├── StockNotesModal.tsx         # Cloud + localStorage per-stock analyst notes modal
+│   │   ├── ScreenerView.tsx            # Single-row dropdown filter bar, GICS sectors & fixed-width table
+│   │   ├── WatchlistView.tsx           # Dedicated watchlist telemetry strip, notes & metrics
+│   │   ├── home/                       # MarketHomeView, SP500Treemap & Upcoming Earnings Docket
 │   │   ├── snowflake/                  # 5-Pillar Snowflake Radar chart & modal
-│   │   └── tabs/                       # 4 Condensed intelligence workspaces
+│   │   └── tabs/                       # 3 Streamlined intelligence workspaces (Technicals, Valuation, Estimates)
 │   ├── db/                             # Neon Serverless Postgres schema & connection pool
 │   └── lib/                            # Core domain logic
 │       ├── valuation.ts                # Deterministic arithmetic, FCF metrics & scenario calibration
 │       ├── snowflake.ts                # 30-point fundamental health scoring engine
 │       ├── sanity.ts                   # Variant perception & data completeness audit
-│       ├── news-filter.ts              # Clickbait & class-action lawsuit spam filter
-│       ├── news-transmission.ts        # Event-to-valuation transmission engine
-│       ├── services/                   # Earnings calendar, financial data, and news services
+│       ├── sectors.ts                  # 11 GICS sector classifications & constituent mappings
+│       ├── treemap.ts                  # Deterministic squarified treemap layout engine
+│       ├── notes.ts                    # Hybrid cloud + localStorage per-stock analyst notes client
+│       ├── services/                   # Earnings calendar, Yahoo/SEC financial data, and AI gateway services
 │       └── repository/                 # Data Access Layer (Drizzle & InMemory repositories)
-└── tests/                              # Vitest automated test suite (275 tests across 27 suites)
+└── tests/                              # Vitest automated test suite (320 tests across 32 suites)
 ```

@@ -7,28 +7,31 @@ StressAlpha is an interactive financial modeling and scenario stress-simulation 
 ## 📸 Platform Overview
 
 ### 1. Interactive Dual-Pane Cockpit
-The left pane anchors deterministic flow-through valuation models and real-time sensitivity controls. The right pane navigates multi-quarter analysis modules (Technical Levels, Consensus & Multiples, Filings & News, and Variant Perception) with independent scrolling.
+The left pane anchors deterministic flow-through valuation models, live TTM/NTM P/E anchors, and real-time sensitivity controls. The right pane navigates 3 streamlined analysis workspaces (Chart & Levels, Valuation & Drivers, Consensus & Peers) plus persistent per-stock Analyst Notes with independent scrolling.
 
 <p align="center">
   <img src="./docs/images/cockpit-preview.png" alt="StressAlpha Dual-Pane Cockpit Preview" width="100%" />
 </p>
 
-### 2. Universe Screener & Multi-Factor Matrix
-Filter, rank, and evaluate valuation spreads, consensus price targets, and 30-point Snowflake Fundamental Radars across 521 covered equities (with 640+ multi-quarter earnings reports) with responsive card and tabular views.
+### 2. Market Home, S&P 500 Treemap & Earnings Docket
+Monitor live major index benchmarks (`SPY`, `QQQ`, `DIA`, `IWM`, `^VIX`, `^TNX`), an interactive squarified S&P 500 & NASDAQ-100 sector heatmap, top valuation movers, and a 14-day Upcoming Earnings Docket with Watchlist-Only filtering and Market Cap sorting.
+
+### 3. Universe Screener & Multi-Factor Matrix
+Filter, rank, and evaluate valuation spreads, 11 GICS sector categories, consensus price targets, and 30-point Snowflake Fundamental Radars across 521 covered equities (with 640+ multi-quarter earnings reports) via a streamlined single-row dropdown control bar and fixed-width tabular/card views.
 
 <p align="center">
   <img src="./docs/images/screener-preview.png" alt="StressAlpha Universe Screener Preview" width="100%" />
 </p>
 
-### 3. Coverage Watchlist & Real-Time Telemetry
-Monitor core positions with real-time quote feeds, multi-regime stress boundaries, margin trends, and historical earnings performance.
+### 4. Coverage Watchlist & Per-Stock Analyst Notes
+Monitor core positions with real-time quote feeds, multi-regime stress boundaries, margin trends, and cloud-synced per-stock Analyst Notes (`user_notes`) that carry automatically into research memos.
 
 <p align="center">
   <img src="./docs/images/watchlist-preview.png" alt="StressAlpha Watchlist Preview" width="100%" />
 </p>
 
-### 4. 1-Click Investment Committee Memorandum (`[M]` key)
-Generates an institutional PDF-styled research memo rendering thesis drivers, consensus divergence, catalyst timetables, and valuation sensitivity matrices.
+### 5. 1-Click Investment Committee Memorandum (`[M]` key)
+Generates an institutional PDF-styled research memo rendering thesis drivers, consensus divergence, catalyst timetables, valuation sensitivity matrices, and custom analyst notes.
 
 <p align="center">
   <img src="./docs/images/memo-preview.png" alt="StressAlpha Investment Memorandum Preview" width="100%" />
@@ -38,11 +41,11 @@ Generates an institutional PDF-styled research memo rendering thesis drivers, co
 
 ## ✨ Key Capabilities
 
-* **Deterministic Valuation Engine**: All financial models—including Weighted Fair Value (WFV), operating leverage flow-through, and multiple sensitivity—are calculated client-side in pure TypeScript (`<1ms` recalculation latency).
+* **Deterministic Valuation Engine**: All financial models—including Weighted Fair Value (WFV), operating leverage flow-through, and multiple sensitivity—are calculated client-side in pure TypeScript (`<1ms` recalculation latency) with zero synthetic UI placeholders.
 * **4-Regime Scenario Stress Testing**: Evaluates cash generation and downside floors across Bull, Base, Bear, and Panic scenarios, modeling operating margin rigidity and upstream volume shocks.
 * **Microstructure & Fundamental Confluence**: Combines floor pivots ($P, S_1-S_3, R_1-R_3$), gap edges, 1-year volume profile Point of Control (POC), and Anchored VWAPs with valuation regimes to identify institutional price confluence within $\pm 2.5\%$.
 * **30-Point Snowflake Fundamental Radar**: Multi-factor fundamental audit across Valuation, Future Growth, Earnings Quality, Moat Durability, and Balance Sheet Resilience.
-* **Automated Data Ingestion & Scaffolding**: Scheduled batch ingestion syncing Finnhub earnings calendars and SEC 10-Q/10-K filings (Massive API) directly into typed relational schemas.
+* **Zero-Key SEC EDGAR & Yahoo Finance Pipeline**: Automated ingestion syncing quarterly financial statements, 1-year OHLCV bars, sell-side consensus targets, and official SEC 10-Q/10-K/8-K filings directly into typed relational schemas without paid third-party data vendor locks.
 * **Bilingual Parity**: Full English and Chinese localization (`en` / `zh`) across workspaces, research memos, and interactive methodology documentation.
 
 ---
@@ -57,14 +60,14 @@ npm install
 ```
 
 ### 2. Configure Environment
-Copy `.env.example` to `.env.local` and add your database and API credentials:
+Copy `.env.example` to `.env.local` and add your database credentials:
 ```bash
 cp .env.example .env.local
 ```
-*(Requires `DATABASE_URL` for Neon PostgreSQL. Optional: `FINNHUB_API_KEY` and `MASSIVE_API_KEY` for live data ingestion).*
+*(Requires `DATABASE_URL` for Neon PostgreSQL. Core SEC EDGAR & Yahoo Finance data pipelines run out-of-the-box with zero external API keys; optional `AI_GATEWAY_API_KEY` for qualitative enrichment).*
 
 ### 3. Run Automated Tests
-Spins up an isolated, ephemeral copy-on-write Neon DB branch in ~0.85s for 100% cloud parity:
+Spins up an isolated, ephemeral copy-on-write Neon DB branch in ~1.0s for 100% cloud parity:
 ```bash
 npm test
 ```
@@ -84,8 +87,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the cockpit.
 | **Framework** | Next.js 16 App Router, React 19, Turbopack | Server components with client-side reactive modeling |
 | **Styling & UI** | Tailwind CSS, Pure SVG Charts | Zero canvas/heavy chart dependencies; dark/light FactSet theme |
 | **Database & ORM** | Neon Serverless PostgreSQL, Drizzle ORM | Normalized relational time-series tables; repository pattern |
-| **Testing** | Vitest, Neon Ephemeral Branching | 275+ integration tests with isolated copy-on-write cloud DB branches |
-| **Data Pipelines** | SEC EDGAR, Massive API, Finnhub API | Scheduled ETL with rate-limiting, exponential backoff, and deduplication |
+| **Testing** | Vitest, Neon Ephemeral Branching | 320+ integration tests across 32 suites with isolated copy-on-write cloud DB branches |
+| **Data Pipelines** | Official SEC EDGAR, Yahoo Finance (`yahoo-finance2`) | Zero-key ETL with rate-budgeting, exponential backoff, and deduplication |
 
 ---
 
