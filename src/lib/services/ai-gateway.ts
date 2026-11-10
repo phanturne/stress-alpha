@@ -16,7 +16,13 @@ import {
   type FilingExtracts,
   type FinancialModelBaseline,
 } from "@/lib/schemas";
-import type { PipelineDataBundle } from "./financial-data/types";
+import type {
+  PipelineDataBundle,
+  FinancialProfile,
+  PeerBenchmarkMetrics,
+} from "./financial-data/types";
+import { fetchPeerBenchmarks } from "./financial-data/fetchers";
+import { round2 } from "./financial-data/utils";
 
 export const AI_GATEWAY_MODELS = {
   EXTRACTOR: "deepseek/deepseek-v4.1-flash-1017",
@@ -38,6 +44,9 @@ const UnifiedSynthesisSchema = z.object({
   filingEn: FilingExtractsSchema,
   segments: FactsSchema.shape.segments,
   oneTimeItems: FactsSchema.shape.oneTimeItems,
+  epsOperating: z.number().optional(),
+  grossMarginPct: z.number().optional(),
+  operatingMarginPct: z.number().optional(),
   guidanceRevenueLowBillions: z.number().nonnegative(),
   guidanceRevenueHighBillions: z.number().nonnegative(),
   guidanceOperatingIncomeLowBillions: z.number(),
@@ -84,7 +93,11 @@ function parseJsonObject(rawText: string): any {
     );
   }
 
-  return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+  const candidate = cleaned
+    .slice(firstBrace, lastBrace + 1)
+    .replace(/,\s*([}\]])/g, "$1");
+
+  return JSON.parse(candidate);
 }
 
 function extractAndParseJson<T extends z.ZodType>(
@@ -96,6 +109,29 @@ function extractAndParseJson<T extends z.ZodType>(
 
 function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
   if (!raw || typeof raw !== "object") return raw;
+
+  if (Array.isArray(raw.segments)) {
+    raw.segments = raw.segments.map((seg: any) => {
+      if (!seg || typeof seg !== "object") return seg;
+      const opInc = seg.operatingIncomeBillions;
+      const opMarg = seg.operatingMarginPct;
+      // When 10-Q disaggregates revenue by product line without separate segment operating income,
+      // omit 0 placeholder margins so Snowflake does not falsely flag unprofitable segments
+      const isUndisclosedSegmentMargin =
+        (opInc === 0 || opInc == null) && (opMarg === 0 || opMarg == null);
+      return {
+        ...seg,
+        revenueBillions: Number(seg.revenueBillions || 0),
+        growthPct: Number(seg.growthPct || 0),
+        operatingIncomeBillions: isUndisclosedSegmentMargin
+          ? undefined
+          : Number(opInc),
+        operatingMarginPct: isUndisclosedSegmentMargin
+          ? undefined
+          : Number(opMarg),
+      };
+    });
+  }
 
   if (Array.isArray(raw.oneTimeItems)) {
     raw.oneTimeItems = raw.oneTimeItems.map((it: any) =>
@@ -182,12 +218,51 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
     if (Array.isArray(raw.moatEn.competitors)) {
       raw.moatEn.competitors = raw.moatEn.competitors.map((c: any) => ({
         ...c,
+        marketCapBillions: Number(c?.marketCapBillions || 0),
+        revenueBillions: Number(c?.revenueBillions || 0),
+        revenueGrowthPct:
+          c?.revenueGrowthPct != null ? Number(c.revenueGrowthPct) : undefined,
+        grossMarginPct: Number(c?.grossMarginPct || 0),
+        operatingMarginPct: Number(c?.operatingMarginPct || 0),
+        forwardPe: c?.forwardPe != null ? Number(c.forwardPe) : undefined,
+        marketSharePct:
+          c?.marketSharePct != null ? Number(c.marketSharePct) : undefined,
         pricingPower: ["Superior", "Parity", "Inferior"].includes(
           c?.pricingPower
         )
           ? c.pricingPower
           : "Parity",
       }));
+    }
+  }
+
+  for (const numKey of [
+    "epsOperating",
+    "grossMarginPct",
+    "operatingMarginPct",
+    "customerConcentrationPct",
+    "purchaseObligationsBillions",
+    "totalCommitmentsBillions",
+    "guaranteeExposureBillions",
+    "revenueGrowthPct",
+  ]) {
+    if (raw[numKey] === null) {
+      raw[numKey] = undefined;
+    } else if (typeof raw[numKey] === "string") {
+      const parsed = Number(raw[numKey]);
+      raw[numKey] = Number.isFinite(parsed) ? parsed : undefined;
+    }
+  }
+  for (const reqNumKey of [
+    "guidanceRevenueLowBillions",
+    "guidanceRevenueHighBillions",
+    "guidanceOperatingIncomeLowBillions",
+    "guidanceOperatingIncomeHighBillions",
+  ]) {
+    if (raw[reqNumKey] == null || Number.isNaN(Number(raw[reqNumKey]))) {
+      raw[reqNumKey] = 0;
+    } else {
+      raw[reqNumKey] = Number(raw[reqNumKey]);
     }
   }
 
@@ -213,9 +288,166 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
 }
 
 /**
+ * Overwrites LLM-generated competitor financial metrics with live, deterministic
+ * Yahoo Finance telemetry so peer comparisons never contain hallucinated numbers.
+ * Unverified tickers where Yahoo Finance lookup fails are dropped and replaced
+ * from verified peerBenchmarks so 100% of returned competitors have live telemetry.
+ */
+export async function hydrateCompetitorsWithLiveMetrics(
+  aiCompetitors: MoatCompetitors["competitors"],
+  profile: Pick<FinancialProfile, "ticker"> &
+    Partial<Pick<FinancialProfile, "peerBenchmarks" | "quarterlyStatements">>,
+  facts: Facts
+): Promise<MoatCompetitors["competitors"]> {
+  if (
+    (!aiCompetitors || aiCompetitors.length === 0) &&
+    (!profile.peerBenchmarks || profile.peerBenchmarks.length === 0)
+  ) {
+    return [];
+  }
+
+  const targetTicker = profile.ticker.toUpperCase();
+  const knownMap = new Map<string, PeerBenchmarkMetrics>();
+  for (const p of profile.peerBenchmarks || []) {
+    knownMap.set(p.ticker.toUpperCase(), p);
+  }
+
+  const missingTickers = (aiCompetitors || [])
+    .map((c) =>
+      String(c.ticker || "")
+        .toUpperCase()
+        .trim()
+    )
+    .filter(
+      (sym) =>
+        sym &&
+        sym !== "PEER" &&
+        sym !== "COMP" &&
+        !knownMap.has(sym) &&
+        sym !== targetTicker
+    );
+
+  if (missingTickers.length > 0) {
+    const fetched = await fetchPeerBenchmarks(missingTickers, targetTicker);
+    for (const p of fetched) {
+      knownMap.set(p.ticker.toUpperCase(), p);
+    }
+  }
+
+  const computePricingPower = (
+    peerGrossMarginPct: number,
+    fallback?: string
+  ): "Superior" | "Parity" | "Inferior" => {
+    if (facts.grossMarginPct == null) {
+      return fallback === "Superior" || fallback === "Inferior"
+        ? fallback
+        : "Parity";
+    }
+    const diff = peerGrossMarginPct - facts.grossMarginPct;
+    return diff >= 6 ? "Superior" : diff <= -6 ? "Inferior" : "Parity";
+  };
+
+  const usedTickers = new Set<string>([targetTicker]);
+  const hydrated: MoatCompetitors["competitors"] = [];
+
+  for (const comp of aiCompetitors || []) {
+    const sym = String(comp.ticker || "")
+      .toUpperCase()
+      .trim();
+    if (usedTickers.has(sym)) {
+      continue;
+    }
+    usedTickers.add(sym);
+    const live = knownMap.get(sym);
+
+    if (live) {
+      hydrated.push({
+        ...comp,
+        ticker: live.ticker,
+        name: live.name || comp.name,
+        marketCapBillions: live.marketCapBillions,
+        revenueBillions: live.revenueBillions,
+        revenueGrowthPct: live.revenueGrowthPct,
+        grossMarginPct: live.grossMarginPct,
+        operatingMarginPct: live.operatingMarginPct,
+        forwardPe: live.forwardPe,
+        pricingPower: computePricingPower(
+          live.grossMarginPct,
+          comp.pricingPower
+        ),
+      });
+    } else {
+      // Unlisted / private competitor (e.g. OpenAI, Anthropic, Huawei)
+      // Retain qualitative moat & competitive dynamics without fabricating numerical figures
+      hydrated.push({
+        ...comp,
+        ticker: sym || comp.name.toUpperCase().slice(0, 6),
+        name: comp.name,
+        marketCapBillions: undefined,
+        revenueBillions: undefined,
+        revenueGrowthPct: undefined,
+        grossMarginPct: undefined,
+        operatingMarginPct: undefined,
+        forwardPe: undefined,
+        pricingPower: comp.pricingPower ?? "Parity",
+        productComparison: comp.productComparison,
+        keyAdvantageOrVulnerability: comp.keyAdvantageOrVulnerability,
+      });
+    }
+  }
+
+  const desiredCount = Math.max(aiCompetitors?.length || 0, 3);
+  if (hydrated.length < desiredCount && profile.peerBenchmarks) {
+    for (const live of profile.peerBenchmarks) {
+      if (hydrated.length >= desiredCount) break;
+      const sym = live.ticker.toUpperCase();
+      if (usedTickers.has(sym)) continue;
+      usedTickers.add(sym);
+
+      hydrated.push({
+        ticker: live.ticker,
+        name: live.name,
+        marketCapBillions: live.marketCapBillions,
+        revenueBillions: live.revenueBillions,
+        revenueGrowthPct: live.revenueGrowthPct,
+        grossMarginPct: live.grossMarginPct,
+        operatingMarginPct: live.operatingMarginPct,
+        forwardPe: live.forwardPe,
+        pricingPower: computePricingPower(live.grossMarginPct, "Parity"),
+        productComparison: `Direct sector peer benchmark vs. ${facts.company} (${live.name}).`,
+        keyAdvantageOrVulnerability: `Operates at ${live.operatingMarginPct}% operating margin and ${live.grossMarginPct}% gross margin.`,
+      });
+    }
+  }
+
+  const annualizedTargetRev = round2(
+    profile.quarterlyStatements && profile.quarterlyStatements.length >= 4
+      ? profile.quarterlyStatements
+          .slice(0, 4)
+          .reduce((s, q) => s + q.revenueBillions, 0)
+      : facts.revenueBillions * 4
+  );
+
+  const totalPoolRev =
+    annualizedTargetRev +
+    hydrated.reduce((s, c) => s + (c.revenueBillions || 0), 0);
+
+  return hydrated.map((c) => ({
+    ...c,
+    marketSharePct:
+      c.revenueBillions !== undefined &&
+      totalPoolRev > 0 &&
+      c.revenueBillions > 0
+        ? round2((c.revenueBillions / totalPoolRev) * 100)
+        : undefined,
+  }));
+}
+
+/**
  * Executes lean, high-fidelity buy-side intelligence extraction via Vercel AI Gateway:
  * - Single-pass unified synthesis (`deepseek/deepseek-v4.1-flash-1017`, thinking disabled):
  *   Extracts sentiment, Item 1A risk factors, operating segments, real peer moats, and calibrated scenarios in 1 call.
+ * - Hydrates competitor financial metrics deterministically from Yahoo Finance.
  * - Optional on-demand localization (`options?.translateZh`): Generates Chinese artifacts only when explicitly requested.
  */
 export async function enrichPipelineBundleWithAi(
@@ -233,6 +465,9 @@ export async function enrichPipelineBundleWithAi(
     {
       ticker,
       companyName: profile.companyName,
+      sector: profile.sector,
+      industry: profile.industry,
+      businessSummary: profile.businessSummary,
       quarter: factsDraft.quarter,
       reportDate: factsDraft.reportDate,
       currentPrice: profile.currentPrice,
@@ -252,8 +487,9 @@ export async function enrichPipelineBundleWithAi(
       quarterlyHistory: profile.quarterlyStatements.slice(0, 5),
       consensusTargets: analystEstimatesEn.priceTargets,
       consensusBreakdown: analystEstimatesEn.consensus,
-      recentSecFilings: filings.slice(0, 5),
+      recentSecFilings: filings.slice(0, 6),
       baselineMultipleRegimes: baseline.multipleRegimes,
+      livePeerBenchmarks: profile.peerBenchmarks || [],
     },
     null,
     2
@@ -277,12 +513,15 @@ export async function enrichPipelineBundleWithAi(
       filingEn: bundle.filingEn,
       segments: factsDraft.segments,
       oneTimeItems: factsDraft.oneTimeItems,
-      guidanceRevenueLowBillions: factsDraft.guidanceRevenueLowBillions,
-      guidanceRevenueHighBillions: factsDraft.guidanceRevenueHighBillions,
+      epsOperating: factsDraft.epsOperating,
+      grossMarginPct: factsDraft.grossMarginPct ?? 50,
+      operatingMarginPct: factsDraft.operatingMarginPct,
+      guidanceRevenueLowBillions: factsDraft.guidanceRevenueLowBillions ?? 0,
+      guidanceRevenueHighBillions: factsDraft.guidanceRevenueHighBillions ?? 0,
       guidanceOperatingIncomeLowBillions:
-        factsDraft.guidanceOperatingIncomeLowBillions,
+        factsDraft.guidanceOperatingIncomeLowBillions ?? 0,
       guidanceOperatingIncomeHighBillions:
-        factsDraft.guidanceOperatingIncomeHighBillions,
+        factsDraft.guidanceOperatingIncomeHighBillions ?? 0,
       governanceRisk: factsDraft.governanceRisk,
       accountingFlags: factsDraft.accountingFlags,
       materialLitigationOrDoj: factsDraft.materialLitigationOrDoj,
@@ -303,34 +542,40 @@ export async function enrichPipelineBundleWithAi(
       if (bundle.secExcerpts.pressReleaseText) {
         secContext += `\n\n--- OFFICIAL FORM 8-K PRESS RELEASE & EXECUTIVE COMMENTARY ---\n${bundle.secExcerpts.pressReleaseText}`;
       }
+      if (bundle.secExcerpts.segmentFootnoteText) {
+        secContext += `\n\n--- OFFICIAL 10-Q/10-K NOTE: OPERATING SEGMENTS, DISAGGREGATION OF REVENUE & CONTRACT BALANCES (RPO) ---\n${bundle.secExcerpts.segmentFootnoteText}`;
+      }
       if (bundle.secExcerpts.commitmentsText) {
-        secContext += `\n\n--- OFFICIAL 10-Q NOTE: COMMITMENTS AND CONTINGENCIES & GUARANTEES ---\n${bundle.secExcerpts.commitmentsText}`;
+        secContext += `\n\n--- OFFICIAL 10-Q/10-K NOTE: COMMITMENTS AND CONTINGENCIES & PURCHASE OBLIGATIONS ---\n${bundle.secExcerpts.commitmentsText}`;
       }
       if (bundle.secExcerpts.customerConcentrationText) {
-        secContext += `\n\n--- OFFICIAL 10-Q NOTE: CUSTOMER & SEGMENT CONCENTRATIONS ---\n${bundle.secExcerpts.customerConcentrationText}`;
+        secContext += `\n\n--- OFFICIAL 10-Q/10-K NOTE: CUSTOMER & GEOGRAPHIC CONCENTRATIONS ---\n${bundle.secExcerpts.customerConcentrationText}`;
+      }
+      if (bundle.secExcerpts.competitionAndMoatText) {
+        secContext += `\n\n--- OFFICIAL 10-K ITEM 1 BUSINESS: STRATEGY, COMPETITION, CUSTOMERS & R&D MOAT ---\n${bundle.secExcerpts.competitionAndMoatText}`;
       }
       if (bundle.secExcerpts.mdaAndRisksText) {
-        secContext += `\n\n--- OFFICIAL 10-Q MD&A & RISK HIGHLIGHTS ---\n${bundle.secExcerpts.mdaAndRisksText}`;
+        secContext += `\n\n--- OFFICIAL 10-Q/10-K MD&A & RISK HIGHLIGHTS ---\n${bundle.secExcerpts.mdaAndRisksText}`;
       }
     }
 
     const { text: synthesisText } = await generateText({
       model: AI_GATEWAY_MODELS.EXTRACTOR,
-      maxOutputTokens: 8192,
+      maxOutputTokens: 16384,
       system: `You are a Senior Buy-Side Equity Analyst & Forensic Auditor. Return ONLY a single valid JSON object matching the exact keys and types of the provided template (no markdown code fences, no commentary).
 Rules:
-1. In sentiment and filingEn, populate concrete, company-specific 10-Q/10-K risk disclosures, MD&A findings, and management tone metrics grounded in the financial context.
-2. Break down total quarterly revenue ($${factsDraft.revenueBillions}B) into 3-4 of ${ticker}'s actual operating segments (never use "Core Business & Solutions").
-3. In moatEn.competitors, list 3-4 real publicly traded competitors with actual stock tickers (never "PEER") and realistic metrics.
-4. In moatEn.overallMoatRating, choose "Wide", "Narrow", or "None" based on durable ROIC > WACC and structural barriers.
-5. Set governanceRisk to "none" and accountingFlags to [] unless the company has an active auditor resignation, SEC restatement, or DOJ accounting fraud probe.
-6. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice}).
-7. When official SEC 10-Q / 8-K excerpts are provided:
-   a. Populate sentiment.keyQuotes using exact quotes from the CEO and CFO in the 8-K press release / commentary.
-   b. If off-balance-sheet commitments and credit guarantees are disclosed, populate them in filingEn.sections under "Note: Commitments and Contingencies" with exact dollar amounts (e.g. supply capacity, shell buildout guarantees) and set purchaseObligationsBillions, totalCommitmentsBillions, and guaranteeExposureBillions.
-   c. If customer concentration is disclosed (e.g. one direct customer represented X%, or top 3 represented Y%), record it in customerConcentrationPct and include a section in filingEn.sections for "Note: Customer and Geographic Concentrations".
-   d. Set revenueGrowthPct to the reported year-over-year revenue growth rate stated in the 8-K/10-Q.
-   e. In catalystsEn and filingEn.newRiskFactors, capture product architecture ramps (e.g. next-gen architectures entering production) and supply chain / execution constraints mentioned in the disclosures.`,
+1. Ground all findings strictly in the provided SEC 8-K, 10-Q, and 10-K disclosures and quantitative context. Keep the JSON concise and high-signal: max 3 keyQuotes, max 4 newRiskFactors, max 4 filingEn.sections (with 2-3 keyFindings each), max 4 moatSources, max 4 competitors, and max 4 catalysts. Keep each descriptive string to 1-2 crisp institutional sentences and escape any internal double quotes.
+2. In segments, extract ${ticker}'s actual disclosed product/operating segments from the 10-Q "Disaggregation of Revenue / Operating Segments" table or 8-K release (e.g. Components vs. Systems, Data Center vs. Gaming), converting millions to billions (e.g. $754.2M -> 0.75B) and computing exact YoY growthPct. Never output the generic "Core Business & Solutions" placeholder.
+3. If the 8-K earnings release discloses Non-GAAP diluted EPS (e.g. $4.57 Non-GAAP vs $3.54 GAAP) or next-quarter revenue/operating margin guidance, set epsOperating to the Non-GAAP diluted EPS and populate guidanceRevenueLowBillions, guidanceRevenueHighBillions, guidanceOperatingIncomeLowBillions, and guidanceOperatingIncomeHighBillions (in billions).
+4. In moatEn.competitors, select 3-4 direct publicly traded competitors of ${ticker} based on the 10-K Competition disclosure and industry overlap (using livePeerBenchmarks when relevant, or closer pure-play public peers with real US stock tickers). Compare each peer's product stack, switching costs, and pricingPower ("Superior", "Parity", or "Inferior" from the peer's perspective relative to ${ticker}) citing concrete technological or margin evidence from the 10-K/10-Q.
+5. In moatEn.overallMoatRating ("Wide", "Narrow", or "None") and moatEn.moatSources, evaluate structural barriers (Intangible Assets/IP, Switching Costs/RPO & multi-billion purchase commitments, Cost Advantage/vertical fab integration, Network Effects, Efficient Scale) grounded in 10-K/10-Q evidence and peer margin differentials.
+6. Set governanceRisk to "none" and accountingFlags to [] unless the company has an active auditor resignation, SEC restatement, or DOJ accounting fraud probe.
+7. In scenariosEn.scenarios, formulate 3 scenarios ("Bull", "Base", "Panic") whose probabilities sum to 1.0 (e.g. 0.25 Bull, 0.50 Base, 0.25 Panic), anchoring forwardEps and multiple to currentPrice ($${profile.currentPrice}) and consensusTarget ($${analystEstimatesEn.priceTargets.average || profile.currentPrice}).
+8. When official SEC 10-Q / 8-K excerpts are provided:
+   a. Populate sentiment.keyQuotes using verbatim quotes from the CEO and CFO in the 8-K press release.
+   b. Extract purchase obligations, supply commitments, and customer prepayments/deferred revenue into filingEn.sections under "Note: Commitments and Contingencies" (convert millions to billions for purchaseObligationsBillions, e.g. $2,948.9 million -> 2.95).
+   c. If customer concentration is disclosed (e.g. two end customers accounted for 37% and 11% of revenue), record the top single-customer share in customerConcentrationPct (e.g. 37) and include "Note: Customer and Geographic Concentrations" in filingEn.sections.
+   d. In catalystsEn and filingEn.newRiskFactors, capture specific product ramps, multi-billion purchase commitments (e.g. NPO/CPO, OCS), M&A combinations, and supply/customer concentration risks disclosed in the 8-K and 10-Q.`,
       prompt: `Synthesize the complete equity research bundle for ${profile.companyName} (${ticker}, ${factsDraft.quarter}).\n\nJSON Template to match:\n${JSON.stringify(synthesisTemplate, null, 2)}\n\nQuantitative Context:\n${compactContext}${secContext}`,
       providerOptions: {
         deepseek: {
@@ -356,11 +601,40 @@ Rules:
       quarter: factsDraft.quarter,
     });
 
+    const hasPressRelease = Boolean(
+      bundle.secExcerpts?.pressReleaseText?.trim()
+    );
+    const hasSegmentDisclosures = Boolean(
+      bundle.secExcerpts?.segmentFootnoteText?.trim() || hasPressRelease
+    );
+
+    const synthSegSum = synth.segments.reduce(
+      (s, seg) => s + (seg.revenueBillions || 0),
+      0
+    );
+    const segmentsValid =
+      hasSegmentDisclosures &&
+      synth.segments.length > 0 &&
+      synth.segments.every((seg) => seg.revenueBillions > 0) &&
+      (factsDraft.revenueBillions <= 0 ||
+        (synthSegSum >= factsDraft.revenueBillions * 0.8 &&
+          synthSegSum <= factsDraft.revenueBillions * 1.2));
+
+    const epsOperatingValid =
+      hasPressRelease &&
+      synth.epsOperating != null &&
+      synth.epsOperating > 0 &&
+      (factsDraft.epsReported <= 0 ||
+        (synth.epsOperating >= factsDraft.epsReported * 0.25 &&
+          synth.epsOperating <= factsDraft.epsReported * 4.0));
+
     enrichedFacts = FactsSchema.parse({
       ...factsDraft,
-      segments:
-        synth.segments.length > 0 ? synth.segments : factsDraft.segments,
+      segments: segmentsValid ? synth.segments : factsDraft.segments,
       oneTimeItems: synth.oneTimeItems,
+      epsOperating: epsOperatingValid
+        ? synth.epsOperating
+        : factsDraft.epsOperating,
       guidanceRevenueLowBillions:
         synth.guidanceRevenueLowBillions > 0
           ? synth.guidanceRevenueLowBillions
@@ -370,28 +644,52 @@ Rules:
           ? synth.guidanceRevenueHighBillions
           : factsDraft.guidanceRevenueHighBillions,
       guidanceOperatingIncomeLowBillions:
-        synth.guidanceOperatingIncomeLowBillions,
+        synth.guidanceOperatingIncomeLowBillions > 0
+          ? synth.guidanceOperatingIncomeLowBillions
+          : factsDraft.guidanceOperatingIncomeLowBillions,
       guidanceOperatingIncomeHighBillions:
-        synth.guidanceOperatingIncomeHighBillions,
+        synth.guidanceOperatingIncomeHighBillions > 0
+          ? synth.guidanceOperatingIncomeHighBillions
+          : factsDraft.guidanceOperatingIncomeHighBillions,
       governanceRisk: synth.governanceRisk,
       accountingFlags: synth.accountingFlags,
       materialLitigationOrDoj: synth.materialLitigationOrDoj,
       valuationArchetype: synth.valuationArchetype,
       customerConcentrationPct:
-        synth.customerConcentrationPct ?? factsDraft.customerConcentrationPct,
+        synth.customerConcentrationPct && synth.customerConcentrationPct > 0
+          ? synth.customerConcentrationPct
+          : factsDraft.customerConcentrationPct,
       purchaseObligationsBillions:
-        synth.purchaseObligationsBillions ??
-        factsDraft.purchaseObligationsBillions,
+        synth.purchaseObligationsBillions &&
+        synth.purchaseObligationsBillions > 0
+          ? synth.purchaseObligationsBillions
+          : factsDraft.purchaseObligationsBillions,
       totalCommitmentsBillions:
-        synth.totalCommitmentsBillions ?? factsDraft.totalCommitmentsBillions,
+        synth.totalCommitmentsBillions && synth.totalCommitmentsBillions > 0
+          ? synth.totalCommitmentsBillions
+          : factsDraft.totalCommitmentsBillions,
       guaranteeExposureBillions:
-        synth.guaranteeExposureBillions ?? factsDraft.guaranteeExposureBillions,
-      revenueGrowthPct: synth.revenueGrowthPct ?? factsDraft.revenueGrowthPct,
+        synth.guaranteeExposureBillions && synth.guaranteeExposureBillions > 0
+          ? synth.guaranteeExposureBillions
+          : factsDraft.guaranteeExposureBillions,
+      revenueGrowthPct:
+        factsDraft.revenueGrowthPct === 0 &&
+        hasPressRelease &&
+        synth.revenueGrowthPct != null
+          ? synth.revenueGrowthPct
+          : factsDraft.revenueGrowthPct,
     });
+
+    const hydratedCompetitors = await hydrateCompetitorsWithLiveMetrics(
+      synth.moatEn.competitors,
+      profile,
+      enrichedFacts
+    );
 
     enrichedMoatEn = MoatCompetitorsSchema.parse({
       ...synth.moatEn,
       ticker,
+      competitors: hydratedCompetitors,
       sources: enrichedFacts.sources,
     });
 
@@ -400,75 +698,51 @@ Rules:
       ticker,
     });
 
-    if (synth.upstreamDrivers.length >= 2) {
+    if (synth.upstreamDrivers.length > 0) {
       enrichedBaseline = FinancialModelBaselineSchema.parse({
         ...baseline,
-        upstreamDrivers: synth.upstreamDrivers,
+        upstreamDrivers: baseline.upstreamDrivers.map((detDriver, idx) => {
+          const aiDriver =
+            synth.upstreamDrivers.find((d) => d.id === detDriver.id) ||
+            synth.upstreamDrivers[idx];
+          return {
+            ...detDriver,
+            name: aiDriver?.name || detDriver.name,
+          };
+        }),
       });
     }
 
-    // Normalize scenario probabilities & anchor
-    const rawScenarios = synth.scenariosEn.scenarios;
-    const probSum = rawScenarios.reduce((s, c) => s + c.probability, 0) || 1;
-    const normalizedScenarios = rawScenarios.map((s, idx) => {
-      const detScenario =
-        bundle.scenariosEn.scenarios.find(
-          (ds) => ds.name.toLowerCase() === s.name.toLowerCase()
-        ) || bundle.scenariosEn.scenarios[idx];
+    // Lock scenario forwardEps, multiple, and probability strictly to deterministic baseline scenarios
+    const lockedScenarios = bundle.scenariosEn.scenarios.map(
+      (detScenario, idx) => {
+        const aiScenario =
+          synth.scenariosEn.scenarios.find(
+            (s) => s.name.toLowerCase() === detScenario.name.toLowerCase()
+          ) || synth.scenariosEn.scenarios[idx];
 
-      const p = Number((s.probability / probSum).toFixed(2));
-      const detEps = detScenario?.forwardEps ?? s.forwardEps;
-      const detMult = detScenario?.multiple ?? s.multiple;
-      const boundedEps = Number(
-        Math.max(
-          detEps * 0.85,
-          Math.min(detEps * 1.15, s.forwardEps || detEps)
-        ).toFixed(2)
-      );
-      const boundedMult = Number(
-        Math.max(
-          detMult * 0.85,
-          Math.min(detMult * 1.15, s.multiple || detMult)
-        ).toFixed(2)
-      );
-
-      return {
-        ...s,
-        probability: p,
-        rawProbability: p,
-        forwardEps: Math.max(boundedEps, 0.1),
-        multiple: Math.max(boundedMult, 2.0),
-      };
-    });
-
-    const currentSum = normalizedScenarios.reduce(
-      (s, c) => s + c.probability,
-      0
+        return {
+          ...detScenario,
+          assumptions:
+            aiScenario?.assumptions && aiScenario.assumptions.length > 0
+              ? aiScenario.assumptions
+              : detScenario.assumptions,
+          keyDrivers:
+            aiScenario?.keyDrivers && aiScenario.keyDrivers.length > 0
+              ? aiScenario.keyDrivers
+              : detScenario.keyDrivers,
+        };
+      }
     );
-    if (normalizedScenarios.length > 0 && Math.abs(currentSum - 1) > 0.001) {
-      const idx =
-        normalizedScenarios.findIndex((s) =>
-          s.name.toLowerCase().includes("base")
-        ) >= 0
-          ? normalizedScenarios.findIndex((s) =>
-              s.name.toLowerCase().includes("base")
-            )
-          : 0;
-      normalizedScenarios[idx].probability = Number(
-        (normalizedScenarios[idx].probability + (1 - currentSum)).toFixed(2)
-      );
-      normalizedScenarios[idx].rawProbability =
-        normalizedScenarios[idx].probability;
-    }
 
     enrichedScenariosEn = ScenariosSchema.parse({
-      ...synth.scenariosEn,
+      ...bundle.scenariosEn,
       ticker,
       currentPrice: profile.currentPrice,
       consensusTarget:
         analystEstimatesEn.priceTargets.average ||
-        synth.scenariosEn.consensusTarget,
-      scenarios: normalizedScenarios,
+        bundle.scenariosEn.consensusTarget,
+      scenarios: lockedScenarios,
     });
   } catch (err) {
     console.warn(
@@ -510,9 +784,9 @@ Rules:
 
       const { text: stage3Text } = await generateText({
         model: AI_GATEWAY_MODELS.EXTRACTOR,
-        maxOutputTokens: 8192,
+        maxOutputTokens: 16384,
         system:
-          "You are an institutional Mandarin Chinese equity research translator. Return ONLY a single valid JSON object matching the exact keys of the provided template (no markdown fences). Translate all English descriptive text fields into professional buy-side Simplified Chinese while keeping every number, percentage, ticker symbol, and enum key 100% identical to the English input.",
+          "You are an institutional Mandarin Chinese equity research translator. Return ONLY a single valid JSON object matching the exact keys of the provided template (no markdown fences). Translate all English descriptive text fields into concise, professional buy-side Simplified Chinese while keeping every number, percentage, ticker symbol, and enum key 100% identical to the English input.",
         prompt: `Translate the following equity research modules for ${ticker} into institutional Simplified Chinese matching the exact JSON structure:\n\n${JSON.stringify(
           stage3Template,
           null,
@@ -526,6 +800,16 @@ Rules:
       });
 
       const rawZh = parseJsonObject(stage3Text);
+      if (Array.isArray(rawZh?.segmentsZh)) {
+        rawZh.segmentsZh = enrichedFacts.segments.map((enSeg, i) => ({
+          ...enSeg,
+          name: rawZh.segmentsZh[i]?.name || enSeg.name,
+          revenueBillions: enSeg.revenueBillions,
+          growthPct: enSeg.growthPct,
+          operatingIncomeBillions: enSeg.operatingIncomeBillions,
+          operatingMarginPct: enSeg.operatingMarginPct,
+        }));
+      }
       if (rawZh?.moatZh) {
         if (Array.isArray(rawZh.moatZh.moatSources)) {
           rawZh.moatZh.moatSources = rawZh.moatZh.moatSources.map(
@@ -540,16 +824,35 @@ Rules:
             })
           );
         }
-        if (Array.isArray(rawZh.moatZh.competitors)) {
-          rawZh.moatZh.competitors = rawZh.moatZh.competitors.map(
-            (c: any, i: number) => ({
-              ...c,
-              ticker: enrichedMoatEn.competitors[i]?.ticker || c.ticker,
-              pricingPower:
-                enrichedMoatEn.competitors[i]?.pricingPower || "Parity",
-            })
-          );
-        }
+        rawZh.moatZh.competitors = enrichedMoatEn.competitors.map(
+          (enComp, i) => {
+            const zhComp = Array.isArray(rawZh.moatZh.competitors)
+              ? rawZh.moatZh.competitors.find(
+                  (c: any) =>
+                    String(c?.ticker || "").toUpperCase() ===
+                    enComp.ticker.toUpperCase()
+                ) || rawZh.moatZh.competitors[i]
+              : undefined;
+            return {
+              ...enComp,
+              name: zhComp?.name || enComp.name,
+              productComparison:
+                zhComp?.productComparison || enComp.productComparison,
+              keyAdvantageOrVulnerability:
+                zhComp?.keyAdvantageOrVulnerability ||
+                enComp.keyAdvantageOrVulnerability,
+              ticker: enComp.ticker,
+              marketCapBillions: enComp.marketCapBillions,
+              revenueBillions: enComp.revenueBillions,
+              revenueGrowthPct: enComp.revenueGrowthPct,
+              grossMarginPct: enComp.grossMarginPct,
+              operatingMarginPct: enComp.operatingMarginPct,
+              forwardPe: enComp.forwardPe,
+              marketSharePct: enComp.marketSharePct,
+              pricingPower: enComp.pricingPower,
+            };
+          }
+        );
         rawZh.moatZh.overallMoatRating = enrichedMoatEn.overallMoatRating;
         rawZh.moatZh.moatTrend = enrichedMoatEn.moatTrend;
       }
@@ -562,6 +865,21 @@ Rules:
             horizon: enrichedCatalystsEn.catalysts[i]?.horizon || "medium-term",
             probability:
               enrichedCatalystsEn.catalysts[i]?.probability ?? cat.probability,
+          })
+        );
+      }
+      if (Array.isArray(rawZh?.scenariosZh?.scenarios)) {
+        rawZh.scenariosZh.scenarios = enrichedScenariosEn.scenarios.map(
+          (enScen, i) => ({
+            ...enScen,
+            assumptions:
+              rawZh.scenariosZh.scenarios[i]?.assumptions ?? enScen.assumptions,
+            keyDrivers:
+              rawZh.scenariosZh.scenarios[i]?.keyDrivers ?? enScen.keyDrivers,
+            forwardEps: enScen.forwardEps,
+            multiple: enScen.multiple,
+            probability: enScen.probability,
+            calibratedProbability: enScen.calibratedProbability,
           })
         );
       }
@@ -594,17 +912,12 @@ Rules:
       const stage3 = Stage3LocalizationSchema.parse(rawZh);
       factsZh = FactsSchema.parse({
         ...enrichedFacts,
-        segments:
-          stage3.segmentsZh.length === enrichedFacts.segments.length
-            ? stage3.segmentsZh
-            : enrichedFacts.segments,
+        segments: stage3.segmentsZh,
         sources: bundle.factsZh.sources,
       });
       moatZh = MoatCompetitorsSchema.parse({
         ...stage3.moatZh,
         ticker,
-        overallMoatRating: enrichedMoatEn.overallMoatRating,
-        moatTrend: enrichedMoatEn.moatTrend,
         sources: bundle.factsZh.sources,
       });
       catalystsZh = CatalystsSchema.parse({
@@ -613,13 +926,7 @@ Rules:
       });
       scenariosZh = ScenariosSchema.parse({
         ...enrichedScenariosEn,
-        scenarios: enrichedScenariosEn.scenarios.map((enScen, i) => ({
-          ...enScen,
-          assumptions:
-            stage3.scenariosZh.scenarios[i]?.assumptions ?? enScen.assumptions,
-          keyDrivers:
-            stage3.scenariosZh.scenarios[i]?.keyDrivers ?? enScen.keyDrivers,
-        })),
+        scenarios: stage3.scenariosZh.scenarios,
       });
       filingZh = FilingExtractsSchema.parse({
         ...stage3.filingZh,

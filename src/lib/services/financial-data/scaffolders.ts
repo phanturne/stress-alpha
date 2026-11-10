@@ -37,10 +37,13 @@ export function generateFactsDraft(
   const calRevBillions = normalizeBillions(calendarActuals?.revenueActual);
   const calRevEstBillions = normalizeBillions(calendarActuals?.revenueEstimate);
 
-  const revenueBillions =
-    calRevBillions ?? (latestStmt?.revenueBillions || 10.0);
-  let revenueGrowthPct = 15.0;
-  if (priorYearStmt && priorYearStmt.revenueBillions > 0) {
+  const revenueBillions = calRevBillions ?? (latestStmt?.revenueBillions || 0);
+  let revenueGrowthPct = 0;
+  if (
+    priorYearStmt &&
+    priorYearStmt.revenueBillions > 0 &&
+    revenueBillions > 0
+  ) {
     revenueGrowthPct = round2(
       ((revenueBillions - priorYearStmt.revenueBillions) /
         priorYearStmt.revenueBillions) *
@@ -60,11 +63,11 @@ export function generateFactsDraft(
           (latestStmt.operatingIncomeBillions / latestStmt.revenueBillions) *
             100
         )
-      : 25.0;
+      : 0;
 
   const operatingIncomeBillions = calRevBillions
     ? round2(revenueBillions * (operatingMarginPct / 100))
-    : latestStmt?.operatingIncomeBillions || 2.5;
+    : latestStmt?.operatingIncomeBillions || 0;
 
   const grossMarginPct =
     latestStmt?.grossProfitBillions != null && latestStmt.revenueBillions > 0
@@ -83,11 +86,15 @@ export function generateFactsDraft(
           ? round2(profile.trailingEps / 4)
           : 0;
 
+  const forwardEpsVal =
+    (profile as any).forwardEps ?? profile.forwardEpsConsensus;
   const epsConsensus =
     calendarActuals?.epsEstimate != null &&
     Number.isFinite(calendarActuals.epsEstimate)
       ? round2(calendarActuals.epsEstimate)
-      : epsReported;
+      : forwardEpsVal && forwardEpsVal > 0
+        ? round2(forwardEpsVal / 4)
+        : 0;
 
   const epsOperating = epsReported; // Default clean operating EPS
 
@@ -167,7 +174,7 @@ export function generateFactsDraft(
               priorYearStmt.operatingIncomeBillions) *
               100
           )
-        : revenueGrowthPct,
+        : undefined,
     epsReported,
     epsConsensus,
     epsOperating,
@@ -571,6 +578,23 @@ export function generateMoatCompetitorsDraft(
   const revGrowth = facts.revenueGrowthPct ?? 0;
   const mktCap = profile.marketCapBillions ?? 0;
 
+  const peers = profile.peerBenchmarks || [];
+  const annualizedTargetRev = round2(
+    profile.quarterlyStatements.length >= 4
+      ? profile.quarterlyStatements
+          .slice(0, 4)
+          .reduce((s, q) => s + q.revenueBillions, 0)
+      : facts.revenueBillions * 4
+  );
+  const totalPoolRev =
+    annualizedTargetRev +
+    peers.reduce((s, p) => s + (p.revenueBillions || 0), 0);
+
+  const avgPeerOpMargin =
+    peers.length > 0
+      ? peers.reduce((s, p) => s + p.operatingMarginPct, 0) / peers.length
+      : 18;
+
   let overallMoatRating: MoatCompetitors["overallMoatRating"] = "Narrow";
   if (
     opMargin < 8 ||
@@ -581,7 +605,8 @@ export function generateMoatCompetitorsDraft(
   } else if (
     (opMargin >= 22 && grossMargin >= 45 && revGrowth >= 0) ||
     (opMargin >= 20 && mktCap >= 200 && revGrowth >= 3) ||
-    (opMargin >= 30 && revGrowth >= -2)
+    (opMargin >= 30 && revGrowth >= -2) ||
+    (opMargin >= avgPeerOpMargin + 6 && grossMargin >= 45 && revGrowth >= 15)
   ) {
     overallMoatRating = "Wide";
   }
@@ -594,7 +619,7 @@ export function generateMoatCompetitorsDraft(
   }
 
   const intangibleStrength: "Strong" | "Moderate" | "Weak" =
-    grossMargin >= 55 && overallMoatRating === "Wide"
+    grossMargin >= 50 && overallMoatRating === "Wide"
       ? "Strong"
       : overallMoatRating === "None"
         ? "Weak"
@@ -606,11 +631,41 @@ export function generateMoatCompetitorsDraft(
         ? "Weak"
         : "Moderate";
   const costStrength: "Strong" | "Moderate" | "Weak" =
-    mktCap >= 150 && opMargin >= 18
+    (mktCap >= 150 && opMargin >= 18) || opMargin >= avgPeerOpMargin + 5
       ? "Strong"
       : opMargin < 8
         ? "Weak"
         : "Moderate";
+
+  const competitorsEn: MoatCompetitors["competitors"] = peers.map((p) => {
+    const sharePct =
+      totalPoolRev > 0
+        ? round2((p.revenueBillions / totalPoolRev) * 100)
+        : undefined;
+    const marginDelta = p.grossMarginPct - grossMargin;
+    const pricingPower: "Superior" | "Parity" | "Inferior" =
+      marginDelta >= 6 ? "Superior" : marginDelta <= -6 ? "Inferior" : "Parity";
+    return {
+      ticker: p.ticker,
+      name: p.name,
+      marketCapBillions: p.marketCapBillions,
+      revenueBillions: p.revenueBillions,
+      revenueGrowthPct: p.revenueGrowthPct,
+      grossMarginPct: p.grossMarginPct,
+      operatingMarginPct: p.operatingMarginPct,
+      forwardPe: p.forwardPe,
+      marketSharePct: sharePct,
+      pricingPower,
+      productComparison: `Direct industry competitor to ${profile.companyName} across ${profile.industry || profile.sector || "core enterprise segments"}.`,
+      keyAdvantageOrVulnerability: `Operates at ${p.grossMarginPct}% gross margin and ${p.operatingMarginPct}% operating margin vs. ${profile.ticker}'s ${grossMargin}% GM / ${opMargin}% OM.`,
+    };
+  });
+
+  const competitorsZh: MoatCompetitors["competitors"] = peers.map((p, idx) => ({
+    ...competitorsEn[idx],
+    productComparison: `${profile.companyName} 在 ${profile.industry || profile.sector || "核心业务赛道"} 的直接同业竞争对手。`,
+    keyAdvantageOrVulnerability: `毛利率为 ${p.grossMarginPct}%，营业利润率为 ${p.operatingMarginPct}%（对比 ${profile.ticker} 的 ${grossMargin}% 毛利率 / ${opMargin}% 营业利润率）。`,
+  }));
 
   const moatEn: MoatCompetitors = {
     ticker: profile.ticker,
@@ -651,7 +706,7 @@ export function generateMoatCompetitorsDraft(
               : 2,
       },
     ],
-    competitors: [],
+    competitors: competitorsEn,
     competitiveDynamicsSummary: `${profile.companyName} maintains a defensible market position supported by proprietary technology and customer retention, while operating in an active competitive landscape.`,
     sources: facts.sources,
   };
@@ -695,7 +750,7 @@ export function generateMoatCompetitorsDraft(
               : 2,
       },
     ],
-    competitors: [],
+    competitors: competitorsZh,
     competitiveDynamicsSummary: `${profile.companyName} 在主营细分赛道具备清晰的护城河壁垒与客户黏性，在行业竞争中保持稳固地位。`,
     sources: facts.sources,
   };
@@ -881,14 +936,7 @@ export function generateEarningsSentimentDraft(
         },
       ],
     },
-    keyQuotes: [
-      {
-        speaker: "Management",
-        quote: `We continue to see robust fundamental demand across our core solutions and remain focused on disciplined operational execution.`,
-        context: `Opening remarks during the quarterly earnings presentation`,
-        sentiment: "bullish",
-      },
-    ],
+    keyQuotes: [],
   };
 
   return EarningsSentimentSchema.parse(sentiment);

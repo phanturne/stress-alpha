@@ -18,7 +18,10 @@ import { eq, sql } from "drizzle-orm";
 import { generateText } from "ai";
 import { getDb } from "../src/db";
 import { reportsTable, tickersTable } from "../src/db/schema";
-import { AI_GATEWAY_MODELS } from "../src/lib/services/ai-gateway";
+import {
+  AI_GATEWAY_MODELS,
+  hydrateCompetitorsWithLiveMetrics,
+} from "../src/lib/services/ai-gateway";
 import {
   computeStressedValuation,
   computeValuation,
@@ -86,18 +89,11 @@ Return ONLY a single valid JSON object (no markdown fences, no commentary, escap
 {
   "overallMoatRating": "Wide" | "Narrow" | "None",
   "moatTrend": "Widening" | "Stable" | "Narrowing",
-  "segments": [
-    { "name": "Real Segment Name (EN)", "nameZh": "真实业务分部名称 (ZH)", "share": 0.55, "growthPct": 12.5, "operatingMarginPct": 24.0 }
-  ],
   "competitors": [
     {
       "ticker": "REAL_PEER_TICKER",
       "name": "Peer Company Name (EN)",
       "nameZh": "同业竞争对手名称 (ZH)",
-      "marketCapBillions": 150.0,
-      "revenueBillions": 45.0,
-      "grossMarginPct": 52.0,
-      "operatingMarginPct": 22.0,
       "pricingPower": "Superior" | "Parity" | "Inferior",
       "productComparison": "Concrete product comparison (EN)",
       "productComparisonZh": "具体产品与市场对比 (ZH)",
@@ -136,17 +132,11 @@ Return ONLY a single valid JSON object (no markdown fences, no commentary, escap
     "bull": { "assumptions": ["...", "..."], "assumptionsZh": ["...", "..."], "keyDrivers": ["...", "..."], "keyDriversZh": ["...", "..."] },
     "base": { "assumptions": ["...", "..."], "assumptionsZh": ["...", "..."], "keyDrivers": ["...", "..."], "keyDriversZh": ["...", "..."] },
     "panic": { "assumptions": ["...", "..."], "assumptionsZh": ["...", "..."], "keyDrivers": ["...", "..."], "keyDriversZh": ["...", "..."] }
-  },
-  "keyQuote": {
-    "speaker": "CEO / CFO",
-    "quote": "Company-specific executive commentary on quarterly execution and outlook (EN)",
-    "context": "Quarterly earnings remarks"
   }
 }
 Rules:
-1. Provide 3-4 real operating segments whose "share" values sum to 1.0 (never use "Core Business & Solutions").
-2. Provide 3 real publicly traded competitors with real stock tickers (never use "PEER").
-3. Provide 3 moatSources and 4 catalysts (2 growth, 2 risk) tailored specifically to ${ticker}.`,
+1. Provide 3-4 real publicly traded competitors with real stock tickers (never use "PEER"). All competitor financial metrics are hydrated deterministically from Yahoo Finance.
+2. Provide 3 moatSources and 4 catalysts (2 growth, 2 risk) tailored specifically to ${ticker}.`,
     prompt: `Generate the bilingual buy-side qualitative modules for ${companyName} (${ticker}):\n${JSON.stringify(promptPayload)}`,
     providerOptions: {
       deepseek: {
@@ -157,37 +147,14 @@ Rules:
 
   const ai = parseJsonObject(text);
 
-  // 1. Build Enriched Segments (EN & ZH)
-  const rawSegs =
-    Array.isArray(ai.segments) && ai.segments.length > 0 ? ai.segments : [];
-  const totalShare =
-    rawSegs.reduce((s: number, x: any) => s + (Number(x.share) || 0.33), 0) ||
-    1;
-  const segmentsEn =
-    rawSegs.length > 0
-      ? rawSegs.map((s: any) => {
-          const share = (Number(s.share) || 0.33) / totalShare;
-          const rev = Number((facts.revenueBillions * share).toFixed(2));
-          const opM = Number(
-            s.operatingMarginPct ?? facts.operatingMarginPct ?? 18
-          );
-          return {
-            name: String(s.name || `${ticker} Segment`),
-            revenueBillions: Math.max(rev, 0.01),
-            growthPct: Number(s.growthPct ?? facts.revenueGrowthPct ?? 8),
-            operatingIncomeBillions: Number((rev * (opM / 100)).toFixed(2)),
-            operatingMarginPct: opM,
-          };
-        })
-      : facts.segments;
-
-  const segmentsZh =
-    rawSegs.length > 0
-      ? segmentsEn.map((seg: any, i: number) => ({
-          ...seg,
-          name: String(rawSegs[i]?.nameZh || seg.name),
-        }))
-      : (r.factsZh?.segments ?? facts.segments);
+  // 1. Preserve deterministic segments when no SEC segment footnote text is present
+  const segmentsEn = facts.segments;
+  const segmentsZh = (r.factsZh?.segments ?? facts.segments).map(
+    (zhSeg: any, i: number) => ({
+      ...(segmentsEn[i] || zhSeg),
+      name: String(zhSeg?.name || segmentsEn[i]?.name || `${ticker} Segment`),
+    })
+  );
 
   const cleanedSources = Array.isArray(facts.sources)
     ? facts.sources.map((src) =>
@@ -273,17 +240,17 @@ Rules:
     Array.isArray(ai.competitors) && ai.competitors.length > 0
       ? ai.competitors
       : [];
-  const competitorsEn =
+  const candidateCompetitorsEn =
     rawPeers.length > 0
       ? rawPeers.map((c: any) => ({
           ticker: String(c?.ticker || "COMP")
             .toUpperCase()
             .slice(0, 10),
           name: String(c?.name || "Industry Peer"),
-          marketCapBillions: Number(c?.marketCapBillions) || 0,
-          revenueBillions: Number(c?.revenueBillions) || 0,
-          grossMarginPct: Number(c?.grossMarginPct ?? 0),
-          operatingMarginPct: Number(c?.operatingMarginPct ?? 0),
+          marketCapBillions: 0,
+          revenueBillions: 0,
+          grossMarginPct: 0,
+          operatingMarginPct: 0,
           productComparison: String(
             c?.productComparison || "Direct segment competitor"
           ),
@@ -298,20 +265,45 @@ Rules:
         }))
       : moat.competitors;
 
-  const competitorsZh =
-    rawPeers.length > 0
-      ? competitorsEn.map((c: any, i: number) => ({
-          ...c,
-          name: String(rawPeers[i]?.nameZh || c.name),
-          productComparison: String(
-            rawPeers[i]?.productComparisonZh || c.productComparison
-          ),
-          keyAdvantageOrVulnerability: String(
-            rawPeers[i]?.keyAdvantageOrVulnerabilityZh ||
-              c.keyAdvantageOrVulnerability
-          ),
-        }))
-      : (r.moatZh?.competitors ?? competitorsEn);
+  const hydratedCompetitorsEn = await hydrateCompetitorsWithLiveMetrics(
+    candidateCompetitorsEn,
+    { ticker },
+    newFactsEn
+  );
+  const competitorsEn =
+    hydratedCompetitorsEn.length > 0 ? hydratedCompetitorsEn : moat.competitors;
+
+  const rawPeersByTicker = new Map<string, any>(
+    rawPeers.map((p: any) => [
+      String(p?.ticker || "")
+        .toUpperCase()
+        .trim(),
+      p,
+    ])
+  );
+  const competitorsZh = competitorsEn.map((c: any, i: number) => {
+    const rawMatch =
+      rawPeersByTicker.get(String(c.ticker || "").toUpperCase()) || rawPeers[i];
+    return {
+      ...c,
+      name: String(rawMatch?.nameZh || c.name),
+      productComparison: String(
+        rawMatch?.productComparisonZh || c.productComparison
+      ),
+      keyAdvantageOrVulnerability: String(
+        rawMatch?.keyAdvantageOrVulnerabilityZh || c.keyAdvantageOrVulnerability
+      ),
+      ticker: c.ticker,
+      marketCapBillions: c.marketCapBillions,
+      revenueBillions: c.revenueBillions,
+      revenueGrowthPct: c.revenueGrowthPct,
+      grossMarginPct: c.grossMarginPct,
+      operatingMarginPct: c.operatingMarginPct,
+      forwardPe: c.forwardPe,
+      marketSharePct: c.marketSharePct,
+      pricingPower: c.pricingPower,
+    };
+  });
 
   const newMoatEn = {
     ...moat,
@@ -466,6 +458,27 @@ Rules:
     estimates: r.estimates ?? undefined,
   });
 
+  if (valuation.scenarioResults?.length) {
+    newScenariosEn.scenarios = newScenariosEn.scenarios.map((scen, i) => {
+      const res =
+        valuation.scenarioResults.find(
+          (r) => r.name.toLowerCase() === scen.name.toLowerCase()
+        ) || valuation.scenarioResults[i];
+      return {
+        ...scen,
+        probability: res?.probability ?? scen.probability,
+        calibratedProbability: res?.probability ?? scen.calibratedProbability,
+      };
+    });
+    newScenariosZh.scenarios = newScenariosEn.scenarios.map((enScen, i) => ({
+      ...(newScenariosZh.scenarios[i] || enScen),
+      forwardEps: enScen.forwardEps,
+      multiple: enScen.multiple,
+      probability: enScen.probability,
+      calibratedProbability: enScen.calibratedProbability,
+    }));
+  }
+
   const reportObj: ReportData = {
     folderSlug: r.slug,
     folderName: r.slug,
@@ -577,7 +590,7 @@ async function main() {
     .select()
     .from(reportsTable)
     .where(
-      sql`${reportsTable.moat}->'competitors'->0->>'ticker' = 'PEER' OR ${reportsTable.facts}->'segments'->0->>'name' = 'Core Business & Solutions'`
+      sql`${reportsTable.moat}->'competitors'->0->>'ticker' = 'PEER' OR jsonb_array_length(COALESCE(${reportsTable.moat}->'competitors', '[]'::jsonb)) = 0`
     );
 
   // Order by largest market cap first

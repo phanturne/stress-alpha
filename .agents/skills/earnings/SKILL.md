@@ -62,14 +62,18 @@ This single command automatically fetches live feeds and stages all 18 JSON arti
 4. **Yahoo Finance & Local Telemetry**:
    - Zero-config automatic fallback for consensus price targets and broker rating history.
 
-#### Qualitative AI Review & Synthesis
+#### Qualitative AI Review & Synthesis (Zero Quantitative Guessing)
+> [!IMPORTANT]
+> **Deterministic Quantitative Hydration:** All quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`), analyst price targets (`low`, `average`, `median`, `high`, `priceTarget`, `priorPriceTarget`, `upsidePct`), scenario quantitative parameters (`forwardEps`, `multiple`, `probability`, `calibratedProbability`), and historical reaction `priceMovePct` are deterministically fetched and hydrated by TypeScript (`npm run fetch:data`, `fetchPeerBenchmarks`, `analyze.ts`). **The LLM must NEVER guess, invent, or overwrite those numbers.**
+
 With all quantitative financials and starter schemas scaffolded, the LLM only audits and enriches qualitative context using the prompt templates in `/Users/krding/Projects/stress-alpha/prompts/`:
 - `facts.json`: Audit **income quality** (isolate clean `epsOperating`), **forward consensus sanity** (verify `forwardEpsConsensus` against operational realities), sector-relevant KPIs (e.g. DAU for consumer, NRR for SaaS, backlog for defense, gross margins for semis), and **forensic governance** (`governanceRisk`: 'none'|'low'|'moderate'|'severe', `accountingFlags`, `materialLitigationOrDoj`).
-- `moat-competitors.json`: Morningstar 5-pillar moat evaluation and direct competitor benchmarking. Audit distribution channel vulnerability (e.g. third-party search, platform gatekeepers) and ensure `moatTrend` critically reflects channel decay if not offset by direct channel retention.
-- `scenarios.json`: Customize discrete Bull, Base, Panic regimes with forward EPS, multiples, and initial raw prior probabilities (`rawProbability`). Ensure Base forward EPS is grounded in operational run-rate and guidance; ensure Panic regime stress-tests the specific business model's primary vulnerability.
+- `moat-competitors.json`: Morningstar 5-pillar moat evaluation and direct competitor qualitative comparison (`productComparison`, `pricingPower`, `keyAdvantageOrVulnerability`). Quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`) are deterministically hydrated via `fetchPeerBenchmarks` (`npm run fetch:data` / `analyze.ts`) — never invent peer numbers. Audit distribution channel vulnerability (e.g. third-party search, platform gatekeepers) and ensure `moatTrend` critically reflects channel decay if not offset by direct channel retention.
+- `scenarios.json`: Enrich qualitative regime `assumptions` and `keyDrivers` for discrete Bull, Base, and Panic regimes while preserving deterministically scaffolded `forwardEps`, `multiple`, and calibrated `probability` (`analyze.ts`). Ensure Base forward EPS is grounded in operational run-rate and guidance; ensure Panic regime stress-tests the specific business model's primary vulnerability.
 - `stress-baseline.json`: Refine upstream driver shocks and operational leverage.
 - `earnings-sentiment.json`: Verify management tone scorecard across 5 dimensions, analyst concerns (user growth, traffic, AI risks), and key executive quotes.
 - `filing-extracts.json`: Extract novel 10-Q risk disclosures and MD&A trends.
+- `reactions.json`: Provide conditional qualitative `context` and `conditionalFraming` around deterministically fetched historical `priceMovePct` values.
 
 ---
 

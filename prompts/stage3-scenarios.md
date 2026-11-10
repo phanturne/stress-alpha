@@ -2,7 +2,11 @@
 
 ## Task
 
-Build a probability-weighted scenario tree (3–5 scenarios) for **{TICKER}** over the next 12 months.
+Refine qualitative assumptions and key drivers for the probability-weighted scenario tree (Bull, Base, Bear/Panic) for **{TICKER}** over the next 12 months.
+
+> **CRITICAL GUARDRAIL — NEVER INVENT SCENARIO EPS, MULTIPLES, OR PROBABILITIES:**
+> All quantitative scenario parameters (`currentPrice`, `consensusTarget`, `forwardEps`, `multiple`, `probability`, `calibratedProbability`, `rawProbability`) and `stress-baseline.json` accounting figures are deterministically scaffolded and calibrated by TypeScript (`npm run fetch:data` and `scripts/analyze.ts`).
+> The LLM must **NEVER** guess, invent, or diverge quantitative scenario numbers between `scenarios.json` and `scenarios_zh.json`. Focus strictly on qualitative `name`, `assumptions`, and `keyDrivers`.
 
 ## Scenario Design Rules
 

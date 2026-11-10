@@ -253,6 +253,7 @@ export async function bulkScaffold(
       // 1. Fetch Complete 8-Module Pipeline Bundle (with AI Gateway enrichment if configured)
       const bundle = await fetchCompletePipelineBundle(ticker, {
         enrichWithAi,
+        translateZh: Boolean(options.ticker),
       });
 
       const quarterStr = bundle.factsDraft.quarter || "Q2 2026";
@@ -287,7 +288,15 @@ export async function bulkScaffold(
       const valuation = computeStressedValuation(
         report.baseline,
         report.scenarios,
-        report.facts
+        report.facts,
+        {
+          moat: report.moat,
+          estimates: report.estimates,
+          filing: report.filing,
+          sentiment: report.sentiment,
+          reactions: report.reactions,
+          catalysts: report.catalysts,
+        }
       );
 
       // 4. Compute Sanity & Variant Perception Audit
@@ -377,6 +386,40 @@ export async function bulkScaffold(
   console.log(` • Skipped (Existing):  ${result.skipped}`);
   console.log(` • Errors Encountered:  ${result.errors}`);
   console.log("=".repeat(62) + "\n");
+
+  if (!options.dryRun && result.scaffolded > 0) {
+    const targets = Array.from(
+      new Set(
+        [
+          process.env.NEXT_PUBLIC_APP_URL,
+          process.env.BETTER_AUTH_URL,
+          `http://localhost:${process.env.PORT || 3000}`,
+          "https://stressalpha.vercel.app",
+        ].filter(Boolean) as string[]
+      )
+    );
+    const secret = process.env.REVALIDATION_SECRET || process.env.CRON_SECRET;
+    const lastSlug =
+      result.details.length === 1 && result.details[0]?.slug
+        ? `&slug=${encodeURIComponent(result.details[0].slug)}`
+        : "";
+    const headers: Record<string, string> = {};
+    if (secret) headers["Authorization"] = `Bearer ${secret}`;
+
+    await Promise.allSettled(
+      targets.map(async (baseUrl) => {
+        const res = await fetch(
+          `${baseUrl}/api/revalidate?tag=reports${lastSlug}`,
+          { method: "POST", headers }
+        );
+        if (res.ok) {
+          console.log(
+            `🔄 [Cache Revalidated] Purged Next.js & repository cache at ${baseUrl}`
+          );
+        }
+      })
+    );
+  }
 
   return result;
 }

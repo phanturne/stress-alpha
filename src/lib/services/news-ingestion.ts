@@ -123,12 +123,58 @@ export interface MappedTransmission {
   transmissionPayload?: TransmissionPayload;
 }
 
+function clampDriverShockPct(
+  shockPct: number,
+  driverId: string,
+  baseline?: ReportData["baseline"]
+): number {
+  const drivers = baseline?.upstreamDrivers || [];
+  let matched = drivers.find((d) => d.id === driverId);
+  if (!matched && drivers.length > 0) {
+    const queryNorm = driverId.toLowerCase().replace(/[-_]/g, " ");
+    matched =
+      drivers.find((d) => {
+        const idNorm = d.id.toLowerCase().replace(/[-_]/g, " ");
+        const nameNorm = (d.name || "").toLowerCase();
+        return (
+          idNorm.includes(queryNorm) ||
+          queryNorm.includes(idNorm) ||
+          nameNorm.includes(queryNorm) ||
+          queryNorm
+            .split(" ")
+            .some(
+              (w) =>
+                w.length > 3 && (idNorm.includes(w) || nameNorm.includes(w))
+            )
+        );
+      }) || drivers[0];
+  }
+  const minShock = matched?.minShockPct ?? -50;
+  const maxShock = matched?.maxShockPct ?? 50;
+  return Math.max(minShock, Math.min(maxShock, shockPct));
+}
+
+function extractPriceTargetFromText(text: string): number | undefined {
+  const afterMatch = text.match(
+    /(?:price\s+target|target\s+price|target|pt|from\s+\$\d+(?:\.\d+)?)\s*(?:raised|lowered|cut|hiked|set|maintained|reiterated)?\s*(?:to|of|at|:)?\s*\$(\d+(?:\.\d+)?)(?!\s*(?:billion|million|trillion|bn|mn|b|m|t)\b)/i
+  );
+  if (afterMatch) return parseFloat(afterMatch[1]);
+
+  const beforeMatch = text.match(
+    /\$(\d+(?:\.\d+)?)(?!\s*(?:billion|million|trillion|bn|mn|b|m|t)\b)\s*(?:price\s+target|target\s+price|target|pt)\b/i
+  );
+  if (beforeMatch) return parseFloat(beforeMatch[1]);
+
+  return undefined;
+}
+
 /**
  * Deterministically maps raw news article content into typed transmission vectors
  * (CapEx, packaging, analyst revisions, product catalysts, or qualitative).
  */
 export function mapArticleToTransmission(
-  article: RawNewsArticle
+  article: RawNewsArticle,
+  baseline?: ReportData["baseline"]
 ): MappedTransmission {
   const text = `${article.title} ${article.summary || ""}`.toLowerCase();
   const title = article.title;
@@ -177,8 +223,8 @@ export function mapArticleToTransmission(
       ? firmMatch[0].replace(/\b\w/g, (c) => c.toUpperCase())
       : article.publisher || "Wall Street Consensus";
 
-    const targetMatch = text.match(/\$(\d+(?:\.\d+)?)/);
-    if (!targetMatch) {
+    const newTarget = extractPriceTargetFromText(text);
+    if (!newTarget) {
       return {
         eventType: "analyst_rating",
         transmissionType: "none",
@@ -187,7 +233,6 @@ export function mapArticleToTransmission(
         },
       };
     }
-    const newTarget = parseFloat(targetMatch[1]);
 
     return {
       eventType: "analyst_rating",
@@ -240,12 +285,14 @@ export function mapArticleToTransmission(
   const supplierKeywords =
     /(tsmc|tsm|asml|broadcom|cowos|foundry).*(record results|profit rose|quarterly profit|record revenue|bottleneck|capacity expansion|revenue surge|ai chip supply turns into a bottleneck)/i;
   if (supplierKeywords.test(text)) {
+    const driverId = "tsmc-cowos-supply";
+    const shockPct = clampDriverShockPct(10, driverId, baseline);
     return {
       eventType: "upstream_earnings",
       transmissionType: "driver_shock",
       transmissionPayload: {
-        driverId: "tsmc-cowos-supply",
-        deltaShockPct: 10,
+        driverId,
+        deltaShockPct: shockPct,
         rationale:
           "Upstream foundry / packaging earnings expansion lifts component delivery velocity.",
       },
@@ -264,8 +311,8 @@ export function mapArticleToTransmission(
       ? firmMatch[0].replace(/\b\w/g, (c) => c.toUpperCase())
       : "Wall Street";
 
-    const targetMatch = text.match(/\$(\d+(?:\.\d+)?)/);
-    if (!targetMatch) {
+    const newTarget = extractPriceTargetFromText(text);
+    if (!newTarget) {
       return {
         eventType: "analyst_rating",
         transmissionType: "none",
@@ -274,7 +321,6 @@ export function mapArticleToTransmission(
         },
       };
     }
-    const newTarget = parseFloat(targetMatch[1]);
 
     return {
       eventType: "analyst_rating",
@@ -309,6 +355,7 @@ export function mapArticleToTransmission(
 
     const isPackaging = /cowos|packaging|advanced packaging/i.test(text);
     const driverId = isPackaging ? "advanced-packaging" : "hyperscaler-capex";
+    shockPct = clampDriverShockPct(shockPct, driverId, baseline);
 
     return {
       eventType: "upstream_earnings",
@@ -423,7 +470,7 @@ export async function ingestNewsForTicker(
 
   for (const article of filteredCandidates) {
     const { eventType, transmissionType, transmissionPayload } =
-      mapArticleToTransmission(article);
+      mapArticleToTransmission(article, reportData?.baseline);
 
     const isSec =
       article.publisher === "SEC EDGAR" || /form 8-k/i.test(article.title);
@@ -695,6 +742,18 @@ export async function ingestGlobalNewsFirehose(
         reportsByTicker.set(ticker, loaded);
       }
       const reportData = reportsByTicker.get(ticker) ?? null;
+      if (
+        transmissionType === "driver_shock" &&
+        transmissionPayload?.driverId &&
+        transmissionPayload.deltaShockPct != null &&
+        reportData?.baseline
+      ) {
+        transmissionPayload.deltaShockPct = clampDriverShockPct(
+          transmissionPayload.deltaShockPct,
+          transmissionPayload.driverId,
+          reportData.baseline
+        );
+      }
 
       const publishedAt = article.publishedAt
         ? new Date(article.publishedAt)

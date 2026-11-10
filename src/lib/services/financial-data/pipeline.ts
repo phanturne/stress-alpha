@@ -6,6 +6,7 @@ import {
   fetchAnalystEstimates,
   fetchSecEdgarFilings,
   fetchHistoricalReactions,
+  fetchPeerBenchmarks,
 } from "./fetchers";
 import { extractSecFilingExcerpts } from "./sec-extractor";
 import {
@@ -65,9 +66,13 @@ export async function fetchCompletePipelineBundle(
     skipYahooFallback: options?.skipYahooFallback,
   });
 
-  // 3. Fetch SEC Filings & Extract Targeted Excerpts
+  // 3. Fetch SEC Filings & Extract Targeted Excerpts + Peer Benchmarks in Parallel
   const filings = await fetchSecEdgarFilings(ticker);
-  const secExcerpts = await extractSecFilingExcerpts(filings);
+  const [secExcerpts, peerBenchmarks] = await Promise.all([
+    extractSecFilingExcerpts(filings),
+    fetchPeerBenchmarks(profile.recommendedPeerTickers || [], ticker),
+  ]);
+  profile.peerBenchmarks = peerBenchmarks;
 
   // 4. Fetch Historical Reactions
   const reactions = await fetchHistoricalReactions(

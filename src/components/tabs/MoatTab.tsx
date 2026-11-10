@@ -429,12 +429,12 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.marketCapBillions !== undefined
                             ? `$${peer.marketCapBillions.toFixed(1)}B`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.revenueBillions !== undefined
                             ? `$${peer.revenueBillions.toFixed(1)}B`
-                            : "-"}
+                            : "—"}
                           {peer.revenueGrowthPct !== undefined && (
                             <span
                               className={`ml-1.5 font-bold ${
@@ -451,22 +451,22 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.grossMarginPct !== undefined
                             ? `${peer.grossMarginPct.toFixed(1)}%`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.operatingMarginPct !== undefined
                             ? `${peer.operatingMarginPct.toFixed(1)}%`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.forwardPe !== undefined
                             ? `${peer.forwardPe.toFixed(1)}x`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-3 text-right font-mono tabular-nums text-slate-200">
                           {peer.marketSharePct !== undefined
                             ? `${peer.marketSharePct.toFixed(1)}%`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-3">
                           {peer.pricingPower ? (
@@ -476,7 +476,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                               {peer.pricingPower}
                             </span>
                           ) : (
-                            "-"
+                            "—"
                           )}
                         </td>
                         <td className="min-w-[200px] p-3 text-[11px] text-slate-300">

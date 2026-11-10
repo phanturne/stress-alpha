@@ -2,7 +2,11 @@
 
 ## Task
 
-Extract and synthesize sell-side Wall Street analyst estimates, price target revisions, consensus ratings breakdown, and institutional research notes for **{TICKER}** in the style of **Perplexity Finance**.
+Synthesize sell-side Wall Street analyst sentiment, price target dispersion, and institutional research commentary for **{TICKER}** in the style of **Perplexity Finance**.
+
+> **CRITICAL GUARDRAIL — NEVER INVENT ANALYST TARGETS OR CONSENSUS NUMBERS:**
+> All quantitative analyst metrics — `consensus` counts/percentages (`totalAnalysts`, `bullishCount`, `bullishPct`, `neutralCount`, `neutralPct`, `bearishCount`, `bearishPct`), `priceTargets` (`currentPrice`, `low`, `average`, `median`, `high`), and individual broker `priceTarget`, `priorPriceTarget`, and `upsidePct` — are deterministically fetched and hydrated by TypeScript (`npm run fetch:data` and `scripts/analyze.ts`).
+> The LLM must **NEVER** guess, invent, or overwrite those numbers. Only enrich the qualitative `synthesisNarrative` and broker `analyst` / `notes` fields, keeping all numeric fields identical between `analyst-estimates.json` and `analyst-estimates_zh.json`.
 
 ## Fast Automated Extraction (Recommended)
 

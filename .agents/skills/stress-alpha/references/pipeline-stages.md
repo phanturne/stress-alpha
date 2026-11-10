@@ -1,6 +1,6 @@
 # StressAlpha Pipeline Stages & Prompt Reference
 
-StressAlpha strictly decouples qualitative intelligence extraction from mathematical computation:
+StressAlpha strictly decouples qualitative intelligence extraction from mathematical computation. All quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`), analyst targets, scenario EPS/multiples/probabilities, and historical reaction `priceMovePct` are deterministically fetched and hydrated by TypeScript (`npm run fetch:data`, `fetchPeerBenchmarks`, `analyze.ts`) — the LLM must **NEVER** guess or invent those numbers:
 
 ## Stage 0b: 10-Q Filing Audit (`prompts/stage0b-filing.md`)
 * Extracts newly added or escalated risk disclosures in Item 1A.
@@ -36,23 +36,15 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
   - *Enterprise Cloud & Data Workloads:* 10–15 years (IAM security, database gravitation).
   - *Regulated Biopharma & Therapeutics:* 10–15 years (composition-of-matter patent protection bounded by IRA price negotiation).
   - *Physical Distribution & Scaled Hubs:* 15–20+ years (densified robotics and logistics grids).
-* **Multi-Metric Peer Matrix:** Benchmark 3–5 direct peers across Market Cap, Revenue, YoY Growth %, Gross Margin %, Operating Margin %, Forward P/E, Market Share %, Pricing Power (`Superior` | `Parity` | `Inferior`), Product Comparison, and Advantage/Vulnerability.
+* **Multi-Metric Peer Matrix (Deterministic Hydration):** Benchmark 3–5 direct peers. Quantitative peer metrics (`marketCapBillions`, `revenueBillions`, `revenueGrowthPct`, `grossMarginPct`, `operatingMarginPct`, `forwardPe`, `marketSharePct`) are deterministically fetched and hydrated by TypeScript (`npm run fetch:data`, `fetchPeerBenchmarks`, `analyze.ts`). The LLM only selects peer `ticker` symbols and writes qualitative fields (`name`, `pricingPower`, `productComparison`, `keyAdvantageOrVulnerability`) — never guess or fabricate peer numbers.
 * **Institutional Feeds**:
-  - **Massive Ratios & Financials API** (`/stocks/financials/v1/ratios?ticker={PEER}`): Multi-peer automated margin and ratio benchmarking.
+  - **Yahoo Finance & SEC EDGAR (`fetchPeerBenchmarks`)**: Automated multi-peer margin, growth, multiple, and market share hydration.
 * Output: `moat-competitors.json` and `moat-competitors_zh.json`
 
 ## Stage 1c: Wall Street Analyst Consensus & Price Targets (`prompts/stage1c-estimates.md`)
-* **Perplexity Finance Style:** Fetches and synthesizes sell-side Wall Street analyst consensus, price target distributions, and revision momentum.
+* **Perplexity Finance Style (Deterministic Telemetry):** Sell-side Wall Street analyst consensus counts, 52W price target distributions (`low`, `average`, `median`, `high`), and broker action targets (`priceTarget`, `priorPriceTarget`, `upsidePct`) are deterministically fetched via `npm run fetch:data` (`yahoo-finance2`). The LLM must never invent or guess analyst price targets or consensus counts, and only enriches qualitative `synthesisNarrative` and broker `notes`.
 * **Institutional Feeds**:
-  - **Finnhub Estimates Tier** ([Finnhub Pricing](https://finnhub.io/pricing)):
-    - `/stock/price-target`: Low, Mean, Median, High 52W target range and covering analyst count.
-    - `/stock/recommendation`: Strong Buy, Buy, Hold, Sell breakdown over time.
-    - `/stock/upgrade-downgrade`: Bank-specific actions, previous and new ratings.
-  - **Massive Benzinga Partner Feed**: Real-time analyst ratings revisions ($99/mo).
-  - **Automated Fallback Command:**
-    ```bash
-    python3 scripts/fetch_analyst_estimates.py <TICKER> reports/<folder> --price <CURRENT_PRICE>
-    ```
+  - **Deterministic Pipeline (`npm run fetch:data`)**: Automatically fetches Yahoo Finance `financialData`, `recommendationTrend`, and `upgradeDowngradeHistory`.
 * **Consensus Distribution:** Consensus Rating (`Strong Buy`, `Buy`, `Hold`, `Sell`), total covering analysts, bullish/neutral/bearish counts & percentages.
 * **52-Week Target Slider:** Reference trading price, Street low, Street consensus average/mean, median, and Street high targets.
 * **Individual Bank Notes Table:** Lists covering investment banks/brokerages with named analyst, rating, 52W target price (with prior target diffs), upside %, note date, revision action (`Raised`, `Lowered`, `Reiterated`), and focus notes.
@@ -64,15 +56,15 @@ StressAlpha strictly decouples qualitative intelligence extraction from mathemat
 * Output: `catalysts.json`
 
 ## Stage 3: Scenarios & Stress Baseline (`prompts/stage3-scenarios.md`)
-* Constructs discrete Bull, Base, and Panic scenarios with EPS and multiple assumptions. Probabilities assigned here represent initial raw priors (`rawProbability`).
+* Scenario `forwardEps`, `multiple`, and `probability` (`calibratedProbability`) are deterministically scaffolded by `npm run fetch:data` and calibrated by `analyze.ts`. The LLM must never guess or invent scenario EPS, multiples, or probabilities, and only refines qualitative `assumptions` and `keyDrivers`.
 * **Operational Consensus Realism:** Anchors Base forward EPS to realistic operational earnings power, re-normalizing against annualized run-rate (`epsOperating * 4 * (1 + growth)`) if consensus feeds are stale or unadjusted. Panic scenario MUST explicitly model distribution loss, referral decay, or customer churn.
 * Formulates `stress-baseline.json` specifying upstream demand drivers (with exposure shares and elasticities), fixed cost leverage, and valuation multiple regimes.
 * Output: `scenarios.json` and `stress-baseline.json`
 
 ## Stage 4: Historical Reaction Framing (`prompts/stage4-reactions.md`)
-* Gathers historical 1-day post-earnings price reactions and synthesizes the conditional market reaction rule.
+* Historical 1-day post-earnings `priceMovePct` values and event dates are deterministically extracted from daily OHLCV bars by `npm run fetch:data`. The LLM must never guess or fabricate `priceMovePct`, and only synthesizes qualitative `event` triggers, `context`, and `conditionalFraming`.
 * **Institutional Feeds**:
-  - **Massive Historical Daily Aggregates API** (`/v2/aggs/ticker/{TICKER}/range/1/day/{from}/{to}` - [Massive Pricing](https://massive.com/pricing)): Exact unadjusted/split-adjusted earnings release date percentage moves.
+  - **Yahoo Finance 1Y Daily OHLCV & Earnings History (`npm run fetch:data`)**: Exact post-earnings day-1 percentage price moves.
 * Output: `reactions.json`
 
 ## Stage 5: Deterministic Computation & Display

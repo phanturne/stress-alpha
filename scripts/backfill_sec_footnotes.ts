@@ -231,9 +231,12 @@ Rules:
         ? Number(ai.guaranteeExposureBillions)
         : (facts.guaranteeExposureBillions ?? 0),
     revenueGrowthPct:
-      Number(ai.revenueGrowthPct) > 0
-        ? Number(ai.revenueGrowthPct)
-        : facts.revenueGrowthPct,
+      facts.revenueGrowthPct != null && facts.revenueGrowthPct !== 0
+        ? facts.revenueGrowthPct
+        : Number(ai.revenueGrowthPct) !== 0 &&
+            Number.isFinite(Number(ai.revenueGrowthPct))
+          ? Number(ai.revenueGrowthPct)
+          : facts.revenueGrowthPct,
   };
 
   const newFactsZh = r.factsZh ? { ...r.factsZh, ...newFactsEn } : newFactsEn;
@@ -303,13 +306,30 @@ Rules:
     estimates: r.estimates ?? undefined,
   });
 
+  const newScenariosZh =
+    r.scenariosZh && Array.isArray(r.scenariosZh.scenarios)
+      ? {
+          ...r.scenariosZh,
+          currentPrice: r.scenarios.currentPrice,
+          consensusTarget: r.scenarios.consensusTarget,
+          scenarios: r.scenarios.scenarios.map((enScen, i) => ({
+            ...(r.scenariosZh!.scenarios[i] || enScen),
+            forwardEps: enScen.forwardEps,
+            multiple: enScen.multiple,
+            probability: enScen.probability,
+            calibratedProbability: enScen.calibratedProbability,
+            rawProbability: enScen.rawProbability,
+          })),
+        }
+      : r.scenariosZh;
+
   const reportObj: ReportData = {
     folderSlug: r.slug,
     folderName: r.slug,
     facts: newFactsEn,
     factsZh: newFactsZh,
     scenarios: r.scenarios,
-    scenariosZh: r.scenariosZh ?? undefined,
+    scenariosZh: newScenariosZh ?? undefined,
     baseline: r.baseline ?? undefined,
     moat: r.moat ?? undefined,
     moatZh: r.moatZh ?? undefined,
@@ -372,6 +392,8 @@ Rules:
       .set({
         facts: newFactsEn,
         factsZh: newFactsZh,
+        scenarios: r.scenarios,
+        scenariosZh: newScenariosZh,
         filing: newFilingEn,
         filingZh: newFilingZh,
         sentiment: newSentiment,
