@@ -158,7 +158,7 @@ async function processValuationRevisionsForTicker(
                 : "catalyst_activation";
 
       const revisionInsert: ValuationRevisionInsert = {
-        id: `rev_${event.id}_${Date.now()}`,
+        id: `rev-evt-${ticker.toLowerCase()}-${event.id}`,
         ticker,
         revisionDate:
           event.publishedAt instanceof Date

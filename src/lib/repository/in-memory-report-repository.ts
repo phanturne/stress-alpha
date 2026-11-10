@@ -188,7 +188,104 @@ export class InMemoryReportRepository implements IReportRepository {
   }
 
   async saveReport(report: ReportData): Promise<void> {
+    const ticker = report.facts.ticker.toUpperCase();
+    const rawQuarter = report.facts.quarter || "Q1 2026";
+    const qMatch = rawQuarter.match(/Q?([1-4])/i);
+    const quarterNum = qMatch ? qMatch[1] : "1";
+    const match =
+      rawQuarter.match(/\b(20\d{2})\b/) ||
+      report.folderSlug.match(/\b(20\d{2})\b/);
+    const year = match ? parseInt(match[1], 10) : new Date().getFullYear();
+    const periodLabel = `Q${quarterNum} ${year}`;
+
+    // Look up prior report for revision calculation
+    let priorWfvNum = report.valuation?.weightedFairValue ?? 0;
+    let priorBullVal = priorWfvNum;
+    let priorBaseVal = priorWfvNum;
+    let priorPanicVal = priorWfvNum;
+
+    for (const [s, existing] of this.reports.entries()) {
+      if (
+        existing.facts.ticker.toUpperCase() === ticker &&
+        existing.valuation?.weightedFairValue &&
+        existing.valuation.weightedFairValue > 0 &&
+        s !== report.folderSlug
+      ) {
+        priorWfvNum = existing.valuation.weightedFairValue;
+        if (existing.scenarios?.scenarios) {
+          for (const sc of existing.scenarios.scenarios) {
+            const fv = sc.forwardEps * sc.multiple;
+            const lower = sc.name.toLowerCase();
+            if (lower.includes("bull")) priorBullVal = fv;
+            else if (lower.includes("base")) priorBaseVal = fv;
+            else if (lower.includes("panic") || lower.includes("bear"))
+              priorPanicVal = fv;
+          }
+        }
+        break;
+      }
+    }
+
     this.addReport(report);
+
+    // Record SEC-filing valuation revision automatically
+    const weightedFairValue = report.valuation?.weightedFairValue ?? 0;
+    if (weightedFairValue > 0) {
+      let bullFairValue = 0;
+      let baseFairValue = 0;
+      let bearFairValue = 0;
+      if (report.scenarios?.scenarios) {
+        for (const s of report.scenarios.scenarios) {
+          const fv = s.forwardEps * s.multiple;
+          const lower = s.name.toLowerCase();
+          if (lower.includes("base")) baseFairValue = fv;
+          else if (lower.includes("bull")) bullFairValue = fv;
+          else if (lower.includes("bear") || lower.includes("panic"))
+            bearFairValue = fv;
+        }
+      }
+      const panicFairValue =
+        report.valuation?.stressTest?.valuationBands?.panic?.targetPrice;
+
+      const wfvDelta = Number((weightedFairValue - priorWfvNum).toFixed(2));
+      const wfvDeltaPctNum =
+        priorWfvNum > 0
+          ? Number(((wfvDelta / priorWfvNum) * 100).toFixed(2))
+          : 0;
+
+      const parsedDate = report.facts.reportDate
+        ? new Date(report.facts.reportDate)
+        : new Date();
+      const revisionDate = Number.isNaN(parsedDate.getTime())
+        ? new Date()
+        : parsedDate;
+
+      await this.saveValuationRevision({
+        id: `rev-sec-${ticker.toLowerCase()}-q${quarterNum}${year}`,
+        ticker,
+        revisionDate,
+        triggerType: "quarterly_filing",
+        headline: `${ticker} ${periodLabel} Earnings & SEC Filing Model`,
+        rationale: `${periodLabel} SEC 10-Q/10-K model valuation (${
+          wfvDeltaPctNum >= 0 ? "+" : ""
+        }${wfvDeltaPctNum.toFixed(1)}% vs prior WFV)`,
+        priorWfv: String(priorWfvNum),
+        newWfv: String(weightedFairValue),
+        wfvDeltaPct: wfvDeltaPctNum.toFixed(2),
+        fullStateDiff: {
+          priorRegimes: {
+            bull: priorBullVal,
+            base: priorBaseVal,
+            panic: priorPanicVal,
+          },
+          newRegimes: {
+            bull: bullFairValue || weightedFairValue,
+            base: baseFairValue || weightedFairValue,
+            panic: panicFairValue || bearFairValue || weightedFairValue,
+          },
+        },
+      });
+    }
   }
 
   async deleteReport(slug: string): Promise<void> {

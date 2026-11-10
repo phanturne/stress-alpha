@@ -508,6 +508,8 @@ export class DrizzleReportRepository implements IReportRepository {
     const slug = report.folderSlug;
     const ticker = report.facts.ticker.toUpperCase();
     const quarter = report.facts.quarter || "Q1 2026";
+    const qMatch = quarter.match(/Q?([1-4])/i);
+    const quarterNum = qMatch ? qMatch[1] : "1";
 
     const match = quarter.match(/\b(20\d{2})\b/) || slug.match(/\b(20\d{2})\b/);
     const year = match ? parseInt(match[1], 10) : new Date().getFullYear();
@@ -770,7 +772,7 @@ export class DrizzleReportRepository implements IReportRepository {
         priorWfvNum > 0
           ? Number(((wfvDelta / priorWfvNum) * 100).toFixed(2))
           : 0;
-      const periodLabel = `Q${quarter} ${year}`.trim();
+      const periodLabel = `Q${quarterNum} ${year}`;
       const parsedDate = report.facts.reportDate
         ? new Date(report.facts.reportDate)
         : new Date();
@@ -778,7 +780,7 @@ export class DrizzleReportRepository implements IReportRepository {
         ? new Date()
         : parsedDate;
       await this.saveValuationRevision({
-        id: `rev-sec-${ticker.toLowerCase()}-q${quarter}${year}`,
+        id: `rev-sec-${ticker.toLowerCase()}-q${quarterNum}${year}`,
         ticker,
         revisionDate,
         triggerType: "quarterly_filing",
