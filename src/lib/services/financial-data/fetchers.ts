@@ -537,7 +537,7 @@ export async function fetchPeerBenchmarks(
             .replace(/\./g, "-")
         )
         .filter((t) =>
-          Boolean(t && t !== targetNorm && /^[A-Z\-]{1,6}$/.test(t))
+          Boolean(t && t !== targetNorm && /^[A-Z0-9\-\.]{1,12}$/i.test(t))
         )
     )
   ).slice(0, 5);

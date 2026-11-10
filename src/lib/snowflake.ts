@@ -378,11 +378,18 @@ function computeMoatCriteria(
       (c) => c.pricingPower === "Inferior" // Peer inferior implies target superior
     ) || facts.operatingMarginPct >= 35;
 
-  // Peer margin superiority
+  // Peer margin superiority (only averaging competitors with reported operating margins)
+  const peersWithMargin = competitors.filter(
+    (c) =>
+      c.operatingMarginPct !== undefined &&
+      Number.isFinite(c.operatingMarginPct)
+  );
   const avgPeerMargin =
-    competitors.length > 0
-      ? competitors.reduce((acc, c) => acc + (c.operatingMarginPct ?? 0), 0) /
-        competitors.length
+    peersWithMargin.length > 0
+      ? peersWithMargin.reduce(
+          (acc, c) => acc + (c.operatingMarginPct ?? 0),
+          0
+        ) / peersWithMargin.length
       : 20;
   const marginSuperiority = facts.operatingMarginPct >= avgPeerMargin;
 

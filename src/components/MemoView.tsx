@@ -668,12 +668,12 @@ export const MemoView: React.FC<MemoViewProps> = ({
                         <td className="whitespace-nowrap p-2.5 text-right font-mono tabular-nums text-slate-300">
                           {peer.marketCapBillions !== undefined
                             ? `$${peer.marketCapBillions.toFixed(1)}B`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-2.5 text-right font-mono tabular-nums text-slate-300">
                           {peer.revenueBillions !== undefined
                             ? `$${peer.revenueBillions.toFixed(1)}B`
-                            : "-"}
+                            : "—"}
                           {peer.revenueGrowthPct !== undefined && (
                             <span
                               className={`ml-1 font-bold ${peer.revenueGrowthPct >= 0 ? "text-fintech-green" : "text-fintech-red"}`}
@@ -685,16 +685,16 @@ export const MemoView: React.FC<MemoViewProps> = ({
                         <td className="whitespace-nowrap p-2.5 text-right font-mono tabular-nums text-slate-300">
                           {peer.operatingMarginPct !== undefined
                             ? `${peer.operatingMarginPct.toFixed(1)}%`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-2.5 text-right font-mono tabular-nums text-slate-300">
                           {peer.forwardPe !== undefined
                             ? `${peer.forwardPe.toFixed(1)}x`
-                            : "-"}
+                            : "—"}
                         </td>
                         <td className="whitespace-nowrap p-2.5">
                           <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-slate-300">
-                            {peer.pricingPower ?? "-"}
+                            {peer.pricingPower ?? "—"}
                           </span>
                         </td>
                         <td

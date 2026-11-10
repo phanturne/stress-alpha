@@ -175,15 +175,23 @@ function renderReportEnglish(input: ReportInput): string {
         "|------|------------|---------|------------|--------------|------------|-------------|--------------|---------------|-------------------------------|"
       );
       for (const comp of m.competitors) {
+        const mktCap =
+          comp.marketCapBillions != null ? `$${comp.marketCapBillions}B` : "—";
+        const rev =
+          comp.revenueBillions != null ? `$${comp.revenueBillions}B` : "—";
         const revGrowth =
           comp.revenueGrowthPct != null
             ? `${comp.revenueGrowthPct > 0 ? "+" : ""}${comp.revenueGrowthPct}%`
             : "—";
+        const gm =
+          comp.grossMarginPct != null ? `${comp.grossMarginPct}%` : "—";
+        const om =
+          comp.operatingMarginPct != null ? `${comp.operatingMarginPct}%` : "—";
         const fwdPe = comp.forwardPe != null ? `${comp.forwardPe}x` : "—";
         const share =
           comp.marketSharePct != null ? `${comp.marketSharePct}%` : "—";
         lines.push(
-          `| **${comp.ticker}** (${comp.name}) | $${comp.marketCapBillions}B | $${comp.revenueBillions}B | ${revGrowth} | ${comp.grossMarginPct}% | ${comp.operatingMarginPct}% | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`
+          `| **${comp.ticker}** (${comp.name}) | ${mktCap} | ${rev} | ${revGrowth} | ${gm} | ${om} | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`
         );
       }
       lines.push("");
@@ -505,15 +513,23 @@ function renderReportChinese(input: ReportInput): string {
         "|-----------------|------|----------|----------|--------|------------|----------|----------|--------|-------------------|"
       );
       for (const comp of m.competitors) {
+        const mktCap =
+          comp.marketCapBillions != null ? `$${comp.marketCapBillions}B` : "—";
+        const rev =
+          comp.revenueBillions != null ? `$${comp.revenueBillions}B` : "—";
         const revGrowth =
           comp.revenueGrowthPct != null
             ? `${comp.revenueGrowthPct > 0 ? "+" : ""}${comp.revenueGrowthPct}%`
             : "—";
+        const gm =
+          comp.grossMarginPct != null ? `${comp.grossMarginPct}%` : "—";
+        const om =
+          comp.operatingMarginPct != null ? `${comp.operatingMarginPct}%` : "—";
         const fwdPe = comp.forwardPe != null ? `${comp.forwardPe}x` : "—";
         const share =
           comp.marketSharePct != null ? `${comp.marketSharePct}%` : "—";
         lines.push(
-          `| **${comp.ticker}** (${comp.name}) | $${comp.marketCapBillions}B | $${comp.revenueBillions}B | ${revGrowth} | ${comp.grossMarginPct}% | ${comp.operatingMarginPct}% | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`
+          `| **${comp.ticker}** (${comp.name}) | ${mktCap} | ${rev} | ${revGrowth} | ${gm} | ${om} | ${fwdPe} | ${share} | ${comp.pricingPower} | ${comp.keyAdvantageOrVulnerability} |`
         );
       }
       lines.push("");

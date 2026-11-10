@@ -354,24 +354,46 @@ export async function hydrateCompetitorsWithLiveMetrics(
     const sym = String(comp.ticker || "")
       .toUpperCase()
       .trim();
-    const live = knownMap.get(sym);
-    if (!live || usedTickers.has(live.ticker.toUpperCase())) {
+    if (usedTickers.has(sym)) {
       continue;
     }
-    usedTickers.add(live.ticker.toUpperCase());
+    usedTickers.add(sym);
+    const live = knownMap.get(sym);
 
-    hydrated.push({
-      ...comp,
-      ticker: live.ticker,
-      name: live.name || comp.name,
-      marketCapBillions: live.marketCapBillions,
-      revenueBillions: live.revenueBillions,
-      revenueGrowthPct: live.revenueGrowthPct,
-      grossMarginPct: live.grossMarginPct,
-      operatingMarginPct: live.operatingMarginPct,
-      forwardPe: live.forwardPe,
-      pricingPower: computePricingPower(live.grossMarginPct, comp.pricingPower),
-    });
+    if (live) {
+      hydrated.push({
+        ...comp,
+        ticker: live.ticker,
+        name: live.name || comp.name,
+        marketCapBillions: live.marketCapBillions,
+        revenueBillions: live.revenueBillions,
+        revenueGrowthPct: live.revenueGrowthPct,
+        grossMarginPct: live.grossMarginPct,
+        operatingMarginPct: live.operatingMarginPct,
+        forwardPe: live.forwardPe,
+        pricingPower: computePricingPower(
+          live.grossMarginPct,
+          comp.pricingPower
+        ),
+      });
+    } else {
+      // Unlisted / private competitor (e.g. OpenAI, Anthropic, Huawei)
+      // Retain qualitative moat & competitive dynamics without fabricating numerical figures
+      hydrated.push({
+        ...comp,
+        ticker: sym || comp.name.toUpperCase().slice(0, 6),
+        name: comp.name,
+        marketCapBillions: undefined,
+        revenueBillions: undefined,
+        revenueGrowthPct: undefined,
+        grossMarginPct: undefined,
+        operatingMarginPct: undefined,
+        forwardPe: undefined,
+        pricingPower: comp.pricingPower ?? "Parity",
+        productComparison: comp.productComparison,
+        keyAdvantageOrVulnerability: comp.keyAdvantageOrVulnerability,
+      });
+    }
   }
 
   const desiredCount = Math.max(aiCompetitors?.length || 0, 3);
@@ -413,7 +435,9 @@ export async function hydrateCompetitorsWithLiveMetrics(
   return hydrated.map((c) => ({
     ...c,
     marketSharePct:
-      totalPoolRev > 0 && c.revenueBillions > 0
+      c.revenueBillions !== undefined &&
+      totalPoolRev > 0 &&
+      c.revenueBillions > 0
         ? round2((c.revenueBillions / totalPoolRev) * 100)
         : undefined,
   }));
