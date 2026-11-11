@@ -236,6 +236,39 @@ describe("Data Access Layer: Repository Pattern", () => {
       const foundRev = revisions.find((r) => r.id === revId);
       expect(foundRev).toBeDefined();
       expect(foundRev?.triggerType).toBe("peer_earnings_shock");
+
+      // 4. Invariant: saveReport generates canonical revision ID and deduplicates idempotently
+      const testReport = {
+        ...mockReport,
+        folderSlug: "nvda-2026q3",
+        facts: {
+          ...mockReport.facts,
+          ticker: testTicker,
+          quarter: "Q3 2026",
+        },
+        valuation: {
+          ...mockReport.valuation!,
+          ticker: testTicker,
+          weightedFairValue: 145.5,
+        },
+      };
+      await drizzleRepo.saveReport(testReport);
+      await drizzleRepo.saveReport(testReport); // Repeated call simulating re-scaffolding
+
+      const updatedRevs = await drizzleRepo.getValuationRevisions(
+        testTicker,
+        50
+      );
+      const secRevs = updatedRevs.filter(
+        (r) =>
+          r.triggerType === "quarterly_filing" && r.headline.includes("Q3 2026")
+      );
+      expect(secRevs.length).toBe(1);
+      expect(secRevs[0].id).toBe("rev-sec-nvda-q32026");
+      expect(secRevs[0].headline).toBe(
+        "NVDA Q3 2026 Earnings & SEC Filing Model"
+      );
+      expect(secRevs[0].id).not.toContain("qQ");
     });
 
     it("manages relational financial metrics time-series on ephemeral test branch", async () => {

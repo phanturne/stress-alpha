@@ -578,87 +578,8 @@ export async function syncEarningsCalendar(
         );
       }
 
-      // Persist bilingual report via repository
+      // Persist bilingual report via repository (automatically logs SEC valuation revision)
       await repo.saveReport(report);
-
-      // Record valuation revision ledger point with true prior-vs-new delta
-      if (valuation && valuation.weightedFairValue > 0) {
-        let bullVal = valuation.weightedFairValue;
-        let baseVal = valuation.weightedFairValue;
-        let panicVal =
-          valuation.stressTest?.valuationBands?.panic?.targetPrice ??
-          valuation.weightedFairValue;
-
-        if (report.scenarios?.scenarios) {
-          for (const s of report.scenarios.scenarios) {
-            const fv = s.forwardEps * s.multiple;
-            const lower = s.name.toLowerCase();
-            if (lower.includes("bull")) bullVal = fv;
-            else if (lower.includes("base")) baseVal = fv;
-            else if (lower.includes("panic") || lower.includes("bear"))
-              panicVal = fv;
-          }
-        }
-
-        const priorWfvNum =
-          priorReport?.valuation?.weightedFairValue &&
-          priorReport.valuation.weightedFairValue > 0
-            ? priorReport.valuation.weightedFairValue
-            : valuation.weightedFairValue;
-
-        let priorBullVal = priorWfvNum;
-        let priorBaseVal = priorWfvNum;
-        let priorPanicVal = priorWfvNum;
-        if (priorReport?.scenarios?.scenarios) {
-          for (const s of priorReport.scenarios.scenarios) {
-            const fv = s.forwardEps * s.multiple;
-            const lower = s.name.toLowerCase();
-            if (lower.includes("bull")) priorBullVal = fv;
-            else if (lower.includes("base")) priorBaseVal = fv;
-            else if (lower.includes("panic") || lower.includes("bear"))
-              priorPanicVal = fv;
-          }
-        }
-
-        const wfvDeltaPct =
-          priorWfvNum > 0
-            ? (
-                ((valuation.weightedFairValue - priorWfvNum) / priorWfvNum) *
-                100
-              ).toFixed(2)
-            : "0.00";
-
-        try {
-          await repo.saveValuationRevision({
-            id: `rev-sec-${symbol.toLowerCase()}-q${quarter}${year}`,
-            ticker: symbol,
-            revisionDate: new Date(),
-            triggerType: "quarterly_filing",
-            headline: `${symbol} Q${quarter} ${year} Earnings & SEC Filing Model`,
-            rationale: `Automated scaffolding from Yahoo Finance & SEC EDGAR filings for ${symbol} Q${quarter} ${year}.`,
-            priorWfv: String(priorWfvNum),
-            newWfv: String(valuation.weightedFairValue),
-            wfvDeltaPct,
-            fullStateDiff: {
-              priorRegimes: {
-                bull: priorBullVal,
-                base: priorBaseVal,
-                panic: priorPanicVal,
-              },
-              newRegimes: {
-                bull: bullVal,
-                base: baseVal,
-                panic: panicVal,
-              },
-            },
-          });
-        } catch (revErr) {
-          console.warn(
-            `⚠️ [ValuationRevision] Failed to save revision point for ${symbol}:`,
-            revErr
-          );
-        }
-      }
 
       scaffolded++;
       results.push({
