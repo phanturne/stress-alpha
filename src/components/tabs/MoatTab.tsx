@@ -128,10 +128,10 @@ export const MoatTab: React.FC<MoatTabProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Tab Header & Moat Verdict Banner */}
-      <div className="glass-panel shadow-xs flex flex-col justify-between gap-4 rounded-2xl border border-border p-5 md:flex-row md:items-center">
-        <div className="flex items-start gap-3.5">
+      <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-border p-5">
+        <div className="flex w-full items-start gap-3.5">
           <ShieldCheck className="mt-1 size-5 shrink-0 text-accent" />
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h3 className="text-base font-bold tracking-tight text-foreground">
                 {t.title}
@@ -148,7 +148,7 @@ export const MoatTab: React.FC<MoatTabProps> = ({
                 {trendInfo.label}
               </span>
             </div>
-            <p className="mt-1.5 max-w-3xl text-xs leading-relaxed text-slate-300">
+            <p className="mt-2 w-full text-xs leading-relaxed text-slate-300">
               {moatData.competitiveDynamicsSummary}
             </p>
           </div>

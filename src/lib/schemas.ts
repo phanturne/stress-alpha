@@ -36,6 +36,16 @@ export const FactsSchema = z.object({
   quarter: z.string().describe("e.g. Q2 2026"),
   reportDate: z.string(),
 
+  // Company Profile & Taxonomy
+  sector: z.string().optional(),
+  industry: z.string().optional(),
+  businessSummary: z
+    .string()
+    .describe(
+      "1-3 sentence summary of business model, core products, and customer base"
+    )
+    .optional(),
+
   // Top-line
   revenueBillions: z.number(),
   revenueGrowthPct: z.number(),

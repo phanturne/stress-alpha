@@ -1,25 +1,44 @@
 "use client";
 
 import React from "react";
-import { AlertOctagon, FileSearch, Sparkles, ExternalLink } from "lucide-react";
-import type { FilingExtracts } from "@/lib/schemas";
+import {
+  AlertOctagon,
+  FileSearch,
+  Sparkles,
+  ExternalLink,
+  Building2,
+} from "lucide-react";
+import type { FilingExtracts, Facts } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
 
 interface FilingTabProps {
   filingData?: FilingExtracts;
+  facts?: Facts;
+  businessSummary?: string;
+  sector?: string;
+  industry?: string;
   locale?: Locale;
   ticker?: string;
 }
 
 export const FilingTab: React.FC<FilingTabProps> = ({
   filingData,
+  facts,
+  businessSummary,
+  sector,
+  industry,
   locale = "zh",
   ticker,
 }) => {
   const t = getTranslations(locale).filingTab;
+  const effectiveSummary = businessSummary || facts?.businessSummary;
+  const effectiveSector = sector || facts?.sector;
+  const effectiveIndustry = industry || facts?.industry;
+
   if (
-    !filingData ||
-    (!filingData.newRiskFactors?.length && !filingData.sections?.length)
+    !effectiveSummary &&
+    (!filingData ||
+      (!filingData.newRiskFactors?.length && !filingData.sections?.length))
   ) {
     return (
       <div className="glass-panel rounded-xl p-12 text-center text-sm text-slate-400">
@@ -28,7 +47,8 @@ export const FilingTab: React.FC<FilingTabProps> = ({
     );
   }
 
-  const { newRiskFactors, sections } = filingData;
+  const newRiskFactors = filingData?.newRiskFactors ?? [];
+  const sections = filingData?.sections ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,6 +78,93 @@ export const FilingTab: React.FC<FilingTabProps> = ({
           </a>
         )}
       </div>
+
+      {/* Item 1: Business Overview */}
+      {effectiveSummary && (
+        <div className="glass-panel shadow-xs flex flex-col gap-3 rounded-2xl border border-accent/25 bg-surface-1/90 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2.5">
+              <Building2 className="size-4 shrink-0 text-accent" />
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  {t.businessOverviewTitle}
+                </h4>
+                <p className="mt-0.5 text-[11px] text-slate-400">
+                  {t.businessOverviewSubtitle}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="rounded border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-accent">
+                {t.item1Badge}
+              </span>
+              {(effectiveSector || effectiveIndustry) && (
+                <span className="rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-medium text-slate-300">
+                  {[effectiveSector, effectiveIndustry]
+                    .filter(Boolean)
+                    .join(" • ")}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="space-y-3 text-xs leading-relaxed">
+            {effectiveSummary.split("\n\n").map((block, bIdx) => {
+              const trimmed = block.trim();
+              if (trimmed.startsWith("•")) {
+                const lines = trimmed.split("\n");
+                const headerLine = lines[0].replace(/^•\s*/, "");
+                const bulletItems = lines.slice(1);
+                return (
+                  <div
+                    key={bIdx}
+                    className="rounded-xl border border-border/60 bg-surface-0/70 p-3.5"
+                  >
+                    <div className="font-mono text-xs font-bold tracking-tight text-foreground">
+                      {headerLine}
+                    </div>
+                    {bulletItems.length > 0 && (
+                      <ul className="mt-2 space-y-1.5 pl-4 text-xs text-slate-300">
+                        {bulletItems.map((item, iIdx) => {
+                          const itemTrimmed = item
+                            .trim()
+                            .replace(/^[-•]\s*/, "");
+                          const parts = itemTrimmed.split(":");
+                          if (parts.length > 1) {
+                            return (
+                              <li
+                                key={iIdx}
+                                className="list-disc leading-relaxed"
+                              >
+                                <span className="font-semibold text-slate-100">
+                                  {parts[0]}:
+                                </span>
+                                <span>{parts.slice(1).join(":")}</span>
+                              </li>
+                            );
+                          }
+                          return (
+                            <li
+                              key={iIdx}
+                              className="list-disc leading-relaxed"
+                            >
+                              {itemTrimmed}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                );
+              }
+              return (
+                <p key={bIdx} className="leading-relaxed text-slate-300">
+                  {trimmed}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* New or Escalated Risks */}
       {newRiskFactors && newRiskFactors.length > 0 && (

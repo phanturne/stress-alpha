@@ -176,13 +176,14 @@ describe("Stock Notes State, Storage & API Contract", () => {
     });
   });
 
-  describe("Workspace 3-Tab Core & i18n Translation Integrity", () => {
-    it("maintains 3 focused workspace tabs in WORKSPACE_TAB_IDS", () => {
-      expect(WORKSPACE_TAB_IDS).toHaveLength(3);
+  describe("Workspace 4-Tab Core & i18n Translation Integrity", () => {
+    it("maintains 4 focused workspace tabs in WORKSPACE_TAB_IDS", () => {
+      expect(WORKSPACE_TAB_IDS).toHaveLength(4);
       expect(WORKSPACE_TAB_IDS).toEqual([
         "technicals",
         "valuation",
         "estimates",
+        "audit",
       ]);
     });
 
@@ -194,18 +195,18 @@ describe("Stock Notes State, Storage & API Contract", () => {
       expect(normalizeWorkspaceTabId("")).toBe("technicals");
       expect(normalizeWorkspaceTabId("unknown-tab")).toBe("technicals");
 
-      // Canonical 3 tabs
+      // Canonical 4 tabs
       expect(normalizeWorkspaceTabId("technicals")).toBe("technicals");
       expect(normalizeWorkspaceTabId("valuation")).toBe("valuation");
       expect(normalizeWorkspaceTabId("estimates")).toBe("estimates");
+      expect(normalizeWorkspaceTabId("audit")).toBe("audit");
 
       // Legacy sub-tabs
       expect(normalizeWorkspaceTabId("scenarios")).toBe("valuation");
       expect(normalizeWorkspaceTabId("sensitivity")).toBe("valuation");
       expect(normalizeWorkspaceTabId("moat")).toBe("estimates");
-      expect(normalizeWorkspaceTabId("audit")).toBe("estimates");
-      expect(normalizeWorkspaceTabId("filing")).toBe("estimates");
-      expect(normalizeWorkspaceTabId("tone")).toBe("estimates");
+      expect(normalizeWorkspaceTabId("filing")).toBe("audit");
+      expect(normalizeWorkspaceTabId("tone")).toBe("audit");
     });
 
     it("provides complete bilingual descriptors for English and Chinese", () => {
@@ -217,10 +218,10 @@ describe("Stock Notes State, Storage & API Contract", () => {
       } as unknown as ReportData;
 
       const tabsEn = getWorkspaceTabs(tEn, mockReportData, 0, false);
-      expect(tabsEn).toHaveLength(3);
+      expect(tabsEn).toHaveLength(4);
 
       const tabsZh = getWorkspaceTabs(tZh, mockReportData, 0, true);
-      expect(tabsZh).toHaveLength(3);
+      expect(tabsZh).toHaveLength(4);
 
       // Verify stockNotes i18n dictionaries have all required keys for Modal and Watchlist hover
       expect(tEn.stockNotes.tabTitle).toBeDefined();

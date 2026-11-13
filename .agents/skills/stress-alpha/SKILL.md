@@ -77,6 +77,11 @@ With all quantitative financials automatically staged, the agent audits and enri
    - **Forward Consensus Sanity Guardrail:** Compare `forwardEpsConsensus` against the operational run-rate (`epsOperating * 4`). For mature or decelerating non-cyclical businesses, verify that forward EPS is not an unadjusted or stale consensus artifact.
    - **Forensic Governance & Accounting Audit (QPCE Anchor):** Audit for `governanceRisk` (`none` | `low` | `moderate` | `severe`), `accountingFlags` (auditor resignations, restatements, internal control weaknesses, related-party pull-forwards), and `materialLitigationOrDoj`.
    - **Valuation Archetype & Capital Runway:** Classify archetype (`compounder` | `operating_scaler` | `venture_hypergrowth`), gross margin %, and Net Liquid Runway months.
+   - **Structured Item 1 Business Overview (`businessSummary` & `businessSummary_zh`):** Synthesize the structured 4-pillar institutional Form 10-K Item 1 Business Model profile for the Filings & Audit workspace:
+     1. Executive Abstract (1-2 sentences): core corporate mission, operating segments, and target end-markets.
+     2. `• Revenue Architecture & Segmentation:` segment revenue breakdown (% of total revenue) and core product lines.
+     3. `• Three-Layer Economic Moat:` (1) proprietary IP/technological barrier, (2) ecosystem switching costs / locked-in RPO, and (3) network effects or cost/scale advantage.
+     4. `• Value Chain & Critical Downside Risks:` key upstream supply chain/foundry dependencies, direct customer concentration, and critical regulatory/competitive bottlenecks.
 2. `scenarios.json` (Required):
    - Scenario `forwardEps`, `multiple`, and `probability` (`calibratedProbability`) are deterministically scaffolded and calibrated by TypeScript (`npm run fetch:data` and `analyze.ts`). The LLM must never invent or guess scenario EPS, multiples, or probabilities, and must keep `scenarios_zh.json` numerically identical to `scenarios.json`.
    - **Operational Realism in Base EPS:** Base forward EPS anchors on realistic operational earnings power (`epsOperating * 4 * (1 + guidanceGrowth)`). Panic regime `assumptions` and `keyDrivers` MUST model the primary structural vulnerability of the business model (e.g. distribution/traffic decay for consumer web, customer churn for SaaS, cycle downturn for semiconductors).

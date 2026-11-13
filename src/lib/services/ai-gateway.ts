@@ -68,6 +68,7 @@ const UnifiedSynthesisSchema = z.object({
   catalystsEn: CatalystsSchema,
   upstreamDrivers: FinancialModelBaselineSchema.shape.upstreamDrivers,
   scenariosEn: ScenariosSchema,
+  businessSummary: z.string().optional(),
 });
 
 const Stage3LocalizationSchema = z.object({
@@ -76,6 +77,7 @@ const Stage3LocalizationSchema = z.object({
   catalystsZh: CatalystsSchema,
   scenariosZh: ScenariosSchema,
   filingZh: FilingExtractsSchema,
+  businessSummaryZh: z.string().optional(),
 });
 
 function parseJsonObject(rawText: string): any {
@@ -264,6 +266,10 @@ function sanitizeStage2Raw(raw: any, fallbackFacts: Facts): any {
     } else {
       raw[reqNumKey] = Number(raw[reqNumKey]);
     }
+  }
+
+  if (typeof raw.businessSummary !== "string" || !raw.businessSummary.trim()) {
+    raw.businessSummary = undefined;
   }
 
   if (raw.catalystsEn && typeof raw.catalystsEn === "object") {
@@ -535,6 +541,8 @@ export async function enrichPipelineBundleWithAi(
       catalystsEn: bundle.catalystsEn,
       upstreamDrivers: baseline.upstreamDrivers,
       scenariosEn: bundle.scenariosEn,
+      businessSummary:
+        factsDraft.businessSummary || profile.businessSummary || "",
     };
 
     let secContext = "";
@@ -575,7 +583,12 @@ Rules:
    a. Populate sentiment.keyQuotes using verbatim quotes from the CEO and CFO in the 8-K press release.
    b. Extract purchase obligations, supply commitments, and customer prepayments/deferred revenue into filingEn.sections under "Note: Commitments and Contingencies" (convert millions to billions for purchaseObligationsBillions, e.g. $2,948.9 million -> 2.95).
    c. If customer concentration is disclosed (e.g. two end customers accounted for 37% and 11% of revenue), record the top single-customer share in customerConcentrationPct (e.g. 37) and include "Note: Customer and Geographic Concentrations" in filingEn.sections.
-   d. In catalystsEn and filingEn.newRiskFactors, capture specific product ramps, multi-billion purchase commitments (e.g. NPO/CPO, OCS), M&A combinations, and supply/customer concentration risks disclosed in the 8-K and 10-Q.`,
+   d. In catalystsEn and filingEn.newRiskFactors, capture specific product ramps, multi-billion purchase commitments (e.g. NPO/CPO, OCS), M&A combinations, and supply/customer concentration risks disclosed in the 8-K and 10-Q.
+9. In businessSummary, synthesize a structured 4-pillar institutional Form 10-K Item 1 Business Model profile for ${ticker}:
+   - Executive Abstract (1-2 sentences): primary corporate mission, core operating segments, and target end-markets served.
+   - • Revenue Architecture & Segmentation: disaggregate revenue segments by their latest percentages of total revenue and describe key product lines/platforms driving each segment.
+   - • Three-Layer Economic Moat: synthesize (1) proprietary IP/technological barrier, (2) ecosystem switching costs / locked-in RPO, and (3) network effects or cost/scale advantage.
+   - • Value Chain & Critical Downside Risks: upstream suppliers/manufacturing dependencies (e.g. foundries, key component vendors), direct customer concentration, and critical regulatory/competitive bottlenecks.`,
       prompt: `Synthesize the complete equity research bundle for ${profile.companyName} (${ticker}, ${factsDraft.quarter}).\n\nJSON Template to match:\n${JSON.stringify(synthesisTemplate, null, 2)}\n\nQuantitative Context:\n${compactContext}${secContext}`,
       providerOptions: {
         deepseek: {
@@ -678,6 +691,10 @@ Rules:
         synth.revenueGrowthPct != null
           ? synth.revenueGrowthPct
           : factsDraft.revenueGrowthPct,
+      businessSummary:
+        synth.businessSummary?.trim() ||
+        factsDraft.businessSummary ||
+        profile.businessSummary,
     });
 
     const hydratedCompetitors = await hydrateCompetitorsWithLiveMetrics(
@@ -780,13 +797,14 @@ Rules:
         catalystsZh: enrichedCatalystsEn,
         scenariosZh: enrichedScenariosEn,
         filingZh: filingEn,
+        businessSummaryZh: enrichedFacts.businessSummary || "",
       };
 
       const { text: stage3Text } = await generateText({
         model: AI_GATEWAY_MODELS.EXTRACTOR,
         maxOutputTokens: 16384,
         system:
-          "You are an institutional Mandarin Chinese equity research translator. Return ONLY a single valid JSON object matching the exact keys of the provided template (no markdown fences). Translate all English descriptive text fields into concise, professional buy-side Simplified Chinese while keeping every number, percentage, ticker symbol, and enum key 100% identical to the English input.",
+          "You are an institutional Mandarin Chinese equity research translator. Return ONLY a single valid JSON object matching the exact keys of the provided template (no markdown fences). Translate all English descriptive text fields into concise, professional buy-side Simplified Chinese while keeping every number, percentage, ticker symbol, and enum key 100% identical to the English input. In businessSummaryZh, translate the structured 4-pillar Item 1 Business Model into professional Chinese, preserving the bullet structure ('• 业务架构与分部营收拆解:', '• 三层护城河壁垒:', '• 产业链卡位与核心下行风险:').",
         prompt: `Translate the following equity research modules for ${ticker} into institutional Simplified Chinese matching the exact JSON structure:\n\n${JSON.stringify(
           stage3Template,
           null,
@@ -912,6 +930,10 @@ Rules:
       const stage3 = Stage3LocalizationSchema.parse(rawZh);
       factsZh = FactsSchema.parse({
         ...enrichedFacts,
+        businessSummary:
+          stage3.businessSummaryZh?.trim() ||
+          bundle.factsZh.businessSummary ||
+          enrichedFacts.businessSummary,
         segments: stage3.segmentsZh,
         sources: bundle.factsZh.sources,
       });
