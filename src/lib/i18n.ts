@@ -574,6 +574,9 @@ export interface Translations {
     title: string;
     subtitle: string;
     empty: string;
+    businessOverviewTitle: string;
+    businessOverviewSubtitle: string;
+    item1Badge: string;
     newRisksTitle: string;
     newTag: string;
     expandedTag: string;
@@ -1728,7 +1731,7 @@ export const translations: Record<Locale, Translations> = {
       segments: "Segments & Financials",
       catalysts: "Catalysts & Risks",
       news: "News & Filings",
-      audit: "Earnings Audit",
+      audit: "Filings & Audit",
       report: "Research Memo",
       scenarios: "Valuation & Scenarios",
       sensitivity: "Sensitivity Heatmap",
@@ -1741,7 +1744,7 @@ export const translations: Record<Locale, Translations> = {
       shortMoat: "Moat",
       shortSegments: "Segments",
       shortCatalysts: "Catalysts",
-      shortAudit: "Audit",
+      shortAudit: "Filings",
       shortNews: "News",
       shortReport: "Memo",
       notes: "Analyst Notes",
@@ -2026,6 +2029,10 @@ export const translations: Record<Locale, Translations> = {
       subtitle:
         "Diff audit against previous regulatory filings highlighting novel disclosures and modified legal risk factors.",
       empty: "No SEC 10-Q filing extract artifacts available for this report.",
+      businessOverviewTitle: "Item 1: Business & Operations Overview",
+      businessOverviewSubtitle:
+        "Audited statutory business model disclosure from official SEC 10-K / 10-Q filings.",
+      item1Badge: "SEC FORM 10-K / ITEM 1",
       newRisksTitle: "New / Escalated Risk Disclosures",
       newTag: "⚡ Newly added this filing period",
       expandedTag: "Language expanded from previous quarter",
@@ -3342,7 +3349,7 @@ export const translations: Record<Locale, Translations> = {
       segments: "分部业务与财务",
       catalysts: "催化剂与风险",
       news: "实时动态与呈报",
-      audit: "业绩与披露审计",
+      audit: "申报与审计",
       report: "投资研报",
       scenarios: "估值与情景",
       sensitivity: "敏感性热力图",
@@ -3355,7 +3362,7 @@ export const translations: Record<Locale, Translations> = {
       shortMoat: "护城河",
       shortSegments: "分部",
       shortCatalysts: "催化",
-      shortAudit: "审计",
+      shortAudit: "申报",
       shortNews: "动态",
       shortReport: "研报",
       notes: "个股投资备忘",
@@ -3629,6 +3636,10 @@ export const translations: Record<Locale, Translations> = {
       subtitle:
         "与往期法定监管申报文件的差异对比审计，识别新增法律表述与合规风险因素。",
       empty: "当前研报暂无 SEC 10-Q 监管申报审计底稿。",
+      businessOverviewTitle: "Item 1: 主营业务与商业运营架构",
+      businessOverviewSubtitle:
+        "源自官方 SEC 10-K / 10-Q 法定披露的主营业务架构与商业模式概述。",
+      item1Badge: "SEC FORM 10-K / ITEM 1",
       newRisksTitle: "新增或升级的风险因素披露",
       newTag: "⚡ 本报告期全新增加",
       expandedTag: "相较上季度表述显著扩充",

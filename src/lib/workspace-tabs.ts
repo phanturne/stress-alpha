@@ -17,6 +17,7 @@ export const WORKSPACE_TAB_IDS = [
   "technicals",
   "valuation",
   "estimates",
+  "audit",
 ] as const;
 
 export type WorkspaceTabId = (typeof WORKSPACE_TAB_IDS)[number];
@@ -41,8 +42,16 @@ export function normalizeWorkspaceTabId(
   ) {
     return "valuation";
   }
-  if (tab === "moat" || tab === "audit" || tab === "tone" || tab === "filing") {
+  if (tab === "moat") {
     return "estimates";
+  }
+  if (
+    tab === "audit" ||
+    tab === "tone" ||
+    tab === "filing" ||
+    tab === "reactions"
+  ) {
+    return "audit";
   }
   return "technicals";
 }
@@ -82,6 +91,13 @@ export function getWorkspaceTabs(
       label: t.tabs.estimates,
       shortLabel: t.tabs.shortEstimates,
       icon: Target,
+    },
+    {
+      id: "audit",
+      shortcut: "4",
+      label: t.tabs.audit,
+      shortLabel: t.tabs.shortAudit,
+      icon: FileSearch,
     },
   ];
 }

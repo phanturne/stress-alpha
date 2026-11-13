@@ -6,6 +6,7 @@ import type {
   EarningsSentiment,
   FilingExtracts,
   Reactions,
+  Facts,
 } from "@/lib/schemas";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { ToneTab } from "./ToneTab";
@@ -16,18 +17,24 @@ interface AuditTabProps {
   sentimentData?: EarningsSentiment;
   filingData?: FilingExtracts;
   reactionsData?: Reactions;
+  facts?: Facts;
   locale?: Locale;
   ticker?: string;
+  initialSubTab?: "filing" | "tone" | "reactions";
 }
 
 export const AuditTab: React.FC<AuditTabProps> = ({
   sentimentData,
   filingData,
   reactionsData,
+  facts,
   locale = "zh",
   ticker,
+  initialSubTab = "filing",
 }) => {
-  const [subTab, setSubTab] = useState<"tone" | "filing" | "reactions">("tone");
+  const [subTab, setSubTab] = useState<"filing" | "tone" | "reactions">(
+    initialSubTab
+  );
   const t = getTranslations(locale).auditTab;
 
   const toneScore = sentimentData?.managementTone?.overallConfidence;
@@ -36,16 +43,16 @@ export const AuditTab: React.FC<AuditTabProps> = ({
 
   const subNavItems = [
     {
-      id: "tone" as const,
-      label: t.subTone,
-      icon: Mic,
-      countBadge: toneScore !== undefined ? `${toneScore}/10` : undefined,
-    },
-    {
       id: "filing" as const,
       label: t.subFiling,
       icon: FileSearch,
       countBadge: newRisksCount > 0 ? `${newRisksCount}` : undefined,
+    },
+    {
+      id: "tone" as const,
+      label: t.subTone,
+      icon: Mic,
+      countBadge: toneScore !== undefined ? `${toneScore}/10` : undefined,
     },
     {
       id: "reactions" as const,
@@ -109,7 +116,12 @@ export const AuditTab: React.FC<AuditTabProps> = ({
           <ToneTab sentimentData={sentimentData} locale={locale} />
         )}
         {subTab === "filing" && (
-          <FilingTab filingData={filingData} locale={locale} ticker={ticker} />
+          <FilingTab
+            filingData={filingData}
+            facts={facts}
+            locale={locale}
+            ticker={ticker}
+          />
         )}
         {subTab === "reactions" && (
           <ReactionsTab reactionsData={reactionsData} locale={locale} />

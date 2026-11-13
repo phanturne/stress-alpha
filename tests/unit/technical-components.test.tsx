@@ -533,7 +533,7 @@ describe("Technical Levels UI Components", () => {
 
       expect(tabs[1].id).toBe("valuation");
       expect(tabs[1].shortcut).toBe("2");
-      expect(tabs).toHaveLength(3);
+      expect(tabs).toHaveLength(4);
     });
   });
 });

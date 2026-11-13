@@ -401,7 +401,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
             </div>
           )}
 
-          {/* WORKSPACE 3: CONSENSUS, MOAT & FILINGS (estimates, moat, audit, tone, filing) */}
+          {/* WORKSPACE 3: CONSENSUS & MOAT (estimates, moat) */}
           {effectiveTab === "estimates" && (
             <div className="flex flex-col gap-6">
               <EstimatesTab
@@ -415,18 +415,21 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   <MoatTab moatData={displayMoat} locale={locale} />
                 </div>
               )}
+            </div>
+          )}
 
-              {(displaySentiment || displayFiling) && (
-                <div className="border-t border-border/60 pt-2">
-                  <AuditTab
-                    sentimentData={displaySentiment}
-                    filingData={displayFiling}
-                    reactionsData={displayReactions}
-                    locale={locale}
-                    ticker={reportData?.facts?.ticker}
-                  />
-                </div>
-              )}
+          {/* WORKSPACE 4: FILINGS & AUDIT (filings, call tone, reactions) */}
+          {effectiveTab === "audit" && (
+            <div className="flex flex-col gap-6">
+              <AuditTab
+                sentimentData={displaySentiment}
+                filingData={displayFiling}
+                reactionsData={displayReactions}
+                facts={displayFacts}
+                locale={locale}
+                ticker={reportData?.facts?.ticker}
+                initialSubTab="filing"
+              />
             </div>
           )}
         </div>
