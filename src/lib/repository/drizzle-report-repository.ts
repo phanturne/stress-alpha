@@ -820,6 +820,32 @@ export class DrizzleReportRepository implements IReportRepository {
     this.snowflakeCache.delete(slug);
   }
 
+  async syncPrice(ticker: string, price: number): Promise<void> {
+    const db = getDb();
+    const upperTicker = ticker.toUpperCase();
+    const priceStr = String(price);
+
+    await db
+      .update(tickersTable)
+      .set({
+        currentPrice: priceStr,
+        priceUpdatedAt: new Date(),
+      })
+      .where(eq(tickersTable.ticker, upperTicker));
+
+    await db
+      .update(reportsTable)
+      .set({
+        reportPrice: priceStr,
+        facts: sql`jsonb_set(COALESCE(${reportsTable.facts}, '{}'::jsonb), '{currentPrice}', ${priceStr}::jsonb)`,
+        factsZh: sql`CASE WHEN ${reportsTable.factsZh} IS NOT NULL THEN jsonb_set(${reportsTable.factsZh}, '{currentPrice}', ${priceStr}::jsonb) ELSE NULL END`,
+        updatedAt: new Date(),
+      })
+      .where(eq(reportsTable.ticker, upperTicker));
+
+    this.clearCache();
+  }
+
   clearCache(): void {
     this.cachedSummaries = null;
     this.lastSummariesTime = 0;

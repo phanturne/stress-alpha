@@ -514,7 +514,7 @@ export function MarketHomeView({
     return { advancers, decliners };
   }, [marketSummary]);
 
-  // Top Movers: Gainers, Losers, and Active for the sidebar tab widget (Daily Price Return %)
+  // Top Movers: Gainers, Losers, and Active for the sidebar tab widget (Daily Price Return %, never WFV)
   const moversData = useMemo(() => {
     const enrichedReports = latestReports.map((r) => {
       const changePct = r.priceChangePct ?? 0;
@@ -525,10 +525,12 @@ export function MarketHomeView({
     });
 
     const gainers = [...enrichedReports]
+      .filter((r) => (r.priceChangePct != null ? r.changePct > 0 : true))
       .sort((a, b) => b.changePct - a.changePct)
       .slice(0, 5);
 
     const losers = [...enrichedReports]
+      .filter((r) => (r.priceChangePct != null ? r.changePct < 0 : true))
       .sort((a, b) => a.changePct - b.changePct)
       .slice(0, 5);
 
@@ -1211,6 +1213,18 @@ export function MarketHomeView({
           {/* Top Movers & Watchlist Widget */}
           <div className="shadow-xs rounded-xl border border-border/80 bg-surface-1 p-3.5 sm:p-4">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="size-4 text-accent" />
+                <h3 className="text-sm font-bold text-foreground">
+                  {tHome.topMoversTitle}
+                </h3>
+              </div>
+              <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+                {tHome.dayPriceChange}
+              </span>
+            </div>
+
+            <div className="mt-3">
               <SegmentedTabs
                 options={moverTabOptions}
                 value={moverTab}
@@ -1267,9 +1281,12 @@ export function MarketHomeView({
                           {isPos ? "+" : ""}
                           {changePct.toFixed(2)}%
                         </span>
-                        <span className="text-[10px] text-slate-500">
-                          ${item.currentPrice?.toFixed(2) || "—"}
-                        </span>
+                        <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400">
+                          <span>${item.currentPrice?.toFixed(2) || "—"}</span>
+                          <span className="font-mono text-[9px] text-slate-500">
+                            1D
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );

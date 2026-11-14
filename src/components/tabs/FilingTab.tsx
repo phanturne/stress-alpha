@@ -168,29 +168,41 @@ export const FilingTab: React.FC<FilingTabProps> = ({
 
       {/* New or Escalated Risks */}
       {newRiskFactors && newRiskFactors.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <AlertOctagon className="size-4 text-fintech-red" />
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              {t.newRisksTitle}
-            </h4>
+        <div className="glass-panel shadow-xs flex flex-col gap-4 rounded-2xl border border-rose-500/25 bg-surface-1/90 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2.5">
+              <AlertOctagon className="size-4 shrink-0 text-fintech-red" />
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  {t.newRisksTitle}
+                </h4>
+                <p className="mt-0.5 text-[11px] text-slate-400">
+                  {t.newRisksSubtitle}
+                </p>
+              </div>
+            </div>
+            <span className="rounded border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-rose-400">
+              {t.newRisksCountBadge(newRiskFactors.length)}
+            </span>
           </div>
 
-          <div className="custom-scrollbar grid max-h-72 grid-cols-1 gap-2.5 overflow-y-auto pr-1">
+          <div className="grid grid-cols-1 gap-3.5">
             {newRiskFactors.map((r, idx) => (
               <div
                 key={idx}
-                className="glass-panel bg-fintech-redGlow/5 shadow-xs flex items-start justify-between gap-4 rounded-xl border border-fintech-red/30 p-4"
+                className="flex items-start justify-between gap-4 rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 transition-colors hover:border-rose-500/35 hover:bg-rose-500/10"
               >
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold leading-relaxed text-slate-200">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-xs font-semibold leading-relaxed text-slate-100">
                     {r.risk}
                   </span>
-                  <span className="font-mono text-[11px] text-slate-400">
-                    {r.priorLanguage === "new" ? t.newTag : t.expandedTag}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] font-medium text-slate-400">
+                      {r.priorLanguage === "new" ? t.newTag : t.expandedTag}
+                    </span>
+                  </div>
                 </div>
-                <span className="bg-fintech-redGlow/20 shadow-xs shrink-0 rounded-full border border-fintech-red/40 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-fintech-red">
+                <span className="bg-fintech-redGlow/20 shadow-xs shrink-0 rounded-full border border-fintech-red/40 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-fintech-red">
                   {r.severity}
                 </span>
               </div>

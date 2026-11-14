@@ -34,15 +34,10 @@ export function normalizeWorkspaceTabId(
     return tab as WorkspaceTabId;
   }
   // Support legacy sub-tab routes
-  if (
-    tab === "scenarios" ||
-    tab === "sensitivity" ||
-    tab === "segments" ||
-    tab === "catalysts"
-  ) {
+  if (tab === "scenarios" || tab === "sensitivity" || tab === "catalysts") {
     return "valuation";
   }
-  if (tab === "moat") {
+  if (tab === "moat" || tab === "segments") {
     return "estimates";
   }
   if (

@@ -31,7 +31,6 @@ import { MoatTab } from "@/components/tabs/MoatTab";
 import { SegmentsTab } from "@/components/tabs/SegmentsTab";
 import { CatalystsTab } from "@/components/tabs/CatalystsTab";
 import { AuditTab } from "@/components/tabs/AuditTab";
-import { ReactionsTab } from "@/components/tabs/ReactionsTab";
 export type { WorkspaceTabDescriptor };
 
 export interface CockpitWorkspacePaneProps {
@@ -348,21 +347,10 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                   />
                 );
               })()}
-
-              {displayReactions &&
-                displayReactions.events &&
-                displayReactions.events.length > 0 && (
-                  <div className="border-t border-border/60 pt-2">
-                    <ReactionsTab
-                      reactionsData={displayReactions}
-                      locale={locale}
-                    />
-                  </div>
-                )}
             </div>
           )}
 
-          {/* WORKSPACE 2: VALUATION & DRIVERS (valuation, scenarios, sensitivity, segments, catalysts) */}
+          {/* WORKSPACE 2: VALUATION & DRIVERS (valuation, scenarios, sensitivity, catalysts) */}
           {effectiveTab === "valuation" && (
             <div className="flex flex-col gap-6">
               <ScenariosTab
@@ -379,14 +367,6 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                 revisions={valuationRevisions}
               />
 
-              {displayFacts &&
-                displayFacts.segments &&
-                displayFacts.segments.length > 0 && (
-                  <div className="border-t border-border/60 pt-2">
-                    <SegmentsTab facts={displayFacts} locale={locale} />
-                  </div>
-                )}
-
               {displayCatalysts &&
                 displayCatalysts.catalysts &&
                 displayCatalysts.catalysts.length > 0 && (
@@ -401,7 +381,7 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
             </div>
           )}
 
-          {/* WORKSPACE 3: CONSENSUS & MOAT (estimates, moat) */}
+          {/* WORKSPACE 3: CONSENSUS, GUIDANCE & MOAT (estimates, segments & guidance, moat) */}
           {effectiveTab === "estimates" && (
             <div className="flex flex-col gap-6">
               <EstimatesTab
@@ -409,6 +389,14 @@ export const CockpitWorkspacePane = React.memo(function CockpitWorkspacePane({
                 currentPrice={displayFacts?.currentPrice}
                 locale={locale}
               />
+
+              {displayFacts &&
+                displayFacts.segments &&
+                displayFacts.segments.length > 0 && (
+                  <div className="border-t border-border/60 pt-2">
+                    <SegmentsTab facts={displayFacts} locale={locale} />
+                  </div>
+                )}
 
               {displayMoat && (
                 <div className="border-t border-border/60 pt-2">

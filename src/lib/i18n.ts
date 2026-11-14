@@ -578,6 +578,8 @@ export interface Translations {
     businessOverviewSubtitle: string;
     item1Badge: string;
     newRisksTitle: string;
+    newRisksSubtitle: string;
+    newRisksCountBadge: (count: number) => string;
     newTag: string;
     expandedTag: string;
     findingsTitle: string;
@@ -1342,6 +1344,8 @@ export interface Translations {
     defaultStandoutReason: (sym: string) => string;
     heatmapExpand: string;
     liveMicrostructure: string;
+    topMoversTitle: string;
+    dayPriceChange: string;
     tabGainers: string;
     tabLosers: string;
     tabActive: string;
@@ -1868,7 +1872,7 @@ export const translations: Record<Locale, Translations> = {
     auditTab: {
       title: "Earnings Print & Filing Audit",
       subtitle:
-        "Management call tone, 10-Q risk disclosures, and post-earnings historical volatility.",
+        "Management call tone, 10-Q risk disclosures, and official regulatory filings.",
       empty: "No earnings audit artifacts available for this report.",
       subTone: "Call Tone & Q&A",
       subFiling: "10-Q Risk Deltas",
@@ -2034,6 +2038,9 @@ export const translations: Record<Locale, Translations> = {
         "Audited statutory business model disclosure from official SEC 10-K / 10-Q filings.",
       item1Badge: "SEC FORM 10-K / ITEM 1",
       newRisksTitle: "New / Escalated Risk Disclosures",
+      newRisksSubtitle:
+        "Newly disclosed or materially escalated risk factors and headwinds from latest SEC filings",
+      newRisksCountBadge: (count: number) => `${count} Disclosures`,
       newTag: "⚡ Newly added this filing period",
       expandedTag: "Language expanded from previous quarter",
       findingsTitle: "Key Section Extractions & Findings",
@@ -2920,6 +2927,8 @@ export const translations: Record<Locale, Translations> = {
         `${sym}: Outsized market volatility driven by fundamental catalyst execution and guidance revisions, creating notable valuation divergence against sell-side consensus.`,
       heatmapExpand: "Expand ⤢",
       liveMicrostructure: "Live Market Microstructure",
+      topMoversTitle: "Top Movers",
+      dayPriceChange: "1D Price Change",
       tabGainers: "Gainers",
       tabLosers: "Losers",
       tabActive: "Active",
@@ -3478,7 +3487,8 @@ export const translations: Record<Locale, Translations> = {
     },
     auditTab: {
       title: "业绩发布与财报披露审计",
-      subtitle: "管理层电话会语调、10-Q新增风险披露变更及历史业绩股价反应。",
+      subtitle:
+        "管理层电话会语调、10-Q新增风险披露变更及官方监管申报文件审计。",
       empty: "当前研报暂无财报审计底稿。",
       subTone: "电话会语调与问答",
       subFiling: "10-Q 风险增量",
@@ -3641,6 +3651,9 @@ export const translations: Record<Locale, Translations> = {
         "源自官方 SEC 10-K / 10-Q 法定披露的主营业务架构与商业模式概述。",
       item1Badge: "SEC FORM 10-K / ITEM 1",
       newRisksTitle: "新增或升级的风险因素披露",
+      newRisksSubtitle:
+        "最新 10-Q/10-K 中新增或实质性升级的风险因素与不确定性披露",
+      newRisksCountBadge: (count: number) => `${count} 项新增或升级风险`,
       newTag: "⚡ 本报告期全新增加",
       expandedTag: "相较上季度表述显著扩充",
       findingsTitle: "关键章节提取与重大发现",
@@ -4495,6 +4508,8 @@ export const translations: Record<Locale, Translations> = {
         `${sym}：由于财报业绩披露、管理层业绩指引修正与基本面催化剂兑现，引发盘面超额异动，形成显著估值预期差。`,
       heatmapExpand: "全屏展开 ⤢",
       liveMicrostructure: "实时市场微观结构",
+      topMoversTitle: "领涨领跌榜",
+      dayPriceChange: "当日行情涨跌",
       tabGainers: "领涨",
       tabLosers: "领跌",
       tabActive: "热门",

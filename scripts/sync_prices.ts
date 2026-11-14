@@ -10,7 +10,7 @@ import * as dotenv from "dotenv";
 import YahooFinance from "yahoo-finance2";
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "../src/db";
-import { tickersTable } from "../src/db/schema";
+import { tickersTable, reportsTable } from "../src/db/schema";
 import {
   computeTechnicalLevels,
   type YahooQuoteLike,
@@ -310,6 +310,21 @@ async function syncPrices() {
             priceUpdatedAt: sql`excluded.price_updated_at`,
           },
         });
+
+      // Synchronize reportsTable.reportPrice & facts.currentPrice so reports never retain stale scaffolding prices
+      for (const upd of chunkUpdates) {
+        if (upd.ticker && upd.currentPrice) {
+          await db
+            .update(reportsTable)
+            .set({
+              reportPrice: upd.currentPrice,
+              facts: sql`jsonb_set(COALESCE(${reportsTable.facts}, '{}'::jsonb), '{currentPrice}', ${upd.currentPrice}::jsonb)`,
+              factsZh: sql`CASE WHEN ${reportsTable.factsZh} IS NOT NULL THEN jsonb_set(${reportsTable.factsZh}, '{currentPrice}', ${upd.currentPrice}::jsonb) ELSE NULL END`,
+              updatedAt: now,
+            })
+            .where(eq(reportsTable.ticker, upd.ticker));
+        }
+      }
     }
 
     if (i + chunkSize < tickers.length) {
