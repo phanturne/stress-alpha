@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mic, FileSearch, History } from "lucide-react";
+import { Mic, FileSearch } from "lucide-react";
 import type {
   EarningsSentiment,
   FilingExtracts,
@@ -11,7 +11,6 @@ import type {
 import { getTranslations, type Locale } from "@/lib/i18n";
 import { ToneTab } from "./ToneTab";
 import { FilingTab } from "./FilingTab";
-import { ReactionsTab } from "./ReactionsTab";
 
 interface AuditTabProps {
   sentimentData?: EarningsSentiment;
@@ -32,14 +31,13 @@ export const AuditTab: React.FC<AuditTabProps> = ({
   ticker,
   initialSubTab = "filing",
 }) => {
-  const [subTab, setSubTab] = useState<"filing" | "tone" | "reactions">(
-    initialSubTab
+  const [subTab, setSubTab] = useState<"filing" | "tone">(
+    initialSubTab === "reactions" ? "filing" : initialSubTab
   );
   const t = getTranslations(locale).auditTab;
 
   const toneScore = sentimentData?.managementTone?.overallConfidence;
   const newRisksCount = filingData?.newRiskFactors?.length ?? 0;
-  const reactionsCount = reactionsData?.events?.length ?? 0;
 
   const subNavItems = [
     {
@@ -53,12 +51,6 @@ export const AuditTab: React.FC<AuditTabProps> = ({
       label: t.subTone,
       icon: Mic,
       countBadge: toneScore !== undefined ? `${toneScore}/10` : undefined,
-    },
-    {
-      id: "reactions" as const,
-      label: t.subReactions,
-      icon: History,
-      countBadge: reactionsCount > 0 ? `${reactionsCount}` : undefined,
     },
   ];
 
@@ -112,9 +104,6 @@ export const AuditTab: React.FC<AuditTabProps> = ({
 
       {/* Sub-Tab View Rendering */}
       <div className="w-full">
-        {subTab === "tone" && (
-          <ToneTab sentimentData={sentimentData} locale={locale} />
-        )}
         {subTab === "filing" && (
           <FilingTab
             filingData={filingData}
@@ -123,8 +112,8 @@ export const AuditTab: React.FC<AuditTabProps> = ({
             ticker={ticker}
           />
         )}
-        {subTab === "reactions" && (
-          <ReactionsTab reactionsData={reactionsData} locale={locale} />
+        {subTab === "tone" && (
+          <ToneTab sentimentData={sentimentData} locale={locale} />
         )}
       </div>
     </div>
